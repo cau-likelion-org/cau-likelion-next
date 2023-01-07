@@ -33,7 +33,10 @@
       ],
       "@utils": [
         "src/utils"
-      ]
+      ],
+      "@image/*": [
+        "public/image/*",
+      ],
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
