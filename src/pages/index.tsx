@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
+import { GetStaticProps } from 'next';
 import Head from 'next/head';
 
 interface Imovie {
@@ -8,7 +8,7 @@ interface Imovie {
   poster_path: string;
 }
 
-function Home({ result }: InferGetServerSidePropsType<GetServerSideProps>) {
+function Home({ result }: { result: Imovie[] }) {
   return (
     <div>
       <Head>
@@ -25,7 +25,7 @@ function Home({ result }: InferGetServerSidePropsType<GetServerSideProps>) {
   );
 }
 
-export async function getServerSideProps() {
+export const getStaticProps: GetStaticProps = async () => {
   const { data } = await axios.get(
     'https://api.themoviedb.org/3/movie/popular?api_key=0b509fc29bded6c0c259c6203d006b72',
   );
@@ -35,6 +35,7 @@ export async function getServerSideProps() {
     props: {
       result,
     },
+    revalidate: 60,
   };
-}
+};
 export default Home;
