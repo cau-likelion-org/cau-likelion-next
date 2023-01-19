@@ -1,3 +1,5 @@
+import { useQueries } from 'react-query';
+
 export type MemberStack = 'pm' | 'frontend' | 'backend' | 'design';
 
 export type ShareURL = 'github' | 'youtube' | 'web';
@@ -22,4 +24,9 @@ interface IProjectDetail extends IProject {
   date: string;
   description: string;
   link: IShareURL[];
+}
+
+interface ResponseData<T> {
+  message: string;
+  data: T;
 }
