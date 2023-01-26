@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import React from 'react';
 import styled from 'styled-components';
 interface INavBarButton {
@@ -6,26 +7,34 @@ interface INavBarButton {
 }
 
 const NavBarButton = ({ title, routing }: INavBarButton) => {
-  if (title === '로그인') return <LoginButton>{title}</LoginButton>;
-  return <Button>{title}</Button>;
+  if (title === '로그인')
+    return (
+      <Link href={routing}><LoginButton>{title}</LoginButton></Link>
+    );
+
+  return (<Link href={routing}><Button>{title}</Button></Link >);
 };
 
 export default NavBarButton;
 
-const Button = styled.button`
+const Button = styled.div`
   background: none;
-  padding: 0 2%;
+  margin: 0 2%;
   border: none;
   font-family: 'Inter';
   font-style: normal;
   font-weight: 400;
   font-size: 18px;
   text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
 `;
 
 const LoginButton = styled(Button)`
-  border-radius: 3.25rem;
+  border-radius: 52px;
   background-color: #333333;
   color: white;
-  padding: 11px 31px;
+  padding: 11px 28px;
 `;
