@@ -5,7 +5,7 @@ import PlanBox from './component/PlanBox';
 const PlanSection = () => {
   return (
     <Wrapper>
-      <TitleText>커리큘럼</TitleText>
+      <TitleText>연간 일정</TitleText>
       <PlanBox />
     </Wrapper>
   );

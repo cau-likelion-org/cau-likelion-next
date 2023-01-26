@@ -1,7 +1,10 @@
 import { PrimaryPurple } from '@utils/constant/color';
 import React from 'react';
 import styled from 'styled-components';
-import CurriculumItem from './PlanItem';
+import PlanDateItem from './PlanDateItem';
+import PlanTitleItem from './PlanTitleItem';
+import PlanDotItem from './PlanDotItem';
+
 
 const PlanBox = () => {
 
@@ -25,12 +28,29 @@ const PlanBox = () => {
     ];
 
     return (
+
         <BoxContainer>
-            <LineBox>
-                {CurriculumData.map((item, i) => (
-                    <CurriculumItem key={i} title={item.title} date={item.date} />
-                ))}
-            </LineBox>
+                <ItemWrapper>
+                    <RowWrapper>
+                        {CurriculumData.map((item, i) => (
+                            <PlanDateItem key={i} date={item.date} />
+                        ))}
+                    </RowWrapper>
+
+                    <RowWrapper>
+                        <PlanDotItem/>
+                    </RowWrapper>
+
+            
+                    
+                    <RowWrapper>
+                        {CurriculumData.map((item, i) => (
+                            <PlanTitleItem key={i} title={item.title} />
+                        ))}
+                    </RowWrapper>
+                    
+                </ItemWrapper>
+                
         </BoxContainer>
     );
 };
@@ -46,6 +66,8 @@ const BoxContainer = styled.div`
     justify-content: center;
     padding: 107px 100px 87px 100px;
     position: relative;
+
+    z-index:2;
 `;
 
 
@@ -66,3 +88,24 @@ const Bottom = styled(Top)`
     border-top: 2px solid black;
     flex-basis: 55%;
 `;
+
+const ItemWrapper = styled.div`
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    gap: 120px;
+    align-items: center;
+`;
+
+const RowWrapper = styled.div`
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+
+    position:relative;
+
+    align-items: center;
+    
+
+`
+
