@@ -10,16 +10,12 @@ const NavBar = () => {
 
   const NavBarData = [
     {
-      title: '프로젝트',
-      routing: '/project',
-    },
-    {
       title: '아카이빙',
       routing: '/gallery',
     },
     {
       title: '커뮤니티',
-      routing: '/freeboard',
+      routing: '/freeboard/list/1',
     },
     {
       title: '출석체크',
@@ -72,7 +68,7 @@ const Wrapper = styled.div`
   align-items: center;
   justify-content: space-between;
   background-color: ${BackgroundColor};
-  z-index: 2;
+  z-index: 9999;
   /* border-bottom: 1px solid #000000; */
 `;
 

@@ -21,10 +21,10 @@ const Button = styled.div`
   background: none;
   margin: 0 2%;
   border: none;
-  font-family: 'Inter';
+  font-family: 'Pretendard';
   font-style: normal;
-  font-weight: 400;
-  font-size: 18px;
+  font-weight: 600;
+  font-size: 1vw;
   text-align: center;
   display: flex;
   justify-content: center;
