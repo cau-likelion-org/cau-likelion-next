@@ -1,38 +1,7 @@
-@import url(//spoqa.github.io/spoqa-han-sans/css/SpoqaHanSansNeo.css);
-html {
-  -webkit-text-size-adjust​: ​none​;
-  margin: 0;
-  height: 100vh;
-}
+html,
 body {
   margin: 0;
-  font-family: 'Spoqa Han Sans', 'Spoqa Han Sans JP';
   padding: 0;
-}
-body:hover {
-  overflow-y: scroll;
-}
-::-webkit-scrollbar {
-  display: none;
-}
-footer {
-  margin: 0;
-}
-
-.normal {
-  font-weight: 400;
-}
-
-.bold {
-  font-weight: 700;
-}
-
-.bolder {
-  font-weight: 800;
-}
-
-.light {
-  font-weight: 300;
 }
 
 a {
@@ -42,10 +11,4 @@ a {
 
 * {
   box-sizing: border-box;
-}
-
-.default-screen {
-  background-color: #ffffff;
-  flex-direction: column;
-  display: flex;
 }

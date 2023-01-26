@@ -11,17 +11,14 @@ export enum PrimaryOrange {
 export enum PrimaryBlack {
   default = '#333333',
 }
-export enum GreyScale {
-  first = '#0A0A0A',
-  second = '#232323',
-  third = '#3B3B3B',
-  fourth = '#545454',
-  fifth = '#848484',
-  sixth = '#CECECE',
-  seventh = '#E8E8E8',
-  eighth = '#F3F3F3',
+export enum PrimaryGrey {
+  default = '#F5F5F5'
 }
 
-export const BackgroundColor = '#C5C5C5';
+export enum PrimaryPurple {
+  default = '#F2F1FF'
+}
+
+export const BackgroundColor = '#FFFFFF';
 export const SurfaceColor = '#F8F8F8';
 export const ErrorColor = '#FF7A6E';
