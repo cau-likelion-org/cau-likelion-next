@@ -2,25 +2,17 @@ import { PrimaryBlue } from '@utils/constant/color';
 import React from 'react';
 import styled from 'styled-components';
 
-const PlanItem = ({ title, date }: { title: string; date: string; }) => {
+const PlanDateItem = ({ date }: { date: string; }) => {
     return (
-        <ItemWrapper>
             <Date>{date}</Date>
-            <Circle />
-            <Title>{title}</Title>
-        </ItemWrapper>
+
+            
     );
 };
 
-export default PlanItem;
+export default PlanDateItem;
 
-const ItemWrapper = styled.div`
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    gap: 120px;
-    align-items: center;
-`;
+
 
 const BlackLine = styled.hr`
     color: black;
@@ -46,11 +38,18 @@ const Circle = styled.div`
     background-color: ${PrimaryBlue.default};
     border-radius: 100%;
     box-shadow: 0 0 12px 12px #D3CEFF;
+
+    &:after{
+        content: '';
+        display:block;
+        
+        width:200px;
+        height: 2px;
+
+        background: red;
+        
+    }
+
+    
 `;
 
-const Title = styled(Date)`
-    font-size: 30px;
-    line-height: 40px;
-    font-weight: 500;
-    white-space: pre;
-`;
