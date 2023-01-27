@@ -3,9 +3,9 @@ import { useEffect } from "react";
 
 
 const FreeboardList = () => {
-    useEffect(() => {
-        alert('준비중입니다 !');
-    },[]);
+    return (
+        <></>
+    );
 };
 
 export default FreeboardList;
@@ -22,6 +22,6 @@ export const getStaticProps = async ({ params }: { params: { page: number; }; })
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
-    let paths: string[] = ['/freeboard/list/1']
+    let paths: string[] = ['/freeboard/list/1'];
     return { paths, fallback: true };
 };
