@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import thumbnail from '@image/활동기록보러가기.png';
-import thumbnail2 from '@image/세션바로가기.png';
+import thumbnail2 from '@image/세션바로가기.jpeg';
 import Image from 'next/image';
 import ProjectButton from './component/ProjectButton';
 
