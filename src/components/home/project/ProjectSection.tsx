@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 import thumbnail from '@image/활동기록보러가기.png';
-import thumbnail2 from '@image/세션바로가기.jpeg';
 import Image from 'next/image';
 import ProjectButton from './component/ProjectButton';
 
@@ -13,12 +12,12 @@ const ProjectSection = () => {
                     <Image src={thumbnail} width={'396px'} height={'396px'} alt="1st" />
                 </FirstFloat>
                 <SecondFloat>
-                    <Image src={thumbnail2} width={'396px'} height={'396px'} alt="2nd" />
+                    <Image src={thumbnail} width={'396px'} height={'396px'} alt="2nd" />
                 </SecondFloat>
             </RowWrapper>
             <RowWrapper>
                 <ThirdFloat>
-                    <Image src={thumbnail2} width={'396px'} height={'396px'} alt="3rd" />
+                    <Image src={thumbnail} width={'396px'} height={'396px'} alt="3rd" />
                 </ThirdFloat>
                 <FourthFloat>
                     <Image src={thumbnail} width={'396px'} height={'396px'} alt="4th" />

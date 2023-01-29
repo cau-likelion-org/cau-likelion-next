@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import IntroLion from '@image/소개_인사하는 사자.gif';
 import Image from 'next/image';
 import PhotoCard from './component/PhotoCard';
-import session from '@image/세션바로가기.jpeg';
 import archiving from '@image/활동기록보러가기.png';
 
 const IntroduceSection = () => {
@@ -14,7 +13,7 @@ const IntroduceSection = () => {
       <SubText>중앙대학교 멋쟁이 사자처럼은 테크 기반의 아이디어를 실현하기 위해</SubText>
       <SubText>다양한 분야의 중앙인이 모였습니다.</SubText>
       <PhotoCardWrapper>
-        <PhotoCard title={'정기세션 모아보기'} subtitle={'정기세션'} thumbnail={session.src} routing={'/session'} />
+        <PhotoCard title={'정기세션 모아보기'} subtitle={'정기세션'} thumbnail={archiving.src} routing={'/session'} />
         <PhotoCard title={'활동기록 보러가기'} subtitle={'활동기록'} thumbnail={archiving.src} routing={'/gallery'} />
       </PhotoCardWrapper>
     </Wrapper>
