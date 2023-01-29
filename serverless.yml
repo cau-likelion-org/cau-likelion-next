@@ -10,5 +10,4 @@ cau-likelion-next:
       imageLambda: 'cau-likelion-image-lambda'
 
     cloudfront:
-      distributionId:'E21OZDEQ2K7NA5' 
       comment: 'next deploy' # CloudFront 설명 설정
