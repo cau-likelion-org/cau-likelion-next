@@ -35,18 +35,16 @@ export default CauLikeLionNext;
 
 const PageContainer = styled.div`
   background-color: ${BackgroundColor};
-  height: auto;
-  min-height: 100vh;
+  min-height: calc(100vh - 270px);
   max-width: 100vw;
   width: 100%;
   overflow-y: scroll;
 
   @media(max-width: 1440px) {
-    padding: 100px 250px 0 250px;
+    padding: 100px 250px 100px 250px;
   }
   @media(max-width: 1280px) {
-    padding: 100px 150px 0 150px;
+    padding: 100px 150px 100px 150px;
   }
-  padding: 100px 360px 0 360px;
-  margin-bottom : 300px;
+  padding: 100px 360px 100px 360px;
 `;

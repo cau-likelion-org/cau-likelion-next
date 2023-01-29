@@ -1,4 +1,4 @@
-import { PrimaryBlue } from '@utils/constant/color';
+import { Primary } from '@utils/constant/color';
 import React from 'react';
 import styled from 'styled-components';
 import Image from 'next/image';
@@ -25,7 +25,7 @@ const FooterButton = ({ type, Img, link }: FooterButtonProps) => {
 export default FooterButton;
 
 const Button = styled.div`
-    background-color: ${PrimaryBlue.default};
+    background-color: ${Primary.default};
     width: 70px;
     height: 70px;
     border-radius: 20px;
