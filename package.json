@@ -20,6 +20,7 @@
     "next": "12.2.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-icons": "^4.7.1",
     "react-query": "^3.39.2",
     "recoil": "^0.7.6",
     "styled-components": "^5.3.6",
@@ -27,8 +28,11 @@
     "typescript": "4.9.4"
   },
   "devDependencies": {
+    "@svgr/webpack": "^6.5.1",
     "@types/styled-components": "^5.1.26",
     "babel-plugin-styled-components": "^2.0.7",
-    "serverless": "2.72.2"
+    "file-loader": "^6.2.0",
+    "serverless": "2.72.2",
+    "url-loader": "^4.1.1"
   }
 }
