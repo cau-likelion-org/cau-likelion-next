@@ -31,7 +31,9 @@ const NavBar = () => {
     <Wrapper>
       <LogoWrapper>
         <Link href={'/'}>
-          <Image src={CAULogo} width={'50px'} height={'50px'} alt="로고 이미지" />
+          <LogoImage>
+            <Image src={CAULogo} width={'50px'} height={'50px'} alt="로고 이미지" />
+          </LogoImage>
         </Link>
         <Link href={'/'}>
           <Title>LIKELION</Title>
@@ -71,7 +73,10 @@ const Wrapper = styled.div`
   z-index: 9999;
   /* border-bottom: 1px solid #000000; */
 `;
-
+const LogoImage = styled.div`
+min-width: 50px;
+min-height: 50px;
+`;
 const LogoWrapper = styled.div`
   display: flex;
   cursor: pointer;
@@ -84,7 +89,7 @@ const Title = styled.p`
   font-family: 'Inter';
   font-style: normal;
   font-weight: 900;
-  font-size: 23px;
+  font-size: 2.3rem;
 `;
 
 const ButtonWrapper = styled.div`

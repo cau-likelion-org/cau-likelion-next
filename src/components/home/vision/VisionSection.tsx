@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import QuestionLion from '@image/가치_물음표 사자.gif';
 import Image from 'next/image';
-import { PrimaryBlue } from '@utils/constant/color';
+import { Primary } from '@utils/constant/color';
 
 
 const VisionSection = () => {
@@ -38,17 +38,25 @@ const TitleText = styled.div`
   font-family: 'Pretendard';
   font-style: normal;
   font-weight: 900;
-  font-size: 37px;
+  font-size: 3rem;
   width: 100%;
   line-height: 76.51px;
   text-align: center;
   margin: 15px 0 70px 0;
+
+  @media(max-width:1200px) {
+    justify-content: center;
+  }
 `;
 
 const ValueCard = styled.div`
     display: flex;
     justify-content: center;
     gap: 65px;
+    
+    @media(max-width:1200px){
+        flex-direction:column;
+    }
 `;
 
 const ImageWrapper = styled.div`
@@ -69,16 +77,28 @@ const BlueText = styled.div`
     font-family: 'Pretendard';
     font-style: normal;
     font-weight: 700;
-    font-size: 30px;
+    font-size: 3rem;
     line-height: 153.02%;
-    color: ${PrimaryBlue.default};
+    color: ${Primary.default};
     margin-bottom: 44px;
+
+    @media(max-width:1200px) {
+        display: flex;
+        justify-content: center;
+    }
+
 `;
 
 const BlackText = styled.div`
     font-family: 'Pretendard';
     font-style: normal;
     font-weight: 500;
-    font-size: 30px;
+    font-size: 3rem;
     line-height: 182.52%;
+
+    @media(max-width:1200px) {
+        justify-content: center;
+        display: flex;
+    }
+
 `;

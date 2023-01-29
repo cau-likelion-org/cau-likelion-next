@@ -1,4 +1,4 @@
-import { PrimaryPurple } from '@utils/constant/color';
+import { Primary } from '@utils/constant/color';
 import React from 'react';
 import styled from 'styled-components';
 import PlanDateItem from './PlanDateItem';
@@ -30,27 +30,27 @@ const PlanBox = () => {
     return (
 
         <BoxContainer>
-                <ItemWrapper>
-                    <RowWrapper>
-                        {CurriculumData.map((item, i) => (
-                            <PlanDateItem key={i} date={item.date} />
-                        ))}
-                    </RowWrapper>
+            <ItemWrapper>
+                <RowWrapper>
+                    {CurriculumData.map((item, i) => (
+                        <PlanDateItem key={i} date={item.date} />
+                    ))}
+                </RowWrapper>
 
-                    <RowWrapper>
-                        <PlanDotItem/>
-                    </RowWrapper>
+                <RowWrapper>
+                    <PlanDotItem />
+                </RowWrapper>
 
-            
-                    
-                    <RowWrapper>
-                        {CurriculumData.map((item, i) => (
-                            <PlanTitleItem key={i} title={item.title} />
-                        ))}
-                    </RowWrapper>
-                    
-                </ItemWrapper>
-                
+
+
+                <RowWrapper>
+                    {CurriculumData.map((item, i) => (
+                        <PlanTitleItem key={i} title={item.title} />
+                    ))}
+                </RowWrapper>
+
+            </ItemWrapper>
+
         </BoxContainer>
     );
 };
@@ -60,7 +60,7 @@ export default PlanBox;
 const BoxContainer = styled.div`
     display: flex;
     width: 100%;
-    background-color: ${PrimaryPurple.default};
+    background-color: ${Primary.light};
     border-radius: 30px;
     flex-direction: column;
     justify-content: center;
@@ -68,25 +68,6 @@ const BoxContainer = styled.div`
     position: relative;
 
     z-index:2;
-`;
-
-
-
-const LineBox = styled.div`
-    display: flex;
-    width: 100%;
-    justify-content: space-between;
-`;
-
-const Top = styled.div`
-    flex-basis: 45%;
-    display: flex;
-    width: 100%;
-`;
-
-const Bottom = styled(Top)`
-    border-top: 2px solid black;
-    flex-basis: 55%;
 `;
 
 const ItemWrapper = styled.div`
@@ -105,7 +86,5 @@ const RowWrapper = styled.div`
     position:relative;
 
     align-items: center;
-    
-
 `
 

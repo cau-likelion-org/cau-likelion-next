@@ -18,7 +18,7 @@ body:hover {
 
 /*데스크탑) 화면 너비: 1280 ~ 1920px*/
 @media (max-width: 1920px) {
-  body {
+  html {
     font-size: 10px;
     /* margin: 0 360px; */
   }
@@ -26,7 +26,7 @@ body:hover {
 
 /*데스크탑) 화면 너비: 1025 ~ 1280px*/
 @media (max-width: 1280px) {
-  body {
+  html {
     font-size: 10px;
     /* margin: 0 200px; */
   }
@@ -34,7 +34,7 @@ body:hover {
 
 /*데스크탑) 화면 너비: 1022 ~ 1024px */
 @media (max-width: 1024px) {
-  body {
+  html {
     font-size: 10px;
     /* margin: 0 200px; */
   }
@@ -42,7 +42,7 @@ body:hover {
 
 /* 노트북) 화면 너비: 0 ~ 960px*/
 @media (max-width: 768px) {
-  body {
+  html {
     font-size: 9px;
     /* margin: 0 150px; */
   }
@@ -50,7 +50,7 @@ body:hover {
 
 /* 타블렛) 화면 너비: 577 ~ 768px */
 @media (max-width: 768px) {
-  body {
+  html {
     font-size: 8px;
     /* margin: 0 150px; */
   }
@@ -58,7 +58,7 @@ body:hover {
 
 /* 모바일) 화면 너비: 0 ~ 576 */
 @media (max-width: 576px) {
-  body {
+  html {
     font-size: 8px;
     /* margin: 0 130px; */
   }

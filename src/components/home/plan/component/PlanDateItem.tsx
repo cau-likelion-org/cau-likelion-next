@@ -1,12 +1,12 @@
-import { PrimaryBlue } from '@utils/constant/color';
+import { Primary } from '@utils/constant/color';
 import React from 'react';
 import styled from 'styled-components';
 
 const PlanDateItem = ({ date }: { date: string; }) => {
     return (
-            <Date>{date}</Date>
+        <Date>{date}</Date>
 
-            
+
     );
 };
 
@@ -26,7 +26,7 @@ const Date = styled.div`
     font-family: 'Pretendard';
     font-style: normal;
     font-weight: 700;
-    font-size: 21px;
+    font-size: 2.1rem;
     line-height: 32px;
     text-align: center;
     color: black;
@@ -35,7 +35,7 @@ const Date = styled.div`
 const Circle = styled.div`
     width: 28px;
     height: 28px;
-    background-color: ${PrimaryBlue.default};
+    background-color: ${Primary.default};
     border-radius: 100%;
     box-shadow: 0 0 12px 12px #D3CEFF;
 

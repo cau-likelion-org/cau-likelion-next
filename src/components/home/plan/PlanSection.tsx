@@ -28,7 +28,7 @@ const TitleText = styled.div`
   font-family: 'Pretendard';
   font-style: normal;
   font-weight: 900;
-  font-size: 37px;
+  font-size: 3.7rem;
   line-height: 76.51px;
   text-align: center;
   margin: 15px 0;

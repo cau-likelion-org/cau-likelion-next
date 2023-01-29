@@ -10,7 +10,7 @@ const ProjectSection = () => {
         <Wrapper>
             <RowWrapper>
                 <FirstFloat>
-                    <Image src={thumbnail} width={'396px'} height={'500px'} alt="1st" />
+                    <Image src={thumbnail} width={'396px'} height={'396px'} alt="1st" />
                 </FirstFloat>
                 <SecondFloat>
                     <Image src={thumbnail2} width={'396px'} height={'396px'} alt="2nd" />
@@ -47,28 +47,32 @@ const FirstFloat = styled.div`
         transition: transform .5s;
     }
     max-height: 396px;
-    border-radius: 30px;
+    max-width: 50%;
     overflow: hidden;
     float: left;
     object-fit: cover;     
     transform:scale(1.0);        
     transition: transform .5s; 
     overflow: hidden;
+
+    img{
+        border-radius: 3rem;
+    }
 `;
 const SecondFloat = styled(FirstFloat)`
     float: right;
-    margin-left: 70px;
-    margin-top: 240px;
+    margin-left: 7rem;
+    margin-top: 24rem;
 `;
 const ThirdFloat = styled(FirstFloat)`
-    margin-top: -170px;
-    margin-left: -170px;
+    margin-top: -17rem;
+    margin-left: -17rem;
 
 `;
 const FourthFloat = styled(FirstFloat)`
     float: right;
-    margin-top: 70px;
-    margin-left: 70px;
+    margin-top: 7rem;
+    margin-left: 7rem;
 `;
 
 const RowWrapper = styled.div`

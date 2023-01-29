@@ -24,7 +24,7 @@ const Button = styled.div`
   font-family: 'Pretendard';
   font-style: normal;
   font-weight: 600;
-  font-size: 1vw;
+  font-size: 2rem;
   text-align: center;
   display: flex;
   justify-content: center;
