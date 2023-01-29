@@ -1,14 +1,15 @@
+import { BackgroundColor } from '@utils/constant/color';
 import React from 'react';
 import styled from 'styled-components';
 
 const VideoSection = () => {
-    return (
-        <Wrapper>
-            <Video autoPlay muted>
-                <source src={"/image/top_hack_your_life.mp4"} type="video/mp4" />
-            </Video>
-        </Wrapper>
-    );
+  return (
+    <Wrapper>
+      <Video autoPlay muted>
+        <source src={"/image/top_hack_your_life.mp4"} type="video/mp4" />
+      </Video>
+    </Wrapper>
+  );
 };
 
 export default VideoSection;

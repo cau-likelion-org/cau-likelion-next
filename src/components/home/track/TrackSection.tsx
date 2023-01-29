@@ -61,7 +61,7 @@ const TitleText = styled.div`
   font-family: 'Pretendard';
   font-style: normal;
   font-weight: 900;
-  font-size: 37px;
+  font-size: 3rem;
   width: 100%;
   line-height: 76.51px;
   text-align: center;
@@ -82,4 +82,8 @@ const ButtonsWrapper = styled.div`
 const DescriptionWrapper = styled.div`
     display: flex;
     gap: 27px;
+    @media(max-width: 1200px) {
+        flex-direction: column;
+    }
+    margin-top: 30px;
 `;

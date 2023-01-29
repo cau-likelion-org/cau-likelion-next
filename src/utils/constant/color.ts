@@ -1,24 +1,26 @@
-// 디자인 결정되면 수정하기
-
-export enum PrimaryBlue {
+// blue
+export enum Primary {
   default = '#1B00FD',
+  // lightblue
+  light = '#F0F1FF'
 }
 
-export enum PrimaryOrange {
+// orange
+export enum Secondary {
   default = '#FB5101',
 }
 
-export enum PrimaryBlack {
-  default = '#333333',
-}
-export enum PrimaryGrey {
-  default = '#F5F5F5'
+// basic black
+export enum Basic {
+  default = '#2D2D2D',
 }
 
-export enum PrimaryPurple {
-  default = '#F2F1FF'
+// grey
+export enum GreyScale {
+  default = '#858585',
+  light = '#F5F5F5'
 }
 
+// white
 export const BackgroundColor = '#FFFFFF';
-export const SurfaceColor = '#F8F8F8';
-export const ErrorColor = '#FF7A6E';
+

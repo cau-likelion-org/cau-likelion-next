@@ -1,4 +1,4 @@
-import { BackgroundColor, PrimaryBlue, PrimaryGrey } from '@utils/constant/color';
+import { BackgroundColor, GreyScale, Primary } from '@utils/constant/color';
 import React from 'react';
 import styled from 'styled-components';
 import { SlArrowRight } from 'react-icons/sl';
@@ -19,7 +19,7 @@ export default ProjectButton;
 
 const ButtonWrapper = styled.div`
     &:hover{
-        background-color: ${PrimaryBlue.default};
+        background-color: ${Primary.default};
         color: ${BackgroundColor};
     }
     .p{
@@ -27,7 +27,7 @@ const ButtonWrapper = styled.div`
     }
     margin: 80px 0;
     cursor: pointer;
-    background-color: ${PrimaryGrey.default};
+    background-color: ${GreyScale.light};
     color: black;
     padding: 26px 50px;
     border-radius: 1000px;
@@ -37,6 +37,6 @@ const ButtonWrapper = styled.div`
     font-family: 'Inter';
     font-style: normal;
     font-weight: 900;
-    font-size: 30px;
+    font-size: 3rem;
     gap: 10px;
 `;

@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { PrimaryBlue, PrimaryPurple } from '@utils/constant/color';
+import { Primary } from '@utils/constant/color';
 
 
 const PlanDotItem = () => {
@@ -8,10 +8,10 @@ const PlanDotItem = () => {
         <>
             <BlackLine />
             {Array.from({ length: 4 }, (item, index) => (
-                    <Circle key={index} />
+                <Circle key={index} />
             ))}
-            
-            
+
+
         </>
     );
 };
@@ -21,7 +21,7 @@ export default PlanDotItem;
 const Circle = styled.div`
     width: 28px;
     height: 28px;
-    background-color: ${PrimaryBlue.default};
+    background-color: ${Primary.default};
     border-radius: 100%;
 
     position: relative;
@@ -53,7 +53,7 @@ const BlackLine = styled.hr`
 
     z-index: 0;
 
-`
+`;
 
 const BigCircle = styled(Circle)`
     display:flex;

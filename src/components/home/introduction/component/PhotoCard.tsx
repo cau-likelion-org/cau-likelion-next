@@ -93,7 +93,7 @@ const TitleText = styled.div`
     font-family: 'Pretendard';
     font-style: normal;
     font-weight: 700;
-    font-size: 50px;
+    font-size: 5rem;
     line-height: 153.02%;
     color: #FFFFFF;
 
@@ -111,7 +111,7 @@ const SubText = styled.div`
     font-family: 'Pretendard';
     font-style: normal;
     font-weight: 700;
-    font-size: 21px;
+    font-size:2.1rem;
 `;
 
 const Top = styled.div`

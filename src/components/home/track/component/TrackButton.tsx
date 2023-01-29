@@ -1,4 +1,4 @@
-import { BackgroundColor, PrimaryBlue, PrimaryGrey } from '@utils/constant/color';
+import { BackgroundColor, GreyScale, Primary } from '@utils/constant/color';
 import React from 'react';
 import styled from 'styled-components';
 
@@ -20,7 +20,7 @@ const TrackButton = ({ title, isClicked, handleClickTrackButton }: TrackButtonPr
 export default TrackButton;
 
 const Button = styled.div<{ isClicked: boolean; }>`
-    background-color: ${props => props.isClicked ? PrimaryBlue.default : PrimaryGrey.default};
+    background-color: ${props => props.isClicked ? Primary.default : GreyScale.light};
     transition: 0.3s ease;
     width: 277px;
     height: 77px;
@@ -31,7 +31,7 @@ const Button = styled.div<{ isClicked: boolean; }>`
     font-family: 'Pretendard';
     font-style: normal;
     font-weight: 700;
-    font-size: 30px;
+    font-size: 3rem;
     line-height: 153.02%;
     color: ${props => props.isClicked ? BackgroundColor : 'black'};
     border-radius: 18px;

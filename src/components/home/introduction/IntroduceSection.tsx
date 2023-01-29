@@ -36,6 +36,11 @@ const PhotoCardWrapper = styled.div`
   width: 100%;
   gap: 30px;
   margin: 50px 0;
+
+  @media(max-width: 1200px) {
+    flex-direction: column;
+    width: 500px;
+  }
 `;
 
 const TitleText = styled.div`
@@ -45,14 +50,14 @@ const TitleText = styled.div`
   font-family: 'Pretendard';
   font-style: normal;
   font-weight: 900;
-  font-size: 37px;
+  font-size: 3.7rem;
   line-height: 76.51px;
   text-align: center;
   margin: 15px 0;
 `;
 
 const SubText = styled(TitleText)`
-  font-size: 23px;
+  font-size: 2.3rem;
   line-height: 40.91px;
   font-weight: 400;
   margin: 0;
