@@ -16,8 +16,23 @@
     "incremental": true,
     "baseUrl": ".",
     "paths": {
-      "@components/*": [
-        "src/components/*"
+      "@common/*": [
+        "src/components/common/*"
+      ],
+      "@home/*": [
+        "src/components/home/*"
+      ],
+      "@gallery/*": [
+        "src/components/gallery/*"
+      ],
+      "@project/*": [
+        "src/components/project/*"
+      ],
+      "@session/*": [
+        "src/components/session/*"
+      ],
+      "@attendance/*": [
+        "src/components/attendance/*"
       ],
       "@pages/*": [
         "src/pages/*"
@@ -39,6 +54,6 @@
       ],
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "mp4.d.ts"],
   "exclude": ["node_modules"]
 }

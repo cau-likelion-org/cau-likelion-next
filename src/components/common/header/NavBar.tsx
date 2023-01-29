@@ -3,21 +3,19 @@ import React from 'react';
 import styled from 'styled-components';
 import CAULogo from '@image/cau사자.png';
 import NavBarButton from './NavBarButton';
+import { BackgroundColor } from '@utils/constant/color';
+import Link from 'next/link';
 
 const NavBar = () => {
 
   const NavBarData = [
-    {
-      title: '프로젝트',
-      routing: '/project',
-    },
     {
       title: '아카이빙',
       routing: '/gallery',
     },
     {
       title: '커뮤니티',
-      routing: '/freeboard',
+      routing: '/freeboard/list/1',
     },
     {
       title: '출석체크',
@@ -32,8 +30,14 @@ const NavBar = () => {
   return (
     <Wrapper>
       <LogoWrapper>
-        <Image src={CAULogo} width={'50px'} height={'50px'} alt="이미지임" />
-        <Ptag>LIKELION</Ptag>
+        <Link href={'/'}>
+          <LogoImage>
+            <Image src={CAULogo} width={'50px'} height={'50px'} alt="로고 이미지" />
+          </LogoImage>
+        </Link>
+        <Link href={'/'}>
+          <Title>LIKELION</Title>
+        </Link>
       </LogoWrapper>
       <ButtonWrapper>
         {NavBarData.map((navbarButton, index) => (
@@ -51,30 +55,45 @@ const NavBar = () => {
 export default NavBar;
 
 const Wrapper = styled.div`
-  height: 100px;
-  padding: 0 15%;
   width: 100%;
   display: flex;
   position: fixed;
+  top: 0;
+  left: 0;
+  @media(max-width: 1440px) {
+    padding: 0 250px;
+  }
+  @media(max-width: 1280px) {
+    padding: 0 150px;
+  }
+  padding: 0 360px;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid #000000;
+  background-color: ${BackgroundColor};
+  z-index: 9999;
+  /* border-bottom: 1px solid #000000; */
 `;
-
+const LogoImage = styled.div`
+min-width: 50px;
+min-height: 50px;
+`;
 const LogoWrapper = styled.div`
   display: flex;
+  cursor: pointer;
   justify-content: center;
   align-items: center;
+  gap: 8px;
 `;
 
-const Ptag = styled.p`
+const Title = styled.p`
   font-family: 'Inter';
   font-style: normal;
   font-weight: 900;
-  font-size: 27px;
+  font-size: 2.3rem;
 `;
 
 const ButtonWrapper = styled.div`
   display: flex;
   width: 500px;
+  justify-content: space-between;
 `;
