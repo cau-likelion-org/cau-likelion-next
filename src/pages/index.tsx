@@ -7,14 +7,19 @@ import More from '@image/home_more.svg';
 import styled from 'styled-components';
 import VideoSection from 'src/components/home/video/VideoSection';
 import ScrollBar from '@home/ScrollBar/ScrollBar';
+import { useRef } from 'react';
 
 function Landing() {
+  const ref = useRef(null);
+  const ClickMore = () => {
+    (ref as any).current.scrollIntoView({ behavior: 'smooth' });
+  };
   return (
     <SectionWrapper>
       <ScrollBar />
       <VideoSection />
-      <More />
-      <IntroduceSection />
+      <More onClick={ClickMore} />
+      <IntroduceSection innerRef={ref} />
       <VisionSection />
       <TrackSection />
       <ProjectSection />
