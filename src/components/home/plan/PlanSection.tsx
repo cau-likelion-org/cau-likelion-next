@@ -19,6 +19,8 @@ const Wrapper = styled.div`
   align-items: center;
   width: 100%;
   gap: 40px;
+  height: 100%;
+  scroll-snap-align: start;
 `;
 
 const TitleText = styled.div`
