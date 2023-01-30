@@ -35,7 +35,6 @@ const PageContainer = styled.div`
   min-height: calc(100vh - 270px);
   max-width: 100vw;
   width: 100%;
-  overflow-y: scroll;
 
   @media (max-width: 1440px) {
     padding: 100px 250px 100px 250px;
