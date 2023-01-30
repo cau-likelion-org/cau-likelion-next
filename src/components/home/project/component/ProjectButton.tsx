@@ -37,6 +37,6 @@ const ButtonWrapper = styled.div`
     font-family: 'Inter';
     font-style: normal;
     font-weight: 900;
-    font-size: 3rem;
+    font-size: 2rem;
     gap: 10px;
 `;

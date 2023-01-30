@@ -10,17 +10,17 @@ const Footer = () => {
     const FooterButtonData = [
         {
             type: "instagram",
-            img: InstaImg,
+            img: '/image/푸터인스타.svg',
             link: "https://www.instagram.com/likelion_cau"
         },
         {
             type: "kakaotalk",
-            img: KakaoImg,
+            img: '/image/푸터카카오.svg',
             link: "https://www.naver.com"
         },
         {
             type: "mail",
-            img: MailImg,
+            img: '/image/푸터메일.svg',
             link: "mailto:99yunsy@naver.com"
         }
     ];
@@ -31,7 +31,7 @@ const Footer = () => {
             <ButtonWrapper>
                 {
                     FooterButtonData.map((icon, i: number) => (
-                        <FooterButton key={i} type={icon.type} Img={icon.img} link={icon.link} />
+                        <FooterButton key={i} Img={icon.img} link={icon.link} />
                     ))
                 }
             </ButtonWrapper>
@@ -49,7 +49,7 @@ const Wrapper = styled.div`
     flex-direction: column;
     width: 100%;
     justify-content: center;
-    gap: 40px;
+    gap: 2.5rem;
     position: relative;
 `;
 
@@ -60,8 +60,7 @@ const TitleText = styled.div`
     font-family: 'Inter';
     font-style: normal;
     font-weight: 900;
-    font-size: 2.7rem;
-    line-height: 41px;
+    font-size: 2.1rem;
     text-align: center;
 `;
 
@@ -70,11 +69,11 @@ const CopyrightWrapper = styled.div`
     justify-content: center;
     align-items: center;
     background-color: ${GreyScale.light};
-    height: 79px;
+    height: 65px;
     font-family: 'Pretendard';
     font-style: normal;
     font-weight: 500;
-    font-size: 2.1rem;
+    font-size: 1.2rem;
     line-height: 32px;
     text-align: center;
     color: ${GreyScale.default};
