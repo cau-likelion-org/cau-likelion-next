@@ -1,8 +1,7 @@
-
 import '@styles/global.css';
-import Head from "next/head";
+import Head from 'next/head';
 import { QueryClient, QueryClientProvider } from 'react-query';
-import { RecoilRoot } from "recoil";
+import { RecoilRoot } from 'recoil';
 import type { AppProps } from 'next/app';
 import React from 'react';
 import styled from 'styled-components';
@@ -11,9 +10,7 @@ import NavBar from '@common/header/NavBar';
 import Footer from '@common/footer/Footer';
 
 function CauLikeLionNext({ Component, pageProps }: AppProps) {
-
   const queryClient = new QueryClient();
-
 
   return (
     <RecoilRoot>
@@ -27,7 +24,7 @@ function CauLikeLionNext({ Component, pageProps }: AppProps) {
         </PageContainer>
         <Footer />
       </QueryClientProvider>
-    </RecoilRoot >
+    </RecoilRoot>
   );
 }
 
@@ -40,10 +37,10 @@ const PageContainer = styled.div`
   width: 100%;
   overflow-y: scroll;
 
-  @media(max-width: 1440px) {
+  @media (max-width: 1440px) {
     padding: 100px 250px 100px 250px;
   }
-  @media(max-width: 1280px) {
+  @media (max-width: 1280px) {
     padding: 100px 150px 100px 150px;
   }
   padding: 100px 360px 100px 360px;

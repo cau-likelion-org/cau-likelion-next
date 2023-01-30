@@ -6,7 +6,7 @@ const VideoSection = () => {
   return (
     <Wrapper>
       <Video autoPlay muted>
-        <source src={"/image/top_hack_your_life.mp4"} type="video/mp4" />
+        <source src={'/image/top_hack_your_life.mp4'} type="video/mp4" />
       </Video>
     </Wrapper>
   );
@@ -23,4 +23,6 @@ const Wrapper = styled.div`
   flex-direction: column;
   align-items: center;
   width: 100%;
+  height: 100%;
+  scroll-snap-align: start;
 `;

@@ -5,44 +5,44 @@ import TrackButton from './component/TrackButton';
 import TrackDescriptionBox from './component/TrackDescriptionBox';
 
 const TrackSection = () => {
-    const [isClicked, setIsClicked] = useState([true, false, false, false]);
-    const track = isClicked.indexOf(true);
+  const [isClicked, setIsClicked] = useState([true, false, false, false]);
+  const track = isClicked.indexOf(true);
 
-    const handleClickTrackButton = (i: number) => {
-        const copy: boolean[] = [false, false, false, false];
-        copy[i] = true;
-        setIsClicked(copy);
-    };
+  const handleClickTrackButton = (i: number) => {
+    const copy: boolean[] = [false, false, false, false];
+    copy[i] = true;
+    setIsClicked(copy);
+  };
 
-
-    return (
-        <Wrapper>
-            <TitleText>트랙 소개</TitleText>
-            <TrackWrapper>
-                <ButtonsWrapper>
-                    {
-                        isClicked.map((track, i: number) => (
-                            <TrackButton
-                                key={i}
-                                title={TRACK_NAME[i]}
-                                isClicked={track}
-                                handleClickTrackButton={() => handleClickTrackButton(i)} />
-                        ))
-                    }
-                </ButtonsWrapper>
-                <DescriptionWrapper>
-                    <TrackDescriptionBox
-                        type="introduction"
-                        title={`${TRACK_NAME[track]} 트랙은 어떤 것을 공부하나요?`}
-                        text={TRACK_DESCRIPTION[track].description} />
-                    <TrackDescriptionBox
-                        type="recommend"
-                        title='추천해요!'
-                        text={TRACK_DESCRIPTION[track].recommend} />
-                </DescriptionWrapper>
-            </TrackWrapper>
-        </Wrapper>
-    );
+  return (
+    <Wrapper>
+      <TitleText>트랙 소개</TitleText>
+      <TrackWrapper>
+        <ButtonsWrapper>
+          {isClicked.map((track, i: number) => (
+            <TrackButton
+              key={i}
+              title={TRACK_NAME[i]}
+              isClicked={track}
+              handleClickTrackButton={() => handleClickTrackButton(i)}
+            />
+          ))}
+        </ButtonsWrapper>
+        <DescriptionWrapper>
+          <TrackDescriptionBox
+            type="introduction"
+            title={`${TRACK_NAME[track]} 트랙은 어떤 것을 공부하나요?`}
+            text={TRACK_DESCRIPTION[track].description}
+          />
+          <TrackDescriptionBox
+            type="recommend"
+            title="추천해요!"
+            text={TRACK_DESCRIPTION[track].recommend}
+          />
+        </DescriptionWrapper>
+      </TrackWrapper>
+    </Wrapper>
+  );
 };
 
 export default TrackSection;
@@ -52,6 +52,8 @@ const Wrapper = styled.div`
   flex-direction: column;
   align-items: center;
   width: 100%;
+  height: 100%;
+  scroll-snap-align: start;
 `;
 
 const TitleText = styled.div`
@@ -69,21 +71,21 @@ const TitleText = styled.div`
 `;
 
 const TrackWrapper = styled.div`
-    width: 100%;
+  width: 100%;
 `;
 
 const ButtonsWrapper = styled.div`
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    gap: 30px;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  gap: 30px;
 `;
 
 const DescriptionWrapper = styled.div`
-    display: flex;
-    gap: 27px;
-    @media(max-width: 1200px) {
-        flex-direction: column;
-    }
-    margin-top: 30px;
+  display: flex;
+  gap: 27px;
+  @media (max-width: 1200px) {
+    flex-direction: column;
+  }
+  margin-top: 30px;
 `;

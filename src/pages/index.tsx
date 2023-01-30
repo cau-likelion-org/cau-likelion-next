@@ -1,15 +1,17 @@
-import PlanSection from "@home/plan/PlanSection";
-import IntroduceSection from "@home/introduction/IntroduceSection";
-import ProjectSection from "@home/project/ProjectSection";
-import TrackSection from "@home/track/TrackSection";
-import VisionSection from "@home/vision/VisionSection";
+import PlanSection from '@home/plan/PlanSection';
+import IntroduceSection from '@home/introduction/IntroduceSection';
+import ProjectSection from '@home/project/ProjectSection';
+import TrackSection from '@home/track/TrackSection';
+import VisionSection from '@home/vision/VisionSection';
 import More from '@image/home_more.svg';
-import styled from "styled-components";
-import VideoSection from "src/components/home/video/VideoSection";
+import styled from 'styled-components';
+import VideoSection from 'src/components/home/video/VideoSection';
+import ScrollBar from '@home/ScrollBar/ScrollBar';
 
 function Landing() {
   return (
     <SectionWrapper>
+      <ScrollBar />
       <VideoSection />
       <More />
       <IntroduceSection />
@@ -22,8 +24,6 @@ function Landing() {
 }
 
 export default Landing;
-
-
 const SectionWrapper = styled.div`
   display: flex;
   flex-direction: column;
