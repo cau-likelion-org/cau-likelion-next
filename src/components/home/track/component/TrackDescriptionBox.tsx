@@ -27,7 +27,7 @@ const BoxWrapper = styled.div<{ type: string; }>`
     gap: 36px;
     @media(min-width: 1200px){
         flex-basis: ${props => props.type === 'recommend' ? '33%' : '66%'};
-        min-height: 540px;
+        min-height: 370px;
 
     }
     @media(max-width: 1200px) {
@@ -38,7 +38,7 @@ const BoxWrapper = styled.div<{ type: string; }>`
 const Text = styled.div`
     font-family: 'Pretendard';
     font-style: normal;
-    font-size: 3rem;
+    font-size: 2rem;
     color: black;
     font-weight: 500;
     line-height: 166.52%;

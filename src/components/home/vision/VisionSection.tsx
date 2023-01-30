@@ -38,7 +38,7 @@ const TitleText = styled.div`
   font-family: 'Pretendard';
   font-style: normal;
   font-weight: 900;
-  font-size: 3rem;
+  font-size: 3.7rem;
   width: 100%;
   line-height: 76.51px;
   text-align: center;
@@ -53,7 +53,7 @@ const ValueCard = styled.div`
     display: flex;
     justify-content: center;
     gap: 65px;
-    
+
     @media(max-width:1200px){
         flex-direction:column;
     }
@@ -77,7 +77,7 @@ const BlueText = styled.div`
     font-family: 'Pretendard';
     font-style: normal;
     font-weight: 700;
-    font-size: 3rem;
+    font-size: 2.5rem;
     line-height: 153.02%;
     color: ${Primary.default};
     margin-bottom: 44px;
@@ -93,7 +93,7 @@ const BlackText = styled.div`
     font-family: 'Pretendard';
     font-style: normal;
     font-weight: 500;
-    font-size: 3rem;
+    font-size: 2rem;
     line-height: 182.52%;
 
     @media(max-width:1200px) {
