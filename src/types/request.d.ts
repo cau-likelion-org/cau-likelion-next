@@ -36,3 +36,4 @@ export interface AttendanceData {
   track: MemberStackKor;
   isComplete: boolean;
 }
+export type AttendanceListData = Record<MemberStack, string[]>;

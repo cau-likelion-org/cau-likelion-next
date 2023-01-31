@@ -1,4 +1,4 @@
-import { AttendanceData } from '@@types/request';
+import { AttendanceData, AttendanceListData } from '@@types/request';
 import axios from 'axios';
 export function getAttendance(): Promise<AttendanceData> {
   return new Promise((resolve) => {
@@ -20,4 +20,11 @@ export function postAttendance(password: string) {
     },
     { headers: { 'Content-Type': `application/json` } },
   );
+}
+export function getAttendanceList() {
+  return axios
+    .get<AttendanceListData>(
+      `https://f36b57ee-3ab4-4f63-8c82-b0d8282695a3.mock.pstmn.io/attendanceList`,
+    )
+    .then((res) => res.data);
 }

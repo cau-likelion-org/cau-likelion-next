@@ -33,6 +33,6 @@ const PageContainer = styled.div`
     background-image: url(${Lion.src});
     background-repeat: repeat;
     background-size: 250px 250px;
-    opacity: 0.4;
+    opacity: 0.2;
   }
 `;
