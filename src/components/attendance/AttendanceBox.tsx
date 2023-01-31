@@ -15,17 +15,12 @@ const AttendanceBox = () => {
   const router = useRouter();
   const InputRef = useRef<HTMLInputElement>(null);
 
-  const { data, isLoading } = useQuery<AttendanceData>(
-    ['attendance'],
-    getAttendance,
-  );
+  const { data, isLoading } = useQuery<AttendanceData>(['attendance'], getAttendance);
 
   const attendancePost = useMutation({
     mutationFn: (password: string) => postAttendance(password),
     onSuccess: (res) => {
-      console.log(res);
       if (res.status === 200) {
-        console.log('성공');
         router.push('/attendance/completed');
       }
     },
@@ -33,17 +28,12 @@ const AttendanceBox = () => {
 
   const handleClick = () => {
     if (InputRef.current) {
-      if (InputRef.current.value === '1234')
-        attendancePost.mutate(InputRef.current.value);
-      else {
-        alert('비밀번호가 맞지 않습니다.');
-      }
+      if (InputRef.current.value === '1234') attendancePost.mutate(InputRef.current.value);
+      else alert('비밀번호가 맞지 않습니다.');
     }
   };
   const handleEnter = (event: KeyboardEvent) => {
-    if (event.key === 'Enter') {
-      handleClick();
-    }
+    if (event.key === 'Enter') handleClick();
   };
   if (isLoading)
     return (
@@ -64,12 +54,7 @@ const AttendanceBox = () => {
       <InputBox title={'트 랙'} detail={data!.track} />
       <PasswordWrapper>
         <PasswordTitle>비밀번호</PasswordTitle>
-        <PasswordInput
-          type="password"
-          ref={InputRef}
-          required
-          onKeyDown={() => handleEnter}
-        />
+        <PasswordInput type="password" ref={InputRef} required onKeyDown={() => handleEnter} />
       </PasswordWrapper>
       <SubmitButton onClick={handleClick}>출석하기</SubmitButton>
     </Wrapper>

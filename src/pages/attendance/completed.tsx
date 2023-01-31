@@ -9,13 +9,10 @@ import { AxiosResponse } from 'axios';
 
 const Complete = () => {
   const trackStacks: MemberStack[] = ['pm', 'design', 'frontend', 'backend'];
-  const { data, isLoading } = useQuery<AttendanceListData>(
-    ['getAttendanceList'],
-    getAttendanceList,
-  );
-  if (isLoading) {
-    return <div>로딩중</div>;
-  }
+  const { data, isLoading } = useQuery<AttendanceListData>(['getAttendanceList'], getAttendanceList);
+
+  if (isLoading) return <div>로딩중</div>;
+
   return (
     <Wrapper>
       <PaddingWrapper>

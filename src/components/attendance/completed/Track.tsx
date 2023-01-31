@@ -3,14 +3,18 @@ import React from 'react';
 import styled from 'styled-components';
 import AttendanceChecker from './AttendanceChecker';
 import { Primary, Secondary } from '@utils/constant/color';
-interface IProps {
+interface IPropsController {
   title: MemberStackKor;
   arrayLength: number;
   titleColor: string;
   color: string;
 }
+interface IProps {
+  track: MemberStack;
+  trackData: string[];
+}
 
-const PropsController: Record<MemberStack, IProps> = {
+const PropsController: Record<MemberStack, IPropsController> = {
   pm: {
     title: '기획',
     arrayLength: 6,
@@ -37,17 +41,12 @@ const PropsController: Record<MemberStack, IProps> = {
   },
 };
 
-const Track = ({
-  track,
-  trackData,
-}: {
-  track: MemberStack;
-  trackData: string[];
-}) => {
+const Track = ({ track, trackData }: IProps) => {
   const attendanceCheckerNumberArray = Array.from(
     { length: PropsController[track].arrayLength },
     (value, index) => index + 1,
   );
+
   return (
     <Wrapper>
       <TrackTitle color={PropsController[track].titleColor}>

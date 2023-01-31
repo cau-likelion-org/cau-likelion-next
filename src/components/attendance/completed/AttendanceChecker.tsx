@@ -14,18 +14,16 @@ const image: Record<MemberStackKor, StaticImageData> = {
   프론트엔드: FrontattendanceImg,
   백엔드: BackattendanceImg,
 };
-const AttendanceChecker = ({
-  color,
-  number,
-  userData,
-  type,
-}: {
+interface IProps {
   color: string;
   number: number;
   userData: string[];
   type: MemberStackKor;
-}) => {
-  if (number < userData.length) {
+}
+
+const AttendanceChecker = ({ color, number, userData, type }: IProps) => {
+  const IS_ATTENDANCED = number < userData.length;
+  if (IS_ATTENDANCED) {
     return (
       <ImageWrapper>
         <Image src={image[type]} alt={type} width={127} height={127} />
@@ -34,11 +32,7 @@ const AttendanceChecker = ({
     );
   }
 
-  return (
-    <>
-      <Circle color={color}>{number}</Circle>
-    </>
-  );
+  return <Circle color={color}>{number}</Circle>;
 };
 
 export default AttendanceChecker;
