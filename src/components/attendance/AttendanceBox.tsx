@@ -17,6 +17,10 @@ const AttendanceBox = () => {
 
   const { data, isLoading } = useQuery<AttendanceData>(['attendance'], getAttendance);
 
+  if (data && data.isComplete) {
+    router.push('/attendance/completed');
+  }
+
   const attendancePost = useMutation({
     mutationFn: (password: string) => postAttendance(password),
     onSuccess: (res) => {
