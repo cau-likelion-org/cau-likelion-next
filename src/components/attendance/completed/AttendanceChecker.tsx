@@ -1,12 +1,14 @@
-import { MemberStackKor } from '@@types/request';
-import { GreyScale } from '@utils/constant/color';
-import React from 'react';
 import styled from 'styled-components';
+import Image, { StaticImageData } from 'next/image';
+
+import { MemberStackKor } from '@@types/request';
+
+import { GreyScale } from '@utils/constant/color';
+
 import PMattendanceImg from '@image/PMattendance.png';
 import DesignattendanceImg from '@image/Designattendance.png';
 import FrontattendanceImg from '@image/Frontattendance.png';
 import BackattendanceImg from '@image/Backattendance.png';
-import Image, { StaticImageData } from 'next/image';
 
 const image: Record<MemberStackKor, StaticImageData> = {
   기획: PMattendanceImg,

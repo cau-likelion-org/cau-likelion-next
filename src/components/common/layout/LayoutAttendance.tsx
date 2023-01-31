@@ -1,13 +1,12 @@
+import { ReactElement } from 'react';
+import styled from 'styled-components';
+
 import NavBar from '@common/header/NavBar';
 import Footer from '@common/footer/Footer';
-import styled from 'styled-components';
+
 import Lion from '@image/cau사자background.png';
-import { ReactElement } from 'react';
-export default function LayoutAttendance({
-  children,
-}: {
-  children: ReactElement;
-}) {
+
+export default function LayoutAttendance({ children }: { children: ReactElement }) {
   return (
     <>
       <PageContainer>

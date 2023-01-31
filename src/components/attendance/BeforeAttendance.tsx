@@ -1,6 +1,7 @@
-import React from 'react';
 import styled from 'styled-components';
+
 import { Primary } from '@utils/constant/color';
+
 import AttendanceBox from './AttendanceBox';
 
 const BeforeAttendance = () => {
