@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { KeyboardEventHandler, useRef } from 'react';
 import { useRouter } from 'next/router';
 import { useMutation, useQuery } from 'react-query';
 import styled from 'styled-components';
@@ -36,7 +36,7 @@ const AttendanceBox = () => {
       else alert('비밀번호가 맞지 않습니다.');
     }
   };
-  const handleEnter = (event: KeyboardEvent) => {
+  const handleEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') handleClick();
   };
   if (isLoading)
@@ -58,7 +58,7 @@ const AttendanceBox = () => {
       <InputBox title={'트 랙'} detail={data!.track} />
       <PasswordWrapper>
         <PasswordTitle>비밀번호</PasswordTitle>
-        <PasswordInput type="password" ref={InputRef} required onKeyDown={() => handleEnter} />
+        <PasswordInput type="password" ref={InputRef} required onKeyDown={handleEnter} />
       </PasswordWrapper>
       <SubmitButton onClick={handleClick}>출석하기</SubmitButton>
     </Wrapper>
