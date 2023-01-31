@@ -1,11 +1,13 @@
+import { ReactElement } from 'react';
+import { useQuery } from 'react-query';
+import styled from 'styled-components';
+
 import Track from '@attendance/completed/Track';
 import LayoutAttendance from '@common/layout/LayoutAttendance';
-import React, { ReactElement } from 'react';
-import styled from 'styled-components';
+
 import { AttendanceListData, MemberStack } from '@@types/request';
-import { useQuery } from 'react-query';
+
 import { getAttendanceList } from 'src/apis/attendance';
-import { AxiosResponse } from 'axios';
 
 const Complete = () => {
   const trackStacks: MemberStack[] = ['pm', 'design', 'frontend', 'backend'];
@@ -24,6 +26,11 @@ const Complete = () => {
       </PaddingWrapper>
     </Wrapper>
   );
+};
+
+//레이아웃 지정
+Complete.getLayout = function getLayout(page: ReactElement) {
+  return <LayoutAttendance>{page}</LayoutAttendance>;
 };
 
 export default Complete;
@@ -56,6 +63,3 @@ const SubTitle = styled.div`
   font-weight: 400;
   font-size: 2rem;
 `;
-Complete.getLayout = function getLayout(page: ReactElement) {
-  return <LayoutAttendance>{page}</LayoutAttendance>;
-};

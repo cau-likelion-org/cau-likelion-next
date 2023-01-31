@@ -1,5 +1,7 @@
 import styled from 'styled-components';
+
 import { Primary, GreyScale } from '@utils/constant/color';
+
 const InputBox = ({ title, detail }: { title: string; detail: string }) => {
   return (
     <Wrapper>
