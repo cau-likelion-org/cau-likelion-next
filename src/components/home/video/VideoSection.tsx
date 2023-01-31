@@ -6,7 +6,8 @@ const VideoSection = () => {
   return (
     <Wrapper>
       <Video autoPlay muted>
-        <source src={'/image/top_hack_your_life.mp4'} type="video/mp4" />
+        {/* <source src={'/image/top_hack_your_life.mp4'} type="video/mp4" /> */}
+        <source src={'/image/hackyourlife 최종수정.mp4'} type="video/mp4" />
       </Video>
     </Wrapper>
   );
