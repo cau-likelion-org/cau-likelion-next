@@ -1,7 +1,7 @@
 import { useQueries } from 'react-query';
 
 export type MemberStack = 'pm' | 'frontend' | 'backend' | 'design';
-
+export type MemberStackKor = '기획' | '프론트엔드' | '백엔드' | '디자인';
 export type ShareURL = 'github' | 'youtube' | 'web';
 
 export interface IShareURL {
@@ -29,4 +29,10 @@ interface IProjectDetail extends IProject {
 interface ResponseData<T> {
   message: string;
   data: T;
+}
+
+export interface AttendanceData {
+  name: string;
+  track: MemberStackKor;
+  isComplete: boolean;
 }

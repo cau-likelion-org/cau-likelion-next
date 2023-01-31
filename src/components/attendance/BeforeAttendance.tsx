@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { Primary } from '@utils/constant/color';
 import AttendanceBox from './AttendanceBox';
 
-const CircleComponent = () => {
+const BeforeAttendance = () => {
   return (
     <CircleWrapper>
       <Circle />
@@ -14,7 +14,7 @@ const CircleComponent = () => {
   );
 };
 
-export default CircleComponent;
+export default BeforeAttendance;
 
 const CircleWrapper = styled.div`
   position: relative;

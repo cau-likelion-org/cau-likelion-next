@@ -1,13 +1,12 @@
 import styled from 'styled-components';
-
-import CircleComponent from '@attendance/CircleComponent';
+import BeforeAttendance from '@attendance/BeforeAttendance';
 import { ReactElement } from 'react';
 import LayoutAttendance from '@common/layout/LayoutAttendance';
 
 const Attendance = () => {
   return (
     <Wrapper>
-      <CircleComponent />
+      <BeforeAttendance />
     </Wrapper>
   );
 };
