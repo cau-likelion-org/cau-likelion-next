@@ -1,13 +1,13 @@
 import { ReactElement } from 'react';
 import styled from 'styled-components';
 
-import BeforeAttendance from '@attendance/BeforeAttendance';
+import InCompletedSection from '@attendance/incompleted/InCompletedSection';
 import LayoutAttendance from '@common/layout/LayoutAttendance';
 
 const Attendance = () => {
   return (
     <Wrapper>
-      <BeforeAttendance />
+      <InCompletedSection />
     </Wrapper>
   );
 };
