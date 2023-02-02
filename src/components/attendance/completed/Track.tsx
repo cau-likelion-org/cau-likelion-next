@@ -49,14 +49,14 @@ const Track = ({ track, trackData }: IProps) => {
 
   return (
     <Wrapper>
-      <TrackTitle color={PropsController[track].titleColor}>
-        {PropsController[track].title}
-      </TrackTitle>
+      <TitleWrapper>
+        <TrackTitle color={PropsController[track].titleColor}>{PropsController[track].title}</TrackTitle>
+      </TitleWrapper>
       <AttendanceCheckWrapper>
         {attendanceCheckerNumberArray.map((number) => (
           <AttendanceChecker
             key={number}
-            color={PropsController[track].color}
+            color={PropsController[track].titleColor}
             type={PropsController[track].title}
             number={number}
             userData={trackData}
@@ -70,18 +70,23 @@ const Track = ({ track, trackData }: IProps) => {
 export default Track;
 const Wrapper = styled.div`
   display: flex;
-  align-items: center;
   margin: 30px 0;
 `;
 const TrackTitle = styled.div`
   font-family: 'Pretendard';
   font-weight: 900;
-  font-size: 4rem;
+  font-size: 1.7rem;
   color: ${(props) => props.color};
-  flex-basis: 10%;
 `;
 const AttendanceCheckWrapper = styled.div`
   flex-basis: 90%;
   display: flex;
+  align-items: center;
   flex-wrap: wrap;
+`;
+const TitleWrapper = styled.div`
+  display: flex;
+  align-items: flex-start;
+  flex-basis: 10%;
+  margin-top: 42px;
 `;
