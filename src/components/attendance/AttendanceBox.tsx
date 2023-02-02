@@ -64,10 +64,6 @@ const AttendanceBox = () => {
     </Wrapper>
   );
 };
-AttendanceBox.getLayout = function getLayout(page: React.ReactElement) {
-  return <LayoutAttendance>{page}</LayoutAttendance>;
-};
-
 export default AttendanceBox;
 const Wrapper = styled.div`
   position: relative;
