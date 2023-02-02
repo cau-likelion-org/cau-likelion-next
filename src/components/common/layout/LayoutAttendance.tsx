@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import NavBar from '@common/header/NavBar';
 import Footer from '@common/footer/Footer';
 
-import Lion from '@image/cau사자background.png';
+import Lion from '@image/background.png';
 
 export default function LayoutAttendance({ children }: { children: ReactElement }) {
   return (
@@ -30,8 +30,5 @@ const PageContainer = styled.div`
     left: 0;
     right: 0;
     background-image: url(${Lion.src});
-    background-repeat: repeat;
-    background-size: 300px 300px;
-    opacity: 0.06;
   }
 `;
