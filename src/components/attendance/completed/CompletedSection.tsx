@@ -1,24 +1,13 @@
-import { useQuery } from 'react-query';
 import styled from 'styled-components';
 
-import { AttendanceListData, MemberStack } from '@@types/request';
-
-import { getAttendanceList } from 'src/apis/attendance';
-
-import Track from './component/Track';
+import EntireTrackAttendance from './component/EntireTrackAttendance';
 
 const CompletedSection = () => {
-  const trackStacks: MemberStack[] = ['pm', 'design', 'frontend', 'backend'];
-  const { data, isLoading } = useQuery<AttendanceListData>(['getAttendanceList'], getAttendanceList);
-
-  if (isLoading) return <div>로딩중</div>;
   return (
     <Wrapper>
       <SubTitle>출석체크</SubTitle>
       <Title>오늘의 출석부</Title>
-      {trackStacks.map((track, index) => (
-        <Track track={track} key={index} trackData={data![track]} />
-      ))}
+      <EntireTrackAttendance />
     </Wrapper>
   );
 };
