@@ -2,9 +2,9 @@ import styled from 'styled-components';
 
 import { Primary } from '@utils/constant/color';
 
-import AttendanceBox from './AttendanceBox';
+import AttendanceBox from './component/AttendanceBox';
 
-const BeforeAttendance = () => {
+const IncompletedSection = () => {
   return (
     <CircleWrapper>
       <Circle />
@@ -15,7 +15,7 @@ const BeforeAttendance = () => {
   );
 };
 
-export default BeforeAttendance;
+export default IncompletedSection;
 
 const CircleWrapper = styled.div`
   position: relative;
