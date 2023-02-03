@@ -23,7 +23,7 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100%;
+  min-height: 70vh;
   height: 100%;
   scroll-snap-align: start;
 `;
