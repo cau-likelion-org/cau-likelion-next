@@ -5,37 +5,16 @@ import Image from 'next/image';
 import PhotoCard from './component/PhotoCard';
 import archiving from '@image/활동기록보러가기.png';
 
-const IntroduceSection = ({
-  innerRef,
-}: {
-  innerRef: MutableRefObject<null>;
-}) => {
+const IntroduceSection = ({ innerRef }: { innerRef: MutableRefObject<null> }) => {
   return (
     <Wrapper ref={innerRef}>
-      <Image
-        src={IntroLion}
-        width={'180px'}
-        height={'180px'}
-        alt="소개하는 사자"
-      />
+      <Image src={IntroLion} width={'180px'} height={'180px'} alt="소개하는 사자" />
       <TitleText>중앙대 멋사를 소개합니다!</TitleText>
-      <SubText>
-        중앙대학교 멋쟁이 사자처럼은 테크 기반의 아이디어를 실현하기 위해
-      </SubText>
+      <SubText>중앙대학교 멋쟁이 사자처럼은 테크 기반의 아이디어를 실현하기 위해</SubText>
       <SubText>다양한 분야의 중앙인이 모였습니다.</SubText>
       <PhotoCardWrapper>
-        <PhotoCard
-          title={'정기세션 모아보기'}
-          subtitle={'정기세션'}
-          thumbnail={archiving.src}
-          routing={'/session'}
-        />
-        <PhotoCard
-          title={'활동기록 보러가기'}
-          subtitle={'활동기록'}
-          thumbnail={archiving.src}
-          routing={'/gallery'}
-        />
+        <PhotoCard title={'정기세션 모아보기'} subtitle={'정기세션'} thumbnail={archiving.src} routing={'/session'} />
+        <PhotoCard title={'활동기록 보러가기'} subtitle={'활동기록'} thumbnail={archiving.src} routing={'/gallery'} />
       </PhotoCardWrapper>
     </Wrapper>
   );
@@ -49,6 +28,7 @@ const Wrapper = styled.div`
   align-items: center;
   width: 100%;
   scroll-snap-align: start;
+  min-height: 100vh;
 `;
 
 const PhotoCardWrapper = styled.div`
