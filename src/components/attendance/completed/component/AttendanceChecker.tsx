@@ -22,23 +22,21 @@ const image: Record<MemberStackKor, StaticImageData> = {
 };
 interface IProps {
   color: string;
-  number: number;
-  userData: string[];
+  displayData: string | number;
   type: MemberStackKor;
 }
 
-const AttendanceChecker = ({ color, number, userData, type }: IProps) => {
-  const IS_ATTENDANCED = number < userData.length;
-  if (IS_ATTENDANCED) {
+const AttendanceChecker = ({ color, displayData, type }: IProps) => {
+  const IS_ATTENDANCED = typeof displayData === 'string';
+  if (IS_ATTENDANCED)
     return (
       <ImageWrapper>
         <Image src={image[type]} alt={type} width={84} height={84} />
-        <ImageText>{userData[number]}</ImageText>
+        <ImageText>{displayData}</ImageText>
       </ImageWrapper>
     );
-  }
 
-  return <Circle color={color}>{number}</Circle>;
+  return <Circle color={color}>{displayData}</Circle>;
 };
 
 export default AttendanceChecker;

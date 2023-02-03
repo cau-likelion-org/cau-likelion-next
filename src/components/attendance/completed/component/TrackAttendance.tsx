@@ -11,6 +11,7 @@ interface IProps {
 
 const TrackAttendance = ({ track, trackData }: IProps) => {
   const attendanceCheckerNumberArray = Array.from({ length: track.arrayLength }, (_, index) => index + 1);
+  const getDisplayData = (number: number) => (trackData[number] ? trackData[number] : number);
 
   return (
     <Wrapper>
@@ -23,8 +24,7 @@ const TrackAttendance = ({ track, trackData }: IProps) => {
             key={number}
             color={track.titleColor}
             type={track.title}
-            number={number}
-            userData={trackData}
+            displayData={getDisplayData(number)}
           />
         ))}
       </AttendanceCheckWrapper>
