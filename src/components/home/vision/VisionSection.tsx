@@ -9,23 +9,20 @@ const VisionSection = () => {
     <Wrapper>
       <TitleText>우리가 추구하는 가치</TitleText>
       <ValueCard>
-        <ImageWrapper>
-          <Image
-            src={QuestionLion}
-            width={'300px'}
-            height={'300px'}
-            alt="소개하는 사자"
-          />
-        </ImageWrapper>
         <DescriptionWrapper>
-          <BlueText>다채로운 아이디어를 펼칠 수 있는 환경</BlueText>
+          <TitleWrapper>
+            <BlueText>다채로운 아이디어를</BlueText>
+            <BlueText>펼칠 수 있는 환경</BlueText>
+          </TitleWrapper>
           <BlackText>
-            아기 사자들의 다양하고 재미있는 아이디어들을 직접 실현시킬 수 있는
-            환경을 최우선으로 만들고 있습니다. 중앙대 멋쟁이 사자처럼에서 즐겁게
-            공부하며 나의 아이디어를 직접 실현시켜 볼 수 있는 기회를 가질 수
-            있어요. 어쩌구 저쩌구! 가나다라 마바사 아자차카 타파하 라고 합니다.
+            아기 사자들의 다양하고 재미있는 아이디어들을 직접 실현시킬 수 있는 환경을 최우선으로 만들고 있습니다. 중앙대
+            멋쟁이 사자처럼에서 즐겁게 공부하며 나의 아이디어를 직접 실현시켜 볼 수 있는 기회를 가질 수 있어요. 어쩌구
+            저쩌구! 가나다라 마바사 아자차카 타파하 라고 합니다.
           </BlackText>
         </DescriptionWrapper>
+        <ImageWrapper>
+          <Image src={QuestionLion} width={'372px'} height={'372px'} alt="소개하는 사자" />
+        </ImageWrapper>
       </ValueCard>
     </Wrapper>
   );
@@ -38,10 +35,12 @@ const Wrapper = styled.div`
   flex-direction: column;
   align-items: center;
   width: 100%;
-  height: 100%;
+  min-height: 100vh;
   scroll-snap-align: start;
 `;
-
+const TitleWrapper = styled.div`
+  margin-bottom: 44px;
+`;
 const TitleText = styled.div`
   display: flex;
   justify-content: flex-start;
@@ -62,9 +61,8 @@ const TitleText = styled.div`
 
 const ValueCard = styled.div`
   display: flex;
-  justify-content: center;
-  gap: 65px;
-
+  justify-content: space-between;
+  width: 100%;
   @media (max-width: 1200px) {
     flex-direction: column;
   }
@@ -87,11 +85,9 @@ const DescriptionWrapper = styled.div`
 const BlueText = styled.div`
   font-family: 'Pretendard';
   font-style: normal;
-  font-weight: 700;
-  font-size: 2.5rem;
-  line-height: 153.02%;
+  font-weight: 900;
+  font-size: 4rem;
   color: ${Primary.default};
-  margin-bottom: 44px;
 
   @media (max-width: 1200px) {
     display: flex;
@@ -103,7 +99,7 @@ const BlackText = styled.div`
   font-family: 'Pretendard';
   font-style: normal;
   font-weight: 500;
-  font-size: 2rem;
+  font-size: 1.7rem;
   line-height: 182.52%;
 
   @media (max-width: 1200px) {
