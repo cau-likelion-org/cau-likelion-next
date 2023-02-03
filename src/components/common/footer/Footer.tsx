@@ -6,7 +6,7 @@ import MailImg from '@image/푸터메일.svg';
 import InstaImg from '@image/푸터인스타.svg';
 import { GreyScale } from '@utils/constant/color';
 
-const Footer = () => {
+const Footer = ({ isDefaultLayout }: { isDefaultLayout: boolean }) => {
   const FooterButtonData = [
     {
       type: 'instagram',
@@ -26,7 +26,7 @@ const Footer = () => {
   ];
 
   return (
-    <Wrapper>
+    <Wrapper isDefaultLayout={isDefaultLayout}>
       <TitleText>CAU LIKELION</TitleText>
       <ButtonWrapper>
         {FooterButtonData.map((icon, i: number) => (
@@ -42,14 +42,14 @@ const Footer = () => {
 
 export default Footer;
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{ isDefaultLayout: boolean }>`
   display: flex;
   flex-direction: column;
   width: 100%;
   justify-content: center;
   gap: 2.5rem;
   position: relative;
-  scroll-snap-align: end;
+  scroll-snap-align: ${(props) => props.isDefaultLayout && 'end'};
 `;
 
 const TitleText = styled.div`
