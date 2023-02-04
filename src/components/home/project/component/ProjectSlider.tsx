@@ -1,12 +1,13 @@
 import styled from 'styled-components';
+import { useState } from 'react';
+import { StaticImageData } from 'next/image';
+
 import { TfiAngleLeft, TfiAngleRight } from 'react-icons/tfi';
 import projectPic from '@image/projectPic.png';
 import projectPic2 from '@image/projectPic2.png';
-import Image, { StaticImageData } from 'next/image';
-import { GreyScale } from '@utils/constant/color';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useState } from 'react';
+
 import Project from './Project';
+
 export interface IProjectInner {
   name: string;
   introduce: string;

@@ -1,7 +1,6 @@
-import { BackgroundColor, GreyScale, Primary } from '@utils/constant/color';
-import React from 'react';
 import styled from 'styled-components';
 
+import { BackgroundColor, GreyScale, Primary } from '@utils/constant/color';
 interface TrackButtonProps {
   title: string;
   isClicked: boolean;

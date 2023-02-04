@@ -1,6 +1,6 @@
-import { Primary } from '@utils/constant/color';
-import React from 'react';
 import styled from 'styled-components';
+
+import { Primary } from '@utils/constant/color';
 
 const PlanDateItem = ({ date }: { date: string }) => {
   return <Date>{date}</Date>;

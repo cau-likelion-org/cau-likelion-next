@@ -1,4 +1,3 @@
-import React from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 interface TrackDescriptionBoxProps {
@@ -7,11 +6,7 @@ interface TrackDescriptionBoxProps {
   text: string;
 }
 
-const TrackDescriptionBox = ({
-  type,
-  title,
-  text,
-}: TrackDescriptionBoxProps) => {
+const TrackDescriptionBox = ({ type, title, text }: TrackDescriptionBoxProps) => {
   const variants = {
     hidden: { opacity: 0 },
     visible: {
@@ -24,12 +19,7 @@ const TrackDescriptionBox = ({
 
   return (
     <BoxWrapper type={type}>
-      <BoldText
-        key={title + text}
-        variants={variants}
-        initial="hidden"
-        animate="visible"
-      >
+      <BoldText key={title + text} variants={variants} initial="hidden" animate="visible">
         {title}
       </BoldText>
       <Text key={text} variants={variants} initial="hidden" animate="visible">

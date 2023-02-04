@@ -1,4 +1,3 @@
-import React from 'react';
 import styled from 'styled-components';
 import ProjectButton from './component/ProjectButton';
 import ProjectSlider from './component/ProjectSlider';
