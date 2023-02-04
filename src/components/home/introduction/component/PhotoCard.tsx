@@ -1,7 +1,7 @@
-import React from 'react';
 import styled from 'styled-components';
-import { HiArrowUpRight } from 'react-icons/hi2';
 import Link from 'next/link';
+
+import { HiArrowUpRight } from 'react-icons/hi2';
 
 const PhotoCard = ({
   title,

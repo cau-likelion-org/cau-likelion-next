@@ -1,6 +1,8 @@
-import { TRACK_DESCRIPTION, TRACK_NAME } from '@utils/constant';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import styled from 'styled-components';
+
+import { TRACK_DESCRIPTION, TRACK_NAME } from '@utils/constant';
+
 import TrackButton from './component/TrackButton';
 import TrackDescriptionBox from './component/TrackDescriptionBox';
 

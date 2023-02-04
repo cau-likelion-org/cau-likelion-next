@@ -1,9 +1,11 @@
-import React, { MutableRefObject } from 'react';
+import { MutableRefObject } from 'react';
 import styled from 'styled-components';
-import IntroLion from '@image/소개_인사하는 사자.gif';
 import Image from 'next/image';
+
 import PhotoCard from './component/PhotoCard';
+
 import archiving from '@image/활동기록보러가기.png';
+import IntroLion from '@image/소개_인사하는 사자.gif';
 
 const IntroduceSection = ({ innerRef }: { innerRef: MutableRefObject<null> }) => {
   return (

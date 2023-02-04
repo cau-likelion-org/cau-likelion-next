@@ -1,7 +1,9 @@
-import { GreyScale } from '@utils/constant/color';
 import { AnimatePresence, motion } from 'framer-motion';
-import Image from 'next/image';
 import styled from 'styled-components';
+import Image from 'next/image';
+
+import { GreyScale } from '@utils/constant/color';
+
 import { IProjectInner } from './ProjectSlider';
 
 const AnimationVariant = {

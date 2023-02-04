@@ -1,6 +1,6 @@
-import React from 'react';
 import { motion, useScroll, useSpring, useTransform } from 'framer-motion';
 import styled from 'styled-components';
+
 import progressBar from '@image/프로그레스바.png';
 import progress from '@image/프로그레스바이동.png';
 

@@ -1,5 +1,5 @@
-import React from 'react';
 import styled from 'styled-components';
+
 import PlanBox from './component/PlanBox';
 
 const PlanSection = () => {
