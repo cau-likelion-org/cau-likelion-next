@@ -20,22 +20,10 @@ const Circle = styled.div`
   height: 28px;
   background-color: ${Primary.default};
   border-radius: 100%;
-
   position: relative;
-
-  &::before {
-    content: '';
-    width: 52px;
-    height: 52px;
-    background-color: #d3ceff;
-    border-radius: 100%;
-
-    position: absolute;
-    top: -12px;
-    left: -12px;
-
-    z-index: -1;
-  }
+  background: #1a21bd;
+  box-shadow: 0px 0px 15px #1b00fd;
+  z-index: -1;
 `;
 
 const BlueLine = styled.hr`

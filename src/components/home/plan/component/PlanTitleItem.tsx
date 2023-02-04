@@ -1,4 +1,3 @@
-import React from 'react';
 import styled from 'styled-components';
 
 const PlanTitleItem = ({ title }: { title: string }) => {
@@ -15,5 +14,6 @@ const Title = styled.div`
   white-space: pre;
   font-family: 'Pretendard';
   font-style: normal;
+  line-height: 160%;
   text-align: center;
 `;
