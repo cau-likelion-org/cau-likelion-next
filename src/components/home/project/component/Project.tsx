@@ -6,6 +6,7 @@ import { GreyScale } from '@utils/constant/color';
 
 import { IProjectInner } from './ProjectSlider';
 
+//애니메이션 효과 객체
 const AnimationVariant = {
   initial: (direction: number) => {
     return {
@@ -36,7 +37,7 @@ const AnimationVariant = {
 
 const Project = ({ ProjectData, direction }: { ProjectData: IProjectInner; direction: number }) => {
   return (
-    <AnimatePresence initial={false} custom={direction}>
+    <AnimatePresence initial={false} custom={direction}> 
       <ProjectWrapper
         variants={AnimationVariant}
         initial="initial"
