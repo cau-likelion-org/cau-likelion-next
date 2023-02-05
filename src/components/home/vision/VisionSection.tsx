@@ -3,28 +3,31 @@ import styled from 'styled-components';
 import QuestionLion from '@image/가치_물음표 사자.gif';
 import Image from 'next/image';
 import { Primary } from '@utils/constant/color';
+import FadeInComponent from '@home/common/FadeInComponent';
 
 const VisionSection = () => {
   return (
-    <Wrapper>
-      <TitleText>우리가 추구하는 가치</TitleText>
-      <ValueCard>
-        <DescriptionWrapper>
-          <TitleWrapper>
-            <BlueText>다채로운 아이디어를</BlueText>
-            <BlueText>펼칠 수 있는 환경</BlueText>
-          </TitleWrapper>
-          <BlackText>
-            아기 사자들의 다양하고 재미있는 아이디어들을 직접 실현시킬 수 있는 환경을 최우선으로 만들고 있습니다. 중앙대
-            멋쟁이 사자처럼에서 즐겁게 공부하며 나의 아이디어를 직접 실현시켜 볼 수 있는 기회를 가질 수 있어요. 어쩌구
-            저쩌구! 가나다라 마바사 아자차카 타파하 라고 합니다.
-          </BlackText>
-        </DescriptionWrapper>
-        <ImageWrapper>
-          <Image src={QuestionLion} width={'372px'} height={'372px'} alt="소개하는 사자" />
-        </ImageWrapper>
-      </ValueCard>
-    </Wrapper>
+    <FadeInComponent>
+      <Wrapper>
+        <TitleText>우리가 추구하는 가치</TitleText>
+        <ValueCard>
+          <DescriptionWrapper>
+            <TitleWrapper>
+              <BlueText>다채로운 아이디어를</BlueText>
+              <BlueText>펼칠 수 있는 환경</BlueText>
+            </TitleWrapper>
+            <BlackText>
+              아기 사자들의 다양하고 재미있는 아이디어들을 직접 실현시킬 수 있는 환경을 최우선으로 만들고 있습니다.
+              중앙대 멋쟁이 사자처럼에서 즐겁게 공부하며 나의 아이디어를 직접 실현시켜 볼 수 있는 기회를 가질 수 있어요.
+              어쩌구 저쩌구! 가나다라 마바사 아자차카 타파하 라고 합니다.
+            </BlackText>
+          </DescriptionWrapper>
+          <ImageWrapper>
+            <Image src={QuestionLion} width={'372px'} height={'372px'} alt="소개하는 사자" />
+          </ImageWrapper>
+        </ValueCard>
+      </Wrapper>
+    </FadeInComponent>
   );
 };
 
