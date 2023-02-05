@@ -1,6 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 
+import { Diamond } from '../../common/Diamond';
+
 const LeftSection = () => {
     return (
         <SectionWrapper>
@@ -33,15 +35,7 @@ const StDiamondWrapper = styled.div`
 display: flex;
 margin-bottom: 30px;
 `
-const Diamond = styled.div`
-width: 11px;
-height: 11px;
-margin-right: 15px;
 
-
-background: #1A21BD;
-transform: rotate(45deg);
-`
 const StTextWrapper = styled.div`
 display: flex;
 flex-direction: column;
