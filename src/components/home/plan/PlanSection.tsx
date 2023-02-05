@@ -1,12 +1,27 @@
+import FadeInComponent from '@home/common/FadeInComponent';
+import { Variants } from 'framer-motion';
 import styled from 'styled-components';
 
 import PlanBox from './component/PlanBox';
-
+const fadeInAnimation: Variants = {
+  visible: {
+    opacity: 1,
+    y: 0,
+  },
+  hidden: {
+    opacity: 0,
+    y: -100,
+  },
+};
 const PlanSection = () => {
   return (
     <Wrapper>
-      <TitleText>연간 일정</TitleText>
-      <PlanBox />
+      <FadeInComponent variants={fadeInAnimation}>
+        <>
+          <TitleText>연간 일정</TitleText>
+          <PlanBox />
+        </>
+      </FadeInComponent>
     </Wrapper>
   );
 };
