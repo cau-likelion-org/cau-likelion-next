@@ -13,6 +13,7 @@ const fadeInAnimation: Variants = {
   visible: {
     opacity: 1,
     translateX: 0,
+    transition: { duration: 1 },
   },
   hidden: {
     opacity: 0,
