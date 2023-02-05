@@ -1,19 +1,33 @@
+import FadeInComponent from '@home/common/FadeInComponent';
+import { Variants } from 'framer-motion';
 import styled from 'styled-components';
 import ProjectButton from './component/ProjectButton';
 import ProjectSlider from './component/ProjectSlider';
 
+const fadeInAnimation: Variants = {
+  visible: {
+    opacity: 1,
+    x: 0,
+  },
+  hidden: {
+    opacity: 0,
+    x: 100,
+  },
+};
 const ProjectSection = () => {
   return (
-    <Wrapper>
-      <TitleWrapper>
-        <Title>각 트랙이 모여 함께 만든 프로젝트</Title>
-        <Text>트랙별 아기사자들이 멋쟁이 사자처럼 활동을 통해 다양하고 재미있는 프로젝트를 만들었습니다~~어쩌구</Text>
-      </TitleWrapper>
-      <ProjectSlider />
-      <ButtonWrapper>
-        <ProjectButton />
-      </ButtonWrapper>
-    </Wrapper>
+    <FadeInComponent variants={fadeInAnimation}>
+      <Wrapper>
+        <TitleWrapper>
+          <Title>각 트랙이 모여 함께 만든 프로젝트</Title>
+          <Text>트랙별 아기사자들이 멋쟁이 사자처럼 활동을 통해 다양하고 재미있는 프로젝트를 만들었습니다~~어쩌구</Text>
+        </TitleWrapper>
+        <ProjectSlider />
+        <ButtonWrapper>
+          <ProjectButton />
+        </ButtonWrapper>
+      </Wrapper>
+    </FadeInComponent>
   );
 };
 
