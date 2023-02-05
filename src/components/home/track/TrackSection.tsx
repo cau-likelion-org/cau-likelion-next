@@ -5,6 +5,7 @@ import { TRACK_DESCRIPTION, TRACK_NAME } from '@utils/constant';
 
 import TrackButton from './component/TrackButton';
 import TrackDescriptionBox from './component/TrackDescriptionBox';
+import FadeInComponent from '@home/common/FadeInComponent';
 
 const TrackSection = () => {
   const [isClicked, setIsClicked] = useState([true, false, false, false]);
@@ -17,32 +18,34 @@ const TrackSection = () => {
   };
 
   return (
-    <Wrapper>
-      <TitleText>트랙 소개</TitleText>
-      <Text>멋사에서는 트랙을 나눠 각 트랙이 자신의 역량을 키우는 것을 돕습니다? 화이팅해서 어쩌구 저쩌구</Text>
-      <TrackWrapper>
-        <CenterWrapper>
-          <ButtonsWrapper>
-            {isClicked.map((track, i: number) => (
-              <TrackButton
-                key={i}
-                title={TRACK_NAME[i]}
-                isClicked={track}
-                handleClickTrackButton={() => handleClickTrackButton(i)}
-              />
-            ))}
-          </ButtonsWrapper>
-        </CenterWrapper>
-        <DescriptionWrapper>
-          <TrackDescriptionBox
-            type="introduction"
-            title={`${TRACK_NAME[track]} 트랙은 어떤 것을 공부하나요?`}
-            text={TRACK_DESCRIPTION[track].description}
-          />
-          <TrackDescriptionBox type="recommend" title="추천해요!" text={TRACK_DESCRIPTION[track].recommend} />
-        </DescriptionWrapper>
-      </TrackWrapper>
-    </Wrapper>
+    <FadeInComponent>
+      <Wrapper>
+        <TitleText>트랙 소개</TitleText>
+        <Text>멋사에서는 트랙을 나눠 각 트랙이 자신의 역량을 키우는 것을 돕습니다? 화이팅해서 어쩌구 저쩌구</Text>
+        <TrackWrapper>
+          <CenterWrapper>
+            <ButtonsWrapper>
+              {isClicked.map((track, i: number) => (
+                <TrackButton
+                  key={i}
+                  title={TRACK_NAME[i]}
+                  isClicked={track}
+                  handleClickTrackButton={() => handleClickTrackButton(i)}
+                />
+              ))}
+            </ButtonsWrapper>
+          </CenterWrapper>
+          <DescriptionWrapper>
+            <TrackDescriptionBox
+              type="introduction"
+              title={`${TRACK_NAME[track]} 트랙은 어떤 것을 공부하나요?`}
+              text={TRACK_DESCRIPTION[track].description}
+            />
+            <TrackDescriptionBox type="recommend" title="추천해요!" text={TRACK_DESCRIPTION[track].recommend} />
+          </DescriptionWrapper>
+        </TrackWrapper>
+      </Wrapper>
+    </FadeInComponent>
   );
 };
 
