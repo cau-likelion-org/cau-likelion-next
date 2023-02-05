@@ -5,6 +5,7 @@ import styled from 'styled-components';
 const defaultFadeInAnimation: Variants = {
   visible: {
     opacity: 1,
+    transition: { duration: 1 },
   },
   hidden: {
     opacity: 0,
@@ -25,13 +26,7 @@ const FadeInComponent = ({ children, variants }: { children: ReactElement; varia
   }, [controls, isInView]);
 
   return (
-    <Wrapper
-      ref={ref}
-      animate={controls}
-      initial="hidden"
-      transition={{ delay: 0.2, duration: 3, type: 'spring' }}
-      variants={variants ? variants : defaultFadeInAnimation}
-    >
+    <Wrapper ref={ref} animate={controls} initial="hidden" variants={variants ? variants : defaultFadeInAnimation}>
       {children}
     </Wrapper>
   );
