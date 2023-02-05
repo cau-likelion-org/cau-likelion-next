@@ -6,29 +6,44 @@ import PhotoCard from './component/PhotoCard';
 
 import archiving from '@image/활동기록보러가기.png';
 import IntroLion from '@image/소개_인사하는 사자.gif';
+import FadeInComponent from '@home/common/FadeInComponent';
+import { Variants } from 'framer-motion';
+
+const fadeInAnimation: Variants = {
+  visible: {
+    opacity: 1,
+    translateX: 0,
+  },
+  hidden: {
+    opacity: 0,
+    translateX: -100,
+  },
+};
 
 const IntroduceSection = ({ innerRef }: { innerRef: MutableRefObject<null> }) => {
   return (
-    <Wrapper ref={innerRef}>
-      <ImageWrapper>
-        <Image
-          src={IntroLion}
-          width={'180px'}
-          height={'180px'}
-          layout="fill"
-          objectFit="fill"
-          objectPosition="center"
-          alt="소개하는 사자"
-        />
-      </ImageWrapper>
-      <TitleText>중앙대 멋사를 소개합니다!</TitleText>
-      <SubText>중앙대학교 멋쟁이 사자처럼은 테크 기반의 아이디어를 실현하기 위해</SubText>
-      <SubText>다양한 분야의 중앙인이 모였습니다.</SubText>
-      <PhotoCardWrapper>
-        <PhotoCard title={'정기세션 모아보기'} subtitle={'정기세션'} thumbnail={archiving.src} routing={'/session'} />
-        <PhotoCard title={'활동기록 보러가기'} subtitle={'활동기록'} thumbnail={archiving.src} routing={'/gallery'} />
-      </PhotoCardWrapper>
-    </Wrapper>
+    <FadeInComponent variants={fadeInAnimation}>
+      <Wrapper ref={innerRef}>
+        <ImageWrapper>
+          <Image
+            src={IntroLion}
+            width={'180px'}
+            height={'180px'}
+            layout="fill"
+            objectFit="fill"
+            objectPosition="center"
+            alt="소개하는 사자"
+          />
+        </ImageWrapper>
+        <TitleText>중앙대 멋사를 소개합니다!</TitleText>
+        <SubText>중앙대학교 멋쟁이 사자처럼은 테크 기반의 아이디어를 실현하기 위해</SubText>
+        <SubText>다양한 분야의 중앙인이 모였습니다.</SubText>
+        <PhotoCardWrapper>
+          <PhotoCard title={'정기세션 모아보기'} subtitle={'정기세션'} thumbnail={archiving.src} routing={'/session'} />
+          <PhotoCard title={'활동기록 보러가기'} subtitle={'활동기록'} thumbnail={archiving.src} routing={'/gallery'} />
+        </PhotoCardWrapper>
+      </Wrapper>
+    </FadeInComponent>
   );
 };
 
