@@ -8,3 +8,8 @@ export const toDateString = (date?: Date, formatter = "-") => {
     const day = ("0" + date.getDate()).slice(-2);
     return year + formatter + month + formatter + day;
 };
+
+export const isEmptyString = (str: string) => {
+    if (str.length == 0) return true;
+    else return false;
+};

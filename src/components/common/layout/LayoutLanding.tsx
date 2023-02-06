@@ -4,19 +4,19 @@ import Footer from '@common/footer/Footer';
 import styled from 'styled-components';
 import { ReactElement } from 'react';
 
-const LayoutDefault = ({ children }: { children: ReactElement; }) => {
-  return (
-    <>
-      <NavBar />
-      <main>
-        <PageContainer>{children}</PageContainer>
-      </main>
-      <Footer isLandingLayout={false} />
-    </>
-  );
+const LayoutLanding = ({ children }: { children: ReactElement; }) => {
+    return (
+        <>
+            <NavBar />
+            <main>
+                <PageContainer>{children}</PageContainer>
+            </main>
+            <Footer isLandingLayout={true} />
+        </>
+    );
 };
 
-export default LayoutDefault;
+export default LayoutLanding;
 const PageContainer = styled.div`
   background-color: ${BackgroundColor};
   min-height: calc(100vh - 180.5px);
