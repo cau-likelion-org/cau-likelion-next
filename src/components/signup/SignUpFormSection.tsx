@@ -45,12 +45,14 @@ const SignUpFormSection = () => {
     });
 
     const handleSubmit = () => {
-        signUpFormPost.mutate({
-            name: nameValue,
-            generation: Number(generationValue),
-            track: TRACK_INDEX[dropdownValue],
-            isAdmin: toggleIsClicked[1]
-        });
+        if (isFormActivated) {
+            signUpFormPost.mutate({
+                name: nameValue,
+                generation: Number(generationValue),
+                track: TRACK_INDEX[dropdownValue],
+                isAdmin: toggleIsClicked[1]
+            });
+        }
     };
 
     return (
