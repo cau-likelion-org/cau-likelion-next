@@ -1,12 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
 import FooterButton from './FooterButton';
-import KakaoImg from '@image/푸터카카오.svg';
-import MailImg from '@image/푸터메일.svg';
-import InstaImg from '@image/푸터인스타.svg';
 import { GreyScale } from '@utils/constant/color';
 
-const Footer = ({ isDefaultLayout }: { isDefaultLayout: boolean }) => {
+const Footer = ({ isLandingLayout }: { isLandingLayout: boolean; }) => {
   const FooterButtonData = [
     {
       type: 'instagram',
@@ -26,7 +23,7 @@ const Footer = ({ isDefaultLayout }: { isDefaultLayout: boolean }) => {
   ];
 
   return (
-    <Wrapper isDefaultLayout={isDefaultLayout}>
+    <Wrapper isLandingLayout={isLandingLayout}>
       <TitleText>CAU LIKELION</TitleText>
       <ButtonWrapper>
         {FooterButtonData.map((icon, i: number) => (
@@ -42,14 +39,14 @@ const Footer = ({ isDefaultLayout }: { isDefaultLayout: boolean }) => {
 
 export default Footer;
 
-const Wrapper = styled.div<{ isDefaultLayout: boolean }>`
+const Wrapper = styled.div<{ isLandingLayout: boolean; }>`
   display: flex;
   flex-direction: column;
   width: 100%;
   justify-content: center;
   gap: 2.5rem;
   position: relative;
-  scroll-snap-align: ${(props) => props.isDefaultLayout && 'end'};
+  scroll-snap-align: ${(props) => props.isLandingLayout && 'end'};
 `;
 
 const TitleText = styled.div`
