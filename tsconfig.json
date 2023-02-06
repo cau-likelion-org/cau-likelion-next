@@ -31,6 +31,12 @@
       "@session/*": [
         "src/components/session/*"
       ],
+      "@signup/*": [
+        "src/components/signup/*"
+      ],
+      "@login/*": [
+        "src/components/login/*"
+      ],
       "@attendance/*": [
         "src/components/attendance/*"
       ],
