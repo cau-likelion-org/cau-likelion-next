@@ -37,3 +37,11 @@ export interface AttendanceData {
   isComplete: boolean;
 }
 export type AttendanceListData = Record<MemberStack, string[]>;
+
+
+export interface RequestSignUpForm {
+  name: string;
+  generation: number;
+  track: number;
+  isAdmin: boolean;
+}
