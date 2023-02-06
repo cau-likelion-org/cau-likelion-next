@@ -14,6 +14,13 @@ export enum TRACK {
     BACKEND
 }
 
+export const TRACK_INDEX: { [key: string]: number; } = {
+    "기획": TRACK.PM,
+    "디자인": TRACK.DESIGN,
+    "프론트엔드": TRACK.FRONTEND,
+    "백엔드": TRACK.BACKEND
+};
+
 export const TRACK_NAME: { [key: number]: string; } = {
     [TRACK.PM]: "기획",
     [TRACK.DESIGN]: "디자인",

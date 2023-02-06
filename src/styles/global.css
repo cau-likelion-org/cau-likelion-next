@@ -11,6 +11,19 @@ html {
 body {
   margin: 0;
   padding: 0;
+  /* 드래그 방지 */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/*드래그 하고 싶은 영억에는 아래 css 적용하기*/
+.draggable {
+  -webkit-user-select: all;
+  -moz-user-select: all;
+  -ms-user-select: all;
+  user-select: all;
 }
 
 /*데스크탑) 화면 너비: 1280 ~ 1920px*/
