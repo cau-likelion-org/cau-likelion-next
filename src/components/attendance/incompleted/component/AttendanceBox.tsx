@@ -6,7 +6,6 @@ import styled from 'styled-components';
 import { AttendanceData } from '@@types/request';
 import { Primary } from '@utils/constant/color';
 
-import LayoutAttendance from '@common/layout/LayoutAttendance';
 import InputBox from './InputBox';
 
 import { getAttendance, postAttendance } from 'src/apis/attendance';
