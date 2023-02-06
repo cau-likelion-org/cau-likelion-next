@@ -6,13 +6,13 @@ import Footer from '@common/footer/Footer';
 
 import Lion from '@image/background.png';
 
-export default function LayoutAttendance({ children }: { children: ReactElement }) {
+export default function LayoutAttendance({ children }: { children: ReactElement; }) {
   return (
     <>
       <PageContainer>
         <NavBar />
         <main>{children}</main>
-        <Footer isDefaultLayout={false} />
+        <Footer isLandingLayout={false} />
       </PageContainer>
     </>
   );

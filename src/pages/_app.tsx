@@ -5,7 +5,7 @@ import { RecoilRoot } from 'recoil';
 import type { AppProps } from 'next/app';
 import React, { ReactElement, ReactNode } from 'react';
 import { NextPage } from 'next';
-import LayoutDefault from '@common/layout/LayoutDefault';
+import LayoutLanding from '@common/layout/LayoutLanding';
 type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode;
 };
@@ -16,7 +16,7 @@ function CauLikeLionNext({ Component, pageProps }: AppPropsWithLayout) {
   const queryClient = new QueryClient();
   const getLayout =
     Component.getLayout ||
-    ((page: ReactElement) => <LayoutDefault>{page}</LayoutDefault>);
+    ((page: ReactElement) => <LayoutLanding>{page}</LayoutLanding>);
   return (
     <RecoilRoot>
       <QueryClientProvider client={queryClient}>
