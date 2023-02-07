@@ -1,6 +1,6 @@
 // blue
 export enum Primary {
-  default = '#1A21BD;',
+  default = '#1A21BD',
   // lightblue
   light = '#F0F1FF',
 }
