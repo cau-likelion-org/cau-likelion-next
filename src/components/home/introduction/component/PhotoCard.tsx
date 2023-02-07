@@ -95,6 +95,9 @@ const Container = styled.div<{ img: string }>`
   @media (max-width: 1376px) {
     height: 300px;
   }
+  @media (max-width: 1536px) {
+    height: 300px;
+  }
   position: relative;
   border-radius: 20px;
   display: flex;
