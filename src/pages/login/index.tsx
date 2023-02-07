@@ -33,9 +33,16 @@ justify-content: center;
 align-items: center;
 height: 100vh;
 
-padding:0 30rem;
+@media (max-width: 1440px) {
+    padding: 100px 250px 100px 250px;
+}
+@media (max-width: 1280px) {
+    padding: 100px 150px 100px 150px;
+}
+padding: 100px 360px 100px 360px;
 
 `;
+
 const StContentsWrapper = styled.div`
 display: flex;
 justify-content: center;
