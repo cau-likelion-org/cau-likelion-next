@@ -45,7 +45,7 @@ export function postSignUpForm(form: RequestSignUpForm) {
         },
         {
             headers: {
-                Authorization: `Bearer ${accessToken}`
+                Authorization: `Bearer ${form.accessToken}`
             }
         },
     );

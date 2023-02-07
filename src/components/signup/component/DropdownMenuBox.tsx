@@ -108,7 +108,6 @@ const Dropdown = styled.div`
     flex-basis: 45%;
     justify-content: space-between;
     height: 45px;
-    color: ${Basic.default};
     border: 1px solid ${GreyScale.default};
     border-radius: 1rem;
     font-family: 'Pretendard';

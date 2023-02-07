@@ -47,6 +47,7 @@ const SignUpFormSection = () => {
     const handleSubmit = () => {
         if (isFormActivated) {
             signUpFormPost.mutate({
+                accessToken: tokenState,
                 name: nameValue,
                 generation: Number(generationValue),
                 track: TRACK_INDEX[dropdownValue],
