@@ -1,32 +1,34 @@
-import React from 'react';
+import FadeInComponent from '@home/common/FadeInComponent';
+import { Variants } from 'framer-motion';
 import styled from 'styled-components';
-import thumbnail from '@image/활동기록보러가기.png';
-import Image from 'next/image';
 import ProjectButton from './component/ProjectButton';
+import ProjectSlider from './component/ProjectSlider';
 
+const fadeInAnimation: Variants = {
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: { duration: 1 },
+  },
+  hidden: {
+    opacity: 0,
+    x: 100,
+  },
+};
 const ProjectSection = () => {
   return (
-    <Wrapper>
-      <RowWrapper>
-        <FirstFloat>
-          <Image src={thumbnail} width={'396px'} height={'396px'} alt="1st" />
-        </FirstFloat>
-        <SecondFloat>
-          <Image src={thumbnail} width={'396px'} height={'396px'} alt="2nd" />
-        </SecondFloat>
-      </RowWrapper>
-      <RowWrapper>
-        <ThirdFloat>
-          <Image src={thumbnail} width={'396px'} height={'396px'} alt="3rd" />
-        </ThirdFloat>
-        <FourthFloat>
-          <Image src={thumbnail} width={'396px'} height={'396px'} alt="4th" />
-        </FourthFloat>
-      </RowWrapper>
-      <ButtonWrapper>
-        <ProjectButton />
-      </ButtonWrapper>
-    </Wrapper>
+    <FadeInComponent variants={fadeInAnimation}>
+      <Wrapper>
+        <TitleWrapper>
+          <Title>각 트랙이 모여 함께 만든 프로젝트</Title>
+          <Text>트랙별 아기사자들이 멋쟁이 사자처럼 활동을 통해 다양하고 재미있는 프로젝트를 만들었습니다~~어쩌구</Text>
+        </TitleWrapper>
+        <ProjectSlider />
+        <ButtonWrapper>
+          <ProjectButton />
+        </ButtonWrapper>
+      </Wrapper>
+    </FadeInComponent>
   );
 };
 
@@ -38,48 +40,27 @@ const Wrapper = styled.div`
   flex-direction: column;
   align-items: center;
   height: 100%;
+  min-height: 100vh;
   scroll-snap-align: start;
 `;
-
-const FirstFloat = styled.div`
-  &:hover {
-    transform: scale(1.1, 1.1);
-    transition: transform 0.5s;
-  }
-  max-height: 396px;
-  max-width: 50%;
-  overflow: hidden;
-  float: left;
-  object-fit: cover;
-  transform: scale(1);
-  transition: transform 0.5s;
-  overflow: hidden;
-
-  img {
-    border-radius: 3rem;
-  }
-`;
-const SecondFloat = styled(FirstFloat)`
-  float: right;
-  margin-left: 7rem;
-  margin-top: 24rem;
-`;
-const ThirdFloat = styled(FirstFloat)`
-  margin-top: -17rem;
-  margin-left: -17rem;
-`;
-const FourthFloat = styled(FirstFloat)`
-  float: right;
-  margin-top: 7rem;
-  margin-left: 7rem;
-`;
-
-const RowWrapper = styled.div`
+const TitleWrapper = styled.div`
+  margin-top: 40px;
+  margin-bottom: 92px;
   display: flex;
-  width: 100%;
-  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 `;
-
+const Title = styled.div`
+  font-family: 'Pretendard';
+  font-weight: 700;
+  font-size: 30px;
+`;
+const Text = styled.div`
+  font-family: 'Pretendard';
+  font-weight: 500;
+  font-size: 17px;
+  margin-top: 23px;
+`;
 const ButtonWrapper = styled.div`
   display: flex;
   justify-content: center;
