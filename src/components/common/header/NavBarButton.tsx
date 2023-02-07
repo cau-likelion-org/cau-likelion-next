@@ -9,10 +9,16 @@ interface INavBarButton {
 const NavBarButton = ({ title, routing }: INavBarButton) => {
   if (title === '로그인')
     return (
-      <Link href={routing}><LoginButton>{title}</LoginButton></Link>
+      <Link href={routing}>
+        <LoginButton>{title}</LoginButton>
+      </Link>
     );
 
-  return (<Link href={routing}><Button>{title}</Button></Link >);
+  return (
+    <Link href={routing}>
+      <Button>{title}</Button>
+    </Link>
+  );
 };
 
 export default NavBarButton;
@@ -24,7 +30,7 @@ const Button = styled.div`
   font-family: 'Pretendard';
   font-style: normal;
   font-weight: 600;
-  font-size: 2rem;
+  font-size: 1.5rem;
   text-align: center;
   display: flex;
   justify-content: center;
