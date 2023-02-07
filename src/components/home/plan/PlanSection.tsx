@@ -18,10 +18,10 @@ const PlanSection = () => {
   return (
     <Wrapper>
       <FadeInComponent variants={fadeInAnimation}>
-        <>
+        <AlignWrapper>
           <TitleText>연간 일정</TitleText>
           <PlanBox />
-        </>
+        </AlignWrapper>
       </FadeInComponent>
     </Wrapper>
   );
@@ -38,6 +38,9 @@ const Wrapper = styled.div`
   height: 100%;
   min-height: 100vh;
   scroll-snap-align: start;
+`;
+const AlignWrapper = styled.div`
+  margin-top: 10%;
 `;
 
 const TitleText = styled.div`
