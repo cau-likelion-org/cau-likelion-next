@@ -3,6 +3,7 @@ import { accessToken } from "@utils/state";
 import axios from "axios";
 import { url } from ".";
 
+
 export const getEmailSecret = async (accessToken: string, emailValue: string) => {
     // const response = await axios.get(
     //     `${url}/cau_email`,
@@ -49,23 +50,21 @@ export function postSignUpForm(form: RequestSignUpForm) {
             }
         },
     );
-    return response.data.data.user;
+    // return response.data.data.user;
 };
 
-export const login = async(code:string, accessToken?:string)=>{
-    const response = await axios.post(`${url}/login`,
-        {
-            code : code,
-            access_token : accessToken,
-        },)
+// interface loginState {
+//     is_active: boolean;
+// }
 
-        return(
-            response.data.data
-            //is_active 받아오기 
-            
+export const login = async(code:string|string[], accessToken?:string): Promise<{code: string|string[]; is_active:boolean; status_code: number; accessToken: string}>=>{
 
-        )
-        
+    // const response = await axios.post(`${url}/login`,
+    //     {
+    //         code : code,
+    //         access_token : accessToken,
+    //     },)
+    const response = {code: code, is_active: false, status_code: 201, accessToken: 'accessSuccess'}
 
-
+    return response;
 }
