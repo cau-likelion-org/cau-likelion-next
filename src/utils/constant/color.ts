@@ -1,8 +1,8 @@
 // blue
 export enum Primary {
-  default = '#1A21BD;',
+  default = '#1A21BD',
   // lightblue
-  light = '#F0F1FF'
+  light = '#F0F1FF',
 }
 
 // orange
@@ -18,9 +18,8 @@ export enum Basic {
 // grey
 export enum GreyScale {
   default = '#858585',
-  light = '#F5F5F5'
+  light = '#F5F5F5',
 }
 
 // white
 export const BackgroundColor = '#FFFFFF';
-

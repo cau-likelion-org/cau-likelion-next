@@ -1,12 +1,28 @@
-import React from 'react';
+import FadeInComponent from '@home/common/FadeInComponent';
+import { Variants } from 'framer-motion';
 import styled from 'styled-components';
-import PlanBox from './component/PlanBox';
 
+import PlanBox from './component/PlanBox';
+const fadeInAnimation: Variants = {
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 1 },
+  },
+  hidden: {
+    opacity: 0,
+    y: -100,
+  },
+};
 const PlanSection = () => {
   return (
     <Wrapper>
-      <TitleText>연간 일정</TitleText>
-      <PlanBox />
+      <FadeInComponent variants={fadeInAnimation}>
+        <AlignWrapper>
+          <TitleText>연간 일정</TitleText>
+          <PlanBox />
+        </AlignWrapper>
+      </FadeInComponent>
     </Wrapper>
   );
 };
@@ -20,7 +36,11 @@ const Wrapper = styled.div`
   width: 100%;
   gap: 40px;
   height: 100%;
+  min-height: 100vh;
   scroll-snap-align: start;
+`;
+const AlignWrapper = styled.div`
+  margin-top: 10%;
 `;
 
 const TitleText = styled.div`

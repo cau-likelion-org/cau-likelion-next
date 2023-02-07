@@ -60,7 +60,7 @@ export const login = async (code: string | string[], accessToken?: string): Prom
     //         code : code,
     //         access_token : accessToken,
     //     },)
-    const response = { code: code, is_active: false, status_code: 201, accessToken: 'accessSuccess' };
+    const response = { code: code, is_active: true, status_code: 400, accessToken: 'accessSuccess' };
 
     return response;
 };

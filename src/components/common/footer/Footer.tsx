@@ -44,6 +44,7 @@ const Wrapper = styled.div<{ isLandingLayout: boolean; }>`
   justify-content: center;
   gap: 2.5rem;
   position: relative;
+  margin-top: 300px;
   scroll-snap-align: ${(props) => props.isLandingLayout && 'end'};
 `;
 
