@@ -14,7 +14,9 @@ const FooterButton = ({ Img, link }: FooterButtonProps) => {
     <Link href={link}>
       <a target="_blank" rel="sponsored">
         <Button>
-          <Image src={Img} width={'40px'} height={'40px'} alt="share" />
+          <ImageWrapper>
+            <Image src={Img} width={'40px'} height={'40px'} alt="share" layout="fill" />
+          </ImageWrapper>
           {/* <Img width={'30px'} height={'30px'} viewBox='0 0 50 50' preserveAspectRatio="xMinYMin meet" /> */}
         </Button>
       </a>
@@ -33,4 +35,18 @@ const Button = styled.div`
   justify-content: center;
   align-items: center;
   border-radius: 100px;
+  @media (max-width: 1550px) {
+    width: 60px;
+    height: 60px;
+  }
+`;
+
+const ImageWrapper = styled.div`
+  position: relative;
+  width: 40px;
+  height: 40px;
+  @media (max-width: 1550px) {
+    width: 33px;
+    height: 33px;
+  }
 `;

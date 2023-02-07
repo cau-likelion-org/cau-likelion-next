@@ -3,7 +3,7 @@ import { TRACK, TRACK_INDEX, TRACK_NAME } from '@utils/constant';
 import { Basic } from '@utils/constant/color';
 import { isEmptyString } from '@utils/index';
 import { accessToken } from '@utils/state';
-import router from 'next/router';
+import router, { useRouter } from 'next/router';
 import React from 'react';
 import { useEffect } from 'react';
 import { useState } from 'react';
@@ -26,9 +26,9 @@ const SignUpFormSection = () => {
     const [emailSecretValue, onChangeEmailSecret, setEmailSecretValue] = useInput('');
     const [toggleIsClicked, setToggleIsClicked] = useState([true, false]);
     const [dropdownValue, setDropdownValue] = useState(track[0]);
-    const [tokenState, setTokenState] = useRecoilState(accessToken);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isFormActivated, setIsFormActivated] = useState(false);
+    const router = useRouter();
 
     useEffect(() => {
         if (!isEmptyString(nameValue) && !isEmptyString(generationValue) && !isEmptyString(emailValue) && !isEmptyString(emailSecretValue) && isAuthenticated) setIsFormActivated(true);
@@ -45,9 +45,9 @@ const SignUpFormSection = () => {
     });
 
     const handleSubmit = () => {
-        if (isFormActivated) {
+        if (isFormActivated && router.query.accessToken) {
             signUpFormPost.mutate({
-                accessToken: tokenState,
+                accessToken: router.query.accessToken,
                 name: nameValue,
                 generation: Number(generationValue),
                 track: TRACK_INDEX[dropdownValue],

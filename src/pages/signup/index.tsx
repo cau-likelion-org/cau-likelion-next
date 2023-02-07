@@ -2,6 +2,8 @@ import React, { ReactElement } from 'react';
 import styled from 'styled-components';
 import LayoutDefault from '@common/layout/LayoutDefault';
 import SignUpFormSection from '@signup/SignUpFormSection';
+import { useEffect } from 'react';
+import { useRouter } from 'next/router';
 
 const SignUp = () => {
     return (
