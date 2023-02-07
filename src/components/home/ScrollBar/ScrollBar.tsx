@@ -39,9 +39,9 @@ const ScrollBarComponent = styled(motion.div)`
 const ScrollBarCurrent = styled(motion.div)`
   background: url(${progress.src});
   width: 58px;
-  height: 23px;
+  height: 29px;
   position: absolute;
-  bottom: -9.5px;
+  bottom: -2px;
   left: 96%;
 `; // 스크롤바 아이콘
 export default ScrollBar;
