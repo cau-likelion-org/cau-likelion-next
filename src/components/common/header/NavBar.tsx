@@ -5,8 +5,11 @@ import CAULogo from '@image/cau사자.png';
 import NavBarButton from './NavBarButton';
 import { BackgroundColor } from '@utils/constant/color';
 import Link from 'next/link';
+import { useRecoilState } from 'recoil';
+import { accessToken } from '@utils/state';
 
 const NavBar = () => {
+  const [tokenState, setTokenState] = useRecoilState(accessToken);
 
   const NavBarData = [
     {
@@ -20,11 +23,7 @@ const NavBar = () => {
     {
       title: '출석체크',
       routing: '/attendance',
-    },
-    {
-      title: '로그인',
-      routing: '/login',
-    },
+    }
   ];
 
   return (
@@ -47,6 +46,7 @@ const NavBar = () => {
             routing={navbarButton.routing}
           />
         ))}
+        <NavBarButton title={tokenState ? 'MY' : 'Log in'} routing={tokenState ? '/mypage' : '/login'} />
       </ButtonWrapper>
     </Wrapper>
   );

@@ -42,6 +42,7 @@ export default class MyDocument extends Document {
           />
           <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" />
           <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap" rel="stylesheet" />
+          <script src="https://apis.google.com/js/platform.js?onload=init" async defer></script>
         </Head>
         <body>
           <Main />

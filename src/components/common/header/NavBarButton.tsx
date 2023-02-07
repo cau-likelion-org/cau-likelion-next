@@ -7,7 +7,7 @@ interface INavBarButton {
 }
 
 const NavBarButton = ({ title, routing }: INavBarButton) => {
-  if (title === '로그인')
+  if (title === 'Log in' || title === 'MY')
     return (
       <Link href={routing}>
         <LoginButton>{title}</LoginButton>
