@@ -12,12 +12,12 @@ import { Variants } from 'framer-motion';
 const fadeInAnimation: Variants = {
   visible: {
     opacity: 1,
-    translateX: 0,
-    transition: { duration: 1 },
+    y: 0,
+    transition: { delay: 0.5, duration: 1 },
   },
   hidden: {
     opacity: 0,
-    translateX: -100,
+    y: -100,
   },
 };
 
@@ -66,6 +66,10 @@ const ImageWrapper = styled.div`
   @media (max-width: 1376px) {
     width: 100px;
     height: 100px;
+  }
+  @media (max-width: 1536px) {
+    width: 120px;
+    height: 120px;
   }
 `;
 const PhotoCardWrapper = styled.div`
