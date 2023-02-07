@@ -47,6 +47,7 @@ const Wrapper = styled.div<{ isDefaultLayout: boolean }>`
   justify-content: center;
   gap: 2.5rem;
   position: relative;
+  margin-top: 300px;
   scroll-snap-align: ${(props) => props.isDefaultLayout && 'end'};
 `;
 
