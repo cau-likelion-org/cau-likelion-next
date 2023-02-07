@@ -46,6 +46,7 @@ const NavBar = () => {
             routing={navbarButton.routing}
           />
         ))}
+        <NavBarButton title={tokenState ? 'MY' : 'Log in'} routing={tokenState ? '/mypage' : '/login'} />
       </ButtonWrapper>
     </Wrapper>
   );
