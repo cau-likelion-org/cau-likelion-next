@@ -52,15 +52,17 @@ export function postSignUpForm(form: RequestSignUpForm) {
     );
 };
 
+interface ResponseData {
+    is_active: boolean;
+    accessToken: string;
+}
 
-export const login = async (code: string | string[], accessToken?: string): Promise<{ code: string | string[]; is_active: boolean; status_code: number; accessToken: string; }> => {
-
-    // const response = await axios.post(`${url}/login`,
-    //     {
-    //         code : code,
-    //         access_token : accessToken,
-    //     },)
-    const response = { code: code, is_active: true, status_code: 400, accessToken: 'accessSuccess' };
-
-    return response;
-};
+export function login(code: string | string[], accessToken: string) {
+    return axios.post<ResponseData>(
+        `${url}/login`,
+        {
+            code: code,
+            accessToken: accessToken
+        }
+    ).then((res) => res.data);
+}

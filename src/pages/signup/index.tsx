@@ -1,9 +1,6 @@
-import React, { ReactElement } from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import LayoutDefault from '@common/layout/LayoutDefault';
 import SignUpFormSection from '@signup/SignUpFormSection';
-import { useEffect } from 'react';
-import { useRouter } from 'next/router';
 
 const SignUp = () => {
     return (
@@ -18,9 +15,6 @@ const SignUp = () => {
 
 export default SignUp;
 
-SignUp.getLayout = function getLayout(page: ReactElement) {
-    return <LayoutDefault>{page}</LayoutDefault>;
-};
 
 const Wrapper = styled.div`
     display: flex;
