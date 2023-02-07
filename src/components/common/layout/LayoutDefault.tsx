@@ -19,7 +19,7 @@ const LayoutDefault = ({ children }: { children: ReactElement; }) => {
 export default LayoutDefault;
 const PageContainer = styled.div`
   background-color: ${BackgroundColor};
-  min-height: calc(100vh - 180.5px);
+  min-height: calc(100vh - 184px);
   width: 100%;
 
   @media (max-width: 1440px) {
