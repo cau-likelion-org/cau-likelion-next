@@ -17,16 +17,8 @@ const LayoutLogin = ({ children }: { children: ReactElement; }) => {
 export default LayoutLogin;
 
 const PageContainer = styled.div`
-background-color: ${BackgroundColor};
-min-height: calc(100vh - 270px);
-width: 100%;
-
-/* @media (max-width: 1440px) {
-    padding: 0 250px;
-}
-
-@media (max-width: 1280px) {
-    padding: 0 150px;
-} */
+    background-color: ${BackgroundColor};
+    min-height: calc(100vh - 184px);
+    width: 100%;
     padding: 0 360px;
 `;

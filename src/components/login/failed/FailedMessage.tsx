@@ -1,18 +1,17 @@
 import React from 'react';
-import styled from 'styled-components'
+import styled from 'styled-components';
 import Image from 'next/image';
 
-import alert from '@image/alert.png'
+import alert from '@image/alert.png';
 
 const FailedMessage = () => {
     return (
         <MessageWrapper>
             <div>
-                <Image src={alert} alt='알림' width='20px' height='20px'/>
+                <Image src={alert} alt='알림' width='20px' height='20px' />
                 <StMessageText>알림</StMessageText>
             </div>
             <StMessageText>LIKE LION 계정으로만 로그인이 가능합니다.</StMessageText>
-
         </MessageWrapper>
     );
 };
@@ -43,7 +42,7 @@ div{
 
 }
 
-`
+`;
 
 const StMessageText = styled.div`
 font-family: 'Pretendard';
