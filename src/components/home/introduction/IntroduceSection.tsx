@@ -9,21 +9,9 @@ import IntroLion from '@image/소개_인사하는 사자.gif';
 import FadeInComponent from '@home/common/FadeInComponent';
 import { Variants } from 'framer-motion';
 
-const fadeInAnimation: Variants = {
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { delay: 0.5, duration: 1 },
-  },
-  hidden: {
-    opacity: 0,
-    y: -100,
-  },
-};
-
 const IntroduceSection = ({ innerRef }: { innerRef: MutableRefObject<null> }) => {
   return (
-    <FadeInComponent variants={fadeInAnimation}>
+    <FadeInComponent>
       <Wrapper ref={innerRef}>
         <ImageWrapper>
           <Image
