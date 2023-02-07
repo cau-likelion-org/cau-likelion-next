@@ -41,6 +41,7 @@ height: 100vh;
 }
 padding: 100px 360px 100px 360px;
 
+
 `;
 
 const StContentsWrapper = styled.div`
