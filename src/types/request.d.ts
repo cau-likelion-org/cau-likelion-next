@@ -40,6 +40,7 @@ export type AttendanceListData = Record<MemberStack, string[]>;
 
 
 export interface RequestSignUpForm {
+  accessToken: string;
   name: string;
   generation: number;
   track: number;

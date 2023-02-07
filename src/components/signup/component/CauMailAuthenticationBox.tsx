@@ -109,7 +109,7 @@ const EmailInput = styled.input`
     border-radius: 1rem;
     border: 1px solid ${GreyScale.default};
     height: 45px;
-    flex-basis: 50%;
+    flex-basis: 40%;
     padding: 1rem;
     font-size: 1.4rem;
     font-family: 'Pretendard';
@@ -134,8 +134,8 @@ const SecretKeyInput = styled(EmailInput)`
 const RequestButton = styled.div`
     font-family: 'Pretendard';
     font-style: normal;
-    font-weight: 700;
-    font-size: 1.rem;
+    font-weight: 600;
+    font-size: 1.3rem;
     width: 100px;
     height: 100%;
     display: flex;
@@ -157,6 +157,7 @@ const SecretKeyButton = styled(RequestButton)``;
 
 const SuccessButton = styled(RequestButton)`
     background-color: ${GreyScale.light};
-    color: ${GreyScale.default};
+    color: ${Basic.default};
     cursor: default;
+    margin-left: 4px;
 `;
