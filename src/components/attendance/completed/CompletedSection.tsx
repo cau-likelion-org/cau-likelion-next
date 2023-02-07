@@ -14,26 +14,24 @@ const CompletedSection = () => {
 
 const Wrapper = styled.div`
   width: 100%;
-  padding: 10rem 35rem;
-  @media (max-width: 1660px) {
-    padding: 100px 200px 100px 200px;
-  }
+  margin-top: 100px;
   @media (max-width: 1440px) {
-    padding: 100px 150px 100px 150px;
+    padding: 0 250px;
   }
   @media (max-width: 1280px) {
-    padding: 100px 120px 100px 120px;
+    padding: 0 150px;
   }
+  padding: 0 360px;
 `;
 const Title = styled.div`
   font-family: 'Pretendard';
   font-style: normal;
   font-weight: 900;
-  font-size: 4rem;
+  font-size: 2.3rem;
 `;
 const SubTitle = styled.div`
   font-family: 'Inter';
   font-weight: 400;
-  font-size: 2rem;
+  font-size: 1.7rem;
 `;
 export default CompletedSection;
