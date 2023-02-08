@@ -4,26 +4,28 @@ import React from 'react';
 import styled from 'styled-components';
 import Card from './Card';
 
-const getIndexMessage = (value: string) => {
+const getIndexMessageAndURL = (value: string) => {
   const number = parseInt(value);
   if (number < 4) {
-    return TRACK[number];
+    return ['/session', TRACK[number]];
   }
   if (number > 2000) {
-    return `${number}년`;
+    return ['/gallery', `${number}년`];
   }
-  return `${number}기`;
+  return ['/project', `${number}기`];
 };
 
 const Archiving = ({ archivingIndex, archivingData }: { archivingIndex: string; archivingData: IArchivingData[] }) => {
+  const [link, title] = getIndexMessageAndURL(archivingIndex);
   return (
     <Wrapper>
-      <ArchivingIndex>{getIndexMessage(archivingIndex)}</ArchivingIndex>
+      <ArchivingIndex>{title}</ArchivingIndex>
       <CardWrapper>
         {archivingData.map((data, index) => (
           <Card
             key={index}
             id={data.id}
+            link={link}
             thumbnail={data.thumbnail}
             title={data.title}
             description={data.description}

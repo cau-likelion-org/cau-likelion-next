@@ -5,9 +5,12 @@ import Link from 'next/link';
 import React from 'react';
 import styled from 'styled-components';
 
-const Card = ({ id, thumbnail, title, description, dev_stack, category }: IArchivingData) => {
+interface ICardProps extends IArchivingData {
+  link: string;
+}
+const Card = ({ id, thumbnail, title, description, dev_stack, category, link }: ICardProps) => {
   return (
-    <Link href={`/project/${id}`}>
+    <Link href={`${link}/${id}`}>
       <Wrapper>
         <ImageWrapper>
           <CustomImage src={thumbnail} alt="썸네일" layout="fill" objectFit="fill" objectPosition="center" />
