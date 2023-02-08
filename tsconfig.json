@@ -16,48 +16,21 @@
     "incremental": true,
     "baseUrl": ".",
     "paths": {
-      "@common/*": [
-        "src/components/common/*"
-      ],
-      "@home/*": [
-        "src/components/home/*"
-      ],
-      "@gallery/*": [
-        "src/components/gallery/*"
-      ],
-      "@project/*": [
-        "src/components/project/*"
-      ],
-      "@session/*": [
-        "src/components/session/*"
-      ],
-      "@signup/*": [
-        "src/components/signup/*"
-      ],
-      "@login/*": [
-        "src/components/login/*"
-      ],
-      "@attendance/*": [
-        "src/components/attendance/*"
-      ],
-      "@pages/*": [
-        "src/pages/*"
-      ],
-      "@styles/*": [
-        "src/styles/*"
-      ],
-      "@@types/*": [
-        "src/types/*"
-      ],
-      "@utils/*": [
-        "src/utils/*"
-      ],
-      "@utils": [
-        "src/utils"
-      ],
-      "@image/*": [
-        "public/image/*",
-      ],
+      "@common/*": ["src/components/common/*"],
+      "@home/*": ["src/components/home/*"],
+      "@gallery/*": ["src/components/gallery/*"],
+      "@project/*": ["src/components/project/*"],
+      "@session/*": ["src/components/session/*"],
+      "@signup/*": ["src/components/signup/*"],
+      "@login/*": ["src/components/login/*"],
+      "@attendance/*": ["src/components/attendance/*"],
+      "@archiving/*": ["src/components/archiving/*"],
+      "@pages/*": ["src/pages/*"],
+      "@styles/*": ["src/styles/*"],
+      "@@types/*": ["src/types/*"],
+      "@utils/*": ["src/utils/*"],
+      "@utils": ["src/utils"],
+      "@image/*": ["public/image/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "mp4.d.ts"],
