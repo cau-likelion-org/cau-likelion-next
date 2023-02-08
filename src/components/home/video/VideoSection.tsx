@@ -15,6 +15,7 @@ export default VideoSection;
 
 const Video = styled.video`
   width: 100%;
+  margin-top:50px;
 `;
 
 const Wrapper = styled.div`
@@ -24,4 +25,5 @@ const Wrapper = styled.div`
   min-height: 70vh;
   height: 100%;
   scroll-snap-align: start;
+  justify-content: center;
 `;
