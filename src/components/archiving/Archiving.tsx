@@ -21,6 +21,7 @@ const Archiving = ({ archivingIndex, archivingData }: { archivingIndex: string; 
         {archivingData.map((data, index) => (
           <Card
             key={index}
+            id={data.id}
             thumbnail={data.thumbnail}
             title={data.title}
             description={data.description}
