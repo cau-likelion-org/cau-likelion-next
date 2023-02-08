@@ -29,14 +29,18 @@ const Projects = ({ generation, generationData }: { generation: string; generati
 export default Projects;
 const Wrapper = styled.div``;
 const Generation = styled.div`
-  font-weight: 700;
+  font-weight: 900;
   font-size: 2.3rem;
+  margin-bottom: 20px;
 `;
 const CustomImage = styled(Image)`
   border-top-left-radius: 25px;
   border-top-right-radius: 25px;
 `;
-const Card = styled.div``;
+const Card = styled.div`
+  border-radius: 25px;
+  box-shadow: 10px 10px 50px rgba(68, 64, 105, 0.08);
+`;
 const CardWrapper = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -48,20 +52,19 @@ const ImageWrapper = styled.div`
   height: 213px;
   border-top-left-radius: 25px;
   border-top-right-radius: 25px;
-  box-shadow: 2px 2px 2px grey;
+
   @media (max-width: 1550px) {
-    width: 300px;
-    height: 200px;
+    width: 252px;
+    height: 150px;
   }
 `;
 const TextWrapper = styled.div`
   border-bottom-left-radius: 25px;
   border-bottom-right-radius: 25px;
-  box-shadow: 2px 2px 2px grey;
   width: 380px;
   padding: 20px;
   @media (max-width: 1550px) {
-    width: 300px;
+    width: 252px;
   }
 `;
 const Event = styled.div`
