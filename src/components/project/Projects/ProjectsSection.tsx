@@ -4,6 +4,7 @@ import { useQuery } from 'react-query';
 import { getProjects } from 'src/apis/project';
 
 export interface IArchivingData {
+  id: number;
   title: string;
   category: string;
   thumbnail: string;
