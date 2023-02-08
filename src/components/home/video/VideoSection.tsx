@@ -15,6 +15,7 @@ export default VideoSection;
 
 const Video = styled.video`
   width: 100%;
+  margin-top:50px;
 `;
 
 const Wrapper = styled.div`
