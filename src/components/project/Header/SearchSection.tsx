@@ -9,15 +9,7 @@ const SearchSection = () => {
       <SearchWrapper>
         <SearchBar />
         <ImageWrapper>
-          <Image
-            src={searchIcon}
-            width={'28px'}
-            height={'28px'}
-            layout="fill"
-            objectFit="fill"
-            objectPosition="center"
-            alt="검색"
-          />
+          <Image src={searchIcon} layout="fill" objectFit="fill" objectPosition="center" alt="검색" />
         </ImageWrapper>
       </SearchWrapper>
       <WriteButton>+</WriteButton>
