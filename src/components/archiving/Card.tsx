@@ -1,4 +1,4 @@
-import { IArchivingData } from '@project/Projects/ProjectsSection';
+import { IArchivingData } from '@@types/request';
 import { GreyScale } from '@utils/constant/color';
 import Image from 'next/image';
 import Link from 'next/link';
