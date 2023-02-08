@@ -24,4 +24,5 @@ const Wrapper = styled.div`
   min-height: 70vh;
   height: 100%;
   scroll-snap-align: start;
+  justify-content: center;
 `;
