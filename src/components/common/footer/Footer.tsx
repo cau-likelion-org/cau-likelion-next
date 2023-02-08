@@ -44,7 +44,6 @@ const Wrapper = styled.div<{ isLandingLayout: boolean; }>`
   justify-content: center;
   gap: 2.5rem;
   position: relative;
-  margin-top: 300px;
   scroll-snap-align: ${(props) => props.isLandingLayout && 'end'};
 `;
 
@@ -55,7 +54,7 @@ const TitleText = styled.div`
   font-family: 'Inter';
   font-style: normal;
   font-weight: 900;
-  font-size: 2.1rem;
+  font-size: 1.8rem;
   text-align: center;
 `;
 
@@ -78,6 +77,6 @@ const ButtonWrapper = styled.div`
   display: flex;
   width: 100%;
   justify-content: center;
-  gap: 30px;
-  margin-bottom: 100px;
+  gap: 27px;
+  margin-bottom: 8px;
 `;
