@@ -3,9 +3,10 @@ import { TRACK } from '@utils/constant';
 import React from 'react';
 import styled from 'styled-components';
 import Card from './Card';
+
 const getIndexMessage = (value: string) => {
   const number = parseInt(value);
-  if (number <= 4) {
+  if (number < 4) {
     return TRACK[number];
   }
   if (number > 2000) {
@@ -13,6 +14,7 @@ const getIndexMessage = (value: string) => {
   }
   return `${number}기`;
 };
+
 const Archiving = ({ archivingIndex, archivingData }: { archivingIndex: string; archivingData: IArchivingData[] }) => {
   return (
     <Wrapper>
