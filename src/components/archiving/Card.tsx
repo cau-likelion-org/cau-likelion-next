@@ -1,50 +1,33 @@
+import { IArchivingData } from '@project/Projects/ProjectsSection';
 import { GreyScale } from '@utils/constant/color';
 import Image from 'next/image';
 import React from 'react';
 import styled from 'styled-components';
-import { IGenerationData } from './ProjectsSection';
 
-const Projects = ({ generation, generationData }: { generation: string; generationData: IGenerationData[] }) => {
+const Card = ({ thumbnail, title, description, dev_stack, category }: IArchivingData) => {
   return (
     <Wrapper>
-      <Generation>{generation}기</Generation>
-      <CardWrapper>
-        {generationData.map((data, index) => (
-          <Card key={index}>
-            <ImageWrapper>
-              <CustomImage src={data.thumbnail} alt="썸네일" layout="fill" objectFit="fill" objectPosition="center" />
-            </ImageWrapper>
-            <TextWrapper>
-              <Event>{data.event}</Event>
-              <ProjectTitle>{data.title}</ProjectTitle>
-              <ProjectDesc>{data.description}</ProjectDesc>
-            </TextWrapper>
-          </Card>
-        ))}
-      </CardWrapper>
+      <ImageWrapper>
+        <CustomImage src={thumbnail} alt="썸네일" layout="fill" objectFit="fill" objectPosition="center" />
+      </ImageWrapper>
+      <TextWrapper>
+        <Category>{category}</Category>
+        <ProjectTitle>{title}</ProjectTitle>
+        {description && <ProjectDesc>{description}</ProjectDesc>}
+        {dev_stack && <div></div>}
+      </TextWrapper>
     </Wrapper>
   );
 };
 
-export default Projects;
-const Wrapper = styled.div``;
-const Generation = styled.div`
-  font-weight: 900;
-  font-size: 2.3rem;
-  margin-bottom: 20px;
-`;
+export default Card;
 const CustomImage = styled(Image)`
   border-top-left-radius: 25px;
   border-top-right-radius: 25px;
 `;
-const Card = styled.div`
+const Wrapper = styled.div`
   border-radius: 25px;
   box-shadow: 10px 10px 50px rgba(68, 64, 105, 0.08);
-`;
-const CardWrapper = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 30px;
 `;
 const ImageWrapper = styled.div`
   position: relative;
@@ -67,7 +50,7 @@ const TextWrapper = styled.div`
     width: 252px;
   }
 `;
-const Event = styled.div`
+const Category = styled.div`
   border-color: ${GreyScale.default};
   border-radius: 25px;
   width: 58px;
