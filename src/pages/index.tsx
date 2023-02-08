@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { useRef } from 'react';
+import { ReactElement, useRef } from 'react';
 
 import VideoSection from '@home/video/VideoSection';
 import PlanSection from '@home/plan/PlanSection';
@@ -10,6 +10,7 @@ import VisionSection from '@home/vision/VisionSection';
 import ScrollBar from '@home/ScrollBar/ScrollBar';
 
 import More from '@image/home_more.svg';
+import LayoutLanding from '@common/layout/LayoutLanding';
 
 function Landing() {
   const ref = useRef(null);
@@ -29,6 +30,9 @@ function Landing() {
     </SectionWrapper>
   );
 }
+Landing.getLayout = function getLayout(page: ReactElement) {
+  return <LayoutLanding>{page}</LayoutLanding>;
+};
 
 export default Landing;
 const SectionWrapper = styled.div`
