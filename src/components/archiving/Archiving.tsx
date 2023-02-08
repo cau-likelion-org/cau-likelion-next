@@ -1,7 +1,7 @@
+import { IArchivingData } from '@@types/request';
 import { TRACK } from '@utils/constant';
 import React from 'react';
 import styled from 'styled-components';
-import { IArchivingData } from '../project/Projects/ProjectsSection';
 import Card from './Card';
 const getIndexMessage = (value: string) => {
   const number = parseInt(value);
