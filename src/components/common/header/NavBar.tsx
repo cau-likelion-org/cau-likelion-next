@@ -11,6 +11,8 @@ import HoverButton from './HoverButton';
 
 const NavBar = () => {
   const [tokenState, setTokenState] = useRecoilState(accessToken);
+  const hoverMenu = [{ title: '아카이빙' }, { title: '세션', routing: '/session' }, { title: '추억', routing: '/gallery' }];
+
 
   return (
     <Wrapper>
@@ -25,7 +27,7 @@ const NavBar = () => {
         </Link>
       </LogoWrapper>
       <ButtonWrapper>
-        <HoverButton menu={[{ title: '아카이빙' }, { title: '세션', routing: '/session' }, { title: '추억', routing: '/gallery' }]} />
+        <HoverButton menu={hoverMenu} />
         <NavBarButton title={'프로젝트'} routing={'/project'} />
         {tokenState && <NavBarButton title='출석체크' routing={'/attendance'} />}
         <NavBarButton title={tokenState ? 'MY' : 'Log in'} routing={tokenState ? '/mypage' : '/login'} />
