@@ -31,30 +31,45 @@ const CustomImage = styled(Image)`
   border-top-left-radius: 25px;
   border-top-right-radius: 25px;
 `;
+
 const Wrapper = styled.div`
   border-radius: 25px;
   box-shadow: 10px 10px 50px rgba(68, 64, 105, 0.08);
   cursor: pointer;
+  @media (min-width: 1920px) {
+    width: 380px;
+    height: 400px;
+  }
+  @media (min-width: 360px) and (max-width: 1919px) {
+    width: 330px;
+    height: 370px;
+  }
 `;
 const ImageWrapper = styled.div`
   position: relative;
-  width: 380px;
-  height: 213px;
+
   border-top-left-radius: 25px;
   border-top-right-radius: 25px;
 
-  @media (max-width: 1550px) {
-    width: 252px;
-    height: 150px;
+  @media (min-width: 360px) and (max-width: 1919px) {
+    width: 330px;
+    height: 200px;
+  }
+  @media (min-width: 1920px) {
+    width: 380px;
+    height: 250px;
   }
 `;
 const TextWrapper = styled.div`
   border-bottom-left-radius: 25px;
   border-bottom-right-radius: 25px;
-  width: 380px;
   padding: 20px;
-  @media (max-width: 1550px) {
-    width: 252px;
+
+  @media (min-width: 360px) and (max-width: 1919px) {
+    width: 330px;
+  }
+  @media (min-width: 1920px) {
+    width: 380px;
   }
 `;
 const Category = styled.div`
