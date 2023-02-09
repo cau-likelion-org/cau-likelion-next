@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import React from 'react';
 import styled from 'styled-components';
+
 interface INavBarButton {
   title: string;
   routing: string;
@@ -25,7 +26,7 @@ export default NavBarButton;
 
 const Button = styled.div`
   background: none;
-  margin: 0 2%;
+  padding: 1rem 4rem;
   border: none;
   font-family: 'Pretendard';
   font-style: normal;
@@ -42,5 +43,6 @@ const LoginButton = styled(Button)`
   border-radius: 52px;
   background-color: #333333;
   color: white;
-  padding: 11px 28px;
+  margin: 0 2rem;
+  padding: 1rem 2rem;
 `;
