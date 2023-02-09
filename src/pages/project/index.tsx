@@ -1,6 +1,8 @@
 import Header from '@archiving/Header';
+import LayoutArchiving from '@common/layout/LayoutArchiving';
 import SearchSection from '@project/Header/SearchSection';
 import ProjectsSection from '@project/Projects/ProjectsSection';
+import { ReactElement } from 'react';
 
 const ProjectList = () => {
   return (
@@ -10,6 +12,9 @@ const ProjectList = () => {
       <ProjectsSection />
     </>
   );
+};
+ProjectList.getLayout = function getLayout(page: ReactElement) {
+  return <LayoutArchiving>{page}</LayoutArchiving>;
 };
 
 export default ProjectList;
