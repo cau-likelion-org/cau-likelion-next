@@ -18,7 +18,6 @@ const BorderSection = () => {
 export default BorderSection;
 
 
-
 const BorderSectionWrapper=styled.div`
 
 span{
@@ -38,20 +37,13 @@ span{
     0%{
         width: 0;
         border-bottom-right-radius: 0;
-        border-right: 4px transparent solid;
     }
     75%{
         border-bottom-right-radius: 0;
     }
-    99%{
-        border-right: 4px #FFFFFF solid;
-
-    }
     100%{
         width : 100%;
         border-bottom-right-radius: 70px;
-        /* border-right: 4px #1A21BD solid; */
-
     }
 }
 
@@ -62,15 +54,11 @@ span:nth-child(1) {
     right:0;
     top: 15rem;
     height: 70rem;
-
     border-bottom: 4px #1A21BD solid;
     border-bottom-right-radius: 70px;
-    
-
-    background-color: transparent;
 
     animation-name: drawLine1;
-    animation-duration: 0.6s;
+    animation-duration: 1s;
     animation-delay: 0s;
     animation-iteration-count:1;
     animation-fill-mode: forwards;
@@ -109,15 +97,13 @@ span:nth-child(2)::after {
     left:0;
     right:0;
     height: 70rem;
-    width: 100%;
-
-    border-right: 10px #FFFFFF solid;
+    width: 99%;
+    border-right: 20px #FFFFFF solid;
     border-radius: 70px;
-    z-index: 1;
 
     animation-name: drawLine2;
-    animation-duration: 0.6s;
-    animation-delay: 0.6s;
+    animation-duration: 1s;
+    animation-delay: 1s;
     animation-iteration-count:1;
     animation-fill-mode: forwards;
 
@@ -147,37 +133,40 @@ span:nth-child(3) {
     top: 15rem;
     height: 70rem;
     width: 50%;
-    border-top: 9px #FFFFFF solid;
+    border-top: 4px #1A21BD solid;
     border-radius: 70px;
-
-    animation-name: drawLine3;
-    animation-duration: 0.6s;
-    animation-delay: 1.2s;
-    animation-iteration-count:1;
-    animation-fill-mode: forwards;
-
-    z-index: 10;
+    z-index: 0;
 
 }
 
-span:nth-child(4):after {
-    content:'';
-    left:120rem;
+span:nth-child(3):after {
+    content: '';
+    position: absolute;
+    left:0;
     right:0;
-    top: 15rem;
+    top: -1rem;
     height: 70rem;
     width: 100%;
-    border-top: 4px #1A21BD solid;
-
+    border-top: 20px #FFFFFF solid;
     border-radius: 70px;
 
+    animation-name: drawLine3;
+    animation-duration: 1s;
+    animation-delay: 2s;
+    animation-iteration-count:1;
+    animation-fill-mode: forwards;
 }
 
 
 @keyframes drawLine4 {
     0%{
         height: 0;
+        border-left: 4px #1A21BD solid;
+        /* border-left: 4px #FFFFFF solid; */
+    }
+    1%{
         border-left: 4px #FFFFFF solid;
+
     }
     100%{
         height : 60rem;
@@ -193,19 +182,18 @@ span:nth-child(4) {
     top: 15rem;
     height: 60rem;
     width: 50%;
-    border-left: 4px #FFFFFF solid;
     border-top-left-radius: 70px;
+    z-index: 5;
 
     animation-name: drawLine4;
-    animation-duration: 0.6s;
-    animation-delay: 1.8s;
+    animation-duration: 1s;
+    animation-delay: 3s;
     animation-iteration-count:1;
     animation-fill-mode: forwards;
-
 }
 
 
-@keyframes drawLine5 {
+@keyframes diamond {
     0%{
         opacity: 0%;
     }
@@ -222,14 +210,12 @@ span:nth-child(4) {
     top: 75rem;
     opacity: 0%;
 
-    animation-name: drawLine5;
-    animation-duration: 2s;
-    animation-delay: 0s;
+    animation-name: diamond;
+    animation-duration: 1s;
+    animation-delay: 4s;
     animation-iteration-count:1;
     animation-fill-mode: forwards;
 
 }
 
-
-    
 `
