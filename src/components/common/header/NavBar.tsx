@@ -9,10 +9,38 @@ import { useRecoilState } from 'recoil';
 import { accessToken } from '@utils/state';
 import HoverButton from './HoverButton';
 
+export interface IHoverButton {
+  'hover': {
+    title: string;
+  };
+  'dropdown': IMenu[];
+}
+
+interface IMenu {
+  title: string;
+  routing: string;
+}
+
 const NavBar = () => {
   const [tokenState, setTokenState] = useRecoilState(accessToken);
-  const hoverMenu = [{ title: '아카이빙' }, { title: '세션', routing: '/session' }, { title: '추억', routing: '/gallery' }];
 
+  const hover: IHoverButton['hover'] = { title: '아카이빙' };
+  const dropdown: IHoverButton['dropdown'] = [
+    { title: '세션', routing: '/session' },
+    { title: '추억', routing: '/gallery' },
+  ];
+
+  const menuDataSelector = (tokenState: string): IMenu[] => {
+    const resultArray = [
+      { title: '프로젝트', routing: '/project' },
+      { title: tokenState ? 'MY' : 'Log in', routing: tokenState ? '/mypage' : 'login' },
+    ];
+    if (tokenState) {
+      const [project, login] = resultArray;
+      return [project, { title: '출석체크', routing: '/attendance' }, login];
+    }
+    return resultArray;
+  };
 
   return (
     <Wrapper>
@@ -27,10 +55,10 @@ const NavBar = () => {
         </Link>
       </LogoWrapper>
       <ButtonWrapper>
-        <HoverButton menu={hoverMenu} />
-        <NavBarButton title={'프로젝트'} routing={'/project'} />
-        {tokenState && <NavBarButton title='출석체크' routing={'/attendance'} />}
-        <NavBarButton title={tokenState ? 'MY' : 'Log in'} routing={tokenState ? '/mypage' : '/login'} />
+        <HoverButton hover={hover} dropdown={dropdown} />
+        {menuDataSelector(tokenState).map(({ title, routing }, index) => (
+          <NavBarButton key={index} title={title} routing={routing} />
+        ))}
       </ButtonWrapper>
     </Wrapper>
   );
