@@ -2,7 +2,7 @@ import Image from 'next/image';
 import React from 'react';
 import styled from 'styled-components';
 import CAULogo from '@image/cau사자.png';
-import NavBarButton from './NavButton';
+import NavButton from './NavButton';
 import { BackgroundColor } from '@utils/constant/color';
 import Link from 'next/link';
 import { useRecoilState } from 'recoil';
@@ -57,7 +57,7 @@ const NavBar = () => {
       <ButtonWrapper>
         <HoverButton hover={hover} dropdown={dropdown} />
         {menuDataSelector(tokenState).map(({ title, routing }, index) => (
-          <NavBarButton key={index} title={title} routing={routing} />
+          <NavButton key={index} title={title} routing={routing} />
         ))}
       </ButtonWrapper>
     </Wrapper>
