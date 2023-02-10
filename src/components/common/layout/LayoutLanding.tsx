@@ -3,11 +3,13 @@ import NavBar from '@common/header/NavBar';
 import Footer from '@common/footer/Footer';
 import styled from 'styled-components';
 import { ReactElement } from 'react';
+import MobileNavBar from '@common/header/MobileNavBar';
 
 const LayoutLanding = ({ children }: { children: ReactElement; }) => {
   return (
     <>
       <NavBar />
+      <MobileNavBar />
       <main>
         <PageContainer>{children}</PageContainer>
       </main>
@@ -17,6 +19,7 @@ const LayoutLanding = ({ children }: { children: ReactElement; }) => {
 };
 
 export default LayoutLanding;
+
 const PageContainer = styled.div`
   background-color: ${BackgroundColor};
   min-height: calc(100vh - 184px);
@@ -30,3 +33,4 @@ const PageContainer = styled.div`
   }
   padding: 100px 360px 100px 360px;
 `;
+
