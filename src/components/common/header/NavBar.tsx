@@ -2,29 +2,45 @@ import Image from 'next/image';
 import React from 'react';
 import styled from 'styled-components';
 import CAULogo from '@image/cau사자.png';
-import NavBarButton from './NavBarButton';
+import NavButton from './NavButton';
 import { BackgroundColor } from '@utils/constant/color';
 import Link from 'next/link';
 import { useRecoilState } from 'recoil';
 import { accessToken } from '@utils/state';
+import HoverButton from './HoverButton';
+
+export interface IHoverButton {
+  'hover': {
+    title: string;
+  };
+  'dropdown': IMenu[];
+}
+
+interface IMenu {
+  title: string;
+  routing: string;
+}
 
 const NavBar = () => {
   const [tokenState, setTokenState] = useRecoilState(accessToken);
 
-  const NavBarData = [
-    {
-      title: '아카이빙',
-      routing: '/gallery',
-    },
-    {
-      title: '커뮤니티',
-      routing: '/freeboard/list/1',
-    },
-    {
-      title: '출석체크',
-      routing: '/attendance',
-    }
+  const hover: IHoverButton['hover'] = { title: '아카이빙' };
+  const dropdown: IHoverButton['dropdown'] = [
+    { title: '세션', routing: '/session' },
+    { title: '추억', routing: '/gallery' },
   ];
+
+  const menuDataSelector = (tokenState: string): IMenu[] => {
+    const resultArray = [
+      { title: '프로젝트', routing: '/project' },
+      { title: tokenState ? 'MY' : 'Log in', routing: tokenState ? '/mypage' : 'login' },
+    ];
+    if (tokenState) {
+      const [project, login] = resultArray;
+      return [project, { title: '출석체크', routing: '/attendance' }, login];
+    }
+    return resultArray;
+  };
 
   return (
     <Wrapper>
@@ -39,14 +55,10 @@ const NavBar = () => {
         </Link>
       </LogoWrapper>
       <ButtonWrapper>
-        {NavBarData.map((navbarButton, index) => (
-          <NavBarButton
-            key={index}
-            title={navbarButton.title}
-            routing={navbarButton.routing}
-          />
+        <HoverButton hover={hover} dropdown={dropdown} />
+        {menuDataSelector(tokenState).map(({ title, routing }, index) => (
+          <NavButton key={index} title={title} routing={routing} />
         ))}
-        <NavBarButton title={tokenState ? 'MY' : 'Log in'} routing={tokenState ? '/mypage' : '/login'} />
       </ButtonWrapper>
     </Wrapper>
   );
@@ -71,12 +83,13 @@ const Wrapper = styled.div`
   justify-content: space-between;
   background-color: ${BackgroundColor};
   z-index: 9999;
-  /* border-bottom: 1px solid #000000; */
 `;
+
 const LogoImage = styled.div`
 min-width: 50px;
 min-height: 50px;
 `;
+
 const LogoWrapper = styled.div`
   display: flex;
   cursor: pointer;
@@ -94,6 +107,6 @@ const Title = styled.p`
 
 const ButtonWrapper = styled.div`
   display: flex;
-  width: 500px;
+  gap: 20px;
   justify-content: space-between;
 `;
