@@ -2,15 +2,14 @@ import { BackgroundColor, Basic, GreyScale, Primary } from '@utils/constant/colo
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import Link from 'next/link';
+import { IHoverButton } from './NavBar';
 
-interface IHoverButton {
-    menu: {
-        title: string;
-        routing?: string;
-    }[];
+interface IHoverButtonProps {
+    hover: IHoverButton['hover'];
+    dropdown: IHoverButton['dropdown'];
 }
 
-const HoverButton = ({ menu }: IHoverButton) => {
+const HoverButton = ({ hover, dropdown }: IHoverButtonProps) => {
     const [dropdownVisibility, setDropdownVisibility] = useState(false);
     const ref = useRef() as React.MutableRefObject<HTMLDivElement>;
 
@@ -33,15 +32,15 @@ const HoverButton = ({ menu }: IHoverButton) => {
 
     return (
         <Button onMouseOver={handleMouseOver} onMouseOut={handleMouseOut} ref={ref}>
-            {menu[0].title}
+            {hover.title}
             {dropdownVisibility &&
                 <DropdownList onMouseOver={handleMouseOver} onMouseOut={handleMouseOut} ref={ref}>
-                    {menu.slice(1).map((m, i) => (
+                    {dropdown.map((d, i) => (
                         <>
                             {
-                                m.routing &&
-                                <Link key={i} href={m.routing}>
-                                    <Button className='hover'>{m.title}</Button>
+                                d.routing &&
+                                <Link key={i} href={d.routing}>
+                                    <Button className='hover'>{d.title}</Button>
                                 </Link>
                             }
                         </>
