@@ -7,7 +7,7 @@ interface INavBarButton {
   routing: string;
 }
 
-const NavBarButton = ({ title, routing }: INavBarButton) => {
+const NavButton = ({ title, routing }: INavBarButton) => {
   if (title === 'Log in' || title === 'MY')
     return (
       <Link href={routing}>
@@ -22,7 +22,7 @@ const NavBarButton = ({ title, routing }: INavBarButton) => {
   );
 };
 
-export default NavBarButton;
+export default NavButton;
 
 const Button = styled.div`
   background: none;
