@@ -1,7 +1,7 @@
 import { Basic, GreyScale, Primary } from '@utils/constant/color';
 import { accessToken } from '@utils/state';
 import React, { Dispatch, SetStateAction, useState } from 'react';
-import { useRecoilState } from 'recoil';
+import { useRecoilValue } from 'recoil';
 import { getEmailSecret, postEmailSecret } from 'src/apis/account';
 import styled from 'styled-components';
 import EmailErrorModal from './EmailErrorModal';
@@ -18,7 +18,7 @@ interface IProps {
 }
 
 const CauMailAuthenticationBox = ({ title, emailValue, onChangeEmail, secretValue, onChangeSecret, isAuthenticated, setIsAuthenticated }: IProps) => {
-    const [tokenState, setTokenState] = useRecoilState(accessToken);
+    const tokenState = useRecoilValue(accessToken);
     const [isEmailModalOn, setIsEmailModalOn] = useState(false);
     const [isErrorModalOn, setIsErrorModalOn] = useState(false);
 

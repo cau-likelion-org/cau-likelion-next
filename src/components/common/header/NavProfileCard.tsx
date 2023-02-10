@@ -2,11 +2,11 @@ import { GreyScale } from '@utils/constant/color';
 import { accessToken } from '@utils/state';
 import { useRouter } from 'next/router';
 import React from 'react';
-import { useRecoilState } from 'recoil';
+import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
 const NavProfileCard = () => {
-    const [tokenState, setTokenState] = useRecoilState(accessToken);
+    const tokenState = useRecoilValue(accessToken);
     const router = useRouter();
 
     const handleRouting = (href: string) => {

@@ -1,14 +1,15 @@
 import { BackgroundColor } from '@utils/constant/color';
 import { accessToken } from '@utils/state';
 import React from 'react';
-import { useRecoilState } from 'recoil';
+import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 import { IMenu } from './NavBar';
 import NavButton from './NavButton';
 import NavProfileCard from './NavProfileCard';
 
 const MobileNavModal = ({ isModalOn }: { isModalOn: boolean; }) => {
-    const [tokenState, setTokenState] = useRecoilState(accessToken);
+
+    const tokenState = useRecoilValue(accessToken);
 
     const menu: IMenu[] = [
         { title: '프로젝트', routing: '/project' },
@@ -35,9 +36,7 @@ const MobileNavModal = ({ isModalOn }: { isModalOn: boolean; }) => {
 export default MobileNavModal;
 
 const Layer = styled.div<{ isModalOn: boolean; }>`
-
     display: ${props => props.isModalOn ? 'block' : 'none'};
-
     position: fixed;
     top: 0;
     left: 0;
