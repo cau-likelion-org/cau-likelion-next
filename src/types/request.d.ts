@@ -9,22 +9,23 @@ export interface IShareURL {
   src: string;
 }
 
-interface IProject {
-  id: string;
+export interface IArchivingData {
+  id: number;
   title: string;
-  generation: number;
-}
-
-interface IProjectDetail extends IProject {
-  dev_stack: number[];
-  subtitle: string;
+  category: string;
   thumbnail: string;
+  dev_stack?: number[];
+  description?: string;
+}
+interface IProjectDetail extends IArchivingData {
+  subtitle: string;
   team_name: string;
   team_member: Record<MemberStack, string[]>;
   date: string;
-  description: string;
   link: IShareURL[];
 }
+
+export type ProjectsArrayType = Record<string, IArchivingData[]>;
 
 interface ResponseData<T> {
   message: string;
@@ -37,7 +38,6 @@ export interface AttendanceData {
   isComplete: boolean;
 }
 export type AttendanceListData = Record<MemberStack, string[]>;
-
 
 export interface RequestSignUpForm {
   accessToken: string | string[];

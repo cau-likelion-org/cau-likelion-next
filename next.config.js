@@ -6,6 +6,7 @@ const nextConfig = {
   images: {
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    domains: ['cau-likelion.s3.ap-northeast-2.amazonaws.com'],
   },
   webpack(config) {
     config.resolve = {
@@ -18,6 +19,7 @@ const nextConfig = {
         '@signup': path.resolve(__dirname, 'src/components/signup'),
         '@login': path.resolve(__dirname, 'src/components/login'),
         '@attendance': path.resolve(__dirname, 'src/components/attendance'),
+        '@archiving': path.resolve(__dirname, 'src/components/archiving'),
         '@pages': path.resolve(__dirname, 'src/pages'),
         '@styles': path.resolve(__dirname, 'src/styles'),
         '@utils': path.resolve(__dirname, 'src/utils'),
