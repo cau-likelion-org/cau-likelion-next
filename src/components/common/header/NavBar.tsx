@@ -16,7 +16,7 @@ export interface IHoverButton {
   'dropdown': IMenu[];
 }
 
-interface IMenu {
+export interface IMenu {
   title: string;
   routing: string;
 }
@@ -83,6 +83,10 @@ const Wrapper = styled.div`
   justify-content: space-between;
   background-color: ${BackgroundColor};
   z-index: 9999;
+
+  @media(max-width: 899px) {
+    display: none;
+  }
 `;
 
 const LogoImage = styled.div`
