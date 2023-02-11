@@ -8,6 +8,7 @@ import styled from 'styled-components';
 interface ICardProps extends IArchivingData {
   link: string;
 }
+
 const Card = ({ id, thumbnail, title, description, dev_stack, category, link }: ICardProps) => {
   return (
     <Link href={`${link}/${id}`}>
