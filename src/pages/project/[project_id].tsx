@@ -50,6 +50,7 @@ export async function getStaticProps({ params }: any) {
 }
 
 export default ProjectDetail;
+
 const Wrapper = styled.div`
   width: 100%;
   height: 100%;
