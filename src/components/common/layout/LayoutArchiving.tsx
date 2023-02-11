@@ -4,7 +4,7 @@ import { BackgroundColor } from '@utils/constant/color';
 import { ReactElement } from 'react';
 import styled from 'styled-components';
 
-const LayoutArchiving = ({ children }: { children: ReactElement }) => {
+const LayoutArchiving = ({ children }: { children: ReactElement; }) => {
   return (
     <>
       <PageContainer>
