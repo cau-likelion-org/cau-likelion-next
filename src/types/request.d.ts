@@ -25,7 +25,14 @@ interface IProjectDetail extends IArchivingData {
   link: IShareURL[];
 }
 
+interface ISessionData extends IArchivingData {
+  session: number,
+  presenter: string
+}
+
 export type ProjectsArrayType = Record<string, IArchivingData[]>;
+
+export type SessionsArrayType = Record<string, ISessionData[]>;
 
 interface ResponseData<T> {
   message: string;
