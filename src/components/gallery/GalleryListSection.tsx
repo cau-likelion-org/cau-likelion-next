@@ -5,12 +5,12 @@ import { useQuery } from 'react-query';
 import { getGalleries } from 'src/apis/gallery';
 
 const GalleryListSection = ({ staticData }: { staticData: ArchivingArrayType; }) => {
-    const { data, isLoading } = useQuery<ArchivingArrayType>(['projects'], getGalleries);
+    const { data, isLoading } = useQuery<ArchivingArrayType>(['galleries'], getGalleries);
 
     return (
         <>
-            {Object.entries(isLoading ? staticData : (data as ArchivingArrayType))!.map(([generation, value]) => (
-                <Archiving archivingType={'gallery'} archivingIndex={generation} archivingData={value} key={generation} />
+            {Object.entries(isLoading ? staticData : (data as ArchivingArrayType))!.map(([year, value]) => (
+                <Archiving archivingType={'gallery'} archivingIndex={year} archivingData={value} key={year} />
             ))}
         </>
     );
