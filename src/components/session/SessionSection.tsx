@@ -7,6 +7,9 @@ import { MemberStack, MemberStackKor } from '@@types/request';
 import Card from '@archiving/Card';
 import Slider from './Slider';
 
+import rightArrow from '@image/Vector 16.png'
+import Image from 'next/image'
+
 
 const SessionSection = ({track, link}:{track:string, link:string}) => {
 
@@ -38,19 +41,40 @@ const SessionSection = ({track, link}:{track:string, link:string}) => {
         }
     };
 
+    const clickRight = (e: React.MouseEvent<HTMLElement, MouseEvent>): void => {
+        moveRight();
+    };
+
+    const clickLeft = (e: React.MouseEvent<HTMLElement, MouseEvent>): void => {
+        moveLeft();
+    };
+
+
     return (
         <StWrapper>
             <Track track={track} link={link}/>
 
 
-            <StSliderWrapper>
-                    <Slider
-                    translateVal={translateVal}
-                    images={images} 
-                    moveRight={moveRight}
-                    moveLeft={moveLeft} />
-            </StSliderWrapper>
-                
+            <StSliderDWrapper>
+                <StArrowWrapper className='moveToLeft' onClick={clickLeft}>
+                    <Image src={rightArrow} width='20px' height='20px' alt='오른쪽 화살표'/>
+                </StArrowWrapper>
+
+                <StSliderWrapper>
+                        <Slider
+                        translateVal={translateVal}
+                        images={images} 
+                        moveRight={moveRight}
+                        moveLeft={moveLeft} />
+                </StSliderWrapper>
+
+                <StArrowWrapper className='moveToRight' onClick={clickRight}>
+                    <Image src={rightArrow} width='20px' height='20px' alt='오른쪽 화살표'/>
+                </StArrowWrapper>
+            </StSliderDWrapper>
+    
+
+    
 
 
             
@@ -94,7 +118,6 @@ const SessionSection = ({track, link}:{track:string, link:string}) => {
 
                 {/* <Archiving archivingIndex='0' archivingData=''/> */}
             {/* </StCardWrapper> */}
-            {/* <NextCard/> */}
 
 
 
@@ -124,8 +147,32 @@ max-width:70vw;
 height:45rem;
 display:flex;
 overflow:hidden;
-/* margin:0 auto; */
+margin:0 auto;
 `;
+
+const StArrowWrapper = styled.div`
+
+    
+`
+
+const StSliderDWrapper = styled.div`
+display: flex;
+align-items: center;
+
+.moveToLeft{
+    margin-right:70px;
+    transform: rotate(180deg);
+
+    /* visibility: hidden; */
+
+}
+
+.moveToRight{
+    margin-left:70px
+}
+
+    
+`
 
 
 

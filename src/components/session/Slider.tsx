@@ -49,9 +49,7 @@ const Slider: React.FC<SliderProps> = ({translateVal, images, moveRight, moveLef
                 })}
             </StImageBox>
 
-            <StArrowWrapper onClick={clickRight}>
-                <Image src={rightArrow} width='20px' height='20px' alt='오른쪽 화살표'/>
-            </StArrowWrapper>
+            
 
 
         </StWrapper>
@@ -95,13 +93,3 @@ transform:${({ translateVal }) => `translateX(-${translateVal}vw)`};
     
 `
 
-const StArrowWrapper = styled.div`
-padding-left: 7.5rem; 
-/* background-color: pink; */
-
-img{
-    
-}
-
-    
-`
