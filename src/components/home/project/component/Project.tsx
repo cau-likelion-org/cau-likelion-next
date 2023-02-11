@@ -35,9 +35,9 @@ const AnimationVariant = {
   },
 };
 
-const Project = ({ ProjectData, direction }: { ProjectData: IProjectInner; direction: number }) => {
+const Project = ({ ProjectData, direction }: { ProjectData: IProjectInner; direction: number; }) => {
   return (
-    <AnimatePresence initial={false} custom={direction}> 
+    <AnimatePresence initial={false} custom={direction}>
       <ProjectWrapper
         variants={AnimationVariant}
         initial="initial"
@@ -104,21 +104,27 @@ const ProjectTitle = styled.div`
   font-family: 'Pretendard';
   font-weight: 700;
   font-size: 3rem;
+  @media(max-width: 900px){
+    font-size: 2rem;
+  }
 `;
 const ProjectText = styled.div`
   font-family: 'Pretendard';
   font-style: normal;
   font-weight: 500;
   font-size: 1.7rem;
-  line-height: 160%;
   margin: 15px 0px;
+  @media(max-width: 900px){
+    font-size: 1rem;
+  }
 `;
 const TextWrapper = styled.div`
-  padding: 30px;
+  padding: 3rem;
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
   height: 100%;
+  
 `;
 const TeamName = styled.div`
   color: ${GreyScale.default};

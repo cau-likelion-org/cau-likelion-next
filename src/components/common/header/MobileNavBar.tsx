@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import CAULogo from '@image/cau사자.png';
 import { BackgroundColor } from '@utils/constant/color';
@@ -51,6 +51,7 @@ const MobileNavBar = () => {
 export default MobileNavBar;
 
 const Wrapper = styled.div`
+  max-width: 100vw;
   width: 100%;
   display: flex;
   position: fixed;
