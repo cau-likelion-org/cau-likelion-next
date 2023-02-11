@@ -17,18 +17,18 @@ export interface IProjectInner {
 }
 const ProjectData: IProjectInner[] = [
   {
-    name: '프로젝트명',
+    name: 'Baby Frog',
     introduce:
-      '트랙별 아기사자들이 멋쟁이 사자처럼 활동을 통해 다양하고 재미있는 프로젝트를 만들었습니다~~어쩌구트랙별아기사자들이 멋쟁이 사자처럼 활동을 통해 다양하고 재미있는 프로젝트를 만들었습니다~~어쩌구트랙별아기사자들이 멋쟁이 사자처럼 활동을 통해 다양하고 재미있는 프로젝트를 만들었습니다~~어쩌구',
+      '아기 개구리를 살려라! 아기 개구리 살리는 서비스, 개굴개굴 baby frog',
     teamName: '개구리팀',
     projectType: '2022 아이디어톤',
     img: projectPic,
   },
   {
-    name: '프로젝트명',
-    introduce: '',
-    teamName: '',
-    projectType: '',
+    name: '카모마일 알라쁑',
+    introduce: '카모마일, 맥심 커피, 그 중 승자는? 승자를 가려라 서비스, 카모마일',
+    teamName: '캠몸맘임',
+    projectType: '2022 해커톤',
     img: projectPic2,
   },
 ];

@@ -7,21 +7,22 @@ import ProjectSlider from './component/ProjectSlider';
 const fadeInAnimation: Variants = {
   visible: {
     opacity: 1,
-    x: 0,
+    y: 0,
     transition: { duration: 1 },
   },
   hidden: {
     opacity: 0,
-    x: 100,
+    y: -100,
   },
 };
+
 const ProjectSection = () => {
   return (
     <FadeInComponent variants={fadeInAnimation}>
       <Wrapper>
         <TitleWrapper>
           <Title>각 트랙이 모여 함께 만든 프로젝트</Title>
-          <Text>트랙별 아기사자들이 멋쟁이 사자처럼 활동을 통해 다양하고 재미있는 프로젝트를 만들었습니다~~어쩌구</Text>
+          <Text>멋쟁이 사자처럼에서 탄생한 서비스들을 소개합니다. </Text>
         </TitleWrapper>
         <ProjectSlider />
         <ButtonWrapper>
@@ -39,14 +40,16 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 100%;
-  min-height: 100vh;
-  scroll-snap-align: start;
+  @media(min-width: 900px){
+    scroll-snap-align: start; 
+    height: 100%;
+    min-height: 100vh;
+  }
 `;
 const TitleWrapper = styled.div`
-  margin-top: 40px;
-  margin-bottom: 92px;
+  margin-top: 3.2rem;
   display: flex;
+  margin-bottom: 4rem;
   align-items: center;
   flex-direction: column;
 `;
