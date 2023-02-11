@@ -1,6 +1,6 @@
 import { BackgroundColor } from '@utils/constant/color';
 import { accessToken } from '@utils/state';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 import { IMenu } from './NavBar';
@@ -10,6 +10,8 @@ import NavProfileCard from './NavProfileCard';
 const MobileNavModal = ({ isModalOn }: { isModalOn: boolean; }) => {
 
     const tokenState = useRecoilValue(accessToken);
+    const [visibilityAnimation, setVisibilityAnimation] = useState(false);
+    const [repeat, setRepeat] = useState<any>(null);
 
     const menu: IMenu[] = [
         { title: '프로젝트', routing: '/project' },
@@ -17,18 +19,32 @@ const MobileNavModal = ({ isModalOn }: { isModalOn: boolean; }) => {
         { title: '추억', routing: '/gallery' },
     ];
 
+    useEffect(() => {
+        if (isModalOn) {
+            clearTimeout(repeat);
+            setRepeat(null);
+            setVisibilityAnimation(true);
+        } else {
+            setRepeat(setTimeout(() => {
+                setVisibilityAnimation(false);
+            }, 400));
+        }
+    }, [isModalOn]);
+
     return (
         <>
             <Layer isModalOn={isModalOn} />
-            <Wrapper className={isModalOn ? 'slide-fade-in-dropdown' : 'slide-fade-out-dropdown'}>
-                <NavProfileCard />
-                <ButtonWrapper>
-                    {tokenState && <NavButton title={'출석체크'} routing={'/attendance'} />}
-                    {menu.map((m, i) => (
-                        <NavButton key={i} title={m.title} routing={m.routing} />
-                    ))}
-                </ButtonWrapper>
-            </Wrapper>
+            {visibilityAnimation &&
+                <Wrapper className={isModalOn ? 'slide-fade-in-dropdown' : 'slide-fade-out-dropdown'}>
+                    <NavProfileCard />
+                    <ButtonWrapper>
+                        {tokenState && <NavButton title={'출석체크'} routing={'/attendance'} />}
+                        {menu.map((m, i) => (
+                            <NavButton key={i} title={m.title} routing={m.routing} />
+                        ))}
+                    </ButtonWrapper>
+                </Wrapper>
+            }
         </>
     );
 };
@@ -36,6 +52,8 @@ const MobileNavModal = ({ isModalOn }: { isModalOn: boolean; }) => {
 export default MobileNavModal;
 
 const Layer = styled.div<{ isModalOn: boolean; }>`
+    max-width: 100vw;
+    width: 100%;
     display: ${props => props.isModalOn ? 'block' : 'none'};
     position: fixed;
     top: 0;
@@ -51,7 +69,8 @@ const Layer = styled.div<{ isModalOn: boolean; }>`
 `;
 
 const Wrapper = styled.div`
-
+    max-width: 100vw;
+    width: 100%;
     @keyframes slide-fade-out-dropdown-animation {
         0% {
             transform: translateY(0);
@@ -81,6 +100,7 @@ const Wrapper = styled.div`
 
     position: fixed;
     left: 0;
+    right: 0;
     width: 101%;
     top: 51.5px;
     display: flex;
