@@ -1,28 +1,27 @@
 import { GreyScale } from '@utils/constant/color';
 import { accessToken } from '@utils/state';
-import { useRouter } from 'next/router';
+import Link from 'next/link';
 import React from 'react';
 import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
 const NavProfileCard = () => {
     const tokenState = useRecoilValue(accessToken);
-    const router = useRouter();
-
-    const handleRouting = (href: string) => {
-        router.push(href);
-    };
 
     return (
         <Wrapper>
             {tokenState ?
                 <>
-                    <Name>
-                        <span>윤선영</span>님
-                    </Name>
-                    <MyButton onClick={() => handleRouting('/mypage')}>MY</MyButton>
-                </> :
-                <Name onClick={() => handleRouting('/login')}><span>로그인</span></Name>
+                    <Link href='/mypage'>
+                        <Name>
+                            <span>윤선영</span>님
+                        </Name>
+                    </Link>
+                    <Link href='/mypage'>
+                        <MyButton>MY</MyButton>
+                    </Link></>
+                :
+                <Link href='/login'><Name><span>로그인</span></Name></Link>
             }
         </Wrapper>
     );
