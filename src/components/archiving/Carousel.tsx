@@ -24,7 +24,7 @@ const animateVariant = {
   },
 };
 
-const Carousel = ({ images }: { images: StaticImageData[] }) => {
+const Carousel = ({ images }: { images: string[] }) => {
   const [index, setIndex] = useState(0);
   useInterval(() => setIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1)), 3000);
 
