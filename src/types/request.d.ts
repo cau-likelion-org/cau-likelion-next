@@ -17,6 +17,7 @@ export interface IArchivingData {
   dev_stack?: number[];
   description?: string;
 }
+
 interface IProjectDetail extends IArchivingData {
   subtitle: string;
   team_name: string;
@@ -27,12 +28,29 @@ interface IProjectDetail extends IArchivingData {
   thumbnail: string[];
 }
 
+export interface IGalleryData {
+  id: number;
+  title: string;
+  date: string;
+  thumbnail: string;
+}
+
+export interface IGalleryDetail {
+  id: number;
+  title: string;
+  date: string;
+  description: string;
+  images: string[];
+}
+
 export type ProjectsArrayType = Record<string, IArchivingData[]>;
+
+export type GalleryListType = Record<string, IGalleryData[]>;
 
 interface ResponseData<T> {
   message: string;
   data: T;
-}
+};
 
 export interface AttendanceData {
   name: string;
