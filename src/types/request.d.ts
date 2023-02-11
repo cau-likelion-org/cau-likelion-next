@@ -23,6 +23,8 @@ interface IProjectDetail extends IArchivingData {
   team_member: Record<MemberStack, string[]>;
   date: string;
   link: IShareURL[];
+  generation: number;
+  thumbnail: string[];
 }
 
 export type ProjectsArrayType = Record<string, IArchivingData[]>;
