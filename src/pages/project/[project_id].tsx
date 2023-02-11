@@ -11,21 +11,18 @@ import { getProjectDetail } from 'src/apis/projectDeatil';
 
 import { IProjectDetail } from '@@types/request';
 import { GreyScale } from '@utils/constant/color';
+import { GetStaticPaths, InferGetStaticPropsType } from 'next';
 
-const ProjectDetail = () => {
+const ProjectDetail = ({ projectDeatilStaticData }: InferGetStaticPropsType<typeof getStaticProps>) => {
   const router = useRouter();
   const { data, isLoading } = useQuery<IProjectDetail>(['projectDeatil', router.query.project_id], () =>
     getProjectDetail(router.query.project_id as string),
   );
 
-  if (isLoading) {
-    return <div>Loading</div>;
-  }
-
   return (
     <Wrapper>
-      <Carousel images={data!.thumbnail} />
-      <DetailMainSection data={data!} />
+      <Carousel images={isLoading ? projectDeatilStaticData.thumbnail : data!.thumbnail} />
+      <DetailMainSection data={isLoading ? projectDeatilStaticData : data!} />
       <hr />
     </Wrapper>
   );
@@ -34,6 +31,23 @@ const ProjectDetail = () => {
 ProjectDetail.getLayout = function getLayout(page: ReactElement) {
   return <LayoutArchiving>{page}</LayoutArchiving>;
 };
+
+export const getStaticPaths: GetStaticPaths = (async) => {
+  return {
+    paths: [{ params: { project_id: '1' } }],
+    fallback: false,
+  };
+};
+
+export async function getStaticProps({ params }: any) {
+  const projectDeatilStaticData = await getProjectDetail(params.project_id);
+  return {
+    props: {
+      projectDeatilStaticData,
+    },
+    revalidate: 86400,
+  };
+}
 
 export default ProjectDetail;
 const Wrapper = styled.div`
