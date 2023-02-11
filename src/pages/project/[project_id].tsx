@@ -11,9 +11,9 @@ import { getProjectDetail } from 'src/apis/projectDeatil';
 
 import { IProjectDetail } from '@@types/request';
 import { GreyScale } from '@utils/constant/color';
-import { GetStaticPaths, InferGetStaticPropsType } from 'next';
+import { GetStaticPaths } from 'next';
 
-const ProjectDetail = ({ projectDeatilStaticData }: InferGetStaticPropsType<typeof getStaticProps>) => {
+const ProjectDetail = ({ projectDeatilStaticData }: { projectDeatilStaticData: IProjectDetail }) => {
   const router = useRouter();
   const { data, isLoading } = useQuery<IProjectDetail>(['projectDeatil', router.query.project_id], () =>
     getProjectDetail(router.query.project_id as string),
@@ -39,7 +39,7 @@ export const getStaticPaths: GetStaticPaths = (async) => {
   };
 };
 
-export async function getStaticProps({ params }: any) {
+export async function getStaticProps({ params }: { params: { project_id: string } }) {
   const projectDeatilStaticData = await getProjectDetail(params.project_id);
   return {
     props: {
