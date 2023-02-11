@@ -33,7 +33,7 @@ const Carousel = ({ images }: { images: StaticImageData[] }) => {
       <CarouselWrapper>
         <AnimatePresence initial={false}>
           <ImageWrapper key={index} variants={animateVariant} initial="initial" animate="animate" exit="exit">
-            <CustomImage src={images[index]} alt="img" layout="fill" objectFit="cover" objectPosition="center" />
+            <Image src={images[index]} alt="img" layout="fill" objectFit="cover" objectPosition="center" />
           </ImageWrapper>
         </AnimatePresence>
       </CarouselWrapper>
@@ -53,11 +53,12 @@ const Wrapper = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  width: 60vw;
 `;
 const CarouselWrapper = styled.div`
   position: relative;
-  width: 1000px;
-  height: 563px;
+  width: 100%;
+  height: 50vh;
   border-radius: 30px;
   border: none;
   overflow: hidden;
@@ -71,12 +72,11 @@ const DiamondWrapper = styled.div`
 `;
 const ImageWrapper = styled(motion.div)`
   position: absolute;
-  width: 1000px;
-  height: 563px;
+  width: 100%;
+  height: 100%;
   border-radius: 30px;
   border: none;
 `;
-const CustomImage = styled(Image)``;
 const Diamond = styled.div`
   width: 7px;
   height: 7px;
