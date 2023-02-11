@@ -5,7 +5,7 @@ import DevStacks from './component/TeamIntroduction/DevStacks';
 import LinkButton from './component/TeamIntroduction/LinkButton';
 import TeamMember from './component/TeamIntroduction/TeamMember';
 
-const TeamIntroducton = ({ projectData }: { projectData: IProjectDetail }) => {
+const TeamIntroduction = ({ projectData }: { projectData: IProjectDetail }) => {
   return (
     <Wrapper>
       <TeamName>{projectData.team_name}</TeamName>
@@ -30,7 +30,7 @@ const TeamIntroducton = ({ projectData }: { projectData: IProjectDetail }) => {
   );
 };
 
-export default TeamIntroducton;
+export default TeamIntroduction;
 const Wrapper = styled.div`
   background-color: #f0f1ff;
   border-radius: 20px;
