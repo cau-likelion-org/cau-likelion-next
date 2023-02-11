@@ -4,11 +4,16 @@ import pic2 from '@image/projectPic.png';
 import pic3 from '@image/projectPic2.png';
 import { ReactElement } from 'react';
 import LayoutArchiving from '@common/layout/LayoutArchiving';
+import styled from 'styled-components';
+import DetailMainSection from '@project/detail/DetailMainSection';
+import { useRouter } from 'next/router';
 const ProjectDetail = () => {
+  const router = useRouter();
   return (
-    <>
+    <Wrapper>
       <Carousel images={[pic1, pic2, pic3]} />
-    </>
+      <DetailMainSection id={router.query.project_id as string} />
+    </Wrapper>
   );
 };
 ProjectDetail.getLayout = function getLayout(page: ReactElement) {
@@ -16,3 +21,7 @@ ProjectDetail.getLayout = function getLayout(page: ReactElement) {
 };
 
 export default ProjectDetail;
+const Wrapper = styled.div`
+  width: 100%;
+  height: 100%;
+`;
