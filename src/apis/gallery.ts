@@ -1,16 +1,16 @@
-import { GalleryListType, IGalleryDetail } from '@@types/request';
+import { ArchivingArrayType, IGalleryDetail } from '@@types/request';
 import axios from 'axios';
 import galleryBackupData from './backup/gallery.json';
 import galleryDetailBackupData from './backup/galleryDetail.json';
 
 export async function getGalleries() {
     try {
-        const res = await axios.get<GalleryListType>(
+        const res = await axios.get<ArchivingArrayType>(
             `https://286eb829-af4d-43ed-b788-0e8e70ae0820.mock.pstmn.io/galleries`,
         );
         return res.data;
     } catch (err) {
-        return new Promise<GalleryListType>((resolve) => resolve(galleryBackupData));
+        return new Promise<ArchivingArrayType>((resolve) => resolve(galleryBackupData));
     }
 }
 export async function getGalleryDetail(id: string) {
