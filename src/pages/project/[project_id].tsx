@@ -13,7 +13,7 @@ import { IProjectDetail } from '@@types/request';
 import { GreyScale } from '@utils/constant/color';
 import { GetStaticPaths } from 'next';
 
-const ProjectDetail = ({ projectDeatilStaticData }: { projectDeatilStaticData: IProjectDetail }) => {
+const ProjectDetail = ({ projectDetailStaticData }: { projectDetailStaticData: IProjectDetail }) => {
   const router = useRouter();
   const { data, isLoading } = useQuery<IProjectDetail>(['projectDeatil', router.query.project_id], () =>
     getProjectDetail(router.query.project_id as string),
@@ -21,8 +21,8 @@ const ProjectDetail = ({ projectDeatilStaticData }: { projectDeatilStaticData: I
 
   return (
     <Wrapper>
-      <Carousel images={isLoading ? projectDeatilStaticData.thumbnail : data!.thumbnail} />
-      <DetailMainSection data={isLoading ? projectDeatilStaticData : data!} />
+      <Carousel images={isLoading ? projectDetailStaticData.thumbnail : data!.thumbnail} />
+      <DetailMainSection data={isLoading ? projectDetailStaticData : data!} />
       <hr />
     </Wrapper>
   );
@@ -40,10 +40,10 @@ export const getStaticPaths: GetStaticPaths = (async) => {
 };
 
 export async function getStaticProps({ params }: { params: { project_id: string } }) {
-  const projectDeatilStaticData = await getProjectDetail(params.project_id);
+  const projectDetailStaticData = await getProjectDetail(params.project_id);
   return {
     props: {
-      projectDeatilStaticData,
+      projectDetailStaticData,
     },
     revalidate: 86400,
   };
