@@ -73,6 +73,7 @@ const Project = ({ ProjectData, direction }: { ProjectData: IProjectInner; direc
 };
 
 export default Project;
+
 const ProjectWrapper = styled(motion.div)`
   position: absolute;
   width: 93%;
@@ -84,7 +85,11 @@ const ProjectWrapper = styled(motion.div)`
   left: 0;
   bottom: 0;
   right: 0;
+  @media (max-width: 900px) {
+    height: 150px;
+  }
 `;
+
 const ImageWrapper = styled.div`
   position: relative;
   object-fit: cover;
