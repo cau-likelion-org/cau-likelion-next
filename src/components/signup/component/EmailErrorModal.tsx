@@ -29,8 +29,6 @@ const Layer = styled.div`
     z-index: 10000;
 `;
 
-
-
 const Wrapper = styled.div`
     position: fixed;
     top: 50%;
