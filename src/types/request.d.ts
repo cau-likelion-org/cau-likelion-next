@@ -69,5 +69,4 @@ export interface UserAttendance {
   notSubmitted: number; // 과제 미제출
   lateSubmitted: number; // 과제 지각 제출
   totalScore: number; // 총점수
-  reason: string;   // 비고
 }

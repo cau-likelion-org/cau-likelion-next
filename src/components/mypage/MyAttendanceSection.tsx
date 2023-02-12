@@ -30,10 +30,6 @@ const MyAttendanceSection = ({ userAttendance }: { userAttendance: UserAttendanc
             type: ATTENDANCE_CATEGORY.TOTALSCORE,
             score: userAttendance.totalScore
         },
-        {
-            type: ATTENDANCE_CATEGORY.REASON,
-            score: userAttendance.reason
-        }
     ];
     return (
         <Wrapper>
