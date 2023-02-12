@@ -15,21 +15,25 @@ import useInput from 'src/hooks/useInput';
 import styled from 'styled-components';
 import { HiXMark } from 'react-icons/hi2';
 
-const UserEditModal = ({ isEditModalOn, handleUserEditModal }: { isEditModalOn: boolean; handleUserEditModal: () => void; }) => {
+interface UserEditModalProps {
+    userProfile: UserProfile;
+    isEditModalOn: boolean;
+    handleUserEditModal: () => void;
+}
+
+const UserEditModal = ({ userProfile, isEditModalOn, handleUserEditModal }: UserEditModalProps) => {
     const track = [TRACK_NAME[TRACK.PM], TRACK_NAME[TRACK.DESIGN], TRACK_NAME[TRACK.FRONTEND], TRACK_NAME[TRACK.BACKEND]];
-    const [nameValue, onChangeName, setNameValue] = useInput('');
-    const [generationValue, onChangeGeneration, setGenerationValue] = useInput('', /^[0-9]*$/);
-    const [emailValue, onChangeEmail, setEmailValue] = useInput('');
-    const [emailSecretValue, onChangeEmailSecret, setEmailSecretValue] = useInput('');
-    const [toggleIsClicked, setToggleIsClicked] = useState([true, false]);
-    const [dropdownValue, setDropdownValue] = useState(track[0]);
+    const [nameValue, onChangeName, setNameValue] = useInput(userProfile.name);
+    const [generationValue, onChangeGeneration, setGenerationValue] = useInput(String(userProfile.generation), /^[0-9]*$/);
+    const [toggleIsClicked, setToggleIsClicked] = useState(userProfile.isAdmin ? [false, true] : [true, false]);
+    const [dropdownValue, setDropdownValue] = useState(track[userProfile.track]);
     const [isFormActivated, setIsFormActivated] = useState(false);
     const tokenState = useRecoilValue(accessToken);
 
     useEffect(() => {
         if (!isEmptyString(nameValue) && !isEmptyString(generationValue)) setIsFormActivated(true);
         else setIsFormActivated(false);
-    }, [nameValue, generationValue, emailValue, emailSecretValue, isEditModalOn]);
+    }, [nameValue, generationValue, isEditModalOn]);
 
     const editUserProfile = useMutation({
         mutationFn: ({ userProfile, accessToken }: { userProfile: UserProfile; accessToken: string; }) => putUserProfile(userProfile, accessToken),
@@ -68,13 +72,13 @@ const UserEditModal = ({ isEditModalOn, handleUserEditModal }: { isEditModalOn: 
                     <TextInputBox
                         title={'이름'}
                         description={'실명으로 입력해주세요.'}
-                        placeholder={'중하하'}
+                        placeholder={''}
                         value={nameValue}
                         onChange={onChangeName} />
                     <TextInputBox
                         title={'기수'}
                         description={'마지막 활동 기수를 숫자로 입력해주세요.'}
-                        placeholder={'11'}
+                        placeholder={''}
                         value={generationValue}
                         onChange={onChangeGeneration} />
                     <DropdownMenuBox
