@@ -51,8 +51,22 @@ export function postSignUpForm(form: RequestSignUpForm) {
     );
 };
 
-() => getUserProfile('sss');
-
+export function putUserProfile(userProfile: UserProfile, accessToken: string) {
+    return axios.put(
+        `${url}/user`,
+        {
+            name: userProfile.name,
+            generation: userProfile.generation,
+            track: userProfile.track,
+            is_admin: userProfile.isAdmin,
+        },
+        {
+            headers: {
+                Authorization: `Bearer ${accessToken}`
+            }
+        }
+    );
+}
 
 export const getUserProfile = async (accessToken: string) => {
     // const response = await axios.get<UserProfile>(
