@@ -61,11 +61,15 @@ const Wrapper = styled.div`
   display: flex;
   align-items: center;
   width: 100%;
+  overflow: hidden;
 `;
 const RelativeWrapper = styled.div`
   position: relative;
   width: 100%;
   height: 300px;
+  @media (max-width: 900px) {
+    height: 150px;
+  }
 `;
 const Right = styled(TfiAngleRight)`
   cursor: pointer;
