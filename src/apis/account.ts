@@ -104,7 +104,6 @@ export const getUserAttendance = async (username: string) => {
         notSubmitted: 3,
         lateSubmitted: 1,
         totalScore: 1.5,
-        reason: '어쩔티비'
     };
 };
 

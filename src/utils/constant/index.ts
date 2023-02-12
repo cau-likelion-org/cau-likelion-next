@@ -31,7 +31,6 @@ export const ATTENDANCE_CATEGORY_NAME: { [key: number]: string; } = {
   [ATTENDANCE_CATEGORY.NOTSUBMITTED]: '과제 미제출',
   [ATTENDANCE_CATEGORY.LATESUBMITTED]: '과제 지각제출',
   [ATTENDANCE_CATEGORY.TOTALSCORE]: '총점',
-  [ATTENDANCE_CATEGORY.REASON]: '비고',
 };
 
 export enum DEV_STACK {
