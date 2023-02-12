@@ -91,7 +91,7 @@ const SignUpFormSection = () => {
                     isAuthenticated={isAuthenticated}
                     setIsAuthenticated={setIsAuthenticated} />
             </FormWrapper>
-            <FormSendButton isActive={isFormActivated} handleSubmit={handleSubmit} />
+            <FormSendButton isActive={isFormActivated} handleSubmit={handleSubmit} buttonTitle={'회원가입'} />
         </>
 
     );

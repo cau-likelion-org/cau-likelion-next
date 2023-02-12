@@ -2,9 +2,15 @@ import { GreyScale, Primary } from '@utils/constant/color';
 import React from 'react';
 import styled from 'styled-components';
 
-const FormSendButton = ({ isActive, handleSubmit }: { isActive: boolean; handleSubmit: () => void; }) => {
+interface FormSendButtonProps {
+    isActive: boolean;
+    handleSubmit: () => void;
+    buttonTitle: string;
+}
+
+const FormSendButton = ({ isActive, handleSubmit, buttonTitle }: FormSendButtonProps) => {
     return (
-        <Wrapper><Button isActive={isActive} onClick={handleSubmit}>회원가입</Button></Wrapper>
+        <Wrapper><Button isActive={isActive} onClick={handleSubmit}>{buttonTitle}</Button></Wrapper>
     );
 };
 
