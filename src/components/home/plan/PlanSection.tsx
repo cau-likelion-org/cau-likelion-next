@@ -1,8 +1,8 @@
 import FadeInComponent from '@home/common/FadeInComponent';
 import { Variants } from 'framer-motion';
 import styled from 'styled-components';
-
 import PlanBox from './component/PlanBox';
+
 const fadeInAnimation: Variants = {
   visible: {
     opacity: 1,
@@ -35,9 +35,11 @@ const Wrapper = styled.div`
   align-items: center;
   width: 100%;
   gap: 40px;
-  height: 100%;
-  min-height: 100vh;
-  scroll-snap-align: start;
+  @media(min-width: 900px){
+    scroll-snap-align: start; 
+    min-height: 100vh;
+    height: 100%;
+  }
 `;
 const AlignWrapper = styled.div`
   margin-top: 10%;
@@ -51,7 +53,6 @@ const TitleText = styled.div`
   font-style: normal;
   font-weight: 900;
   font-size: 3.7rem;
-  line-height: 76.51px;
   text-align: center;
   margin: 15px 0;
 `;

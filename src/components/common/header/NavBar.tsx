@@ -5,7 +5,7 @@ import CAULogo from '@image/cau사자.png';
 import NavButton from './NavButton';
 import { BackgroundColor } from '@utils/constant/color';
 import Link from 'next/link';
-import { useRecoilState } from 'recoil';
+import { useRecoilValue } from 'recoil';
 import { accessToken } from '@utils/state';
 import HoverButton from './HoverButton';
 
@@ -16,13 +16,13 @@ export interface IHoverButton {
   'dropdown': IMenu[];
 }
 
-interface IMenu {
+export interface IMenu {
   title: string;
   routing: string;
 }
 
 const NavBar = () => {
-  const [tokenState, setTokenState] = useRecoilState(accessToken);
+  const tokenState = useRecoilValue(accessToken);
 
   const hover: IHoverButton['hover'] = { title: '아카이빙' };
   const dropdown: IHoverButton['dropdown'] = [
@@ -83,6 +83,10 @@ const Wrapper = styled.div`
   justify-content: space-between;
   background-color: ${BackgroundColor};
   z-index: 9999;
+
+  @media(max-width: 899px) {
+    display: none;
+  }
 `;
 
 const LogoImage = styled.div`
