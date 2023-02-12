@@ -17,12 +17,14 @@ export interface IArchivingData {
   dev_stack?: number[];
   description?: string;
 }
-interface IProjectDetail extends IArchivingData {
+export interface IProjectDetail extends IArchivingData {
   subtitle: string;
   team_name: string;
   team_member: Record<MemberStack, string[]>;
   date: string;
   link: IShareURL[];
+  generation: number;
+  thumbnail: string[];
 }
 
 export type ProjectsArrayType = Record<string, IArchivingData[]>;
