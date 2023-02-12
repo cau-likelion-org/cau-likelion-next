@@ -32,7 +32,7 @@ const ProfileCard = ({ user }: { user: UserProfile; }) => {
                     </DescriptionWrapper>
                 </Wrapper>
             }
-            {isEditModalOn ? <UserEditModal isEditModalOn={isEditModalOn} handleUserEditModal={handleUserEditModal} /> : null}
+            {isEditModalOn ? <UserEditModal userProfile={user} isEditModalOn={isEditModalOn} handleUserEditModal={handleUserEditModal} /> : null}
         </>
     );
 };
