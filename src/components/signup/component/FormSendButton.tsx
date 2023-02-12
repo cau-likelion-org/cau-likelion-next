@@ -19,7 +19,7 @@ export default FormSendButton;
 const Wrapper = styled.div`
     display: flex;
     justify-content: center;
-    margin-top: 50px;
+    margin-top: 40px;
 `;
 
 const Button = styled.div<{ isActive: boolean; }>`

@@ -65,16 +65,16 @@ const Header = styled.div`
     color: ${GreyScale.default};
 `;
 
-const TextTitle = styled.div`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 0 1rem;
-`;
-
 const RowWrapper = styled.div`
+    margin-top: 5rem;
     display: flex;
     justify-content: center;
     width: 100%;
+    gap: 35px;
+
+    @media(max-width: 900px){
+        flex-direction: column;
+        
+    }
 `;
 
