@@ -73,7 +73,7 @@ const AttendanceRow = styled.div<{ index: number; }>`
     display: flex;
     flex-direction: column;
     width: 100%;
-    border-right: ${props => props.index < 6 ? `1px solid #BBBBBB` : 'none'};
+    border-right: ${props => props.index < 5 ? `1px solid #BBBBBB` : 'none'};
 `;
 
 const AttendanceTitle = styled.div`
