@@ -9,20 +9,24 @@ import PlanDotItem from './PlanDotItem';
 const PlanBox = () => {
   const CurriculumData = [
     {
-      date: '2월',
-      title: '아기사자\n모집',
+      date: '3월',
+      title: '트랙별\n세션 시작',
     },
     {
-      date: '3월-7월',
-      title: '트랙별\n개별 세션',
+      date: '6월',
+      title: '아이디어톤',
     },
     {
-      date: '7월-8월',
-      title: '아이디어톤\n해커톤',
+      date: '8월',
+      title: '해커톤',
     },
     {
-      date: '방학',
-      title: '예정',
+      date: '9월',
+      title: '트랙별\n스터디 시작',
+    },
+    {
+      date: '12월',
+      title: '중앙대\n해커톤',
     },
   ];
 
@@ -59,6 +63,9 @@ const BoxContainer = styled.div`
   flex-direction: column;
   justify-content: center;
   padding: 78px 102px;
+  @media(max-width: 900px) {
+    padding: 3rem;
+  }
   position: relative;
 
   z-index: 2;

@@ -51,7 +51,7 @@ const BlurBackground = styled.div`
   border-radius: 20px;
 `;
 
-const Container = styled.div<{ img: string }>`
+const Container = styled.div<{ img: string; }>`
   &:hover {
     .blur {
       opacity: 1;
@@ -109,8 +109,8 @@ const TitleText = styled.div`
   font-family: 'Pretendard';
   font-style: normal;
   font-weight: 700;
-  font-size: 5rem;
-  line-height: 153.02%;
+  font-size: 4rem;
+  line-height: 5rem;
   color: #ffffff;
 `;
 
@@ -118,7 +118,7 @@ const SubText = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 13px 33px;
+  padding: 1.3rem 3.3rem;
   background-color: #33333399;
   border-radius: 100px;
   border: 1px solid rgba(255, 255, 255, 0.5);
@@ -131,10 +131,10 @@ const SubText = styled.div`
 
 const Top = styled.div`
   z-index: 2;
-  flex-basis: 20%;
+  flex-basis: 15%;
   display: flex;
   align-items: center;
-  margin: 0 30px;
+  margin: 1rem 2rem;
   justify-content: space-between;
 `;
 

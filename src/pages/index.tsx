@@ -6,8 +6,8 @@ import PlanSection from '@home/plan/PlanSection';
 import IntroduceSection from '@home/introduction/IntroduceSection';
 import ProjectSection from '@home/project/ProjectSection';
 import TrackSection from '@home/track/TrackSection';
-import VisionSection from '@home/vision/VisionSection';
-import ScrollBar from '@home/ScrollBar/ScrollBar';
+import ActivitySection from '@home/activity/ActivitySection';
+import ScrollBar from '@home/scrollbar/ScrollBar';
 
 import More from '@image/home_more.svg';
 import LayoutLanding from '@common/layout/LayoutLanding';
@@ -23,7 +23,7 @@ function Landing() {
       <VideoSection />
       <More onClick={ClickMore} />
       <IntroduceSection innerRef={ref} />
-      <VisionSection />
+      <ActivitySection />
       <TrackSection />
       <ProjectSection />
       <PlanSection />
