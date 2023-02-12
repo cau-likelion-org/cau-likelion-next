@@ -1,17 +1,17 @@
 // example
 
 export enum MENU {
-    SESSION,
-    GALLERY,
-    PROJECT,
-    ATTENDANCE
+  SESSION,
+  GALLERY,
+  PROJECT,
+  ATTENDANCE,
 }
 
 export enum TRACK {
-    PM,
-    DESIGN,
-    FRONTEND,
-    BACKEND
+  PM,
+  DESIGN,
+  FRONTEND,
+  BACKEND,
 }
 
 export enum ACTIVITY {
@@ -28,13 +28,22 @@ export const TRACK_INDEX: { [key: string]: number; } = {
     "디자인": TRACK.DESIGN,
     "프론트엔드": TRACK.FRONTEND,
     "백엔드": TRACK.BACKEND
-};
 
-export const TRACK_NAME: { [key: number]: string; } = {
-    [TRACK.PM]: "기획",
-    [TRACK.DESIGN]: "디자인",
-    [TRACK.FRONTEND]: "프론트엔드",
-    [TRACK.BACKEND]: "백엔드",
+export enum DEV_STACK {
+  React,
+  Typescript,
+  Spring,
+  NextJS,
+  NodeJS,
+  Django,
+  //변동 가능
+}
+
+export const TRACK_NAME: { [key: number]: string } = {
+  [TRACK.PM]: '기획',
+  [TRACK.DESIGN]: '디자인',
+  [TRACK.FRONTEND]: '프론트엔드',
+  [TRACK.BACKEND]: '백엔드',
 };
 
 export const ACTIVITY_NAME: { [key: number]: string; } = {
