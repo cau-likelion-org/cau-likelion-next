@@ -25,6 +25,7 @@
       "@login/*": ["src/components/login/*"],
       "@attendance/*": ["src/components/attendance/*"],
       "@archiving/*": ["src/components/archiving/*"],
+      "@mypage/*": ["src/components/mypage/*"],
       "@pages/*": ["src/pages/*"],
       "@styles/*": ["src/styles/*"],
       "@@types/*": ["src/types/*"],
