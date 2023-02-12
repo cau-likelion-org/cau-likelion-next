@@ -1,5 +1,4 @@
-import { RequestSignUpForm } from "@@types/request";
-import { accessToken } from "@utils/state";
+import { LoginResponse, RequestSignUpForm, UserAttendance, UserProfile } from "@@types/request";
 import axios from "axios";
 import { url } from ".";
 
@@ -52,13 +51,51 @@ export function postSignUpForm(form: RequestSignUpForm) {
     );
 };
 
-interface ResponseData {
-    is_active: boolean;
-    accessToken: string;
-}
+() => getUserProfile('sss');
+
+
+export const getUserProfile = async (accessToken: string) => {
+    // const response = await axios.get<UserProfile>(
+    //     `${url}/user`,
+    //     {
+    //         headers: {
+    //             Authorization: `Bearer ${accessToken}`
+    //         }
+    //     }
+    // );
+    // return response.data;
+    return {
+        name: '윤선영',
+        generation: 11,
+        track: 2,
+        isAdmin: true
+    };
+};
+
+export const getUserAttendance = async (username: string) => {
+    // const response = await axios.get<UserAttendance>(
+    //     `${url}/attendance`,
+    //     {
+    //         params: {
+    //             name: username
+    //         }
+    //     }
+    // );
+    // return response.data;
+    return {
+        name: '윤선영',
+        absence: 3,
+        truancy: 1,
+        tardiness: 2,
+        notSubmitted: 3,
+        lateSubmitted: 1,
+        totalScore: 1.5,
+        reason: '어쩔티비'
+    };
+};
 
 export function login(code: string | string[], accessToken: string) {
-    return axios.post<ResponseData>(
+    return axios.post<LoginResponse>(
         `${url}/login`,
         {
             code: code,
