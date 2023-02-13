@@ -1,8 +1,6 @@
 import Card from '@archiving/Card';
 import React, {useState} from 'react';
 import styled from 'styled-components';
-import rightArrow from '@image/Vector 16.png'
-import Image from 'next/image'
 
 type SliderProps = {
     translateVal: number;
@@ -17,9 +15,6 @@ type ImgBoxProps = {
 
 
 const Slider: React.FC<SliderProps> = ({translateVal, images, moveRight, moveLeft}) => {
-    const [mouseDownClientX, setMouseDownClientX] = useState<number>(0);
-    const [mouseUpClientX, setMouseUpClientX] = useState<number>(0);
-    const [cursorOn, setCursorOn] = useState<boolean>(false);
 
     const clickRight = (e: React.MouseEvent<HTMLElement, MouseEvent>): void => {
         moveRight();
@@ -32,8 +27,8 @@ const Slider: React.FC<SliderProps> = ({translateVal, images, moveRight, moveLef
     return (
         <StWrapper>
             <StImageBox 
-            translateVal={translateVal !== 0 ? translateVal : null}
-            >
+            translateVal={translateVal !== 0 ? translateVal : null}>
+                
                 {images.map((picture, idx)=>{
                     return(
                         <Card
@@ -61,7 +56,6 @@ export default Slider;
 const StWrapper=styled.div`
 display: flex;
 align-items: center;
-/* background-color: yellow; */
 `
 
 const StImageBox = styled.div<ImgBoxProps>`

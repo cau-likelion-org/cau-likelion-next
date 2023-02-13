@@ -6,12 +6,17 @@ import Track from './Track';
 import { MemberStack, MemberStackKor } from '@@types/request';
 import Card from '@archiving/Card';
 import Slider from './Slider';
+import Arrow from './Arrow';
+import sessionData from './sessionData.json'
 
-import rightArrow from '@image/Vector 16.png'
-import Image from 'next/image'
+console.log(sessionData);
+
+const pmData = sessionData[0];
 
 
-const SessionSection = ({track, link}:{track:string, link:string}) => {
+
+
+const SessionSection = ({track}:{track:string}) => {
 
     const images = [
         { pic: 'https://cau-likelion.s3.ap-northeast-2.amazonaws.com/project-img/9%E1%84%80%E1%85%B5/Rectangle_336-1.png', id: 1, session:1 },
@@ -22,7 +27,6 @@ const SessionSection = ({track, link}:{track:string, link:string}) => {
     ];
 
 
-    
     const [translateVal, setTranslateVal] = useState<number>(0);
 
     const moveRight = (): void => {
@@ -52,14 +56,11 @@ const SessionSection = ({track, link}:{track:string, link:string}) => {
 
     return (
         <StWrapper>
-            <Track track={track} link={link}/>
+            <Track track={track} />
 
+            <StSliderRowWrapper>
 
-            <StSliderDWrapper>
-                <StArrowWrapper className='moveToLeft' onClick={clickLeft}>
-                    <Image src={rightArrow} width='20px' height='20px' alt='오른쪽 화살표'/>
-                </StArrowWrapper>
-
+                <div onClick={clickLeft}><Arrow direction='left' /></div>
                 <StSliderWrapper>
                         <Slider
                         translateVal={translateVal}
@@ -67,63 +68,10 @@ const SessionSection = ({track, link}:{track:string, link:string}) => {
                         moveRight={moveRight}
                         moveLeft={moveLeft} />
                 </StSliderWrapper>
+                <div onClick={clickRight}><Arrow direction='right' /></div>
 
-                <StArrowWrapper className='moveToRight' onClick={clickRight}>
-                    <Image src={rightArrow} width='20px' height='20px' alt='오른쪽 화살표'/>
-                </StArrowWrapper>
-            </StSliderDWrapper>
-    
+            </StSliderRowWrapper> 
 
-    
-
-
-            
-
-            {/* <StCardWrapper >
-                <Card 
-                key='1'
-                id= {1}
-                link={link}
-                thumbnail='https://cau-likelion.s3.ap-northeast-2.amazonaws.com/project-img/9%E1%84%80%E1%85%B5/Rectangle_336-4.png'
-                title='첫번째 세션'
-                category={`${images[0].session}번째 세션`}
-                />
-
-                <Card 
-                key='1'
-                id= {1}
-                link={link}
-                thumbnail='https://cau-likelion.s3.ap-northeast-2.amazonaws.com/project-img/9%E1%84%80%E1%85%B5/Rectangle_336-3.png'
-                title='첫번째 세션'
-                category={`${images[1].session}번째 세션`}
-                />
-
-                <Card 
-                key='1'
-                id= {1}
-                link={link}
-                thumbnail='https://cau-likelion.s3.ap-northeast-2.amazonaws.com/project-img/9%E1%84%80%E1%85%B5/Rectangle_336-1.png'
-                title='첫번째 세션'
-                category={`${images[2].session}번째 세션`}
-                />
-
-                <Card 
-                key='1'
-                id= {1}
-                link={link}
-                thumbnail='https://cau-likelion.s3.ap-northeast-2.amazonaws.com/project-img/9%E1%84%80%E1%85%B5/Rectangle_336-2.png'
-                title='첫번째 세션'
-                category={`${images[3].session}번째 세션`}
-                /> */}
-
-                {/* <Archiving archivingIndex='0' archivingData=''/> */}
-            {/* </StCardWrapper> */}
-
-
-
-
-
-            
         </StWrapper>
     );
 }
@@ -155,7 +103,7 @@ const StArrowWrapper = styled.div`
     
 `
 
-const StSliderDWrapper = styled.div`
+const StSliderRowWrapper = styled.div`
 display: flex;
 align-items: center;
 

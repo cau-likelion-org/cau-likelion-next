@@ -5,15 +5,11 @@ import { Primary } from '@utils/constant/color';
 import { MemberStack, MemberStackKor } from '@@types/request';
 
 
-const Track = ({track, link}:{track:string, link:string}) => {
+const Track = ({track}:{track:string}) => {
     return (
         <StWrapper>
             <p> {track} </p>
-            
-            <Link href={`${link}`}>
-                <StShowAll>전체보기 &gt;</StShowAll>
-            </Link>
-
+            <StShowAll>전체보기 &gt;</StShowAll>
         </StWrapper>
         
     );
