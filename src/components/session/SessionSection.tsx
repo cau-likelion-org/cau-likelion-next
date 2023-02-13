@@ -9,14 +9,15 @@ import Slider from './Slider';
 import Arrow from './Arrow';
 import sessionData from './sessionData.json'
 
-console.log(sessionData);
+type  SessionProps = {
+    trackName: string;
+    data: { id: number; title: string, category:string, thumbnail:string}[];
+    trackNum: number,
+};
 
-const pmData = sessionData[0];
 
 
-
-
-const SessionSection = ({track}:{track:string}) => {
+const SessionSection:React.FC<SessionProps> =({trackName, trackNum, data}) => {
 
     const images = [
         { pic: 'https://cau-likelion.s3.ap-northeast-2.amazonaws.com/project-img/9%E1%84%80%E1%85%B5/Rectangle_336-1.png', id: 1, session:1 },
@@ -26,23 +27,25 @@ const SessionSection = ({track}:{track:string}) => {
         { pic: 'https://cau-likelion.s3.ap-northeast-2.amazonaws.com/project-img/9%E1%84%80%E1%85%B5/Rectangle_336-5.png', id: 5, session:5 },
     ];
 
+    
+
+
+
 
     const [translateVal, setTranslateVal] = useState<number>(0);
 
     const moveRight = (): void => {
         if (translateVal !== 70 * (images.length - 1)) {
             setTranslateVal((prev) => prev + 70);
-        } else {
-            setTranslateVal(0);
-        }
+        } 
+        else {setTranslateVal(0);}
     };
 
     const moveLeft = (): void => {
         if (translateVal !== 0) {
             setTranslateVal((prev) => prev - 70);
-        } else {
-          setTranslateVal(70 * (images.length - 1));
-        }
+        } 
+        else {setTranslateVal(70 * (images.length - 1));}
     };
 
     const clickRight = (e: React.MouseEvent<HTMLElement, MouseEvent>): void => {
@@ -53,10 +56,26 @@ const SessionSection = ({track}:{track:string}) => {
         moveLeft();
     };
 
+    // console.log(typeof trackNum);
+    // console.log(sessionData[0]);
+    // console.log(sessionData['0']);
+    console.log(trackNum);
+
+    const [trackIndex, setTrackIndex] = useState(0);
+
+
+    
+
+
+
+
+
+
+    
 
     return (
         <StWrapper>
-            <Track track={track} />
+            <Track track={trackName} />
 
             <StSliderRowWrapper>
 
@@ -64,9 +83,9 @@ const SessionSection = ({track}:{track:string}) => {
                 <StSliderWrapper>
                         <Slider
                         translateVal={translateVal}
-                        images={images} 
-                        moveRight={moveRight}
-                        moveLeft={moveLeft} />
+                        images={data}
+                        trackNum={trackNum}
+                        />
                 </StSliderWrapper>
                 <div onClick={clickRight}><Arrow direction='right' /></div>
 
@@ -98,28 +117,10 @@ overflow:hidden;
 margin:0 auto;
 `;
 
-const StArrowWrapper = styled.div`
-
-    
-`
 
 const StSliderRowWrapper = styled.div`
 display: flex;
 align-items: center;
-
-.moveToLeft{
-    margin-right:70px;
-    transform: rotate(180deg);
-
-    /* visibility: hidden; */
-
-}
-
-.moveToRight{
-    margin-left:70px
-}
-
-    
 `
 
 

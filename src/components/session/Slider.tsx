@@ -1,12 +1,13 @@
 import Card from '@archiving/Card';
 import React, {useState} from 'react';
 import styled from 'styled-components';
+import sessionData from './sessionData.json'
+import { SessionsArrayType } from '@@types/request';
 
-type SliderProps = {
+type  SliderProps = {
     translateVal: number;
-    images: { pic: string; id: number, session:number }[];
-    moveRight: () => void;
-    moveLeft: () => void;
+    images: { id: number; title: string, category:string, thumbnail:string}[];
+    trackNum: number,
 };
 
 type ImgBoxProps = {
@@ -14,30 +15,28 @@ type ImgBoxProps = {
 };
 
 
-const Slider: React.FC<SliderProps> = ({translateVal, images, moveRight, moveLeft}) => {
 
-    const clickRight = (e: React.MouseEvent<HTMLElement, MouseEvent>): void => {
-        moveRight();
-    };
-    
-    const clickLeft = (e: React.MouseEvent<HTMLElement, MouseEvent>): void => {
-        moveLeft();
-    };
+const Slider: React.FC<SliderProps> = ({translateVal, images, trackNum}) => {
+
+    const pm = sessionData[0];
+    const design = sessionData[1];
+    const frontend = sessionData[2];
+    const backend = sessionData[3];
 
     return (
         <StWrapper>
             <StImageBox 
             translateVal={translateVal !== 0 ? translateVal : null}>
-                
-                {images.map((picture, idx)=>{
+
+                {images.map((data)=>{
                     return(
                         <Card
-                        key={picture.id}
-                        id= {picture.id}
+                        key={data.id}
+                        id= {data.id}
                         link={'/'}
-                        thumbnail={picture.pic}
-                        title='첫번째 세션'
-                        category={`${picture.session}번째 세션`} />
+                        thumbnail={data.thumbnail}
+                        title={data.title}
+                        category={`${data.id}번째 세션`} />
 
                     )
                     
