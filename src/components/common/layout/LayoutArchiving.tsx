@@ -1,4 +1,5 @@
 import Footer from '@common/footer/Footer';
+import MobileNavBar from '@common/header/MobileNavBar';
 import NavBar from '@common/header/NavBar';
 import { BackgroundColor } from '@utils/constant/color';
 import { ReactElement } from 'react';
@@ -9,6 +10,7 @@ const LayoutArchiving = ({ children }: { children: ReactElement; }) => {
     <>
       <PageContainer>
         <NavBar />
+        <MobileNavBar />
         <main>{children}</main>
       </PageContainer>
       <Footer isLandingLayout={false} />

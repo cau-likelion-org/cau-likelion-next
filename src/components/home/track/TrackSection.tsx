@@ -21,7 +21,8 @@ const TrackSection = () => {
     <FadeInComponent>
       <Wrapper>
         <TitleText>트랙 소개</TitleText>
-        <Text>멋사에서는 트랙을 나눠 각 트랙이 자신의 역량을 키우는 것을 돕습니다? 화이팅해서 어쩌구 저쩌구</Text>
+        <Text>기획, 디자인, 프론트엔드, 백엔드 트랙으로 나뉘어 개별 세션, 스터디가 진행됩니다.</Text>
+        <Text>각 트랙의 세부 활동에 대해 알아볼까요?</Text>
         <TrackWrapper>
           <CenterWrapper>
             <ButtonsWrapper>
@@ -52,12 +53,16 @@ const TrackSection = () => {
 export default TrackSection;
 
 const Wrapper = styled.div`
+  padding-top: 2rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
-  min-height: 100vh;
-  scroll-snap-align: start;
+  @media(min-width: 900px) {
+    scroll-snap-align: start;
+    min-height: 100vh;
+    height: 100%;
+  }
 `;
 
 const TitleText = styled.div`
@@ -69,29 +74,34 @@ const TitleText = styled.div`
   font-weight: 900;
   font-size: 3.7rem;
   width: 100%;
-  line-height: 76.51px;
   text-align: center;
   margin-left: 15px;
   margin-right: 15px;
+  margin-bottom: 1.5rem;
 `;
 
 const Text = styled.div`
   font-family: 'Pretendard';
   font-weight: 500;
-  font-size: 17px;
+  line-height: 2.5rem;;
+  font-size: 1.7rem;
+  padding: 0.8rem 0;
   text-align: center;
-  margin-top: 23px;
-  margin-bottom: 70px;
 `;
 const TrackWrapper = styled.div`
   width: 100%;
+  margin-top: 2rem;
 `;
 
 const ButtonsWrapper = styled.div`
   display: flex;
   justify-content: space-between;
-  width: 70%;
-  gap: 30px;
+  @media(max-width: 900px){
+    width: 90%;
+    justify-content: space-around;
+  }
+  width: 80%;
+  gap: 3rem;
 `;
 const CenterWrapper = styled.div`
   display: flex;

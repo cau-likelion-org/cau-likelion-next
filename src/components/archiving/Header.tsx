@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { GreyScale } from '@utils/constant/color';
-const Header = ({ pageName, introduce }: { pageName: string; introduce: string }) => {
+const Header = ({ pageName, introduce }: { pageName: string; introduce: string; }) => {
   return (
     <Wrapper>
       <Category>아카이빙 &gt; {pageName}</Category>
@@ -17,7 +17,6 @@ const Category = styled.div`
   font-style: normal;
   font-weight: 400;
   font-size: 21px;
-  line-height: 153.02%;
   @media (max-width: 1550px) {
     font-size: 1.5rem;
   }
@@ -27,7 +26,6 @@ const Title = styled.div`
   font-style: normal;
   font-weight: 900;
   font-size: 4rem;
-  line-height: 100%;
   @media (max-width: 1550px) {
     font-size: 2.3rem;
   }
