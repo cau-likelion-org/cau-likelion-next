@@ -7,9 +7,8 @@ import PhotoCard from './component/PhotoCard';
 import archiving from '@image/활동기록보러가기.png';
 import IntroLion from '@image/소개_인사하는 사자.gif';
 import FadeInComponent from '@home/common/FadeInComponent';
-import { Variants } from 'framer-motion';
 
-const IntroduceSection = ({ innerRef }: { innerRef: MutableRefObject<null> }) => {
+const IntroduceSection = ({ innerRef }: { innerRef: MutableRefObject<null>; }) => {
   return (
     <FadeInComponent>
       <Wrapper ref={innerRef}>
@@ -24,9 +23,10 @@ const IntroduceSection = ({ innerRef }: { innerRef: MutableRefObject<null> }) =>
             alt="소개하는 사자"
           />
         </ImageWrapper>
-        <TitleText>중앙대 멋사를 소개합니다!</TitleText>
-        <SubText>중앙대학교 멋쟁이 사자처럼은 테크 기반의 아이디어를 실현하기 위해</SubText>
-        <SubText>다양한 분야의 중앙인이 모였습니다.</SubText>
+        <TitleText>중앙대학교 멋사를 소개합니다!</TitleText>
+        <SubText>중앙대학교 멋쟁이사자처럼은 중앙대 학생들로 이루어진 IT 창업 동아리입니다.</SubText>
+        <SubText>테크 기반의 아이디어를 실현하기 위해 기획, 디자인, 개발 트랙 간의 끊임없는 소통을 추구하며</SubText>
+        <SubText>다양한 프로젝트 활동을 통해 기술적 성장을 도모하고 협업 역량을 끌어올립니다.</SubText>
         <PhotoCardWrapper>
           <PhotoCard title={'정기세션 모아보기'} subtitle={'정기세션'} thumbnail={archiving.src} routing={'/session'} />
           <PhotoCard title={'활동기록 보러가기'} subtitle={'활동기록'} thumbnail={archiving.src} routing={'/gallery'} />
@@ -43,8 +43,12 @@ const Wrapper = styled.div`
   flex-direction: column;
   align-items: center;
   width: 100%;
-  scroll-snap-align: start;
-  min-height: 100vh;
+  margin-top: 1.5rem;
+  @media(min-width: 900px){
+    scroll-snap-align: start;
+    min-height: 100vh;
+    height: 100%;
+  }
 `;
 
 const ImageWrapper = styled.div`
@@ -68,7 +72,10 @@ const PhotoCardWrapper = styled.div`
   margin: 50px 0;
   @media (max-width: 1200px) {
     flex-direction: column;
-    width: 500px;
+    max-width: 500px;
+  }
+  @media (max-width: 900px) {
+    width: 90%;
   }
 `;
 
@@ -80,7 +87,6 @@ const TitleText = styled.div`
   font-style: normal;
   font-weight: 900;
   font-size: 3rem;
-  line-height: 76.51px;
   text-align: center;
   margin: 14px 0;
   @media (max-width: 1376px) {
@@ -91,7 +97,7 @@ const TitleText = styled.div`
 
 const SubText = styled(TitleText)`
   font-size: 1.7rem;
-  line-height: 40.91px;
   font-weight: 400;
+  line-height: 3rem;
   margin: 0;
 `;

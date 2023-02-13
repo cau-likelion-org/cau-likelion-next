@@ -44,7 +44,9 @@ const Wrapper = styled.div<{ isLandingLayout: boolean; }>`
   justify-content: center;
   gap: 2.5rem;
   position: relative;
-  scroll-snap-align: ${(props) => props.isLandingLayout && 'end'};
+  @media(min-width: 900px){
+    scroll-snap-align: ${(props) => props.isLandingLayout && 'end'};
+  }
 `;
 
 const TitleText = styled.div`
@@ -68,7 +70,6 @@ const CopyrightWrapper = styled.div`
   font-style: normal;
   font-weight: 500;
   font-size: 1.2rem;
-  line-height: 32px;
   text-align: center;
   color: ${GreyScale.default};
 `;

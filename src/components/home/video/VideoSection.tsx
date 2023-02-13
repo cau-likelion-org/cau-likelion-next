@@ -22,8 +22,10 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 70vh;
-  height: 100%;
-  scroll-snap-align: start;
+  @media(min-width:900px){
+    scroll-snap-align: start;
+    min-height: 70vh;
+    height: 100%;
+  }
   justify-content: center;
 `;

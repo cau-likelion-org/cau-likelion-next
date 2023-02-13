@@ -1,22 +1,22 @@
-import { IArchivingData } from '@@types/request';
+import { ArchivingType, IArchivingData } from '@@types/request';
 import { TRACK } from '@utils/constant';
 import React from 'react';
 import styled from 'styled-components';
 import Card from './Card';
 
-const getIndexMessageAndURL = (value: string) => {
-  const number = parseInt(value);
-  if (number < 4) {
-    return ['/session', TRACK[number]];
+const getIndexMessageAndURL = (archivingType: ArchivingType, archivingIndex: number) => {
+
+  if (archivingType == 'session') {
+    return ['/session', TRACK[archivingIndex]];
   }
-  if (number > 2000) {
-    return ['/gallery', `${number}년`];
+  if (archivingType == 'gallery') {
+    return ['/gallery', `${archivingIndex}년`];
   }
-  return ['/project', `${number}기`];
+  return ['/project', `${archivingIndex}기`];
 };
 
-const Archiving = ({ archivingIndex, archivingData }: { archivingIndex: string; archivingData: IArchivingData[] }) => {
-  const [link, title] = getIndexMessageAndURL(archivingIndex);
+const Archiving = ({ archivingType, archivingIndex, archivingData }: { archivingType: ArchivingType; archivingIndex: string; archivingData: IArchivingData[]; }) => {
+  const [link, title] = getIndexMessageAndURL(archivingType, parseInt(archivingIndex));
   return (
     <Wrapper>
       <ArchivingIndex>{title}</ArchivingIndex>
