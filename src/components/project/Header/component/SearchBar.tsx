@@ -31,7 +31,6 @@ const Input = styled.input`
     font-style: normal;
     font-weight: 500;
     font-size: 17px;
-    line-height: 160%;
     color: ${GreyScale.default};
   }
 `;
