@@ -7,5 +7,5 @@ import { v1 } from 'uuid';
 export const accessToken = atom<string>({
     key: `accessToken/${v1()}`,
     // default: cookie.load('accessToken')
-    default: 'asd'
+    default: 'ads'
 });
