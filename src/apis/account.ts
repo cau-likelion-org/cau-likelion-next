@@ -51,8 +51,8 @@ export function postSignUpForm(form: RequestSignUpForm) {
     );
 };
 
-export function putUserProfile(userProfile: UserProfile, accessToken: string) {
-    return axios.put(
+export function patchUserProfile(userProfile: UserProfile, accessToken: string) {
+    return axios.patch(
         `${url}/user`,
         {
             name: userProfile.name,

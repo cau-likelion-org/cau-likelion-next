@@ -10,7 +10,7 @@ import { accessToken } from '@utils/state';
 import React, { useEffect, useState } from 'react';
 import { useMutation } from 'react-query';
 import { useRecoilValue } from 'recoil';
-import { getUserProfile, putUserProfile } from 'src/apis/account';
+import { getUserProfile, patchUserProfile } from 'src/apis/account';
 import useInput from 'src/hooks/useInput';
 import styled from 'styled-components';
 import { HiXMark } from 'react-icons/hi2';
@@ -23,8 +23,8 @@ interface UserEditModalProps {
 
 const UserEditModal = ({ userProfile, isEditModalOn, handleUserEditModal }: UserEditModalProps) => {
     const track = [TRACK_NAME[TRACK.PM], TRACK_NAME[TRACK.DESIGN], TRACK_NAME[TRACK.FRONTEND], TRACK_NAME[TRACK.BACKEND]];
-    const [nameValue, onChangeName, setNameValue] = useInput(userProfile.name);
-    const [generationValue, onChangeGeneration, setGenerationValue] = useInput(String(userProfile.generation), /^[0-9]*$/);
+    const [nameValue, onChangeName] = useInput(userProfile.name);
+    const [generationValue, onChangeGeneration] = useInput(String(userProfile.generation), /^[0-9]*$/);
     const [toggleIsClicked, setToggleIsClicked] = useState(userProfile.isAdmin ? [false, true] : [true, false]);
     const [dropdownValue, setDropdownValue] = useState(track[userProfile.track]);
     const [isFormActivated, setIsFormActivated] = useState(false);
@@ -36,7 +36,7 @@ const UserEditModal = ({ userProfile, isEditModalOn, handleUserEditModal }: User
     }, [nameValue, generationValue, isEditModalOn]);
 
     const editUserProfile = useMutation({
-        mutationFn: ({ userProfile, accessToken }: { userProfile: UserProfile; accessToken: string; }) => putUserProfile(userProfile, accessToken),
+        mutationFn: ({ userProfile, accessToken }: { userProfile: UserProfile; accessToken: string; }) => patchUserProfile(userProfile, accessToken),
         onSuccess: (res) => {
             if (res.status === 200) {
                 () => getUserProfile(tokenState);

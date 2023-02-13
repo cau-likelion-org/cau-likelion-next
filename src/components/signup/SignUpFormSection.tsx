@@ -20,10 +20,10 @@ import ToggleBox from './component/ToggleBox';
 
 const SignUpFormSection = () => {
     const track = [TRACK_NAME[TRACK.PM], TRACK_NAME[TRACK.DESIGN], TRACK_NAME[TRACK.FRONTEND], TRACK_NAME[TRACK.BACKEND]];
-    const [nameValue, onChangeName, setNameValue] = useInput('');
-    const [generationValue, onChangeGeneration, setGenerationValue] = useInput('', /^[0-9]*$/);
-    const [emailValue, onChangeEmail, setEmailValue] = useInput('');
-    const [emailSecretValue, onChangeEmailSecret, setEmailSecretValue] = useInput('');
+    const [nameValue, onChangeName] = useInput('');
+    const [generationValue, onChangeGeneration] = useInput('', /^[0-9]*$/);
+    const [emailValue, onChangeEmail] = useInput('');
+    const [emailSecretValue, onChangeEmailSecret] = useInput('');
     const [toggleIsClicked, setToggleIsClicked] = useState([true, false]);
     const [dropdownValue, setDropdownValue] = useState(track[0]);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
