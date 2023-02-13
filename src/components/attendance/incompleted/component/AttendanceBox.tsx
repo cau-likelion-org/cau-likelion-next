@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { useMutation, useQuery } from 'react-query';
 import styled from 'styled-components';
 
-import { AttendanceData } from '@@types/request';
+import { TodayAttendanceData } from '@@types/request';
 import { Primary } from '@utils/constant/color';
 
 import InputBox from './InputBox';
@@ -14,7 +14,7 @@ const AttendanceBox = () => {
   const router = useRouter();
   const InputRef = useRef<HTMLInputElement>(null);
 
-  const { data, isLoading } = useQuery<AttendanceData>(['attendance'], getAttendance);
+  const { data, isLoading } = useQuery<TodayAttendanceData>(['attendance'], getAttendance);
 
   if (data && data.isComplete) {
     router.push('/attendance/completed');
