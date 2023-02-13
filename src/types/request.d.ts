@@ -34,12 +34,12 @@ interface ResponseData<T> {
   data: T;
 }
 
-export interface AttendanceData {
+export interface TodayAttendanceData {
   name: string;
   track: MemberStackKor;
   isComplete: boolean;
 }
-export type AttendanceListData = Record<MemberStack, string[]>;
+export type TodayAttendanceListData = Record<MemberStack, string[]>;
 
 export interface RequestSignUpForm {
   accessToken: string | string[];
