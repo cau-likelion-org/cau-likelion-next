@@ -1,12 +1,12 @@
 import ProjectIntroduction from './ProjectIntroductionSection';
-import TeamIntroducton from './TeamIntroductonSection';
+import TeamIntroduction from './TeamIntroductionSection';
 import styled from 'styled-components';
 import { IProjectDetail } from '@@types/request';
 
 const DetailMainSection = ({ data }: { data: IProjectDetail }) => {
   return (
     <Wrapper>
-      <TeamIntroducton projectData={data} />
+      <TeamIntroduction projectData={data} />
       <ProjectIntroduction projectData={data} />
     </Wrapper>
   );
