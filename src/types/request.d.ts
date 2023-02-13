@@ -41,12 +41,12 @@ interface ResponseData<T> {
   data: T;
 };
 
-export interface AttendanceData {
+export interface TodayAttendanceData {
   name: string;
   track: MemberStackKor;
   isComplete: boolean;
 }
-export type AttendanceListData = Record<MemberStack, string[]>;
+export type TodayAttendanceListData = Record<MemberStack, string[]>;
 
 export interface RequestSignUpForm {
   accessToken: string | string[];
@@ -54,4 +54,26 @@ export interface RequestSignUpForm {
   generation: number;
   track: number;
   isAdmin: boolean;
+}
+
+export interface LoginResponse {
+  is_active: boolean;
+  accessToken: string;
+}
+
+export interface UserProfile {
+  name: string;
+  track: number;
+  isAdmin: boolean;
+  generation: number;
+}
+
+export interface UserAttendance {
+  name: string; // 이름
+  absence: number;  // 결석
+  truancy: number; // 무단결석
+  tardiness: number; // 지각
+  notSubmitted: number; // 과제 미제출
+  lateSubmitted: number; // 과제 지각 제출
+  totalScore: number; // 총점수
 }
