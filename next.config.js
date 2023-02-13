@@ -19,6 +19,7 @@ const nextConfig = {
         '@signup': path.resolve(__dirname, 'src/components/signup'),
         '@login': path.resolve(__dirname, 'src/components/login'),
         '@attendance': path.resolve(__dirname, 'src/components/attendance'),
+        '@mypage': path.resolve(__dirname, 'src/components/mypage'),
         '@archiving': path.resolve(__dirname, 'src/components/archiving'),
         '@pages': path.resolve(__dirname, 'src/pages'),
         '@styles': path.resolve(__dirname, 'src/styles'),

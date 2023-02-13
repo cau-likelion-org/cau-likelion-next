@@ -24,7 +24,7 @@ const animateVariant = {
   },
 };
 
-const Carousel = ({ images }: { images: string[] }) => {
+const Carousel = ({ images }: { images: string[]; }) => {
   const [index, setIndex] = useState(0);
   useInterval(() => setIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1)), 3000);
 
@@ -53,8 +53,9 @@ const Wrapper = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: 60vw;
+  width: 80vw;
 `;
+
 const CarouselWrapper = styled.div`
   position: relative;
   width: 100%;
