@@ -1,7 +1,7 @@
 import Header from '@archiving/Header';
 import LayoutArchiving from '@common/layout/LayoutArchiving';
-import SearchSection from '@project/Header/SearchSection';
-import ProjectsSection from '@project/Projects/ProjectsSection';
+import SearchSection from '@project/header/SearchSection';
+import ProjectsSection from '@project/projects/ProjectsSection';
 import { InferGetStaticPropsType } from 'next';
 import { ReactElement } from 'react';
 import { getProjects } from 'src/apis/project';

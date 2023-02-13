@@ -2,8 +2,6 @@ import { ArchivingArrayType } from '@@types/request';
 import Header from '@archiving/Header';
 import LayoutArchiving from '@common/layout/LayoutArchiving';
 import GalleryListSection from '@gallery/GalleryListSection';
-import SearchSection from '@project/Header/SearchSection';
-import ProjectsSection from '@project/Projects/ProjectsSection';
 import { Primary } from '@utils/constant/color';
 import { ReactElement } from 'react';
 import { getGalleries } from 'src/apis/gallery';
