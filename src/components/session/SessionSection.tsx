@@ -1,41 +1,21 @@
 import React,{useState} from 'react';
 import styled from 'styled-components';
-import { Primary } from '@utils/constant/color';
-import Link from 'next/link';
 import Track from './Track';
-import { MemberStack, MemberStackKor } from '@@types/request';
-import Card from '@archiving/Card';
 import Slider from './Slider';
 import Arrow from './Arrow';
-import sessionData from './sessionData.json'
 
 type  SessionProps = {
     trackName: string;
-    data: { id: number; title: string, category:string, thumbnail:string}[];
+    trackData: { id: number; title: string, category:string, thumbnail:string}[];
     trackNum: number,
 };
 
 
-
-const SessionSection:React.FC<SessionProps> =({trackName, trackNum, data}) => {
-
-    const images = [
-        { pic: 'https://cau-likelion.s3.ap-northeast-2.amazonaws.com/project-img/9%E1%84%80%E1%85%B5/Rectangle_336-1.png', id: 1, session:1 },
-        { pic: 'https://cau-likelion.s3.ap-northeast-2.amazonaws.com/project-img/9%E1%84%80%E1%85%B5/Rectangle_336-2.png', id: 2, session:2 },
-        { pic: 'https://cau-likelion.s3.ap-northeast-2.amazonaws.com/project-img/9%E1%84%80%E1%85%B5/Rectangle_336-3.png', id: 3, session:3 },
-        { pic: 'https://cau-likelion.s3.ap-northeast-2.amazonaws.com/project-img/9%E1%84%80%E1%85%B5/Rectangle_336-4.png', id: 4, session:4 },
-        { pic: 'https://cau-likelion.s3.ap-northeast-2.amazonaws.com/project-img/9%E1%84%80%E1%85%B5/Rectangle_336-5.png', id: 5, session:5 },
-    ];
-
-    
-
-
-
-
+const SessionSection:React.FC<SessionProps> =({trackName, trackNum, trackData}) => {
     const [translateVal, setTranslateVal] = useState<number>(0);
 
     const moveRight = (): void => {
-        if (translateVal !== 70 * (images.length - 1)) {
+        if (translateVal !== 70 * (trackData.length - 1)) {
             setTranslateVal((prev) => prev + 70);
         } 
         else {setTranslateVal(0);}
@@ -45,7 +25,7 @@ const SessionSection:React.FC<SessionProps> =({trackName, trackNum, data}) => {
         if (translateVal !== 0) {
             setTranslateVal((prev) => prev - 70);
         } 
-        else {setTranslateVal(70 * (images.length - 1));}
+        else {setTranslateVal(70 * (trackData.length - 1));}
     };
 
     const clickRight = (e: React.MouseEvent<HTMLElement, MouseEvent>): void => {
@@ -56,23 +36,8 @@ const SessionSection:React.FC<SessionProps> =({trackName, trackNum, data}) => {
         moveLeft();
     };
 
-    // console.log(typeof trackNum);
-    // console.log(sessionData[0]);
-    // console.log(sessionData['0']);
-    console.log(trackNum);
-
-    const [trackIndex, setTrackIndex] = useState(0);
-
 
     
-
-
-
-
-
-
-    
-
     return (
         <StWrapper>
             <Track track={trackName} />
@@ -83,7 +48,7 @@ const SessionSection:React.FC<SessionProps> =({trackName, trackNum, data}) => {
                 <StSliderWrapper>
                         <Slider
                         translateVal={translateVal}
-                        images={data}
+                        trackData={trackData}
                         trackNum={trackNum}
                         />
                 </StSliderWrapper>
