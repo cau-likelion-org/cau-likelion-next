@@ -14,6 +14,24 @@ export enum TRACK {
   BACKEND,
 }
 
+export enum ATTENDANCE_CATEGORY {
+  ABSENCE,
+  TRUANCY,
+  TARDINESS,
+  NOTSUBMITTED,
+  LATESUBMITTED,
+  TOTALSCORE,
+}
+
+export const ATTENDANCE_CATEGORY_NAME: { [key: number]: string } = {
+  [ATTENDANCE_CATEGORY.ABSENCE]: '결석',
+  [ATTENDANCE_CATEGORY.TRUANCY]: '무단결석',
+  [ATTENDANCE_CATEGORY.TARDINESS]: '지각',
+  [ATTENDANCE_CATEGORY.NOTSUBMITTED]: '과제 미제출',
+  [ATTENDANCE_CATEGORY.LATESUBMITTED]: '과제 지각제출',
+  [ATTENDANCE_CATEGORY.TOTALSCORE]: '총점',
+};
+
 export enum ACTIVITY {
   SESSION,
   IDEATHON,
@@ -21,13 +39,6 @@ export enum ACTIVITY {
   CAUTHON,
   STUDY,
 }
-
-export const TRACK_INDEX: { [key: string]: number } = {
-  기획: TRACK.PM,
-  디자인: TRACK.DESIGN,
-  프론트엔드: TRACK.FRONTEND,
-  백엔드: TRACK.BACKEND,
-};
 
 export enum DEV_STACK {
   React,
@@ -38,6 +49,13 @@ export enum DEV_STACK {
   Django,
   //변동 가능
 }
+
+export const TRACK_INDEX: { [key: string]: number } = {
+  기획: TRACK.PM,
+  디자인: TRACK.DESIGN,
+  프론트엔드: TRACK.FRONTEND,
+  백엔드: TRACK.BACKEND,
+};
 
 export const TRACK_NAME: { [key: number]: string } = {
   [TRACK.PM]: '기획',
