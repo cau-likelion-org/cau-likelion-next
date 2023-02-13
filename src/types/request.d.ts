@@ -19,7 +19,7 @@ export interface IArchivingData {
   description?: string;
 }
 
-interface IProjectDetail extends IArchivingData {
+export interface IProjectDetail extends IArchivingData {
   subtitle: string;
   team_name: string;
   team_member: Record<MemberStack, string[]>;
