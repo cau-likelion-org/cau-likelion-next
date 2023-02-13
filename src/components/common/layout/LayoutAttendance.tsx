@@ -5,12 +5,14 @@ import NavBar from '@common/header/NavBar';
 import Footer from '@common/footer/Footer';
 
 import Lion from '@image/background.png';
+import MobileNavBar from '@common/header/MobileNavBar';
 
 export default function LayoutAttendance({ children }: { children: ReactElement; }) {
   return (
     <>
       <PageContainer>
         <NavBar />
+        <MobileNavBar />
         <main>{children}</main>
         <Footer isLandingLayout={false} />
       </PageContainer>

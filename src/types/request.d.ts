@@ -3,6 +3,7 @@ import { useQueries } from 'react-query';
 export type MemberStack = 'pm' | 'frontend' | 'backend' | 'design';
 export type MemberStackKor = '기획' | '프론트엔드' | '백엔드' | '디자인';
 export type ShareURL = 'github' | 'youtube' | 'web';
+export type ArchivingType = 'gallery' | 'session' | 'project';
 
 export interface IShareURL {
   type: ShareURL;
@@ -17,20 +18,28 @@ export interface IArchivingData {
   dev_stack?: number[];
   description?: string;
 }
-interface IProjectDetail extends IArchivingData {
+
+export interface IProjectDetail extends IArchivingData {
   subtitle: string;
   team_name: string;
   team_member: Record<MemberStack, string[]>;
   date: string;
   link: IShareURL[];
+  generation: number;
+  thumbnail: string[];
 }
 
-export type ProjectsArrayType = Record<string, IArchivingData[]>;
+export interface IGalleryDetail extends IArchivingData {
+  description: string;
+  thumbnail: string[];
+}
+
+export type ArchivingArrayType = Record<string, IArchivingData[]>;
 
 interface ResponseData<T> {
   message: string;
   data: T;
-}
+};
 
 export interface AttendanceData {
   name: string;
