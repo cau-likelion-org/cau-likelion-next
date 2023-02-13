@@ -1,0 +1,36 @@
+{
+  "id": 0,
+  "title": "호미",
+  "dev_stack": [0, 1, 2, 4, 14, 15],
+  "subtitle": "호미는 말입니다.",
+  "thumbnail": [
+    "https://cau-likelion.s3.ap-northeast-2.amazonaws.com/project-img/9%E1%84%80%E1%85%B5/Rectangle_336-1.png",
+    "https://cau-likelion.s3.ap-northeast-2.amazonaws.com/project-img/9%E1%84%80%E1%85%B5/Rectangle_336-2.png",
+    "https://cau-likelion.s3.ap-northeast-2.amazonaws.com/project-img/9%E1%84%80%E1%85%B5/Rectangle_336-3.png"
+  ],
+  "generation": 10,
+  "team_name": "항정살",
+  "team_member": {
+    "pm": ["이서현", "강민지"],
+    "frontend": ["이의제", "이동길"],
+    "backend": ["김원표", "이수은", "고하영"],
+    "design": ["김원표", "변주현"]
+  },
+  "date": "2022.10.05~2022.11.15",
+  "description": "호미는 말입니다 조금 더 긴 버전",
+  "link": [
+    {
+      "type": "github",
+      "src": "https://www.github.com/hangjeongsal"
+    },
+    {
+      "type": "youtube",
+      "src": "https://youtube.com/어쩌고"
+    },
+    {
+      "type": "web",
+      "src": "https://hangjeonsal.co.kr"
+    }
+  ],
+  "category": "중커톤"
+}
