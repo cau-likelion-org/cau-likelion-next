@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import Image, { StaticImageData } from 'next/image';
+import { useState } from 'react';
+import Image from 'next/image';
 import styled from 'styled-components';
 import { AnimatePresence, motion, PanInfo } from 'framer-motion';
 import { useInterval } from 'src/hooks/useInterval';
