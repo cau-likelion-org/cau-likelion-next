@@ -1,14 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
-import Link from 'next/link'
 import { Primary } from '@utils/constant/color';
-import { MemberStack, MemberStackKor } from '@@types/request';
 import {useState} from 'react';
 import Card from '@archiving/Card';
 import Image from 'next/image';
 import close from '@image/Frame 916.png';
 import more from '@image/Vector 18.png';
-import UploadButton from './UploadButton';
 import {useBodyScrollLock} from './scrollBlock'
 
 type  TrackProps = {
@@ -22,7 +19,7 @@ type ShowAllProps = {
 
 
 const Track: React.FC<TrackProps> = ({track, trackData}) => {
-    const [modal, setModal] = useState(true);
+    const [modal, setModal] = useState(false);
     const [showAll, setShowAll]= useState(false);
 
     const {lockScroll, openScroll} = useBodyScrollLock();
@@ -52,9 +49,10 @@ const Track: React.FC<TrackProps> = ({track, trackData}) => {
             <StShowAll onClick={handleClick}>전체보기 &gt;</StShowAll>
         </StWrapper>
 
-        {modal ?  
-        <ModalBGWrapper>
-            <ModalWrapper  showAll={showAll} >
+        {modal && (  
+        <StModalLayer>
+            <StModalWrapper  showAll={showAll} >
+
                 <ModalHeader>
                     <ImgWrapper onClick={handleClose}>
                         <Image src={close} width='35px' height='35px' alt='창닫기'/>
@@ -62,11 +60,14 @@ const Track: React.FC<TrackProps> = ({track, trackData}) => {
 
                     <ButtonWrapper>
                         <p>{track}</p>
-                        <UploadButton/>
+                        <UploadButton>+</UploadButton>
                     </ButtonWrapper>
                 </ModalHeader>
 
+
                 <CardWrapper showAll={showAll}>
+
+
                     {trackData.map((data,i)=>{
                         return(
                             <Card
@@ -76,9 +77,8 @@ const Track: React.FC<TrackProps> = ({track, trackData}) => {
                             thumbnail={data.thumbnail}
                             title={data.title}
                             category={`${data.category}차 세션`} />
-                        )
-                        
-                    })}
+                            )
+                        })}
                 </CardWrapper>
 
                 <ModalFooter showAll={showAll}>
@@ -88,8 +88,9 @@ const Track: React.FC<TrackProps> = ({track, trackData}) => {
                 </ModalFooter>
         
             
-            </ModalWrapper>
-        </ModalBGWrapper> : null}
+            </StModalWrapper>
+        </StModalLayer> 
+        )}
     
 
         </>
@@ -113,7 +114,7 @@ color:${Primary};
 font-size: 1.4rem;
 `
 
-const ModalBGWrapper = styled.div`
+const StModalLayer = styled.div`
 display: flex;
 justify-content: center;
 
@@ -131,14 +132,14 @@ z-index: 9999;
 overflow: hidden;
 `
 
-const ModalWrapper = styled.div<ShowAllProps>`
+const StModalWrapper = styled.div<ShowAllProps>`
 display: flex;
 flex-direction: column;
 align-items: center;
 
 top: 50%;
 left: 50%;
-width: 68%;
+width: 70%;
 height: ${props=> !props.showAll ? '50rem' : 'auto'};
 
 background: #FFFFFF;
@@ -154,21 +155,14 @@ scrollbar-width: none;
     display: none; 
 } */
 
-@media (min-width: 1920px) {
-    min-height: 100rem;
-}
+//<전체보기> 눌렀을 때 모달창 초기 높이
+@media (min-width: 1920px) {min-height: 100rem;}
 
-@media (min-width: 1124px) and (max-width: 1919px) {
-    min-height: 80rem;
-}
+@media (min-width: 1124px) and (max-width: 1919px) {min-height: 80rem;}
 
-@media (min-width: 766px) and (max-width: 1123px) {
-    min-height: 50rem;
-}
+@media (min-width: 766px) and (max-width: 1123px) {min-height: 60rem;}
 
-@media (min-width: 360px) and (max-width: 765px) {
-    min-height: 30rem;
-}
+@media (min-width: 360px) and (max-width: 765px) {min-height: 60rem;}
 
 `
 
@@ -190,30 +184,21 @@ const ButtonWrapper = styled.div`
 display:flex;
 justify-content: space-between;
 align-items: center;
-
 `
 
 
 const CardWrapper = styled.div<ShowAllProps>`
 display: grid;
-display: flex;
-flex-wrap: wrap;
 
-justify-content: center;
-justify-content: space-evenly;
-width: 90%;
+width: 100%;
 background-color: white;
+gap: 20px;
 
-border: green 2px solid;
-
-
-
-
-/* height: ${props=> !props.showAll ? '80rem' : '180rem'}; */
 overflow-y: ${props=> !props.showAll ? 'hidden' : 'visible'};
 
 -ms-overflow-style: none; 
 scrollbar-width: none;
+
 ::-webkit-scrollbar {
     display: none; 
 }
@@ -225,30 +210,44 @@ scrollbar-width: none;
 }
 
 @media (min-width: 1124px) and (max-width: 1919px) {
-    width: 80%;
+    width: 90%;
     grid-template-columns: 1fr 1fr 1fr;
     gap: 20px;
 }
 
 @media (min-width: 766px) and (max-width: 1123px) {
     width: 70%;
-    grid-template-columns: 1fr;
-    gap: 20px;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
 }
 
 
 @media (min-width: 360px) and (max-width: 765px) {
     display: flex;
-    /* height: ${props=> !props.showAll ? '30rem' : '100rem'}; */
-    gap: 20px;
+    flex-direction: column;
+    gap: 5px;
     align-items: center;
-    justify-content: center;
+    /* justify-content: center; */
 }
 
 `
 
 const ModalFooter = styled.div<ShowAllProps>`
 margin: 2rem 0;
-
 visibility: ${props=> !props.showAll ? 'visbile' : 'hidden'};
 `
+
+const UploadButton = styled.button`
+border: none;
+display: flex;
+align-items: center;
+justify-content: center;
+position: relative;
+width: 38px;
+height: 38px;
+border-radius: 50%;
+font-size: 30px;
+color: white;
+background-color: ${Primary.default};
+margin-left: 27px;
+`;
