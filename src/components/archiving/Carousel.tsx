@@ -5,35 +5,8 @@ import { AnimatePresence, motion, PanInfo } from 'framer-motion';
 import { useInterval } from 'src/hooks/useInterval';
 import useSlider from 'src/hooks/useSlider';
 
-const animateVariant = {
-  initial: (direction: number) => {
-    return {
-      x: direction > 0 ? 1000 : -1000,
-      transition: {
-        type: 'Tween',
-        duration: 0.1,
-      },
-    };
-  },
-  animate: {
-    x: 0,
-    transition: {
-      type: 'Tween',
-      duration: 0.1,
-    },
-  },
-  exit: (direction: number) => {
-    return {
-      x: direction < 0 ? 1000 : -1000,
-      transition: {
-        type: 'Tween',
-        duration: 0.1,
-      },
-    };
-  },
-};
 const Carousel = ({ images }: { images: string[] }) => {
-  const [index, direction, increase, decrease] = useSlider<string>(images);
+  const [index, direction, increase, decrease, animateVariant] = useSlider<string>(images, 0.1, 1000, false, 'tween');
   const [timerBool, setTimerBool] = useState(true);
   const [dragStartX, setdragStartX] = useState(0);
   useInterval(increase, 3000, timerBool);
@@ -51,7 +24,7 @@ const Carousel = ({ images }: { images: string[] }) => {
             key={index}
             variants={animateVariant}
             initial="initial"
-            animate="animate"
+            animate="visible"
             exit="exit"
             drag="x"
             onDragStart={(_, info) => {
