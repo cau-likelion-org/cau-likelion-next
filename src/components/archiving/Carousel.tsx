@@ -1,39 +1,40 @@
 import { useState } from 'react';
-import Image, { StaticImageData } from 'next/image';
+import Image from 'next/image';
 import styled from 'styled-components';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion, PanInfo } from 'framer-motion';
 import { useInterval } from 'src/hooks/useInterval';
+import useSlider from 'src/hooks/useSlider';
 
-const animateVariant = {
-  initial: {
-    x: 1000,
-  },
-  animate: {
-    x: 0,
-    transition: {
-      type: 'Tween',
-      duration: 1,
-    },
-  },
-  exit: {
-    x: -1000,
-    transition: {
-      type: 'Tween',
-      duration: 1,
-    },
-  },
-};
+const Carousel = ({ images }: { images: string[] }) => {
+  const [index, direction, increase, decrease, animateVariant] = useSlider<string>(images, 0.1, 1000, false, 'tween');
+  const [timerBool, setTimerBool] = useState(true);
+  const [dragStartX, setdragStartX] = useState(0);
+  useInterval(increase, 3000, timerBool);
 
-const Carousel = ({ images }: { images: string[]; }) => {
-  const [index, setIndex] = useState(0);
-  useInterval(() => setIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1)), 3000);
-
+  const handleScroll = (_: any, info: PanInfo) => {
+    setTimerBool((prev) => (prev = true));
+    if (dragStartX > info.point.x) increase();
+    else decrease();
+  };
   return (
     <Wrapper>
       <CarouselWrapper>
-        <AnimatePresence initial={false}>
-          <ImageWrapper key={index} variants={animateVariant} initial="initial" animate="animate" exit="exit">
-            <Image src={images[index]} alt="img" layout="fill" objectFit="cover" objectPosition="center" />
+        <AnimatePresence initial={false} custom={direction}>
+          <ImageWrapper
+            key={index}
+            variants={animateVariant}
+            initial="initial"
+            animate="visible"
+            exit="exit"
+            drag="x"
+            onDragStart={(_, info) => {
+              setTimerBool((prev) => (prev = false));
+              setdragStartX((prev) => (prev = info.point.x));
+            }}
+            onDragEnd={handleScroll}
+            custom={direction}
+          >
+            <CustomImage src={images[index]} alt="img" layout="fill" objectFit="cover" objectPosition="center" />
           </ImageWrapper>
         </AnimatePresence>
       </CarouselWrapper>
@@ -56,6 +57,10 @@ const Wrapper = styled.div`
   width: 80vw;
 `;
 
+const CustomImage = styled(Image)`
+  cursor: pointer;
+  -webkit-user-drag: none;
+`;
 const CarouselWrapper = styled.div`
   position: relative;
   width: 100%;
