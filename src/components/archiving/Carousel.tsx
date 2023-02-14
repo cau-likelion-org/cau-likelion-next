@@ -3,6 +3,7 @@ import Image, { StaticImageData } from 'next/image';
 import styled from 'styled-components';
 import { AnimatePresence, motion, PanInfo } from 'framer-motion';
 import { useInterval } from 'src/hooks/useInterval';
+import useSlider from 'src/hooks/useSlider';
 
 const animateVariant = {
   initial: (direction: number) => {
@@ -32,19 +33,15 @@ const animateVariant = {
   },
 };
 const Carousel = ({ images }: { images: string[] }) => {
-  const [[index, direction], setIndex] = useState([0, 0]);
+  const [index, direction, increase, decrease] = useSlider<string>(images);
   const [timerBool, setTimerBool] = useState(true);
   const [dragStartX, setdragStartX] = useState(0);
-  useInterval(() => IndexControl(true), 3000, timerBool);
-
-  const IndexControl = (direction: boolean) => {
-    if (direction) setIndex((prev) => (prev[0] > images.length - 2 ? [0, +1] : [index + 1, +1]));
-    else setIndex((prev) => (prev[0] < 1 ? [images.length - 1, -1] : [index - 1, -1]));
-  };
+  useInterval(increase, 3000, timerBool);
 
   const handleScroll = (_: any, info: PanInfo) => {
     setTimerBool((prev) => (prev = true));
-    IndexControl(dragStartX > info.point.x);
+    if (dragStartX > info.point.x) increase();
+    else decrease();
   };
   return (
     <Wrapper>
