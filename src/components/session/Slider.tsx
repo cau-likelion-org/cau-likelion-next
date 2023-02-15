@@ -39,7 +39,7 @@ const Slider: React.FC<SliderProps> = ({translateVal, trackData, trackNum, clone
                 transition={transition}>
                 
             
-                {cloneData.map(
+                {cloneData.slice(0).reverse().map(
                     (data,i)=>{
                     return(
                         <>

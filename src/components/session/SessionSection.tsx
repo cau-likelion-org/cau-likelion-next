@@ -55,7 +55,7 @@ const SessionSection:React.FC<SessionProps> =({trackName, trackNum, trackData}) 
                 index++;
             }
     
-            return[...images, ...addLast];
+            return[...addFront, ...images];
         }
     
         const transitionTime = 500;
@@ -78,8 +78,6 @@ const SessionSection:React.FC<SessionProps> =({trackName, trackNum, trackData}) 
             handleSlide(currentIdx+direction);
         }
     
-
-
     return (
         <>
 
