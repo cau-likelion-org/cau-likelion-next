@@ -4,11 +4,12 @@ import Image from 'next/image';
 
 import PhotoCard from './component/PhotoCard';
 
-import archiving from '@image/활동기록보러가기.png';
+import session from '@image/활동기록보러가기.png';
+import archiving from '@image/session.png';
 import IntroLion from '@image/소개_인사하는 사자.gif';
 import FadeInComponent from '@home/common/FadeInComponent';
 
-const IntroduceSection = ({ innerRef }: { innerRef: MutableRefObject<null>; }) => {
+const IntroduceSection = ({ innerRef }: { innerRef: MutableRefObject<null> }) => {
   return (
     <FadeInComponent>
       <Wrapper ref={innerRef}>
@@ -28,7 +29,7 @@ const IntroduceSection = ({ innerRef }: { innerRef: MutableRefObject<null>; }) =
         <SubText>테크 기반의 아이디어를 실현하기 위해 기획, 디자인, 개발 트랙 간의 끊임없는 소통을 추구하며</SubText>
         <SubText>다양한 프로젝트 활동을 통해 기술적 성장을 도모하고 협업 역량을 끌어올립니다.</SubText>
         <PhotoCardWrapper>
-          <PhotoCard title={'정기세션 모아보기'} subtitle={'정기세션'} thumbnail={archiving.src} routing={'/session'} />
+          <PhotoCard title={'정기세션 모아보기'} subtitle={'정기세션'} thumbnail={session.src} routing={'/session'} />
           <PhotoCard title={'활동기록 보러가기'} subtitle={'활동기록'} thumbnail={archiving.src} routing={'/gallery'} />
         </PhotoCardWrapper>
       </Wrapper>
@@ -44,7 +45,7 @@ const Wrapper = styled.div`
   align-items: center;
   width: 100%;
   margin-top: 1.5rem;
-  @media(min-width: 900px){
+  @media (min-width: 900px) {
     scroll-snap-align: start;
     min-height: 100vh;
     height: 100%;
