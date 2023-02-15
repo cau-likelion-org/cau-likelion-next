@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { Primary } from '@utils/constant/color';
 import {useState} from 'react';
 
-import {useBodyScrollLock} from './scrollBlock'
+import {useBodyScrollLock} from './utils/scrollBlock'
 import SessionModal from './SessionModal';
 
 type  TrackProps = {

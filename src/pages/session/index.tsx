@@ -5,7 +5,7 @@ import SessionSection from '@session/SessionSection';
 import { ReactElement } from 'react';
 import { TRACK_NAME } from '@utils/constant';
 
-import sessionData from '@session/sessionData.json'
+import sessionData from '@session/data/sessionData.json'
 
 const SessionList = () => {
     return (
