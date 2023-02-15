@@ -58,11 +58,6 @@ const Wrapper = styled.div`
   flex-direction: column;
   align-items: center;
   width: 100%;
-  @media(min-width: 900px) {
-    scroll-snap-align: start;
-    min-height: 100vh;
-    height: 100%;
-  }
 `;
 
 const TitleText = styled.div`
@@ -83,7 +78,7 @@ const TitleText = styled.div`
 const Text = styled.div`
   font-family: 'Pretendard';
   font-weight: 500;
-  line-height: 2.5rem;;
+  line-height: 2.5rem;
   font-size: 1.7rem;
   padding: 0.8rem 0;
   text-align: center;
@@ -96,7 +91,7 @@ const TrackWrapper = styled.div`
 const ButtonsWrapper = styled.div`
   display: flex;
   justify-content: space-between;
-  @media(max-width: 900px){
+  @media (max-width: 900px) {
     width: 90%;
     justify-content: space-around;
   }

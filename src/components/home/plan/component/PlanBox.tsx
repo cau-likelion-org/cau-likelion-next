@@ -63,7 +63,7 @@ const BoxContainer = styled.div`
   flex-direction: column;
   justify-content: center;
   padding: 78px 102px;
-  @media(max-width: 900px) {
+  @media (max-width: 900px) {
     padding: 3rem;
   }
   position: relative;
