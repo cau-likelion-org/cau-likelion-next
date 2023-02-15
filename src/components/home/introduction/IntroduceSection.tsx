@@ -4,8 +4,8 @@ import Image from 'next/image';
 
 import PhotoCard from './component/PhotoCard';
 
-import session from '@image/활동기록보러가기.png';
-import archiving from '@image/session.png';
+import archiving from '@image/활동기록.png';
+import session from '@image/세션기록.png';
 import IntroLion from '@image/소개_인사하는 사자.gif';
 import FadeInComponent from '@home/common/FadeInComponent';
 
@@ -45,11 +45,6 @@ const Wrapper = styled.div`
   align-items: center;
   width: 100%;
   margin-top: 1.5rem;
-  @media (min-width: 900px) {
-    scroll-snap-align: start;
-    min-height: 100vh;
-    height: 100%;
-  }
 `;
 
 const ImageWrapper = styled.div`
