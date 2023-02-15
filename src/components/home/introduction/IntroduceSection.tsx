@@ -4,11 +4,13 @@ import Image from 'next/image';
 
 import PhotoCard from './component/PhotoCard';
 
-import archiving from '@image/활동기록보러가기.png';
+import archiving from '@image/활동기록.png';
+import session from '@image/세션기록.png';
 import IntroLion from '@image/소개_인사하는 사자.gif';
 import FadeInComponent from '@home/common/FadeInComponent';
-
-const IntroduceSection = ({ innerRef }: { innerRef: MutableRefObject<null>; }) => {
+const text =
+  '중앙대학교 멋쟁이사자처럼은 중앙대 학생들로 이루어진 IT 창업 동아리입니다. \n테크 기반의 아이디어를 실현하기위해 기획, 디자인, 개발 트랙 간의 끊임없는 소통을 추구하며\n다양한 프로젝트 활동을 통해 기술적 성장을 도모하고 협업 역량을 끌어올립니다.';
+const IntroduceSection = ({ innerRef }: { innerRef: MutableRefObject<null> }) => {
   return (
     <FadeInComponent>
       <Wrapper ref={innerRef}>
@@ -24,11 +26,9 @@ const IntroduceSection = ({ innerRef }: { innerRef: MutableRefObject<null>; }) =
           />
         </ImageWrapper>
         <TitleText>중앙대학교 멋사를 소개합니다!</TitleText>
-        <SubText>중앙대학교 멋쟁이사자처럼은 중앙대 학생들로 이루어진 IT 창업 동아리입니다.</SubText>
-        <SubText>테크 기반의 아이디어를 실현하기 위해 기획, 디자인, 개발 트랙 간의 끊임없는 소통을 추구하며</SubText>
-        <SubText>다양한 프로젝트 활동을 통해 기술적 성장을 도모하고 협업 역량을 끌어올립니다.</SubText>
+        <SubText>{text}</SubText>
         <PhotoCardWrapper>
-          <PhotoCard title={'정기세션 모아보기'} subtitle={'정기세션'} thumbnail={archiving.src} routing={'/session'} />
+          <PhotoCard title={'정기세션 모아보기'} subtitle={'정기세션'} thumbnail={session.src} routing={'/session'} />
           <PhotoCard title={'활동기록 보러가기'} subtitle={'활동기록'} thumbnail={archiving.src} routing={'/gallery'} />
         </PhotoCardWrapper>
       </Wrapper>
@@ -43,12 +43,6 @@ const Wrapper = styled.div`
   flex-direction: column;
   align-items: center;
   width: 100%;
-  margin-top: 1.5rem;
-  @media(min-width: 900px){
-    scroll-snap-align: start;
-    min-height: 100vh;
-    height: 100%;
-  }
 `;
 
 const ImageWrapper = styled.div`
@@ -100,4 +94,10 @@ const SubText = styled(TitleText)`
   font-weight: 400;
   line-height: 3rem;
   margin: 0;
+  white-space: pre-wrap;
+  text-align: center;
+  @media (max-width: 900px) {
+    white-space: normal;
+    text-align: left;
+  }
 `;

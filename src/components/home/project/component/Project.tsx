@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion, Variants } from 'framer-motion';
 import styled from 'styled-components';
 import Image from 'next/image';
 
@@ -6,40 +6,19 @@ import { GreyScale } from '@utils/constant/color';
 
 import { IProjectInner } from './ProjectSlider';
 
-//애니메이션 효과 객체
-const AnimationVariant = {
-  initial: (direction: number) => {
-    return {
-      x: direction > 0 ? 1000 : -1000,
-      opacity: 0,
-      transition: {
-        duration: 0.5,
-      },
-    };
-  },
-  visible: {
-    x: 0,
-    opacity: 1,
-    transition: {
-      duration: 0.5,
-    },
-  },
-  exit: (direction: number) => {
-    return {
-      opacity: 0,
-      x: direction < 0 ? 1000 : -1000,
-      transition: {
-        duration: 0.5,
-      },
-    };
-  },
-};
-
-const Project = ({ ProjectData, direction }: { ProjectData: IProjectInner; direction: number; }) => {
+const Project = ({
+  ProjectData,
+  direction,
+  animationVaraints,
+}: {
+  ProjectData: IProjectInner;
+  direction: number;
+  animationVaraints: Variants;
+}) => {
   return (
     <AnimatePresence initial={false} custom={direction}>
       <ProjectWrapper
-        variants={AnimationVariant}
+        variants={animationVaraints}
         initial="initial"
         animate="visible"
         exit="exit"
@@ -109,7 +88,7 @@ const ProjectTitle = styled.div`
   font-family: 'Pretendard';
   font-weight: 700;
   font-size: 3rem;
-  @media(max-width: 900px){
+  @media (max-width: 900px) {
     font-size: 2rem;
   }
 `;
@@ -119,7 +98,7 @@ const ProjectText = styled.div`
   font-weight: 500;
   font-size: 1.7rem;
   margin: 15px 0px;
-  @media(max-width: 900px){
+  @media (max-width: 900px) {
     font-size: 1rem;
   }
 `;
@@ -129,7 +108,6 @@ const TextWrapper = styled.div`
   flex-direction: column;
   justify-content: space-evenly;
   height: 100%;
-  
 `;
 const TeamName = styled.div`
   color: ${GreyScale.default};
@@ -138,6 +116,9 @@ const TeamName = styled.div`
   font-weight: 500;
   font-size: 14px;
   margin-right: 15px;
+  @media (max-width: 900px) {
+    font-size: 10px;
+  }
 `;
 const ProjectType = styled(TeamName)``;
 const TeamInfo = styled.div`
