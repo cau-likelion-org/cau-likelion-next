@@ -24,9 +24,9 @@ const Circle = styled.div`
   background: #1a21bd;
   box-shadow: 0px 0px 15px #1b00fd;
   z-index: -1;
-  @media(max-width:900px){
-    width: 18px;
-    height: 18px;
+  @media (max-width: 900px) {
+    width: 13px;
+    height: 13px;
   }
 `;
 
