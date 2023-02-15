@@ -23,6 +23,8 @@ const SessionModal:React.FC<ModalProps> = ({trackData, trackName, handleClose}) 
 
     const handleMore = (e: React.MouseEvent<HTMLElement, MouseEvent>): void  =>{
         setShowAll(true);
+
+        console.log(showAll);
     
     }
 
@@ -65,6 +67,7 @@ const SessionModal:React.FC<ModalProps> = ({trackData, trackName, handleClose}) 
     
         
         </StModalWrapper>
+
     </StModalLayer> 
     );
 };
@@ -105,13 +108,13 @@ border-radius: 24px;
 overflow-y: ${props=> !props.showAll ? 'hidden' : 'scroll'};
 
 //<전체보기> 눌렀을 때 모달창 초기 높이, 너비
-@media (min-width: 1920px) {min-height: 103rem; width: 150rem; }
+@media (min-width: 1920px) {min-height: 100rem; width: 150rem; }
 
-@media (min-width: 1661px) and (max-width: 1919px) {min-height: 103rem; width:120rem;}
+@media (min-width: 1661px) and (max-width: 1919px) {min-height: 100rem; width:120rem;}
 
-@media (min-width: 1220px) and (max-width: 1660px) {min-height: 103rem; width: 100rem;}
+@media (min-width: 1220px) and (max-width: 1660px) {min-height: 100rem; width: 100rem;}
 
-@media (min-width: 870px) and (max-width: 1221px) {min-height: 103rem; width: 80rem;}
+@media (min-width: 870px) and (max-width: 1221px) {min-height: 100rem; width: 80rem;}
 
 @media (max-width: 871px) {min-height: 60rem; width: 50rem; height: ${props=> !props.showAll ? '75rem' : 'auto'};}
 

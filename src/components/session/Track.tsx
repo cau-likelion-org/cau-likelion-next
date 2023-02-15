@@ -21,6 +21,7 @@ const Track: React.FC<TrackProps> = ({track, trackData}) => {
     const handleClick = (e: React.MouseEvent<HTMLElement, MouseEvent>): void  =>{
         setModal(!modal);
         lockScroll();
+
     }
 
     const handleClose = (e: React.MouseEvent<HTMLElement, MouseEvent>): void  =>{
