@@ -19,7 +19,7 @@ const fadeInAnimation: Variants = {
 const ProjectSection = () => {
   return (
     <FadeInComponent variants={fadeInAnimation}>
-      <Wrapper>
+      <>
         <TitleWrapper>
           <Title>각 트랙이 모여 함께 만든 프로젝트</Title>
           <Text>멋쟁이 사자처럼에서 탄생한 서비스들을 소개합니다. </Text>
@@ -28,24 +28,13 @@ const ProjectSection = () => {
         <ButtonWrapper>
           <ProjectButton />
         </ButtonWrapper>
-      </Wrapper>
+      </>
     </FadeInComponent>
   );
 };
 
 export default ProjectSection;
 
-const Wrapper = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  @media(min-width: 900px){
-    scroll-snap-align: start; 
-    height: 100%;
-    min-height: 100vh;
-  }
-`;
 const TitleWrapper = styled.div`
   margin-top: 3.2rem;
   display: flex;
