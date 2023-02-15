@@ -42,10 +42,7 @@ const ProjectSlider = () => {
   );
   return (
     <Wrapper>
-      <Left>
-        <TfiAngleLeft size={30} onClick={increase} />
-        {/* 알수 없는 오류로 Left는 pointer:cursor가 안먹음; */}
-      </Left>
+      <Left size={30} onClick={increase} />
       <RelativeWrapper>
         <Project ProjectData={ProjectData[index]} direction={direction} animationVaraints={animationVariants} />
       </RelativeWrapper>
@@ -71,7 +68,15 @@ const RelativeWrapper = styled.div`
 `;
 const Right = styled(TfiAngleRight)`
   cursor: pointer;
+  @media (max-width: 900px) {
+    width: 15px;
+    height: 15px;
+  }
 `;
-const Left = styled.div`
+const Left = styled(TfiAngleLeft)`
   cursor: pointer;
+  @media (max-width: 900px) {
+    width: 15px;
+    height: 15px;
+  }
 `;
