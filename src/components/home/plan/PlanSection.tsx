@@ -51,4 +51,7 @@ const TitleText = styled.div`
   font-size: 3.7rem;
   text-align: center;
   margin: 15px 0;
+  @media (max-width: 900px) {
+    font-size: 2rem;
+  }
 `;
