@@ -31,7 +31,7 @@ const TrackDescriptionBox = ({ type, title, text }: TrackDescriptionBoxProps) =>
 
 export default TrackDescriptionBox;
 
-const BoxWrapper = styled.div<{ type: string; }>`
+const BoxWrapper = styled.div<{ type: string }>`
   background: #f2f1ff;
   border-radius: 18px;
   padding: 5rem;
@@ -45,10 +45,9 @@ const BoxWrapper = styled.div<{ type: string; }>`
   @media (max-width: 1200px) {
     margin: 0;
   }
-  @media(max-width: 900px) {
+  @media (max-width: 900px) {
     padding: 3rem;
   }
-
 `;
 
 const Text = styled(motion.div)`
@@ -58,6 +57,10 @@ const Text = styled(motion.div)`
   line-height: 3rem;
   color: black;
   font-weight: 500;
+  @media (max-width: 1440px) {
+    font-size: 1.5rem;
+    line-height: 2.5rem;
+  }
   @media (max-width: 900px) {
     font-size: 1.5rem;
     line-height: 2rem;
