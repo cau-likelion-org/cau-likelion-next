@@ -57,6 +57,10 @@ const Text = styled(motion.div)`
   line-height: 3rem;
   color: black;
   font-weight: 500;
+  @media (max-width: 1550px) {
+    font-size: 1.4rem;
+    line-height: 2rem;
+  }
   @media (max-width: 1440px) {
     font-size: 1.5rem;
     line-height: 2.5rem;
