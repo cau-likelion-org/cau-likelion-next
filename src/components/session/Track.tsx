@@ -11,11 +11,6 @@ type  TrackProps = {
     trackData: {id: number; title: string, category:string, thumbnail:string}[];
 };
 
-type ShowAllProps = {
-    showAll:boolean;
-}
-
-
 const Track: React.FC<TrackProps> = ({track, trackData}) => {
     const [modal, setModal] = useState(false);
     const [showAll, setShowAll]= useState(false);
@@ -45,21 +40,12 @@ const Track: React.FC<TrackProps> = ({track, trackData}) => {
         {modal && (  
             <SessionModal 
             trackData={trackData}
-            // showAll={showAll}
             trackName={track}
             handleClose={handleClose}
-            // handleMore={handleMore}
             />
         )}
-
-
-
-    
-
         </>
 
-        
-        
     );
 };
 
@@ -70,9 +56,7 @@ const StWrapper = styled.div`
 display: flex;
 justify-content: space-between;
 align-items: center;
-
 margin: 3rem;
-
 width: 100%;
 
 `

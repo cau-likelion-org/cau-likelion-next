@@ -19,7 +19,6 @@ type ShowAllProps = {
 
 
 const SessionModal:React.FC<ModalProps> = ({trackData, trackName, handleClose}) => {
-
     const [showAll, setShowAll]= useState(false);
 
     const handleMore = (e: React.MouseEvent<HTMLElement, MouseEvent>): void  =>{
@@ -29,6 +28,7 @@ const SessionModal:React.FC<ModalProps> = ({trackData, trackName, handleClose}) 
 
     return (
         <StModalLayer>
+
         <StModalWrapper showAll={showAll} >
 
             <ModalHeader>
@@ -82,13 +82,11 @@ top: 0;
 left: 0;
 bottom: 0;
 right: 0;
-
 padding: 3rem 0 0 0;
 background: rgba(0, 0, 0, 0.3);
-
 z-index: 9999;
-
 overflow: hidden;
+
 `
 
 const StModalWrapper = styled.div<ShowAllProps>`
@@ -98,7 +96,6 @@ align-items: center;
 
 top: 50%;
 left: 50%;
-width: 70%;
 height: ${props=> !props.showAll ? '50rem' : 'auto'};
 
 background: #FFFFFF;
@@ -107,15 +104,16 @@ border-radius: 24px;
 
 overflow-y: ${props=> !props.showAll ? 'hidden' : 'scroll'};
 
+//<전체보기> 눌렀을 때 모달창 초기 높이, 너비
+@media (min-width: 1920px) {min-height: 103rem; width: 150rem; }
 
-//<전체보기> 눌렀을 때 모달창 초기 높이
-@media (min-width: 1920px) {min-height: 100rem;}
+@media (min-width: 1661px) and (max-width: 1919px) {min-height: 103rem; width:120rem;}
 
-@media (min-width: 1124px) and (max-width: 1919px) {min-height: 80rem;}
+@media (min-width: 1220px) and (max-width: 1660px) {min-height: 103rem; width: 100rem;}
 
-@media (min-width: 766px) and (max-width: 1123px) {min-height: 60rem;}
+@media (min-width: 870px) and (max-width: 1221px) {min-height: 103rem; width: 80rem;}
 
-@media (min-width: 360px) and (max-width: 765px) {min-height: 60rem;}
+@media (max-width: 871px) {min-height: 60rem; width: 50rem; height: ${props=> !props.showAll ? '75rem' : 'auto'};}
 
 `
 
@@ -144,47 +142,25 @@ margin: 3rem 0 ;
 
 const CardWrapper = styled.div<ShowAllProps>`
 display: grid;
-
-
-width: 100%;
 background-color: white;
 gap: 20px;
-
-overflow-y: ${props=> !props.showAll ? 'hidden' : 'visible'};
+grid-template-columns: 1fr 1fr 1fr;
 
 -ms-overflow-style: none; 
 scrollbar-width: none;
-
 ::-webkit-scrollbar {
     display: none; 
 }
 
-@media (min-width: 1920px) {
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 20px;
-    
-}
+overflow-y: ${props=> !props.showAll ? 'hidden' : 'visible'};
 
-@media (min-width: 1124px) and (max-width: 1919px) {
-    width: 90%;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 20px;
-}
+@media (min-width: 1920px) {grid-template-columns: 1fr 1fr 1fr; gap: 20px;}
 
-@media (min-width: 766px) and (max-width: 1123px) {
-    width: 70%;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-}
+@media (min-width: 1220px) and (max-width: 1660px) {grid-template-columns: 1fr 1fr; gap: 30px;}
 
+@media (min-width: 870px) and (max-width: 1221px) {grid-template-columns: 1fr 1fr; gap: 30px;;}
 
-@media (min-width: 360px) and (max-width: 765px) {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    align-items: center;
-    justify-content: center;
-}
+@media (min-width: 360px) and (max-width: 871px) {grid-template-columns: 1fr; gap: 30px;}
 
 `
 
