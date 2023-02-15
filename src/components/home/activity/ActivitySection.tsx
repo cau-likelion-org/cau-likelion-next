@@ -8,11 +8,10 @@ import TrackDescriptionBox from '@home/track/component/TrackDescriptionBox';
 import ActivityDescriptionBox from './component/ActivityDescriptionBox';
 import { useState } from 'react';
 import ActivityButton from './component/ActivityButton';
-import activityimg from '@image/활동기록보러가기.png';
+import activityimg from '@image/img.png';
 import { ACTIVITY_DESCRIPTION, ACTIVITY_NAME } from '@utils/constant';
 
 const ActivitySection = () => {
-
   const [isClicked, setIsClicked] = useState([true, false, false, false, false]);
   const activity = isClicked.indexOf(true);
 
@@ -54,7 +53,7 @@ const ActivitySection = () => {
           </CenterWrapper>
           <DescriptionWrapper>
             <ActivityImageWrapper>
-              <Image src={activityimg} width={550} height={380} alt="활동사진" style={{ 'borderRadius': '20px' }} />
+              <Image src={activityimg} width={550} height={380} alt="활동사진" style={{ borderRadius: '20px' }} />
             </ActivityImageWrapper>
             <ActivityDescriptionBox text={ACTIVITY_DESCRIPTION[activity].description} />
           </DescriptionWrapper>
@@ -71,13 +70,7 @@ const Wrapper = styled.div`
   flex-direction: column;
   align-items: center;
   width: 100%;
-  @media(min-width: 900px){
-    scroll-snap-align: start;
-    min-height: 100vh;
-    height: 100%;
-  }
 `;
-
 
 const TitleText = styled.div`
   display: flex;
@@ -93,12 +86,10 @@ const TitleText = styled.div`
     font-size: 3rem;
   }
 
-  @media(max-width: 900px){
+  @media (max-width: 900px) {
     justify-content: center;
   }
 `;
-
-
 
 const ImageWrapper = styled.div`
   position: relative;
@@ -120,7 +111,7 @@ const DescriptionWrapper = styled.div`
   justify-content: center;
   gap: 4rem;
   margin-top: 30px;
-  @media(max-width: 900px){
+  @media (max-width: 900px) {
     flex-direction: column;
     align-items: center;
     gap: 2rem;
@@ -130,7 +121,7 @@ const DescriptionWrapper = styled.div`
 const ButtonsWrapper = styled.div`
   display: flex;
   justify-content: space-between;
-  @media(max-width: 900px){
+  @media (max-width: 900px) {
     width: 100%;
     justify-content: space-around;
   }
@@ -155,4 +146,3 @@ const RowWrapper = styled.div`
   align-items: center;
   gap: 3rem;
 `;
-
