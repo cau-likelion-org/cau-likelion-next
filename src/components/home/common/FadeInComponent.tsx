@@ -35,6 +35,7 @@ const FadeInComponent = ({ children, variants }: { children: ReactElement; varia
 };
 const Absolute = styled(motion.div)`
   width: 100%;
+  height: 100%;
   @media (min-width: 900px) {
     position: absolute;
   }
