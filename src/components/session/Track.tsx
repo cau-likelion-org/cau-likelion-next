@@ -39,7 +39,6 @@ const Track: React.FC<TrackProps> = ({track, trackData}) => {
     const handleMore = (e: React.MouseEvent<HTMLElement, MouseEvent>): void  =>{
         setShowAll(true);
 
-        console.log(showAll);
     }
 
     return (
