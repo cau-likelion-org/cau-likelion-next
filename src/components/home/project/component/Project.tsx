@@ -116,6 +116,9 @@ const TeamName = styled.div`
   font-weight: 500;
   font-size: 14px;
   margin-right: 15px;
+  @media (max-width: 900px) {
+    font-size: 10px;
+  }
 `;
 const ProjectType = styled(TeamName)``;
 const TeamInfo = styled.div`
