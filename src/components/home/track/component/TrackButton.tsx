@@ -17,13 +17,15 @@ const TrackButton = ({ title, isClicked, handleClickTrackButton }: TrackButtonPr
 
 export default TrackButton;
 
-const Button = styled.div<{ isClicked: boolean; }>`
+const Button = styled.div<{ isClicked: boolean }>`
   background-color: ${(props) => (props.isClicked ? Primary.default : GreyScale.light)};
   transition: 0.3s ease;
-  @media(max-width: 900px){
-    flex-basis: 23%;
+  @media (max-width: 900px) {
+    flex-basis: 25%;
     padding: 2rem 1rem;
     border-radius: 20px;
+    height: 35px;
+    font-size: 10px;
   }
   width: 250px;
   height: 68px;
