@@ -4,9 +4,10 @@ import styled from 'styled-components';
 import { Diamond } from '../common/Diamond';
 
 const BorderSection = () => {
+
     return (
         <BorderSectionWrapper className='outline'>
-            <span className='width'></span>
+            <span className='width'  ></span>
             <span className='height'></span>
             <span className='width'></span>
             <span className='height'></span>
@@ -58,7 +59,7 @@ span:nth-child(1) {
     border-bottom-right-radius: 70px;
 
     animation-name: drawLine1;
-    animation-duration: 1s;
+    animation-duration: 0.7s; 
     animation-delay: 0s;
     animation-iteration-count:1;
     animation-fill-mode: forwards;
@@ -102,8 +103,8 @@ span:nth-child(2)::after {
     border-radius: 70px;
 
     animation-name: drawLine2;
-    animation-duration: 1s;
-    animation-delay: 1s;
+    animation-duration: 0.7s;
+    animation-delay: 0.7s;
     animation-iteration-count:1;
     animation-fill-mode: forwards;
 
@@ -151,8 +152,8 @@ span:nth-child(3):after {
     border-radius: 70px;
 
     animation-name: drawLine3;
-    animation-duration: 1s;
-    animation-delay: 2s;
+    animation-duration: 0.7s;
+    animation-delay: 1.4s;
     animation-iteration-count:1;
     animation-fill-mode: forwards;
 }
@@ -186,8 +187,8 @@ span:nth-child(4) {
     z-index: 5;
 
     animation-name: drawLine4;
-    animation-duration: 1s;
-    animation-delay: 3s;
+    animation-duration: 0.7s;
+    animation-delay: 2.1s;
     animation-iteration-count:1;
     animation-fill-mode: forwards;
 }
@@ -211,8 +212,8 @@ span:nth-child(4) {
     opacity: 0%;
 
     animation-name: diamond;
-    animation-duration: 1s;
-    animation-delay: 4s;
+    animation-duration: 0.7s;
+    animation-delay: 2.8s;
     animation-iteration-count:1;
     animation-fill-mode: forwards;
 
