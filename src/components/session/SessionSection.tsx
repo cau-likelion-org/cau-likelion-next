@@ -15,6 +15,8 @@ const SessionSection:React.FC<SessionProps> =({trackName, trackNum, trackData}) 
 
     //무한슬라이드 구현
     const [currentIdx, setCurrentIdx] = useState(0);
+    const cloneDataNum=4;
+
     const length = trackData.length;
 
 
@@ -37,7 +39,6 @@ const SessionSection:React.FC<SessionProps> =({trackName, trackNum, trackData}) 
     
             return Arr;
         }
-        // console.log(Arr);
     
         //끝에 도달했을 때 한바퀴 도는 것 처럼 보이게 하기 위해 
         //데이터를 복제하여 만든 배열 return
@@ -48,7 +49,7 @@ const SessionSection:React.FC<SessionProps> =({trackName, trackNum, trackData}) 
             let images = getArr();
             let length = images.length;
     
-            while (index < 3) {
+            while (index < cloneDataNum ) {
                 addLast.push(images[index%length]);
                 addFront.unshift(images[length-1-(index%length)]);
                 index++;
@@ -57,46 +58,22 @@ const SessionSection:React.FC<SessionProps> =({trackName, trackNum, trackData}) 
             return[...images, ...addLast];
         }
     
-        function getArrIndex(idx:number){
-            idx -= 3;
-            if (idx<0) {idx += length;}
-            else if (idx>=length) {idx -= length}
-    
-            return idx;
-        }
-    
         const transitionTime = 500;
         const transitionStyle = `transform ${transitionTime}ms ease 0s`;
-        const [transition, setTransition] = useState('1');
-    
-        function replaceSlide(idx:number){
-            setTimeout(()=>{
-                setTransition('');
-                setCurrentIdx(idx);
-            },transitionTime)}
-
         
 
+        
+        const [transition, setTransition] = useState('1s');
         function handleSwipe(direction:number){
-            // let idx = currentIdx+direction;
-            // setCurrentIdx(idx);
-            // if(idx<3){
-            //     idx += length;
-            //     replaceSlide(idx);
-            //     setTranslateVal(currentIdx);
-            // }
-            // else if (idx >= length + 3){
-            //     idx -= -length;
-            //     replaceSlide(idx);
-            //     setTranslateVal(currentIdx);
-            // }
-            // setTransition(transitionStyle);
+            // if (translateVal === slides.length-3){
+            //     setTimeout(()=>{
+            //         setTransition('');
+            //         setTranslateVal(0);
 
-            // console.log(translateVal);
-            if (translateVal === slides.length-3){
-                setTransition('0');
+            //     },1000)
+            // }
+            // else {setTransition('1s')};
 
-            }
 
             handleSlide(currentIdx+direction);
         }
@@ -116,6 +93,7 @@ const SessionSection:React.FC<SessionProps> =({trackName, trackNum, trackData}) 
                     trackNum={trackNum}
                     sessionImg={slides}
                     transition={transition}
+                    cloneDataNum={cloneDataNum}
                     />
                 <div onClick={() => handleSwipe(1)}><Arrow direction='right' /></div>
 

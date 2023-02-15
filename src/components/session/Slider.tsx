@@ -9,6 +9,7 @@ type  SliderProps = {
     trackNum: number,
     sessionImg:{id: number; title: string, category:string, thumbnail:string}[];
     transition:string
+    cloneDataNum:number;
 };
 
 type ImgBoxProps = {
@@ -19,10 +20,15 @@ type ImgBoxProps = {
 
 
 
-
-// translateVal={translateVal !== 0 ? translateVal : null}>
-const Slider: React.FC<SliderProps> = ({translateVal, trackData, trackNum, sessionImg, transition}) => {
+const Slider: React.FC<SliderProps> = ({translateVal, trackData, trackNum, sessionImg, transition, cloneDataNum}) => {
     const length = sessionImg.length;
+
+    //translateVal===((복제한 데이터 배열 길이)-(추가한 데이터개수))면 슬라이더 끝에 도달했다는 것
+    //=> 다시 첫번째 index로 돌려보내기 (translateVal=0)
+    if (translateVal===sessionImg.length-cloneDataNum) {
+        translateVal=0;
+        transition='';
+    };
 
     return (
         <StWrapper>
@@ -65,13 +71,14 @@ width: 70vw;
 
 const StImageBox = styled.div<ImgBoxProps>`
 display:flex;
-transition: transform ease 1s; 
-/* transition-duration: (${props=> props.transition}s); */
-/* transition: (${props=> (props.translateVal===props.sessionImg.length-3) ? 'transform ease 1s' : 'transform ease 0s'}) ; */
 gap: 20px;
 
-//-1 * (슬라이드 한 개의 너비의 반) + (슬라이드 한 개의 너비 * 현재 슬라이드 index)%만큼 이동
-transform:translateX(${props=> !props.translateVal ? 0 : (-100 / props.sessionImg.length) *  (0.5 + props.translateVal)}%);
+// 버튼을 눌렀을 때-> 어떻게 이동할지 (*이동시간이 길어질수록 부드럽게 넘어감)
+transition-duration: ${props=> props.transition};
+
+// 버튼을 눌렀을 때-> 얼만큼 이동할지 (=이동범위)
+//(-100 / props.sessionImg.length) *  (x + props.translateVal) 에서 x=클릭시 넘어갈 카드 수
+transform:translateX(${props=> !props.translateVal ? 0 : (-100 / props.sessionImg.length) *  (1 + props.translateVal)}%);
 
 
 
