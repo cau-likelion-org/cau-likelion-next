@@ -26,12 +26,26 @@ const FadeInComponent = ({ children, variants }: { children: ReactElement; varia
   }, [controls, isInView]);
 
   return (
-    <Wrapper ref={ref} animate={controls} initial="hidden" variants={variants ? variants : defaultFadeInAnimation}>
-      {children}
+    <Wrapper>
+      <Absolute ref={ref} animate={controls} initial="hidden" variants={variants ? variants : defaultFadeInAnimation}>
+        {children}
+      </Absolute>
     </Wrapper>
   );
 };
-const Wrapper = styled(motion.div)`
+const Absolute = styled(motion.div)`
   width: 100%;
+  @media (min-width: 900px) {
+    position: absolute;
+  }
+`;
+const Wrapper = styled.div`
+  position: relative;
+  width: 100%;
+  @media (min-width: 900px) {
+    scroll-snap-align: start;
+    height: 100%;
+    min-height: 100vh;
+  }
 `;
 export default FadeInComponent;
