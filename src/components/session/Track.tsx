@@ -44,7 +44,7 @@ const Track: React.FC<TrackProps> = ({track, trackData}) => {
     return (
         <>
         <StWrapper>
-            <p> {track} </p>
+            <a>{track}</a>
             <StShowAll onClick={handleClick}>전체보기 &gt;</StShowAll>
         </StWrapper>
 
@@ -58,7 +58,7 @@ const Track: React.FC<TrackProps> = ({track, trackData}) => {
                     </ImgWrapper>
 
                     <ButtonWrapper>
-                        <p>{track}</p>
+                        <a>{track}</a>
                         <UploadButton>+</UploadButton>
                     </ButtonWrapper>
                 </ModalHeader>
@@ -103,19 +103,22 @@ export default Track;
 
 
 const StWrapper = styled.div`
-font-family: 'Pretendard';
-font-style: normal;
-font-weight: 900;
-font-size: 4rem;
 display: flex;
 justify-content: space-between;
 align-items: center;
+
+margin: 3rem;
+
+width: 100%;
+
 `
 
 const StShowAll = styled.div`
 color: #1A21BD;
 font-size: 1.4rem;
 `
+
+
 
 const StModalLayer = styled.div`
 display: flex;

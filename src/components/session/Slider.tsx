@@ -66,7 +66,7 @@ export default Slider;
 const StWrapper=styled.div`
 display: flex;
 overflow: hidden;
-width: 70vw;
+width: 80vw;
 `
 
 const StImageBox = styled.div<ImgBoxProps>`
