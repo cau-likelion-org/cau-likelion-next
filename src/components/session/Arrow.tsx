@@ -21,6 +21,6 @@ export default Arrow;
 
 const StArrowWrapper = styled.div<ISessionComponent>`
 transform: ${({direction})=>(direction === 'left' ? 'rotate(180deg)' : null)};
-margin: 0 3rem;
-    
+padding-left: 2rem;
+
 `

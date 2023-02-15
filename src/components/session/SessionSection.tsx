@@ -81,34 +81,31 @@ const SessionSection:React.FC<SessionProps> =({trackName, trackNum, trackData}) 
 
 
     return (
+        <>
+        <Track track={trackName} trackData={trackData} />
+
         <StWrapper>
-            <Track track={trackName} trackData={trackData} />
-
-            <StSliderRowWrapper>
-
-                <div onClick={() => handleSwipe(-1)}><Arrow direction='left' /></div>
-                    <Slider
-                    translateVal={translateVal}
-                    trackData={trackData}
-                    trackNum={trackNum}
-                    sessionImg={slides}
-                    transition={transition}
-                    cloneDataNum={cloneDataNum}
-                    />
-                <div onClick={() => handleSwipe(1)}><Arrow direction='right' /></div>
-
-            </StSliderRowWrapper> 
-
+            <div onClick={() => handleSwipe(-1)}><Arrow direction='left' /></div>
+            <Slider
+                translateVal={translateVal}
+                trackData={trackData}
+                trackNum={trackNum}
+                cloneData={slides}
+                cloneDataNum={cloneDataNum}
+                transition={transition}/>
+                
+            <div onClick={() => handleSwipe(1)}><Arrow direction='right' /></div>
         </StWrapper>
+        </>
     );
 }
 export default SessionSection;
 
 const StWrapper= styled.div`
-font-family: 'Pretendard';
-font-style: normal;
-font-weight: 900;
-font-size: 4rem;
+display: flex;
+justify-content: space-between;
+align-items: center;
+width: 100%;
 
 @media (max-width: 1550px) {
         font-size: 2.3rem;
@@ -116,10 +113,6 @@ font-size: 4rem;
 
 `
 
-const StSliderRowWrapper = styled.div`
-display: flex;
-align-items: center;
-`
 
 
 

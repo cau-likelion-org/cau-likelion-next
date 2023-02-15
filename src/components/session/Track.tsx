@@ -103,13 +103,17 @@ export default Track;
 
 
 const StWrapper = styled.div`
+font-family: 'Pretendard';
+font-style: normal;
+font-weight: 900;
+font-size: 4rem;
 display: flex;
 justify-content: space-between;
 align-items: center;
 `
 
 const StShowAll = styled.div`
-color:${Primary};
+color: #1A21BD;
 font-size: 1.4rem;
 `
 
@@ -188,7 +192,7 @@ align-items: center;
 
 const CardWrapper = styled.div<ShowAllProps>`
 display: grid;
-/* display: flex; */
+
 
 width: 100%;
 background-color: white;
