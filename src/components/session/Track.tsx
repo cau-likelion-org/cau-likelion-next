@@ -188,6 +188,7 @@ align-items: center;
 
 const CardWrapper = styled.div<ShowAllProps>`
 display: grid;
+/* display: flex; */
 
 width: 100%;
 background-color: white;
@@ -226,7 +227,7 @@ scrollbar-width: none;
     flex-direction: column;
     gap: 5px;
     align-items: center;
-    /* justify-content: center; */
+    justify-content: center;
 }
 
 `
