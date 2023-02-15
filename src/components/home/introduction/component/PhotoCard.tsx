@@ -51,7 +51,7 @@ const BlurBackground = styled.div`
   border-radius: 20px;
 `;
 
-const Container = styled.div<{ img: string; }>`
+const Container = styled.div<{ img: string }>`
   &:hover {
     .blur {
       opacity: 1;
@@ -97,6 +97,9 @@ const Container = styled.div<{ img: string; }>`
   }
   @media (max-width: 1536px) {
     height: 300px;
+  }
+  @media (max-width: 900px) {
+    height: 200px;
   }
   position: relative;
   border-radius: 20px;
