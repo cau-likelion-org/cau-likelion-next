@@ -25,6 +25,9 @@ const Title = styled.div`
   font-size: 1.7rem;
   margin-right: 3rem;
   word-spacing: 25px;
+  @media (max-width: 900px) {
+    font-size: 1.5rem;
+  }
 `;
 const Input = styled.div`
   display: flex;
@@ -38,4 +41,9 @@ const Input = styled.div`
   background-color: ${Primary.light};
   border-radius: 15px;
   color: ${GreyScale.default};
+  @media (max-width: 900px) {
+    font-size: 1.5rem;
+    height: 5rem;
+    width: 15rem;
+  }
 `;
