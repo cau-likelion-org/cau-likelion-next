@@ -86,27 +86,6 @@ export const getUserProfile = async (accessToken: string) => {
     };
 };
 
-export const getUserAttendance = async (username: string) => {
-    // const response = await axios.get<UserAttendance>(
-    //     `${url}/attendance`,
-    //     {
-    //         params: {
-    //             name: username
-    //         }
-    //     }
-    // );
-    // return response.data;
-    return {
-        name: '윤선영',
-        absence: 3,
-        truancy: 1,
-        tardiness: 2,
-        notSubmitted: 3,
-        lateSubmitted: 1,
-        totalScore: 1.5,
-    };
-};
-
 export function login(code: string | string[], accessToken: string) {
     return axios.post<LoginResponse>(
         `${url}/login`,
