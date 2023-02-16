@@ -1,11 +1,12 @@
-import { UserAttendance, UserProfile } from '@@types/request';
+import { UserAssignment, UserAttendance, UserProfile } from '@@types/request';
 import { accessToken } from '@utils/state';
 import { AxiosError } from 'axios';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 import { useRecoilValue } from 'recoil';
-import { getUserAttendance, getUserProfile } from 'src/apis/account';
+import { getUserProfile } from 'src/apis/account';
 import NameCard from '@mypage/component/NameCard';
+import { getAssignments, getUserAttendance } from 'src/apis/attendance';
 import styled from 'styled-components';
 import MyAttendanceSection from '@mypage/MyAttendanceSection';
 import ProfileCard from '@mypage/component/ProfileCard';
@@ -13,6 +14,7 @@ import { GreyScale } from '@utils/constant/color';
 
 const MyPage = () => {
     const tokenState = useRecoilValue(accessToken);
+    const [userAssignmentData, setUserAssignmentData] = useState<UserAssignment>({ name: '', lateSubmitted: 0, notSubmitted: 0 });
 
     const { data: userProfile, isLoading: profileLoading, error: profileError } = useQuery<UserProfile, AxiosError>(
         ['userProfile', tokenState],
@@ -27,9 +29,29 @@ const MyPage = () => {
         }
     );
 
+    const { data: userAssignment, isLoading: assignmentLoading, error: assignmentError } = useQuery(
+        ['userAssignment'],
+        () => getAssignments().then(res => res.data.filter((d: any) =>
+            d.Name == userProfile!.name
+        )),
+        {
+            enabled: !!userProfile
+        }
+    );
+
+    useEffect(() => {
+        if (userAssignment) {
+            setUserAssignmentData({
+                name: userAssignment.Name,
+                lateSubmitted: userAssignment[0]['지각제출'],
+                notSubmitted: userAssignment[0]['미제출']
+            });
+        }
+    }, [userAssignment]);
+
     return (
         <>
-            {userProfile && userAttendance &&
+            {userProfile && userAttendance && userAssignment &&
                 <Wrapper>
                     <Header>
                         <NameCard
@@ -38,7 +60,7 @@ const MyPage = () => {
                     </Header>
                     <RowWrapper>
                         <ProfileCard user={userProfile} />
-                        <MyAttendanceSection userAttendance={userAttendance} />
+                        <MyAttendanceSection userAttendance={userAttendance} userAssignment={userAssignmentData} />
                     </RowWrapper>
                 </Wrapper>
             }
