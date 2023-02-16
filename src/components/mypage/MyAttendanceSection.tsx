@@ -1,10 +1,10 @@
-import { UserAttendance } from '@@types/request';
+import { UserAttendance, UserAssignment } from '@@types/request';
 import { ATTENDANCE_CATEGORY, ATTENDANCE_CATEGORY_NAME } from '@utils/constant';
 import { GreyScale } from '@utils/constant/color';
 import React from 'react';
 import styled from 'styled-components';
 
-const MyAttendanceSection = ({ userAttendance }: { userAttendance: UserAttendance; }) => {
+const MyAttendanceSection = ({ userAttendance, userAssignment }: { userAttendance: UserAttendance; userAssignment: UserAssignment; }) => {
     const attendanceData = [
         {
             type: ATTENDANCE_CATEGORY.ABSENCE,
@@ -20,15 +20,11 @@ const MyAttendanceSection = ({ userAttendance }: { userAttendance: UserAttendanc
         },
         {
             type: ATTENDANCE_CATEGORY.NOTSUBMITTED,
-            score: userAttendance.notSubmitted
+            score: userAssignment.notSubmitted
         },
         {
             type: ATTENDANCE_CATEGORY.LATESUBMITTED,
-            score: userAttendance.lateSubmitted
-        },
-        {
-            type: ATTENDANCE_CATEGORY.TOTALSCORE,
-            score: userAttendance.totalScore
+            score: userAssignment.lateSubmitted
         },
     ];
     return (
