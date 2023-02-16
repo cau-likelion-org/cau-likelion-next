@@ -73,7 +73,10 @@ export interface UserAttendance {
   absence: number;  // 결석
   truancy: number; // 무단결석
   tardiness: number; // 지각
-  notSubmitted: number; // 과제 미제출
-  lateSubmitted: number; // 과제 지각 제출
-  totalScore: number; // 총점수
+}
+
+export interface UserAssignment {
+  name: string; // 이름
+  notSubmitted: number;
+  lateSubmitted: number;
 }
