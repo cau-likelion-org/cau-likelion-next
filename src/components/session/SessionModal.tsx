@@ -29,7 +29,9 @@ const SessionModal:React.FC<ModalProps> = ({trackData, trackName, handleClose}) 
     }
 
     return (
-        <StModalLayer onClick={handleClose}>
+        <StModalLayer>
+
+        <StModalCenterLayer>
 
         <StModalWrapper showAll={showAll} >
 
@@ -58,15 +60,9 @@ const SessionModal:React.FC<ModalProps> = ({trackData, trackName, handleClose}) 
                         )
                     })}
             </CardWrapper>
-
-            <ModalFooter showAll={showAll}>
-                <ImgWrapper onClick={handleMore}>
-                    <Image src={more} width='35px' height='20px' alt='창닫기'/>
-                </ImgWrapper>
-            </ModalFooter>
-    
         
         </StModalWrapper>
+        </StModalCenterLayer>
 
     </StModalLayer> 
     );
@@ -92,20 +88,29 @@ overflow: hidden;
 
 `
 
+const StModalCenterLayer = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+
+`
+
 const StModalWrapper = styled.div<ShowAllProps>`
 display: flex;
 flex-direction: column;
 align-items: center;
 
-top: 50%;
+/* top: 50%; */
+top: 50rem;
 left: 50%;
-height: ${props=> !props.showAll ? '50rem' : 'auto'};
+height:50rem;
 
 background: #FFFFFF;
 box-shadow: 10px 10px 60px rgba(0, 0, 0, 0.4);
 border-radius: 24px;
 
-overflow-y: ${props=> !props.showAll ? 'hidden' : 'scroll'};
+overflow: scroll;
 
 //<전체보기> 눌렀을 때 모달창 초기 높이, 너비
 @media (min-width: 1920px) {min-height: 100rem; width: 150rem; }
@@ -155,7 +160,8 @@ scrollbar-width: none;
     display: none; 
 }
 
-overflow-y: ${props=> !props.showAll ? 'hidden' : 'visible'};
+/* overflow-y: ${props=> !props.showAll ? 'hidden' : 'visible'}; */
+overflow-y: visible;
 
 @media (min-width: 1920px) {grid-template-columns: 1fr 1fr 1fr; gap: 20px;}
 
