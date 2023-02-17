@@ -80,3 +80,11 @@ export interface UserAssignment {
   notSubmitted: number;
   lateSubmitted: number;
 }
+
+export interface AttendanceTotalScore {
+  notSubmitted: number;
+  lateSubmitted: number;
+  absence: number;
+  truancy: number;
+  tardiness: number;
+}
