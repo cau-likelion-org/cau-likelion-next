@@ -32,7 +32,7 @@ const MyPage = () => {
     const { data: userAssignment, isLoading: assignmentLoading, error: assignmentError } = useQuery(
         ['userAssignment'],
         () => getAssignments().then(res => res.data.filter((d: any) =>
-            d.Name == userProfile!.name
+            d['이름'] == userProfile!.name
         )),
         {
             enabled: !!userProfile
@@ -42,9 +42,9 @@ const MyPage = () => {
     useEffect(() => {
         if (userAssignment) {
             setUserAssignmentData({
-                name: userAssignment.Name,
-                lateSubmitted: userAssignment[0]['지각제출'],
-                notSubmitted: userAssignment[0]['미제출']
+                name: userAssignment['이름'],
+                lateSubmitted: userAssignment[0]['과제 지각제출'],
+                notSubmitted: userAssignment[0]['과제 미제출']
             });
         }
     }, [userAssignment]);
@@ -73,6 +73,7 @@ export default MyPage;
 const Wrapper = styled.div`
     display: flex;
     flex-direction: column;
+    width: 100%;
 `;
 
 const Header = styled.div`
@@ -88,7 +89,7 @@ const Header = styled.div`
 `;
 
 const RowWrapper = styled.div`
-    margin-top: 5rem;
+    margin-top: 2rem;
     display: flex;
     justify-content: center;
     width: 100%;
