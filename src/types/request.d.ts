@@ -22,7 +22,7 @@ export interface IProjectData extends IArchivingData {
 }
 
 export interface ISessionData extends IArchivingData {
-  degree: string;
+  degree: number;
 }
 
 export interface IGalleryData extends IArchivingData {

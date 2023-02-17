@@ -7,7 +7,7 @@ import styled from 'styled-components';
 
 interface ICardProps extends IArchivingData {
   dev_stack?: number[];
-  category?: string;
+  category?: string | number;
   link: string;
 }
 
