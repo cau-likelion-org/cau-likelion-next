@@ -1,9 +1,5 @@
 import { useQuery } from 'react-query';
-<<<<<<< HEAD
 import { TodayAttendanceListData, MemberStack, MemberStackKor } from '@@types/request';
-=======
-import { AttendanceListData, MemberStack, MemberStackKor } from '@@types/request';
->>>>>>> c11c1f16dc937071ef92f3bdfdbae3896e83dcc9
 
 import { getAttendanceList } from 'src/apis/attendance';
 import Track from './TrackAttendance';
@@ -39,11 +35,7 @@ const trackController: Record<MemberStack, ITrackController> = {
 
 const EntireTrackAttendance = () => {
   const trackStacks = Object.keys(trackController) as MemberStack[];
-<<<<<<< HEAD
   const { data, isLoading } = useQuery<TodayAttendanceListData>(['getAttendanceList'], getAttendanceList);
-=======
-  const { data, isLoading } = useQuery<AttendanceListData>(['getAttendanceList'], getAttendanceList);
->>>>>>> c11c1f16dc937071ef92f3bdfdbae3896e83dcc9
 
   if (isLoading) return <div>로딩중</div>;
 

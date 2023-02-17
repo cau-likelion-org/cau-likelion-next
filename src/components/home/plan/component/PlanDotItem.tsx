@@ -6,11 +6,7 @@ const PlanDotItem = () => {
   return (
     <>
       <BlueLine />
-<<<<<<< HEAD
       {Array.from({ length: 5 }, (item, index) => (
-=======
-      {Array.from({ length: 4 }, (item, index) => (
->>>>>>> c11c1f16dc937071ef92f3bdfdbae3896e83dcc9
         <Circle key={index} />
       ))}
     </>
@@ -28,13 +24,10 @@ const Circle = styled.div`
   background: #1a21bd;
   box-shadow: 0px 0px 15px #1b00fd;
   z-index: -1;
-<<<<<<< HEAD
   @media (max-width: 900px) {
     width: 13px;
     height: 13px;
   }
-=======
->>>>>>> c11c1f16dc937071ef92f3bdfdbae3896e83dcc9
 `;
 
 const BlueLine = styled.hr`

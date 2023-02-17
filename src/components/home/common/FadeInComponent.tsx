@@ -12,7 +12,7 @@ const defaultFadeInAnimation: Variants = {
   },
 };
 
-const FadeInComponent = ({ children, variants }: { children: ReactElement; variants?: Variants }) => {
+const FadeInComponent = ({ children, variants }: { children: ReactElement; variants?: Variants; }) => {
   const ref = useRef(null);
   const isInView = useInView(ref);
   const controls = useAnimation();
@@ -26,7 +26,6 @@ const FadeInComponent = ({ children, variants }: { children: ReactElement; varia
   }, [controls, isInView]);
 
   return (
-<<<<<<< HEAD
     <Wrapper>
       <Absolute ref={ref} animate={controls} initial="hidden" variants={variants ? variants : defaultFadeInAnimation}>
         {children}
@@ -49,14 +48,5 @@ const Wrapper = styled.div`
     height: 100%;
     min-height: 100vh;
   }
-=======
-    <Wrapper ref={ref} animate={controls} initial="hidden" variants={variants ? variants : defaultFadeInAnimation}>
-      {children}
-    </Wrapper>
-  );
-};
-const Wrapper = styled(motion.div)`
-  width: 100%;
->>>>>>> c11c1f16dc937071ef92f3bdfdbae3896e83dcc9
 `;
 export default FadeInComponent;

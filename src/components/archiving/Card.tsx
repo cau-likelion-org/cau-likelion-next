@@ -8,10 +8,6 @@ import styled from 'styled-components';
 interface ICardProps extends IArchivingData {
   link: string;
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> c11c1f16dc937071ef92f3bdfdbae3896e83dcc9
 const Card = ({ id, thumbnail, title, description, dev_stack, category, link }: ICardProps) => {
   return (
     <Link href={`${link}/${id}`}>
@@ -77,7 +73,6 @@ const TextWrapper = styled.div`
   }
 `;
 const Category = styled.div`
-<<<<<<< HEAD
   border-radius: 25px;
   border: 1px solid ${GreyScale.default};
   max-width: 25%;
@@ -87,19 +82,6 @@ const Category = styled.div`
   font-size: 1.2rem;
   display: flex;
   padding: 0.3rem 0;
-=======
-  border-color: ${GreyScale.default};
-  border-radius: 25px;
-  width: 58px;
-  height: 19px;
-  border-style: solid;
-  border-width: 1px;
-  font-family: 'Pretendard';
-  font-style: normal;
-  font-weight: 500;
-  font-size: 12px;
-  display: flex;
->>>>>>> c11c1f16dc937071ef92f3bdfdbae3896e83dcc9
   justify-content: center;
   align-items: center;
 `;

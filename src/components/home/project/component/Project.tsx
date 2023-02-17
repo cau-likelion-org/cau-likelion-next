@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import { AnimatePresence, motion, Variants } from 'framer-motion';
-=======
-import { AnimatePresence, motion } from 'framer-motion';
->>>>>>> c11c1f16dc937071ef92f3bdfdbae3896e83dcc9
 import styled from 'styled-components';
 import Image from 'next/image';
 
@@ -10,7 +6,6 @@ import { GreyScale } from '@utils/constant/color';
 
 import { IProjectInner } from './ProjectSlider';
 
-<<<<<<< HEAD
 const Project = ({
   ProjectData,
   direction,
@@ -24,42 +19,6 @@ const Project = ({
     <AnimatePresence initial={false} custom={direction}>
       <ProjectWrapper
         variants={animationVaraints}
-=======
-//애니메이션 효과 객체
-const AnimationVariant = {
-  initial: (direction: number) => {
-    return {
-      x: direction > 0 ? 1000 : -1000,
-      opacity: 0,
-      transition: {
-        duration: 0.5,
-      },
-    };
-  },
-  visible: {
-    x: 0,
-    opacity: 1,
-    transition: {
-      duration: 0.5,
-    },
-  },
-  exit: (direction: number) => {
-    return {
-      opacity: 0,
-      x: direction < 0 ? 1000 : -1000,
-      transition: {
-        duration: 0.5,
-      },
-    };
-  },
-};
-
-const Project = ({ ProjectData, direction }: { ProjectData: IProjectInner; direction: number }) => {
-  return (
-    <AnimatePresence initial={false} custom={direction}> 
-      <ProjectWrapper
-        variants={AnimationVariant}
->>>>>>> c11c1f16dc937071ef92f3bdfdbae3896e83dcc9
         initial="initial"
         animate="visible"
         exit="exit"
@@ -93,10 +52,6 @@ const Project = ({ ProjectData, direction }: { ProjectData: IProjectInner; direc
 };
 
 export default Project;
-<<<<<<< HEAD
-
-=======
->>>>>>> c11c1f16dc937071ef92f3bdfdbae3896e83dcc9
 const ProjectWrapper = styled(motion.div)`
   position: absolute;
   width: 93%;
@@ -108,15 +63,11 @@ const ProjectWrapper = styled(motion.div)`
   left: 0;
   bottom: 0;
   right: 0;
-<<<<<<< HEAD
   @media (max-width: 900px) {
     height: 150px;
   }
 `;
 
-=======
-`;
->>>>>>> c11c1f16dc937071ef92f3bdfdbae3896e83dcc9
 const ImageWrapper = styled.div`
   position: relative;
   object-fit: cover;
@@ -136,19 +87,15 @@ const ProjectTitle = styled.div`
   font-family: 'Pretendard';
   font-weight: 700;
   font-size: 3rem;
-<<<<<<< HEAD
   @media (max-width: 900px) {
     font-size: 2rem;
   }
-=======
->>>>>>> c11c1f16dc937071ef92f3bdfdbae3896e83dcc9
 `;
 const ProjectText = styled.div`
   font-family: 'Pretendard';
   font-style: normal;
   font-weight: 500;
   font-size: 1.7rem;
-<<<<<<< HEAD
   margin: 15px 0px;
   @media (max-width: 900px) {
     font-size: 1rem;
@@ -156,13 +103,6 @@ const ProjectText = styled.div`
 `;
 const TextWrapper = styled.div`
   padding: 3rem;
-=======
-  line-height: 160%;
-  margin: 15px 0px;
-`;
-const TextWrapper = styled.div`
-  padding: 30px;
->>>>>>> c11c1f16dc937071ef92f3bdfdbae3896e83dcc9
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
@@ -175,12 +115,9 @@ const TeamName = styled.div`
   font-weight: 500;
   font-size: 14px;
   margin-right: 15px;
-<<<<<<< HEAD
   @media (max-width: 900px) {
     font-size: 10px;
   }
-=======
->>>>>>> c11c1f16dc937071ef92f3bdfdbae3896e83dcc9
 `;
 const ProjectType = styled(TeamName)``;
 const TeamInfo = styled.div`
