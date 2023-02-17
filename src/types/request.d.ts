@@ -13,13 +13,23 @@ export interface IShareURL {
 export interface IArchivingData {
   id: number;
   title: string;
-  category: string;
   thumbnail: string;
-  dev_stack?: number[];
   description?: string;
 }
+export interface IProjectData extends IArchivingData {
+  category: string;
+  dev_stack: number[];
+}
 
-export interface IProjectDetail extends IArchivingData {
+export interface ISessionData extends IArchivingData {
+  degree: string;
+}
+
+export interface IGalleryData extends IArchivingData {
+  date: string;
+}
+
+export interface IProjectDetail extends IProjectData {
   subtitle: string;
   team_name: string;
   team_member: Record<MemberStack, string[]>;
@@ -29,17 +39,17 @@ export interface IProjectDetail extends IArchivingData {
   thumbnail: string[];
 }
 
-export interface IGalleryDetail extends IArchivingData {
+export interface IGalleryDetail extends IGalleryData {
   description: string;
   thumbnail: string[];
 }
 
-export type ArchivingArrayType = Record<string, IArchivingData[]>;
+export type ArchivingArrayType<T> = Record<string, T[]>;
 
 interface ResponseData<T> {
   message: string;
   data: T;
-};
+}
 
 export interface TodayAttendanceData {
   name: string;
@@ -70,7 +80,7 @@ export interface UserProfile {
 
 export interface UserAttendance {
   name: string; // 이름
-  absence: number;  // 결석
+  absence: number; // 결석
   truancy: number; // 무단결석
   tardiness: number; // 지각
   notSubmitted: number; // 과제 미제출
