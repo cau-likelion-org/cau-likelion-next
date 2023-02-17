@@ -1,7 +1,7 @@
 import Card from '@archiving/Card';
 import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
-import sessionData from './sessionData.json'
+// import sessionData from './sessionData.json'
 
 type  SliderProps = {
     translateVal: number;
@@ -30,6 +30,9 @@ const Slider: React.FC<SliderProps> = ({translateVal, trackData, trackNum, clone
         transition='';
     };
 
+    console.log(cloneData);
+
+
     return (
         <StWrapper>
 
@@ -39,7 +42,7 @@ const Slider: React.FC<SliderProps> = ({translateVal, trackData, trackNum, clone
                 transition={transition}>
                 
             
-                {cloneData.slice(0).reverse().map(
+                {/* {cloneData.slice(0).reverse().map(
                     (data,i)=>{
                     return(
                         <>
@@ -54,7 +57,7 @@ const Slider: React.FC<SliderProps> = ({translateVal, trackData, trackNum, clone
                     )
 
                     
-                })}
+                })} */}
             </StImageBox>
 
         </StWrapper>
@@ -79,7 +82,8 @@ transition-duration: ${props=> props.transition};
 
 // 버튼을 눌렀을 때-> 얼만큼 이동할지 (=이동범위)
 //(-100 / props.cloneData.length) *  (x + props.translateVal) 에서 x=클릭시 넘어갈 카드 수
-transform:translateX(${props=> !props.translateVal ? 0 : (-100 / props.cloneData.length) *  (1 + props.translateVal)}%);
+/* transform:translateX(${props=> !props.translateVal ? 0 : (-100 / props.cloneData.length) *  (1 + props.translateVal)}%); */
+transform:translateX(${props=> !props.translateVal ? 0 : (-100/props.cloneData.length) *  (1 + props.translateVal)}%);
 
 
 

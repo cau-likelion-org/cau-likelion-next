@@ -54,9 +54,65 @@ const SessionSection:React.FC<SessionProps> =({trackName, trackNum, trackData}) 
                 addFront.unshift(images[length-1-(index%length)]);
                 index++;
             }
-    
+
+
             return[...addFront, ...images];
         }
+
+        
+        let slidesDivide = dividePerWidth();
+
+        //슬라이더에 3개씩 보이게
+        //슬라이더 회전 수 = rotation
+        //if (총 슬라이드 수/3 = 0) => {rotation=총 슬라이드 수 % 3},  
+        // else => {rotation = 총 슬라이드 수 % 3}
+        function dividePerWidth(){
+            const length = trackData.length;
+            let slidesPerRow = 3;
+            
+            //map 돌릴 배열
+            let slicedArr=[];
+            let rotation = length/slidesPerRow;
+            let remain = length%slidesPerRow;
+            var i=0;
+            var pushArr=[]
+
+            //데이터 복제 필요 없음 
+            //rotation = 총 게시물 수 / 한 슬라이더에 보여줄 슬라이드 수 ... 로 딱 나누어 떨어짐
+            if (length/slidesPerRow===0){
+                rotation = length/3;
+
+                while (i<rotation){
+                    pushArr = trackData.slice(i, i+slidesPerRow-1);
+                    slicedArr.push(pushArr[i]);
+                    i++;
+                }
+
+            }
+
+            //슬라이더에 부족한 수만큼 복제
+            //ex) 게시물 개수 8개인 경우-> rotation=> 2회(3개,3개) 1회(2개)
+            //ex) 게시물 개수 13개인 경우-> rotation=> 4회(3개,3개,3,3) 1회(1개)
+            else{
+                rotation = length/3 + 1;
+
+                while (i<rotation){
+                    pushArr = trackData.slice(i,i+slidesPerRow-1);
+                    slicedArr.push(pushArr[i]);
+                    i++;
+                }
+
+                //배열 복제 코드
+                while (i<remain){
+                slicedArr.push(trackData[i]);
+                i++;
+                }
+            }
+
+            return[...slicedArr];
+        }
+
+
     
         const transitionTime = 500;
         const transitionStyle = `transform ${transitionTime}ms ease 0s`;
@@ -65,14 +121,10 @@ const SessionSection:React.FC<SessionProps> =({trackName, trackNum, trackData}) 
         
         const [transition, setTransition] = useState('1s');
         function handleSwipe(direction:number){
-            // if (translateVal === slides.length-3){
-            //     setTimeout(()=>{
-            //         setTransition('');
-            //         setTranslateVal(0);
 
-            //     },1000)
-            // }
-            // else {setTransition('1s')};
+            if (translateVal===slides.length-cloneDataNum) {
+                
+            };
 
 
             handleSlide(currentIdx+direction);
@@ -90,7 +142,7 @@ const SessionSection:React.FC<SessionProps> =({trackName, trackNum, trackData}) 
                     translateVal={translateVal}
                     trackData={trackData}
                     trackNum={trackNum}
-                    cloneData={slides}
+                    cloneData={slidesDivide}
                     cloneDataNum={cloneDataNum}
                     transition={transition}/>
                     

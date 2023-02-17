@@ -46,7 +46,7 @@ const SessionModal:React.FC<ModalProps> = ({trackData, trackName, handleClose}) 
 
             <CardWrapper showAll={showAll}>
 
-                {trackData.slice(0).reverse().map((data,i)=>{
+                {trackData.slice(1).reverse().map((data,i)=>{
                     return(
                         <Card
                         key={data.id}
