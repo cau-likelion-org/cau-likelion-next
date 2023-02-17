@@ -2,6 +2,10 @@ name: NEXT Deploy prod
 on:
   push:
     branches: main
+env:
+  NEXT_PUBLIC_GOOGLE_CLIENT_ID: '${{secrets.NEXT_PUBLIC_GOOGLE_CLIENT_ID}}'
+  NEXT_PUBLIC_GOOGLE_REDIRECT_URI: '${{secrets.NEXT_PUBLIC_GOOGLE_REDIRECT_URI}}'
+  NEXT_PUBLIC_GOOGLE_SCOPE: '${{secrets.NEXT_PUBLIC_GOOGLE_SCOPE}}'
 jobs:
   build:
     runs-on: ubuntu-latest
