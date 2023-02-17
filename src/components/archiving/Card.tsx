@@ -6,6 +6,8 @@ import React from 'react';
 import styled from 'styled-components';
 
 interface ICardProps extends IArchivingData {
+  dev_stack?: number[];
+  category?: string;
   link: string;
 }
 
