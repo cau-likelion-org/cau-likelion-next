@@ -1,12 +1,5 @@
 import { TodayAttendanceData, TodayAttendanceListData } from '@@types/request';
 import axios from 'axios';
-import { Client } from "@notionhq/client";
-import { resolve } from 'path';
-
-const notion = new Client({
-  auth: process.env.NEXT_PUBLIC_NOTION_KEY,
-});
-
 
 export function getAttendance() {
   return axios
@@ -39,17 +32,15 @@ export const getUserAttendance = async (username: string) => {
   // );
   // return response.data;
   return {
-    name: '홍길동',
+    name: '윤선영',
     absence: 3,
     truancy: 1,
     tardiness: 2,
   };
 };
 
-
 export const getAssignments = () => {
-  const NOTION_PAGE_ID = 'd1e1aae2439b44f197bac20d6bec6ca1';
-  const data = axios.get(`https://notion-api.splitbee.io/v1/table/${NOTION_PAGE_ID}`);
+  const data = axios.get(`https://notion-api.splitbee.io/v1/table/${process.env.NEXT_PUBLIC_NOTION_DATABASE_ID}`);
   return data;
 };
 
