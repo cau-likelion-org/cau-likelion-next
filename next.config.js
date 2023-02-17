@@ -49,6 +49,14 @@ const nextConfig = {
     });
     return config;
   },
+  async rewrites() {
+    return [
+      {
+        source: '/:path*',
+        destination: 'https://api.cau-likelion.org/:path*',
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;
