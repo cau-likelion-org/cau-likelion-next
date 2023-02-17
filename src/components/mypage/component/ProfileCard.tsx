@@ -40,7 +40,7 @@ const ProfileCard = ({ user }: { user: UserProfile; }) => {
 export default ProfileCard;
 
 const Wrapper = styled.div`
-    width: 180px;
+    width: 50%;
     height: 140px;
     padding: 2rem;
     background-color: ${Primary.light};
@@ -48,8 +48,8 @@ const Wrapper = styled.div`
     display: flex;
     flex-direction: column;
 
-    @media(max-width: 900px){
-        width: 90%;
+    @media(min-width: 900px){
+        width: 200px;
         height: 200px;
     }
 `;
