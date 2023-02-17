@@ -26,4 +26,8 @@ const Wrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  @media (max-width: 900px) {
+    height: 100%;
+    margin: 90px 0px;
+  }
 `;

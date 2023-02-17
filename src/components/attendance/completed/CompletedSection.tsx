@@ -21,6 +21,9 @@ const Wrapper = styled.div`
   @media (max-width: 1280px) {
     padding: 0 150px;
   }
+  @media (max-width: 900px) {
+    padding: 0 45px;
+  }
   padding: 0 360px;
 `;
 const Title = styled.div`

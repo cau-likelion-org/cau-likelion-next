@@ -21,6 +21,10 @@ const CircleWrapper = styled.div`
   position: relative;
   width: 640px;
   height: 640px;
+  @media (max-width: 900px) {
+    width: 350px;
+    height: 350px;
+  }
 `;
 const Circle = styled.div`
   position: absolute;
@@ -30,6 +34,10 @@ const Circle = styled.div`
   height: 640px;
   border-radius: 100%;
   border-width: 2px;
+  @media (max-width: 900px) {
+    width: 350px;
+    height: 350px;
+  }
 `;
 
 const Circle2 = styled(Circle)`

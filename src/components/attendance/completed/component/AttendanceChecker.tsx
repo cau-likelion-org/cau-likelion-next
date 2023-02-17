@@ -47,6 +47,11 @@ const Circle = styled.div<{ color: string }>`
     width: 60px;
     height: 60px;
   }
+  @media (max-width: 900px) {
+    width: 45px;
+    height: 45px;
+    margin: 5px;
+  }
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -69,6 +74,11 @@ const ImageWrapper = styled.div`
     width: 60px;
     height: 60px;
   }
+  @media (max-width: 900px) {
+    width: 45px;
+    height: 45px;
+    margin: 5px;
+  }
 `;
 const ImageText = styled.div`
   position: absolute;
@@ -83,5 +93,8 @@ const ImageText = styled.div`
   @media (max-width: 1550px) {
     top: 35%;
     left: 20%;
+  }
+  @media (max-width: 900px) {
+    font-size: 10px;
   }
 `;
