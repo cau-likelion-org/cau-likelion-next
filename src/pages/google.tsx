@@ -3,7 +3,6 @@ import { useRouter } from 'next/router';
 import { login } from 'src/apis/account';
 import { useRecoilValue } from 'recoil';
 import { accessToken } from '@utils/state';
-import cookie from 'react-cookies';
 import { useMutation } from 'react-query';
 
 const Google = () => {

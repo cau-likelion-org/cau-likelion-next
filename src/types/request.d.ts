@@ -35,6 +35,14 @@ export interface IGalleryDetail extends IArchivingData {
 }
 
 export type ArchivingArrayType = Record<string, IArchivingData[]>;
+interface ISessionData extends IArchivingData {
+  session: number,
+  presenter: string;
+}
+
+export type ProjectsArrayType = Record<string, IArchivingData[]>;
+
+export type SessionsArrayType = Record<string, ISessionData[]>;
 
 interface ResponseData<T> {
   message: string;
@@ -76,4 +84,18 @@ export interface UserAttendance {
   notSubmitted: number; // 과제 미제출
   lateSubmitted: number; // 과제 지각 제출
   totalScore: number; // 총점수
+}
+export interface AttendanceData {
+  name: string;
+  track: MemberStackKor;
+  isComplete: boolean;
+}
+export type AttendanceListData = Record<MemberStack, string[]>;
+
+export interface RequestSignUpForm {
+  accessToken: string | string[];
+  name: string;
+  generation: number;
+  track: number;
+  isAdmin: boolean;
 }

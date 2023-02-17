@@ -20,10 +20,17 @@ import ToggleBox from './component/ToggleBox';
 
 const SignUpFormSection = () => {
     const track = [TRACK_NAME[TRACK.PM], TRACK_NAME[TRACK.DESIGN], TRACK_NAME[TRACK.FRONTEND], TRACK_NAME[TRACK.BACKEND]];
+<<<<<<< HEAD
     const [nameValue, onChangeName] = useInput('');
     const [generationValue, onChangeGeneration] = useInput('', /^[0-9]*$/);
     const [emailValue, onChangeEmail] = useInput('');
     const [emailSecretValue, onChangeEmailSecret] = useInput('');
+=======
+    const [nameValue, onChangeName, setNameValue] = useInput('');
+    const [generationValue, onChangeGeneration, setGenerationValue] = useInput('', /^[0-9]*$/);
+    const [emailValue, onChangeEmail, setEmailValue] = useInput('');
+    const [emailSecretValue, onChangeEmailSecret, setEmailSecretValue] = useInput('');
+>>>>>>> c11c1f16dc937071ef92f3bdfdbae3896e83dcc9
     const [toggleIsClicked, setToggleIsClicked] = useState([true, false]);
     const [dropdownValue, setDropdownValue] = useState(track[0]);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -91,7 +98,11 @@ const SignUpFormSection = () => {
                     isAuthenticated={isAuthenticated}
                     setIsAuthenticated={setIsAuthenticated} />
             </FormWrapper>
+<<<<<<< HEAD
             <FormSendButton isActive={isFormActivated} handleSubmit={handleSubmit} buttonTitle={'회원가입'} />
+=======
+            <FormSendButton isActive={isFormActivated} handleSubmit={handleSubmit} />
+>>>>>>> c11c1f16dc937071ef92f3bdfdbae3896e83dcc9
         </>
 
     );

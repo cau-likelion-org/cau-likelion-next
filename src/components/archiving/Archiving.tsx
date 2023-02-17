@@ -1,9 +1,14 @@
+<<<<<<< HEAD
 import { ArchivingType, IArchivingData } from '@@types/request';
+=======
+import { IArchivingData } from '@@types/request';
+>>>>>>> c11c1f16dc937071ef92f3bdfdbae3896e83dcc9
 import { TRACK } from '@utils/constant';
 import React from 'react';
 import styled from 'styled-components';
 import Card from './Card';
 
+<<<<<<< HEAD
 const getIndexMessageAndURL = (archivingType: ArchivingType, archivingIndex: number) => {
 
   if (archivingType == 'session') {
@@ -17,6 +22,21 @@ const getIndexMessageAndURL = (archivingType: ArchivingType, archivingIndex: num
 
 const Archiving = ({ archivingType, archivingIndex, archivingData }: { archivingType: ArchivingType; archivingIndex: string; archivingData: IArchivingData[]; }) => {
   const [link, title] = getIndexMessageAndURL(archivingType, parseInt(archivingIndex));
+=======
+const getIndexMessageAndURL = (value: string) => {
+  const number = parseInt(value);
+  if (number < 4) {
+    return ['/session', TRACK[number]];
+  }
+  if (number > 2000) {
+    return ['/gallery', `${number}년`];
+  }
+  return ['/project', `${number}기`];
+};
+
+const Archiving = ({ archivingIndex, archivingData }: { archivingIndex: string; archivingData: IArchivingData[] }) => {
+  const [link, title] = getIndexMessageAndURL(archivingIndex);
+>>>>>>> c11c1f16dc937071ef92f3bdfdbae3896e83dcc9
   return (
     <Wrapper>
       <ArchivingIndex>{title}</ArchivingIndex>

@@ -10,6 +10,7 @@ import FadeInComponent from '@home/common/FadeInComponent';
 const TrackSection = () => {
   const [isClicked, setIsClicked] = useState([true, false, false, false]);
   const track = isClicked.indexOf(true);
+<<<<<<< HEAD
 
   const handleClickTrackButton = (i: number) => {
     const copy: boolean[] = [false, false, false, false];
@@ -18,11 +19,24 @@ const TrackSection = () => {
   };
   const text =
     '기획, 디자인, 프론트엔드, 백엔드 트랙으로 나뉘어 개별 세션, 스터디가 진행됩니다.\n각 트랙의 세부 활동에 대해 알아볼까요?';
+=======
+
+  const handleClickTrackButton = (i: number) => {
+    const copy: boolean[] = [false, false, false, false];
+    copy[i] = true;
+    setIsClicked(copy);
+  };
+
+>>>>>>> c11c1f16dc937071ef92f3bdfdbae3896e83dcc9
   return (
     <FadeInComponent>
       <Wrapper>
         <TitleText>트랙 소개</TitleText>
+<<<<<<< HEAD
         <Text>{text}</Text>
+=======
+        <Text>멋사에서는 트랙을 나눠 각 트랙이 자신의 역량을 키우는 것을 돕습니다? 화이팅해서 어쩌구 저쩌구</Text>
+>>>>>>> c11c1f16dc937071ef92f3bdfdbae3896e83dcc9
         <TrackWrapper>
           <CenterWrapper>
             <ButtonsWrapper>
@@ -58,6 +72,8 @@ const Wrapper = styled.div`
   flex-direction: column;
   align-items: center;
   width: 100%;
+  min-height: 100vh;
+  scroll-snap-align: start;
 `;
 
 const TitleText = styled.div`
@@ -72,15 +88,19 @@ const TitleText = styled.div`
   text-align: center;
   margin-left: 15px;
   margin-right: 15px;
+<<<<<<< HEAD
   margin-bottom: 1.5rem;
   @media (max-width: 1376px) {
     font-size: 2.5rem;
   }
+=======
+>>>>>>> c11c1f16dc937071ef92f3bdfdbae3896e83dcc9
 `;
 
 const Text = styled.div`
   font-family: 'Pretendard';
   font-weight: 500;
+<<<<<<< HEAD
   line-height: 2.5rem;
   font-size: 1.7rem;
   padding: 0.8rem 0;
@@ -94,17 +114,31 @@ const Text = styled.div`
 const TrackWrapper = styled.div`
   width: 100%;
   margin-top: 2rem;
+=======
+  font-size: 17px;
+  text-align: center;
+  margin-top: 23px;
+  margin-bottom: 70px;
+`;
+const TrackWrapper = styled.div`
+  width: 100%;
+>>>>>>> c11c1f16dc937071ef92f3bdfdbae3896e83dcc9
 `;
 
 const ButtonsWrapper = styled.div`
   display: flex;
   justify-content: space-between;
+<<<<<<< HEAD
   @media (max-width: 900px) {
     width: 100%;
     justify-content: space-around;
   }
   width: 80%;
   gap: 3rem;
+=======
+  width: 70%;
+  gap: 30px;
+>>>>>>> c11c1f16dc937071ef92f3bdfdbae3896e83dcc9
 `;
 const CenterWrapper = styled.div`
   display: flex;

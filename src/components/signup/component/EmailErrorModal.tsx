@@ -29,6 +29,11 @@ const Layer = styled.div`
     z-index: 10000;
 `;
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> c11c1f16dc937071ef92f3bdfdbae3896e83dcc9
 const Wrapper = styled.div`
     position: fixed;
     top: 50%;
