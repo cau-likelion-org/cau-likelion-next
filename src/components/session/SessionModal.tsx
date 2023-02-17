@@ -29,7 +29,7 @@ const SessionModal:React.FC<ModalProps> = ({trackData, trackName, handleClose}) 
     }
 
     return (
-        <StModalLayer>
+        <StModalLayer onClick={handleClose}>
 
         <StModalWrapper showAll={showAll} >
 
