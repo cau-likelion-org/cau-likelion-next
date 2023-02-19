@@ -1,11 +1,10 @@
-import { ArchivingType, IArchivingData } from '@@types/request';
+import { ArchivingType, IGalleryData, IProjectData, ISessionData } from '@@types/request';
 import { TRACK } from '@utils/constant';
 import React from 'react';
 import styled from 'styled-components';
 import Card from './Card';
 
 const getIndexMessageAndURL = (archivingType: ArchivingType, archivingIndex: number) => {
-
   if (archivingType == 'session') {
     return ['/session', TRACK[archivingIndex]];
   }
@@ -14,8 +13,21 @@ const getIndexMessageAndURL = (archivingType: ArchivingType, archivingIndex: num
   }
   return ['/project', `${archivingIndex}기`];
 };
+const getType = <Type extends ISessionData | IProjectData | IGalleryData>(data: Type) => {
+  if ('category' in data) return data.category;
+  if ('degree' in data) return data.degree;
+  if ('date' in data) return data.date;
+};
 
-const Archiving = ({ archivingType, archivingIndex, archivingData }: { archivingType: ArchivingType; archivingIndex: string; archivingData: IArchivingData[]; }) => {
+const Archiving = <Type extends ISessionData | IProjectData | IGalleryData>({
+  archivingType,
+  archivingIndex,
+  archivingData,
+}: {
+  archivingType: ArchivingType;
+  archivingIndex: string;
+  archivingData: Type[];
+}) => {
   const [link, title] = getIndexMessageAndURL(archivingType, parseInt(archivingIndex));
   return (
     <Wrapper>
@@ -29,8 +41,8 @@ const Archiving = ({ archivingType, archivingIndex, archivingData }: { archiving
             thumbnail={data.thumbnail}
             title={data.title}
             description={data.description}
-            dev_stack={data.dev_stack}
-            category={data.category}
+            dev_stack={'dev_stack' in data ? data.dev_stack : undefined}
+            category={getType(data)}
           />
         ))}
       </CardWrapper>
