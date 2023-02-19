@@ -34,7 +34,7 @@ const Google = () => {
   useEffect(() => {
     if (code) loginHandler.mutate({ code });
     router.push('/', undefined, { shallow: true });
-  }, [router, loginHandler, code, tokenState]);
+  }, [code]);
 
   return <div>로딩중</div>;
 };
