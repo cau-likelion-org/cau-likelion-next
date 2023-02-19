@@ -3,14 +3,20 @@ import styled from 'styled-components';
 import { Primary } from '@utils/constant/color';
 
 import AttendanceBox from './component/AttendanceBox';
+import { useQuery } from 'react-query';
+import { TodayAttendanceData } from '@@types/request';
+import { getAttendance } from 'src/apis/attendance';
+import Loading from '@common/loading/loading';
 
 const IncompletedSection = () => {
+  const { data, isLoading } = useQuery<TodayAttendanceData>(['attendance'], getAttendance);
+  if (isLoading) return <Loading />;
   return (
     <CircleWrapper>
       <Circle />
       <Circle2 />
       <Circle />
-      <AttendanceBox />
+      <AttendanceBox data={data!} />
     </CircleWrapper>
   );
 };

@@ -9,14 +9,13 @@ import { Primary } from '@utils/constant/color';
 import InputBox from './InputBox';
 
 import { getAttendance, postAttendance } from 'src/apis/attendance';
+import Loading from '@common/loading/loading';
 
-const AttendanceBox = () => {
+const AttendanceBox = ({ data }: { data: TodayAttendanceData }) => {
   const router = useRouter();
   const InputRef = useRef<HTMLInputElement>(null);
 
-  const { data, isLoading } = useQuery<TodayAttendanceData>(['attendance'], getAttendance);
-
-  if (data && data.isComplete) {
+  if (data.isComplete) {
     router.push('/attendance/completed');
   }
 
@@ -38,12 +37,6 @@ const AttendanceBox = () => {
   const handleEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') handleClick();
   };
-  if (isLoading)
-    return (
-      <Wrapper>
-        <Title>로딩중...</Title>
-      </Wrapper>
-    );
 
   return (
     <Wrapper>
