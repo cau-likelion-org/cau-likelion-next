@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import Track from './Track';
 import Slider from './Slider';
 import Arrow from './Arrow';
+import Slick from './Slick';
 
 type  SessionProps = {
     trackName: string;
@@ -75,16 +76,22 @@ const SessionSection:React.FC<SessionProps> =({trackName, trackNum, trackData}) 
             let rotation = length/slidesPerRow;
             let remain = length%slidesPerRow;
             var i=0;
+            var n=0;
             var pushArr=[]
 
             //데이터 복제 필요 없음 
             //rotation = 총 게시물 수 / 한 슬라이더에 보여줄 슬라이드 수 ... 로 딱 나누어 떨어짐
             if (length/slidesPerRow===0){
                 rotation = length/3;
-
+                
                 while (i<rotation){
-                    pushArr = trackData.slice(i, i+slidesPerRow-1);
-                    slicedArr.push(pushArr[i]);
+                    pushArr = trackData.slice(i, i+slidesPerRow+1);
+                    // slicedArr.push(pushArr[i]);
+
+                    while(n<slidesPerRow){
+                        slicedArr.push(pushArr[n]);
+                        n++;
+                    }
                     i++;
                 }
 
@@ -95,10 +102,18 @@ const SessionSection:React.FC<SessionProps> =({trackName, trackNum, trackData}) 
             //ex) 게시물 개수 13개인 경우-> rotation=> 4회(3개,3개,3,3) 1회(1개)
             else{
                 rotation = length/3 + 1;
+                console.log('딱 떨어지지않을때')
 
                 while (i<rotation){
-                    pushArr = trackData.slice(i,i+slidesPerRow-1);
-                    slicedArr.push(pushArr[i]);
+                    pushArr = trackData.slice(i,i+slidesPerRow+1);
+                    console.log(pushArr);
+                    // slicedArr.push(pushArr[i]);
+
+                    while(n<slidesPerRow){
+                        slicedArr.push(pushArr[n]);
+                        n++;
+                        
+                    }
                     i++;
                 }
 
@@ -137,16 +152,21 @@ const SessionSection:React.FC<SessionProps> =({trackName, trackNum, trackData}) 
             <Track track={trackName} trackData={trackData} />
 
             <StSlideWrapper>
-                <div onClick={() => handleSwipe(-1)}><Arrow direction='left' /></div>
-                <Slider
+                <Arrow direction='left' />
+                {/* <Slider
                     translateVal={translateVal}
                     trackData={trackData}
                     trackNum={trackNum}
                     cloneData={slidesDivide}
                     cloneDataNum={cloneDataNum}
-                    transition={transition}/>
+                    transition={transition}/> */}
+
+                <Slick
+                    trackData={trackData}
+                    trackName={trackName}
+                    />
                     
-                <div onClick={() => handleSwipe(1)}><Arrow direction='right' /></div>
+                <Arrow direction='right' />
 
             </StSlideWrapper>
 
