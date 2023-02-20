@@ -6,14 +6,14 @@ import NavButton from './NavButton';
 import { BackgroundColor } from '@utils/constant/color';
 import Link from 'next/link';
 import { useRecoilValue } from 'recoil';
-import { accessToken } from '@utils/state';
+import { token } from '@utils/state';
 import HoverButton from './HoverButton';
 
 export interface IHoverButton {
-  'hover': {
+  hover: {
     title: string;
   };
-  'dropdown': IMenu[];
+  dropdown: IMenu[];
 }
 
 export interface IMenu {
@@ -22,7 +22,7 @@ export interface IMenu {
 }
 
 const NavBar = () => {
-  const tokenState = useRecoilValue(accessToken);
+  const tokenState = useRecoilValue(token);
 
   const hover: IHoverButton['hover'] = { title: '아카이빙' };
   const dropdown: IHoverButton['dropdown'] = [
@@ -56,7 +56,7 @@ const NavBar = () => {
       </LogoWrapper>
       <ButtonWrapper>
         <HoverButton hover={hover} dropdown={dropdown} />
-        {menuDataSelector(tokenState).map(({ title, routing }, index) => (
+        {menuDataSelector(tokenState.access).map(({ title, routing }, index) => (
           <NavButton key={index} title={title} routing={routing} />
         ))}
       </ButtonWrapper>
@@ -72,10 +72,10 @@ const Wrapper = styled.div`
   position: fixed;
   top: 0;
   left: 0;
-  @media(max-width: 1440px) {
+  @media (max-width: 1440px) {
     padding: 0 250px;
   }
-  @media(max-width: 1280px) {
+  @media (max-width: 1280px) {
     padding: 0 150px;
   }
   padding: 0 360px;
@@ -84,14 +84,14 @@ const Wrapper = styled.div`
   background-color: ${BackgroundColor};
   z-index: 9999;
 
-  @media(max-width: 899px) {
+  @media (max-width: 899px) {
     display: none;
   }
 `;
 
 const LogoImage = styled.div`
-min-width: 50px;
-min-height: 50px;
+  min-width: 50px;
+  min-height: 50px;
 `;
 
 const LogoWrapper = styled.div`

@@ -68,7 +68,10 @@ export interface RequestSignUpForm {
 
 export interface LoginResponse {
   is_active: boolean;
-  accessToken: string;
+  token: {
+    access: string;
+    refresh: string;
+  };
 }
 
 export interface UserProfile {

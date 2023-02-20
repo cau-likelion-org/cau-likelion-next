@@ -3,9 +3,15 @@
 import { atom } from 'recoil';
 import cookie from 'react-cookies';
 import { v1 } from 'uuid';
-
-export const accessToken = atom<string>({
-    key: `accessToken/${v1()}`,
-    // default: cookie.load('accessToken')
-    default: 'ads'
+interface IToken {
+  access: string;
+  refresh: string;
+}
+export const token = atom<IToken>({
+  key: `tokenoken/${v1()}`,
+  // default: cookie.load('accessToken')
+  default: {
+    access: '',
+    refresh: '',
+  },
 });
