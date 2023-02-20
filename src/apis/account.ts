@@ -114,3 +114,15 @@ export function login(code: string | string[]) {
       return res.data;
     });
 }
+
+export function getAcessToken(refresh_code: string) {
+  console.log('코드:', refresh_code);
+  return axios
+    .post(`/api/auths/token/refresh/`, {
+      refresh: refresh_code,
+    })
+    .then((res) => {
+      console.log(res);
+      return res.data;
+    });
+}
