@@ -43,8 +43,8 @@ export interface ISessionDetail extends IArchivingData {
   track: string,
   topic: string,
   description: string,
-  data: "2022.12.30",
-  reference?: string,
+  date: "2022.12.30",
+  reference?: string[],
 }
 
 export type ProjectsArrayType = Record<string, IArchivingData[]>;
