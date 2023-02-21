@@ -97,14 +97,11 @@ const Wrapper = styled.div`
 margin: 0;
 padding: 0;
 width: 70vw;
-
-
-
 `;
 
 
 const StSlider = styled(Slider)`
-height: 50rem;
+height: 45rem;
 
 .slick-prev,
 .slick-next {
