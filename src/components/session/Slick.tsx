@@ -20,7 +20,7 @@ const Slick:React.FC<ModalProps> = ({trackData, trackName}) => {
     function setSlidesToShow(){
         let arr=[]
         let i = 4;
-        
+
         while(i>0){
             if(length<i){
                 arr.push(length)
@@ -78,7 +78,7 @@ const Slick:React.FC<ModalProps> = ({trackData, trackName}) => {
                         <Card
                         key={data.id}
                         id= {data.id}
-                        link={`/${data.id}`}
+                        link='/session'
                         thumbnail={data.thumbnail}
                         title={data.title}
                         category={`${data.category}차 세션`} />
