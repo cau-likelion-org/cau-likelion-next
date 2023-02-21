@@ -4,9 +4,7 @@ import styled, {keyframes,css} from 'styled-components';
 import Card from '@archiving/Card';
 import Image from 'next/image';
 import close from '@image/Frame 916.png';
-import more from '@image/Vector 18.png';
 import { Primary } from '@utils/constant/color';
-import {useBodyScrollLock} from './utils/scrollBlock'
 
 type  ModalProps = {
     trackName: string;
@@ -15,13 +13,8 @@ type  ModalProps = {
     visible:boolean,
 };
 
-// type ModalAniProps={
-//     visible: boolean,
-// }
-
 
 const SessionModal:React.FC<ModalProps> = ({trackData, trackName, handleClose, visible}) => {
-    // const [visible, setVisible] = useState(true);
     const [isOpen, setIsOpen] = useState(false);
 
     useEffect(() => {
@@ -103,8 +96,8 @@ const fadeOut = keyframes`
 
 const modalSettings = (visible: boolean) => css`
 visibility: ${visible ? 'visible' : 'hidden'};
-animation: ${visible ? fadeIn : fadeOut} 0.3s ease-out;
-transition: visibility 0.3s ease-out;
+animation: ${visible ? fadeIn : fadeOut} 0.5s ease-out;
+transition: visibility 0.5s ease-out;
 `;
 
 
@@ -117,12 +110,14 @@ top: 0;
 left: 0;
 bottom: 0;
 right: 0;
-padding: 3rem 0 0 0;
+margin: auto;
 background: rgba(0, 0, 0, 0.3);
 z-index: 9999;
 overflow: hidden;
-${(props) => modalSettings(props.visible)};
 
+animation: ${(props)=> props.visible ? fadeIn : fadeOut} 0s ease-out;
+visibility: ${(props)=> props.visible ? 'visible' : 'hidden'};
+transition: visibility 0s ease-out;
 `
 
 
@@ -134,13 +129,10 @@ z-index: 10000;
 margin: auto;
 
 position: absolute;
-${(props) => modalSettings(props.visible)};
 top: ${(props) => props.visible ?'5%': '15%'};
-/* left: 15%; */
 background: #FFFFFF;
 box-shadow: 10px 10px 60px rgba(0, 0, 0, 0.4);
 border-radius: 24px;
-
 overflow: scroll;
 
 ${(props) => modalSettings(props.visible)};
@@ -148,7 +140,8 @@ ${(props) => modalSettings(props.visible)};
 
 //<전체보기> 눌렀을 때 모달창 초기 높이, 너비
 @media (min-width: 1920px) {
-    max-height: 100rem; width: 150rem; 
+    max-height: 100rem; 
+    width: 150rem; 
 }
 
 @media (min-width: 1661px) and (max-width: 1919px) {
