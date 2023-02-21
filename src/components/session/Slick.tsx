@@ -14,14 +14,13 @@ type  ModalProps = {
 
 
 const Slick:React.FC<ModalProps> = ({trackData, trackName}) => {
-    const [active, setActive] = useState(1);
     const length = trackData.length;
-
     const slidesToShowArr = setSlidesToShow();
 
     function setSlidesToShow(){
         let arr=[]
         let i = 4;
+        
         while(i>0){
             if(length<i){
                 arr.push(length)
@@ -33,17 +32,16 @@ const Slick:React.FC<ModalProps> = ({trackData, trackName}) => {
         }
         return[...arr];
     }
-    
-    console.log(slidesToShowArr);
 
 
-    
 
-    const settings1={
+
+    const settings={
         infinite: true,
         speed: 1000,
-        // variableWidth: true,
-        // centerMode: true,
+        variableWidth: true,
+        swipeToSlide: true,
+        touchMove: true,
 
         responsive:[
             {breakpoint: 1920,
@@ -58,31 +56,23 @@ const Slick:React.FC<ModalProps> = ({trackData, trackName}) => {
             }},
             {breakpoint:1220,
                 settings:{
-                    slidesToShow: slidesToShowArr[2],
-                    slidesToScroll:slidesToShowArr[2],
-            }},
-            {breakpoint:300,
-                settings:{
-                    slidesToShow:slidesToShowArr[3],
+                    slidesToShow: slidesToShowArr[3],
                     slidesToScroll:slidesToShowArr[3],
-            }}
+            }},
+            {breakpoint:600,
+                settings:{
+                    slidesToShow: slidesToShowArr[3],
+                    slidesToScroll:slidesToShowArr[3],
+            }},
 
         ]
     }
-
-    // @media (min-width: 1920px) {grid-template-columns: 1fr 1fr 1fr; gap: 20px;}
-
-    // @media (min-width: 1220px) and (max-width: 1660px) {grid-template-columns: 1fr 1fr; gap: 30px;}
-
-    // @media (min-width: 870px) and (max-width: 1221px) {grid-template-columns: 1fr 1fr; gap: 30px;;}
-
-    // @media (min-width: 360px) and (max-width: 871px) {grid-template-columns: 1fr; gap: 30px;}
 
 
 
     return (
         <Wrapper>
-            <StSlider  {...settings1} className='cardWrapper'>
+            <StSlider  {...settings}>
                 {trackData.slice(0).reverse().map((data)=>{
                     return(
                         <Card
@@ -109,10 +99,12 @@ padding: 0;
 width: 70vw;
 
 
+
 `;
 
 
 const StSlider = styled(Slider)`
+height: 50rem;
 
 .slick-prev,
 .slick-next {
@@ -121,10 +113,6 @@ const StSlider = styled(Slider)`
     cursor: pointer;
     padding: 0;
     display: block;
-    color: transparent;
-    border: none;
-    outline: none;
-    background: transparent;
     z-index: 1;
 
 }
