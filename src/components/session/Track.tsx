@@ -12,21 +12,18 @@ type  TrackProps = {
 };
 
 const Track: React.FC<TrackProps> = ({track, trackData}) => {
-    const [modal, setModal] = useState(false);
-    const [showAll, setShowAll]= useState(false);
-
+    const [visible, setVisible]= useState(false);
     const {lockScroll, openScroll} = useBodyScrollLock();
 
 
     const handleClick = (e: React.MouseEvent<HTMLElement, MouseEvent>): void  =>{
-        setModal(!modal);
+        setVisible(true);
         lockScroll();
 
     }
 
     const handleClose = (e: React.MouseEvent<HTMLElement, MouseEvent>): void  =>{
-        setModal(false);
-        setShowAll(false);
+        setVisible(false);
         openScroll();
     }
 
@@ -38,13 +35,14 @@ const Track: React.FC<TrackProps> = ({track, trackData}) => {
             <StShowAll onClick={handleClick}>전체보기 &gt;</StShowAll>
         </StWrapper>
 
-        {modal && (  
+        {visible && (  
             <SessionModal 
             trackData={trackData}
             trackName={track}
             handleClose={handleClose}
+
             />
-        )}
+        )} 
         </>
 
     );

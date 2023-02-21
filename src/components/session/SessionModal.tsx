@@ -1,11 +1,12 @@
 import React,{useState} from 'react';
-import styled from 'styled-components';
+import styled, {keyframes,css} from 'styled-components';
 
 import Card from '@archiving/Card';
 import Image from 'next/image';
 import close from '@image/Frame 916.png';
 import more from '@image/Vector 18.png';
 import { Primary } from '@utils/constant/color';
+import {useBodyScrollLock} from './utils/scrollBlock'
 
 type  ModalProps = {
     trackName: string;
@@ -13,28 +14,20 @@ type  ModalProps = {
     handleClose: (e: React.MouseEvent<HTMLElement, MouseEvent>) => void,
 };
 
-type ShowAllProps = {
-    showAll:boolean;
+type ModalAniProps={
+    visible: boolean,
 }
 
 
 const SessionModal:React.FC<ModalProps> = ({trackData, trackName, handleClose}) => {
-    const [showAll, setShowAll]= useState(false);
+    const [visible, setVisible] = useState(true);
 
-    const handleMore = (e: React.MouseEvent<HTMLElement, MouseEvent>): void  =>{
-        setShowAll(true);
-
-        console.log(showAll);
-    
-    }
 
     return (
-        <StModalLayer>
+        <>
+        <StModalLayer onClick={handleClose} visible={visible}/>
 
-        <StModalCenterLayer>
-
-        <StModalWrapper showAll={showAll} >
-
+        <StModalWrapper visible={visible}>
             <ModalHeader>
                 <ImgWrapper onClick={handleClose}>
                     <Image src={close} width='35px' height='35px' alt='창닫기'/>
@@ -46,9 +39,9 @@ const SessionModal:React.FC<ModalProps> = ({trackData, trackName, handleClose}) 
                 </ButtonWrapper>
             </ModalHeader>
 
-            <CardWrapper showAll={showAll}>
+            <CardWrapper>
 
-                {trackData.slice(1).reverse().map((data,i)=>{
+                {trackData.slice(0).reverse().map((data,i)=>{
                     return(
                         <Card
                         key={data.id}
@@ -62,17 +55,40 @@ const SessionModal:React.FC<ModalProps> = ({trackData, trackName, handleClose}) 
             </CardWrapper>
         
         </StModalWrapper>
-        </StModalCenterLayer>
 
-    </StModalLayer> 
+        </>
+
     );
 };
 
 export default SessionModal;
 
+const fadeIn = keyframes`
+    0% {
+    opacity: 0;
+    }
+    100% {
+    opacity: 1;
+    }
+`;
+
+const fadeOut = keyframes`
+    0% {
+    opacity: 1;
+    }
+    100% {
+    opacity: 0;
+    }
+`;
+
+const modalSettings = (visible: boolean) => css`
+visibility: ${visible ? 'visible' : 'hidden'};
+animation: ${visible ? fadeIn : fadeOut} 0.15s ease-out;
+transition: visibility 0.15s ease-out;
+`;
 
 
-const StModalLayer = styled.div`
+const StModalLayer = styled.div<ModalAniProps>`
 display: flex;
 justify-content: center;
 
@@ -85,43 +101,50 @@ padding: 3rem 0 0 0;
 background: rgba(0, 0, 0, 0.3);
 z-index: 9999;
 overflow: hidden;
-
-`
-
-const StModalCenterLayer = styled.div`
-    display: flex;
-    justify-content: center;
-    align-items: center;
+${(props) => modalSettings(props.visible)};
 
 
 `
 
-const StModalWrapper = styled.div<ShowAllProps>`
+
+const StModalWrapper = styled.div<ModalAniProps>`
 display: flex;
 flex-direction: column;
 align-items: center;
+z-index: 10000;
+margin: auto;
 
-/* top: 50%; */
-top: 50rem;
-left: 50%;
-height:50rem;
-
+position: absolute;
+top: 5%;
+left: 15%;
 background: #FFFFFF;
 box-shadow: 10px 10px 60px rgba(0, 0, 0, 0.4);
 border-radius: 24px;
 
 overflow: scroll;
 
+${(props) => modalSettings(props.visible)};
+
+
 //<전체보기> 눌렀을 때 모달창 초기 높이, 너비
-@media (min-width: 1920px) {min-height: 100rem; width: 150rem; }
+@media (min-width: 1920px) {
+    max-height: 100rem; width: 150rem; 
+}
 
-@media (min-width: 1661px) and (max-width: 1919px) {min-height: 100rem; width:120rem;}
+@media (min-width: 1661px) and (max-width: 1919px) {
+    max-height: 100rem; width:120rem; 
+}
 
-@media (min-width: 1220px) and (max-width: 1660px) {min-height: 100rem; width: 100rem;}
+@media (min-width: 1220px) and (max-width: 1660px) {
+    max-height: 100rem; width: 100rem; 
+}
 
-@media (min-width: 870px) and (max-width: 1221px) {min-height: 100rem; width: 80rem;}
+@media (min-width: 870px) and (max-width: 1221px) {
+    max-height: 100rem; width: 80rem; 
+}
 
-@media (max-width: 871px) {min-height: 60rem; width: 50rem; height: ${props=> !props.showAll ? '75rem' : 'auto'};}
+@media (max-width: 871px) {
+    max-height: 60rem; width: 50rem; height: 100rem;}
 
 `
 
@@ -148,7 +171,7 @@ margin: 3rem 0 ;
 `
 
 
-const CardWrapper = styled.div<ShowAllProps>`
+const CardWrapper = styled.div`
 display: grid;
 background-color: white;
 gap: 20px;
@@ -160,7 +183,6 @@ scrollbar-width: none;
     display: none; 
 }
 
-/* overflow-y: ${props=> !props.showAll ? 'hidden' : 'visible'}; */
 overflow-y: visible;
 
 @media (min-width: 1920px) {grid-template-columns: 1fr 1fr 1fr; gap: 20px;}
@@ -173,10 +195,6 @@ overflow-y: visible;
 
 `
 
-const ModalFooter = styled.div<ShowAllProps>`
-margin: 2rem 0;
-visibility: ${props=> !props.showAll ? 'visbile' : 'hidden'};
-`
 
 const UploadButton = styled.button`
 border: none;
