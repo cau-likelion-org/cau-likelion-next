@@ -8,6 +8,7 @@ import Carousel from '@archiving/Carousel';
 import LayoutArchiving from '@common/layout/LayoutArchiving';
 import { getSessionDetail } from 'src/apis/sessionDetail';
 import { GetStaticPaths } from 'next';
+import { GreyScale } from '@utils/constant/color';
 
 const SessionDetail = ({sessionDetailStaticData}:{sessionDetailStaticData:ISessionDetail;}) => {
     const router = useRouter();
@@ -15,13 +16,11 @@ const SessionDetail = ({sessionDetailStaticData}:{sessionDetailStaticData:ISessi
         getSessionDetail(router.query.session_id as string),
         )
 
-        console.log(sessionDetailStaticData);
-    
-
     return (
         <Wrapper>
             <Carousel images={isLoading ? sessionDetailStaticData.thumbnail : data!.thumbnail}/>
             <SessionDetailSection sessionDetail={sessionDetailStaticData}/>
+            <hr/>
         </Wrapper>
     );
 };
@@ -32,7 +31,7 @@ SessionDetail.getLayout = function getLayout(page:ReactElement){
 
 export const getStaticPaths: GetStaticPaths = (async) => {
     return {
-        paths: [{ params: { session_id: '1' } }],
+        paths: [{ params: { session_id: '8' } }],
         fallback: false,
     };
 };
@@ -52,5 +51,13 @@ export default SessionDetail;
 
 
 const Wrapper=styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    &hr {
+        background: ${GreyScale.light};
+    }
     
 `
