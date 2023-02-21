@@ -1,4 +1,4 @@
-import React,{useState} from 'react';
+import React,{useState,useEffect} from 'react';
 import styled, {keyframes,css} from 'styled-components';
 
 import Card from '@archiving/Card';
@@ -12,17 +12,37 @@ type  ModalProps = {
     trackName: string;
     trackData: { id: number; title: string, category:string, thumbnail:string}[];
     handleClose: (e: React.MouseEvent<HTMLElement, MouseEvent>) => void,
+    visible:boolean,
 };
 
-type ModalAniProps={
-    visible: boolean,
-}
+// type ModalAniProps={
+//     visible: boolean,
+// }
 
 
-const SessionModal:React.FC<ModalProps> = ({trackData, trackName, handleClose}) => {
-    const [visible, setVisible] = useState(true);
+const SessionModal:React.FC<ModalProps> = ({trackData, trackName, handleClose, visible}) => {
+    // const [visible, setVisible] = useState(true);
+    const [isOpen, setIsOpen] = useState(false);
+
+    useEffect(() => {
+        let timeoutId: NodeJS.Timeout;
+        if (visible) {
+            setIsOpen(true);
+        } else {
+            timeoutId = setTimeout(() => setIsOpen(false), 300);
+        }
+    
+        return () => {
+            if (timeoutId !== undefined) {
+            clearTimeout(timeoutId);
+        }
+        };
+    }, [visible]);
 
 
+
+    if (!isOpen){return null}
+    
     return (
         <>
         <StModalLayer onClick={handleClose} visible={visible}/>
@@ -46,7 +66,7 @@ const SessionModal:React.FC<ModalProps> = ({trackData, trackName, handleClose}) 
                         <Card
                         key={data.id}
                         id= {data.id}
-                        link={`/${data.id}`}
+                        link='/session'
                         thumbnail={data.thumbnail}
                         title={data.title}
                         category={`${data.category}차 세션`} />
@@ -83,12 +103,12 @@ const fadeOut = keyframes`
 
 const modalSettings = (visible: boolean) => css`
 visibility: ${visible ? 'visible' : 'hidden'};
-animation: ${visible ? fadeIn : fadeOut} 0.15s ease-out;
-transition: visibility 0.15s ease-out;
+animation: ${visible ? fadeIn : fadeOut} 0.3s ease-out;
+transition: visibility 0.3s ease-out;
 `;
 
 
-const StModalLayer = styled.div<ModalAniProps>`
+const StModalLayer = styled.div<{ visible: boolean }>`
 display: flex;
 justify-content: center;
 
@@ -103,11 +123,10 @@ z-index: 9999;
 overflow: hidden;
 ${(props) => modalSettings(props.visible)};
 
-
 `
 
 
-const StModalWrapper = styled.div<ModalAniProps>`
+const StModalWrapper = styled.div<{ visible: boolean }>`
 display: flex;
 flex-direction: column;
 align-items: center;
@@ -115,8 +134,9 @@ z-index: 10000;
 margin: auto;
 
 position: absolute;
-top: 5%;
-left: 15%;
+${(props) => modalSettings(props.visible)};
+top: ${(props) => props.visible ?'5%': '15%'};
+/* left: 15%; */
 background: #FFFFFF;
 box-shadow: 10px 10px 60px rgba(0, 0, 0, 0.4);
 border-radius: 24px;
