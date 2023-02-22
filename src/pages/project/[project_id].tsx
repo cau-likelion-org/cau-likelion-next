@@ -35,12 +35,13 @@ ProjectDetail.getLayout = function getLayout(page: ReactElement) {
 export const getStaticPaths: GetStaticPaths = (async) => {
   return {
     paths: [{ params: { project_id: '1' } }],
-    fallback: false,
+    fallback: true,
   };
 };
 
 export async function getStaticProps({ params }: { params: { project_id: string } }) {
   const projectDetailStaticData = await getProjectDetail(params.project_id);
+  await new Promise((resolve) => setTimeout(resolve, 5000));
   return {
     props: {
       projectDetailStaticData,
