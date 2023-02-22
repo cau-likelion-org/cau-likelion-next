@@ -17,6 +17,9 @@ const GalleryDetail = ({ galleryDetailStaticData }: { galleryDetailStaticData: I
     getGalleryDetail(router.query.project_id as string),
   );
 
+  if (router.isFallback) {
+    return <div>로딩중</div>;
+  }
   return (
     <Wrapper>
       <Carousel images={isLoading ? galleryDetailStaticData.thumbnail : data!.thumbnail} />

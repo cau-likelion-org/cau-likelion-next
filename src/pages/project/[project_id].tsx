@@ -18,7 +18,9 @@ const ProjectDetail = ({ projectDetailStaticData }: { projectDetailStaticData: I
   const { data, isLoading } = useQuery<IProjectDetail>(['projectDeatil', router.query.project_id], () =>
     getProjectDetail(router.query.project_id as string),
   );
-
+  if (router.isFallback) {
+    return <div>로딩중</div>;
+  }
   return (
     <Wrapper>
       <Carousel images={isLoading ? projectDetailStaticData.thumbnail : data!.thumbnail} />
@@ -41,7 +43,6 @@ export const getStaticPaths: GetStaticPaths = (async) => {
 
 export async function getStaticProps({ params }: { params: { project_id: string } }) {
   const projectDetailStaticData = await getProjectDetail(params.project_id);
-  await new Promise((resolve) => setTimeout(resolve, 5000));
   return {
     props: {
       projectDetailStaticData,
