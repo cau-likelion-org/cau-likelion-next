@@ -6,6 +6,8 @@ import React from 'react';
 import styled from 'styled-components';
 
 interface ICardProps extends IArchivingData {
+  dev_stack?: number[];
+  category?: string | number;
   link: string;
 }
 const Card = ({ id, thumbnail, title, description, dev_stack, category, link }: ICardProps) => {
