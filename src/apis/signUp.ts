@@ -35,34 +35,30 @@ export const getEmailSecret = async (accessToken: string, refreshToken: string, 
   return response;
 };
 
-export const postEmailSecret = (accessToken: string, secretValue: string) => {
-  // const response = axios.post(
-  //     `${url}/cau_email`,
-  //     {
-  //         secret: secretValue
-  //     },
-  //     {
-  //         headers: {
-  //             Authorization: `Bearer ${accessToken}`
-  //         }
-  //     }
-  // ).then((res) => '1234');
-  return '1235';
+interface IMailResponse {
+  data: boolean;
+}
+export const postEmailSecret = async (accessToken: string, refreshToken: string, secretValue: string) => {
+  const axiosInstance = getSignUpAxiosInstance(accessToken, refreshToken);
+  const response = await axiosInstance.post<IMailResponse>(`api/accounts/caumail`, {
+    code: secretValue,
+  });
+  return response.data;
 };
 
-export function postSignUpForm(form: RequestSignUpForm) {
-  return axios.post(
-    `/signup`,
-    {
-      name: form.name,
-      generation: form.generation,
-      track: form.track,
-      is_admin: form.isAdmin,
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${form.accessToken}`,
-      },
-    },
-  );
+export interface IMutationProps {
+  form: RequestSignUpForm;
+  accessToken: string;
+  refreshToken: string;
 }
+
+export const postSignUpForm = async (props: IMutationProps) => {
+  const axiosInstance = getSignUpAxiosInstance(props.accessToken, props.refreshToken);
+  const response = await axiosInstance.put(`/api/accounts/profile`, {
+    name: props.form.name,
+    generation: props.form.generation,
+    track: props.form.track,
+    is_admin: props.form.isAdmin,
+  });
+  return response.data;
+};

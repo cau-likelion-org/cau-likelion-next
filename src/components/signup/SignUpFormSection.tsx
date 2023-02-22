@@ -2,13 +2,13 @@ import { RequestSignUpForm } from '@@types/request';
 import { TRACK, TRACK_INDEX, TRACK_NAME } from '@utils/constant';
 import { Basic } from '@utils/constant/color';
 import { isEmptyString } from '@utils/index';
-import router, { useRouter } from 'next/router';
+import { useRouter } from 'next/router';
 import React from 'react';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { useMutation, useQuery } from 'react-query';
 import { useRecoilState } from 'recoil';
-import { postSignUpForm } from 'src/apis/signup';
+import { IMutationProps, postSignUpForm } from 'src/apis/signUp';
 import useInput from 'src/hooks/useInput';
 import styled from 'styled-components';
 import CauMailAuthenticationBox from './component/CauMailAuthenticationBox';
@@ -43,9 +43,9 @@ const SignUpFormSection = () => {
   }, [nameValue, generationValue, emailValue, emailSecretValue, isAuthenticated]);
 
   const signUpFormPost = useMutation({
-    mutationFn: (form: RequestSignUpForm) => postSignUpForm(form),
-    onSuccess: (res) => {
-      if (res.status === 200) {
+    mutationFn: (props: IMutationProps) => postSignUpForm(props),
+    onSuccess: (res: any) => {
+      if (res) {
         router.push('/signup/success');
       }
     },
@@ -54,12 +54,16 @@ const SignUpFormSection = () => {
   const handleSubmit = () => {
     if (isFormActivated && accessToken) {
       signUpFormPost.mutate({
-        accessToken: accessToken,
-        name: nameValue,
-        generation: Number(generationValue),
-        track: TRACK_INDEX[dropdownValue],
-        isAdmin: toggleIsClicked[1],
-      });
+        form: {
+          accessToken: accessToken,
+          name: nameValue,
+          generation: Number(generationValue),
+          track: TRACK_INDEX[dropdownValue],
+          isAdmin: toggleIsClicked[1],
+        },
+        accessToken,
+        refreshToken,
+      } as IMutationProps);
     }
   };
 
