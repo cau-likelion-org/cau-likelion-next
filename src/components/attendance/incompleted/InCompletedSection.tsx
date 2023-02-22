@@ -6,7 +6,7 @@ import AttendanceBox from './component/AttendanceBox';
 import { useQuery } from 'react-query';
 import { TodayAttendanceData } from '@@types/request';
 import { getAttendance } from 'src/apis/attendance';
-import Loading from '@common/loading/loading';
+import Loading from '@common/loading/Loading';
 
 const IncompletedSection = () => {
   const { data, isLoading } = useQuery<TodayAttendanceData>(['attendance'], getAttendance);

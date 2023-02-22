@@ -9,7 +9,6 @@ import { Primary } from '@utils/constant/color';
 import InputBox from './InputBox';
 
 import { getAttendance, postAttendance } from 'src/apis/attendance';
-import Loading from '@common/loading/loading';
 
 const AttendanceBox = ({ data }: { data: TodayAttendanceData }) => {
   const router = useRouter();

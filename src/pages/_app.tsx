@@ -8,7 +8,7 @@ import { NextPage } from 'next';
 import LayoutDefault from '@common/layout/LayoutDefault';
 import { useState, useEffect } from 'react';
 import { Router } from 'next/router';
-import Loading from '@common/loading/loading';
+import Loading from '@common/loading/Loading';
 type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode;
 };
