@@ -30,7 +30,7 @@ const getSignUpAxiosInstance = (accessToken: string, refreshToken: string) => {
 export const getEmailSecret = async (accessToken: string, refreshToken: string, emailValue: string) => {
   const axiosInstance = getSignUpAxiosInstance(accessToken, refreshToken);
   const response = await axiosInstance.get(`/api/accounts/caumail`, {
-    params: { email: emailValue },
+    params: { email: `${emailValue}@cau.ac.kr` },
   });
   return response;
 };
