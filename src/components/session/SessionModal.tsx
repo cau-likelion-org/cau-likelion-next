@@ -21,22 +21,20 @@ const SessionModal:React.FC<ModalProps> = ({trackData, trackName, handleClose, v
         let timeoutId: NodeJS.Timeout;
         if (visible) {
             setIsOpen(true);
-        } else {
+        } 
+        else {
             timeoutId = setTimeout(() => setIsOpen(false), 300);
         }
     
         return () => {
             if (timeoutId !== undefined) {
             clearTimeout(timeoutId);
-        }
-        };
+        }};
     }, [visible]);
-
-
-
-    if (!isOpen){return null}
     
     return (
+        <>
+        {isOpen && 
         <>
         <StModalLayer onClick={handleClose} visible={visible}/>
 
@@ -53,7 +51,6 @@ const SessionModal:React.FC<ModalProps> = ({trackData, trackName, handleClose, v
             </ModalHeader>
 
             <CardWrapper>
-
                 {trackData.slice(0).reverse().map((data,i)=>{
                     return(
                         <Card
@@ -66,11 +63,10 @@ const SessionModal:React.FC<ModalProps> = ({trackData, trackName, handleClose, v
                         )
                     })}
             </CardWrapper>
-        
         </StModalWrapper>
-
         </>
-
+        }
+        </>
     );
 };
 
@@ -96,8 +92,8 @@ const fadeOut = keyframes`
 
 const modalSettings = (visible: boolean) => css`
 visibility: ${visible ? 'visible' : 'hidden'};
-animation: ${visible ? fadeIn : fadeOut} 0.5s ease-out;
-transition: visibility 0.5s ease-out;
+animation: ${visible ? fadeIn : fadeOut} 0.3s ease-out;
+transition: visibility 0.3s ease-out;
 `;
 
 
@@ -115,9 +111,11 @@ background: rgba(0, 0, 0, 0.3);
 z-index: 9999;
 overflow: hidden;
 
-animation: ${(props)=> props.visible ? fadeIn : fadeOut} 0s ease-out;
+${(props) => modalSettings(props.visible)};
+
+/* animation: ${(props)=> props.visible ? fadeIn : fadeOut} 0s ease-out;
 visibility: ${(props)=> props.visible ? 'visible' : 'hidden'};
-transition: visibility 0s ease-out;
+transition: visibility 0s ease-out; */
 `
 
 
