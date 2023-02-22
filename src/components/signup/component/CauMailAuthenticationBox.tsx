@@ -1,7 +1,7 @@
 import { Basic, GreyScale, Primary } from '@utils/constant/color';
 import React, { Dispatch, SetStateAction, useState } from 'react';
 import { useRecoilValue } from 'recoil';
-import { getEmailSecret, postEmailSecret } from 'src/apis/signup';
+import { getEmailSecret, postEmailSecret } from 'src/apis/signUp';
 import { useAuthRequest } from 'src/hooks/useAuthRequest';
 import styled from 'styled-components';
 import EmailErrorModal from './EmailErrorModal';
@@ -39,8 +39,8 @@ const CauMailAuthenticationBox = ({
   };
 
   const handleSecretKeyButton = async () => {
-    const response = await postEmailSecret(accessTokenOnce, secretValue);
-    if (response == secretValue) setIsAuthenticated(true);
+    const response = await postEmailSecret(accessTokenOnce, refreshTokenOnce, secretValue);
+    if (response) setIsAuthenticated(true);
     else setIsErrorModalOn(true);
   };
 
