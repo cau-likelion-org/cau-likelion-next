@@ -8,7 +8,7 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import { useMutation } from 'react-query';
 import { useRecoilState } from 'recoil';
-import { IMutationProps, postSignUpForm } from 'src/apis/signUp';
+import { IMutationProps, putUserProfile } from 'src/apis/signUp';
 import useInput from 'src/hooks/useInput';
 import styled from 'styled-components';
 import CauMailAuthenticationBox from './component/CauMailAuthenticationBox';
@@ -50,7 +50,7 @@ const SignUpFormSection = () => {
   }, [nameValue, generationValue, emailValue, emailSecretValue, isAuthenticated]);
 
   const signUpFormPost = useMutation({
-    mutationFn: (props: IMutationProps) => postSignUpForm(props),
+    mutationFn: (props: IMutationProps) => putUserProfile(props),
     onSuccess: (res: any) => {
       if (res) {
         setToken((prev) => {
@@ -68,7 +68,6 @@ const SignUpFormSection = () => {
     if (isFormActivated && accessToken) {
       signUpFormPost.mutate({
         form: {
-          accessToken: accessToken,
           name: nameValue,
           generation: Number(generationValue),
           track: TRACK_INDEX[dropdownValue],
