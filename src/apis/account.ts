@@ -1,6 +1,7 @@
 import { LoginResponse, RequestSignUpForm, UserAttendance, UserProfile } from '@@types/request';
+import { IToken } from '@utils/state';
 import axios, { AxiosInstance } from 'axios';
-import { url } from '.';
+import { getAuthAxios } from './authAxios';
 
 export function patchUserProfile(userProfile: UserProfile, accessToken: string) {
   return axios.patch(
@@ -19,22 +20,10 @@ export function patchUserProfile(userProfile: UserProfile, accessToken: string) 
   );
 }
 
-export const getUserProfile = async (accessToken: string) => {
-  // const response = await axios.get<UserProfile>(
-  //     `${url}/user`,
-  //     {
-  //         headers: {
-  //             Authorization: `Bearer ${accessToken}`
-  //         }
-  //     }
-  // );
-  // return response.data;
-  return {
-    name: '윤선영',
-    generation: 11,
-    track: 2,
-    isAdmin: true,
-  };
+export const getUserProfile = async (token: IToken) => {
+  const authAxios = getAuthAxios(token);
+  const response = await authAxios.get(`/api/accounts/profile/`);
+  return response.data.data.user as UserProfile;
 };
 
 export const getUserAttendance = async (username: string) => {
