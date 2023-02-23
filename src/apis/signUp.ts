@@ -1,34 +1,9 @@
 import { RequestSignUpForm } from '@@types/request';
-import axios from 'axios';
-import Axios from 'axios';
-import { getAcessToken } from './account';
-const getSignUpAxiosInstance = (accessToken: string, refreshToken: string) => {
-  const signUpAxiosInstance = Axios.create({
-    headers: {
-      Authorization: `${accessToken}`,
-    },
-  });
-  signUpAxiosInstance.interceptors.response.use(
-    (res) => res,
-    async (error) => {
-      const {
-        config,
-        response: { status },
-      } = error;
-      if (status !== 401) {
-        return Promise.reject(error);
-      }
-      const { access: newAccessToken } = await getAcessToken(refreshToken);
+import { IToken } from '@utils/state';
+import { getAuthAxios } from './authAxios';
 
-      config.headers.Authorization = `Bearer ${newAccessToken}`;
-      return axios(config);
-    },
-  );
-  return signUpAxiosInstance;
-};
-
-export const getEmailSecret = async (accessToken: string, refreshToken: string, emailValue: string) => {
-  const axiosInstance = getSignUpAxiosInstance(accessToken, refreshToken);
+export const getEmailSecret = async (token: IToken, emailValue: string) => {
+  const axiosInstance = getAuthAxios(token);
   const response = await axiosInstance.get(`/api/accounts/caumail`, {
     params: { email: `${emailValue}@cau.ac.kr` },
   });
@@ -38,9 +13,10 @@ export const getEmailSecret = async (accessToken: string, refreshToken: string, 
 interface IMailResponse {
   data: boolean;
 }
-export const postEmailSecret = async (accessToken: string, refreshToken: string, secretValue: string) => {
-  const axiosInstance = getSignUpAxiosInstance(accessToken, refreshToken);
-  const response = await axiosInstance.post<IMailResponse>(`api/accounts/caumail`, {
+
+export const postEmailSecret = async (token: IToken, secretValue: string) => {
+  const axiosInstance = getAuthAxios(token);
+  const response = await axiosInstance.post<IMailResponse>(`/api/accounts/caumail`, {
     code: secretValue,
   });
   return response.data;
@@ -53,7 +29,7 @@ export interface IMutationProps {
 }
 
 export const postSignUpForm = async (props: IMutationProps) => {
-  const axiosInstance = getSignUpAxiosInstance(props.accessToken, props.refreshToken);
+  const axiosInstance = getAuthAxios({ access: props.accessToken, refresh: props.refreshToken });
   const response = await axiosInstance.put(`/api/accounts/profile`, {
     name: props.form.name,
     generation: props.form.generation,
