@@ -5,10 +5,13 @@ import {useState} from 'react';
 
 import {useBodyScrollLock} from './utils/scrollBlock'
 import SessionModal from './SessionModal';
+import { ArchivingArrayType } from '@@types/request';
+
+
 
 type  TrackProps = {
     track: string,
-    trackData: {id: number; title: string, category:string, thumbnail:string}[];
+    trackData: { id: number; title: string, category:string, thumbnail:string}[],
 };
 
 const Track: React.FC<TrackProps> = ({track, trackData}) => {

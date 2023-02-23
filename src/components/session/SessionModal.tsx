@@ -7,7 +7,7 @@ import close from '@image/Frame 916.png';
 import { Primary } from '@utils/constant/color';
 
 type  ModalProps = {
-    trackName: string;
+    trackName: string,
     trackData: { id: number; title: string, category:string, thumbnail:string}[];
     handleClose: (e: React.MouseEvent<HTMLElement, MouseEvent>) => void,
     visible:boolean,
