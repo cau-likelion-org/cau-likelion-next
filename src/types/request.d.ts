@@ -59,7 +59,6 @@ export interface TodayAttendanceData {
 export type TodayAttendanceListData = Record<MemberStack, string[]>;
 
 export interface RequestSignUpForm {
-  accessToken: string | string[];
   name: string;
   generation: number;
   track: number;
@@ -77,7 +76,7 @@ export interface LoginResponse {
 export interface UserProfile {
   name: string;
   track: number;
-  isAdmin: boolean;
+  is_admin: boolean;
   generation: number;
 }
 
