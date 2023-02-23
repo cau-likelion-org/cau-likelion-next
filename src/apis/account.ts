@@ -3,23 +3,6 @@ import { IToken } from '@utils/state';
 import axios, { AxiosInstance } from 'axios';
 import { getAuthAxios } from './authAxios';
 
-export function patchUserProfile(userProfile: UserProfile, accessToken: string) {
-  return axios.patch(
-    `/user`,
-    {
-      name: userProfile.name,
-      generation: userProfile.generation,
-      track: userProfile.track,
-      is_admin: userProfile.isAdmin,
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    },
-  );
-}
-
 export const getUserProfile = async (token: IToken) => {
   const authAxios = getAuthAxios(token);
   const response = await authAxios.get(`/api/accounts/profile/`);

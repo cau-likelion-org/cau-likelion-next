@@ -28,7 +28,7 @@ export interface IMutationProps {
   refreshToken: string;
 }
 
-export const postSignUpForm = async (props: IMutationProps) => {
+export const putUserProfile = async (props: IMutationProps) => {
   const axiosInstance = getAuthAxios({ access: props.accessToken, refresh: props.refreshToken });
   const response = await axiosInstance.put(`/api/accounts/profile`, {
     name: props.form.name,
