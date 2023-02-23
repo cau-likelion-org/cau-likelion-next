@@ -53,7 +53,7 @@ export interface ISessionDetail extends IArchivingData {
   track: string,
   topic: string,
   description: string,
-  date: "2022.12.30",
+  date: string,
   reference?: string[],
 }
 
