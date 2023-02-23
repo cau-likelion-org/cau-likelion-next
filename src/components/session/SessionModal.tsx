@@ -96,7 +96,6 @@ animation: ${visible ? fadeIn : fadeOut} 0.3s ease-out;
 transition: visibility 0.3s ease-out;
 `;
 
-
 const StModalLayer = styled.div<{ visible: boolean }>`
 display: flex;
 justify-content: center;
@@ -112,10 +111,6 @@ z-index: 9999;
 overflow: hidden;
 
 ${(props) => modalSettings(props.visible)};
-
-/* animation: ${(props)=> props.visible ? fadeIn : fadeOut} 0s ease-out;
-visibility: ${(props)=> props.visible ? 'visible' : 'hidden'};
-transition: visibility 0s ease-out; */
 `
 
 
@@ -134,6 +129,7 @@ border-radius: 24px;
 overflow: scroll;
 
 ${(props) => modalSettings(props.visible)};
+
 
 
 //<전체보기> 눌렀을 때 모달창 초기 높이, 너비
@@ -203,7 +199,6 @@ overflow-y: visible;
 @media (min-width: 870px) and (max-width: 1221px) {grid-template-columns: 1fr 1fr; gap: 30px;;}
 
 @media (min-width: 360px) and (max-width: 871px) {grid-template-columns: 1fr; gap: 30px;}
-
 `
 
 
