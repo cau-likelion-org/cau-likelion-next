@@ -3,7 +3,7 @@
 import { atom } from 'recoil';
 import cookie from 'react-cookies';
 import { v1 } from 'uuid';
-interface IToken {
+export interface IToken {
   access: string;
   refresh: string;
 }
