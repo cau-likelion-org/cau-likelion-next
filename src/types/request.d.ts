@@ -62,7 +62,7 @@ export interface RequestSignUpForm {
   name: string;
   generation: number;
   track: number;
-  isAdmin: boolean;
+  is_admin: boolean;
 }
 
 export interface LoginResponse {
