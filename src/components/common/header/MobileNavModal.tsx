@@ -8,7 +8,7 @@ import NavButton from './NavButton';
 import NavProfileCard from './NavProfileCard';
 
 const MobileNavModal = ({ isModalOn }: { isModalOn: boolean }) => {
-  const tokenState = useRecoilValue(token);
+  const { access: tokenState } = useRecoilValue(token);
   const [visibilityAnimation, setVisibilityAnimation] = useState(false);
   const [repeat, setRepeat] = useState<any>(null);
 

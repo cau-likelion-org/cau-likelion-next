@@ -22,7 +22,7 @@ export interface IMenu {
 }
 
 const NavBar = () => {
-  const tokenState = useRecoilValue(token);
+  const { access: tokenState } = useRecoilValue(token);
 
   const hover: IHoverButton['hover'] = { title: '아카이빙' };
   const dropdown: IHoverButton['dropdown'] = [
@@ -56,7 +56,7 @@ const NavBar = () => {
       </LogoWrapper>
       <ButtonWrapper>
         <HoverButton hover={hover} dropdown={dropdown} />
-        {menuDataSelector(tokenState.access).map(({ title, routing }, index) => (
+        {menuDataSelector(tokenState).map(({ title, routing }, index) => (
           <NavButton key={index} title={title} routing={routing} />
         ))}
       </ButtonWrapper>
