@@ -1,12 +1,12 @@
-import { RequestSignUpForm } from '@@types/request';
 import { TRACK, TRACK_INDEX, TRACK_NAME } from '@utils/constant';
 import { Basic } from '@utils/constant/color';
 import { isEmptyString } from '@utils/index';
+import { token } from '@utils/state';
 import { useRouter } from 'next/router';
 import React from 'react';
 import { useEffect } from 'react';
 import { useState } from 'react';
-import { useMutation, useQuery } from 'react-query';
+import { useMutation } from 'react-query';
 import { useRecoilState } from 'recoil';
 import { IMutationProps, postSignUpForm } from 'src/apis/signUp';
 import useInput from 'src/hooks/useInput';
@@ -27,10 +27,17 @@ const SignUpFormSection = () => {
   const [dropdownValue, setDropdownValue] = useState(track[0]);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isFormActivated, setIsFormActivated] = useState(false);
+  const [{ access, refresh }, setToken] = useRecoilState(token);
   const router = useRouter();
   const { accessToken, refreshToken } = router.query;
-  console.log(accessToken);
+
   useEffect(() => {
+    if (access) {
+      router.push('/');
+    }
+    if (access == '' && !accessToken) {
+      router.push('/login');
+    }
     if (
       !isEmptyString(nameValue) &&
       !isEmptyString(generationValue) &&
@@ -46,6 +53,12 @@ const SignUpFormSection = () => {
     mutationFn: (props: IMutationProps) => postSignUpForm(props),
     onSuccess: (res: any) => {
       if (res) {
+        setToken((prev) => {
+          const obj = { ...prev };
+          obj.access = accessToken as string;
+          obj.refresh = refreshToken as string;
+          return obj;
+        });
         router.push('/signup/success');
       }
     },
