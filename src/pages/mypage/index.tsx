@@ -10,10 +10,16 @@ import styled from 'styled-components';
 import MyAttendanceSection from '@mypage/MyAttendanceSection';
 import ProfileCard from '@mypage/component/ProfileCard';
 import { GreyScale } from '@utils/constant/color';
+import { useRouter } from 'next/router';
 
 const MyPage = () => {
   const tokenState = useRecoilValue(token);
-
+  const router = useRouter();
+  useEffect(() => {
+    if (!tokenState.access) {
+      router.push('/login');
+    }
+  }, []);
   const {
     data: userProfile,
     isLoading: profileLoading,
