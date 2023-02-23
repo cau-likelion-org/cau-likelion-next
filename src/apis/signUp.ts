@@ -34,7 +34,7 @@ export const putUserProfile = async (props: IMutationProps) => {
     name: props.form.name,
     generation: props.form.generation,
     track: props.form.track,
-    is_admin: props.form.isAdmin,
+    is_admin: props.form.is_admin,
   });
   return response.data;
 };
