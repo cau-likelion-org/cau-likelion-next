@@ -32,7 +32,7 @@ SessionDetail.getLayout = function getLayout(page:ReactElement){
 export const getStaticPaths: GetStaticPaths = (async) => {
     return {
         paths: [{ params: { session_id: '8' } }],
-        fallback: false,
+        fallback: true,
     };
 };
 
