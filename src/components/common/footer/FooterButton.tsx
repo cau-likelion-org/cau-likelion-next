@@ -15,7 +15,7 @@ const FooterButton = ({ Img, link }: FooterButtonProps) => {
       <a target="_blank" rel="sponsored">
         <Button>
           <ImageWrapper>
-            <Image src={Img} width={'40px'} height={'40px'} alt="share" layout="fill" />
+            <Image src={Img} alt="share" layout="fill" />
           </ImageWrapper>
         </Button>
       </a>

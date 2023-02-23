@@ -15,15 +15,7 @@ const IntroduceSection = ({ innerRef }: { innerRef: MutableRefObject<null> }) =>
     <FadeInComponent>
       <Wrapper ref={innerRef}>
         <ImageWrapper>
-          <Image
-            src={IntroLion}
-            width={'180px'}
-            height={'180px'}
-            layout="fill"
-            objectFit="fill"
-            objectPosition="center"
-            alt="소개하는 사자"
-          />
+          <Image src={IntroLion} layout="fill" objectFit="fill" objectPosition="center" alt="소개하는 사자" />
         </ImageWrapper>
         <TitleText>중앙대학교 멋사를 소개합니다!</TitleText>
         <SubText>{text}</SubText>

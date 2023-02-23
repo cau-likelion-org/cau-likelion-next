@@ -26,15 +26,7 @@ const Project = ({
         custom={direction}
       >
         <ImageWrapper>
-          <ImageComponent
-            src={ProjectData.img}
-            width={483}
-            height={295}
-            alt="img"
-            layout="fill"
-            objectFit="fill"
-            objectPosition="center"
-          />
+          <ImageComponent src={ProjectData.img} alt="img" layout="fill" objectFit="fill" objectPosition="center" />
         </ImageWrapper>
         <ProjectInfo>
           <TextWrapper>
