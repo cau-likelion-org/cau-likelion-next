@@ -18,7 +18,9 @@ const ProjectDetail = ({ projectDetailStaticData }: { projectDetailStaticData: I
   const { data, isLoading } = useQuery<IProjectDetail>(['projectDeatil', router.query.project_id], () =>
     getProjectDetail(router.query.project_id as string),
   );
-
+  if (router.isFallback) {
+    return <div>로딩중</div>;
+  }
   return (
     <Wrapper>
       <Carousel images={isLoading ? projectDetailStaticData.thumbnail : data!.thumbnail} />
@@ -35,7 +37,7 @@ ProjectDetail.getLayout = function getLayout(page: ReactElement) {
 export const getStaticPaths: GetStaticPaths = (async) => {
   return {
     paths: [{ params: { project_id: '1' } }],
-    fallback: false,
+    fallback: true,
   };
 };
 
