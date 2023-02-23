@@ -40,9 +40,12 @@ const ButtonWrapper = styled.div`
   font-weight: 900;
   font-size: 2rem;
   gap: 10px;
+<<<<<<< HEAD
   @media (max-width: 900px) {
     font-size: 1.5rem;
     padding: 20px 30px;
     margin: 40px 0;
   }
+=======
+>>>>>>> c11c1f16dc937071ef92f3bdfdbae3896e83dcc9
 `;

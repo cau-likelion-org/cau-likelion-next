@@ -52,7 +52,6 @@ const Project = ({
 };
 
 export default Project;
-
 const ProjectWrapper = styled(motion.div)`
   position: absolute;
   width: 93%;

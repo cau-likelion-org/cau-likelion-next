@@ -27,7 +27,7 @@ function Landing() {
       <TrackSection />
       <ProjectSection />
       <PlanSection />
-    </SectionWrapper>
+    </SectionWrapper >
   );
 }
 Landing.getLayout = function getLayout(page: ReactElement) {

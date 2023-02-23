@@ -10,7 +10,7 @@ import IntroLion from '@image/소개_인사하는 사자.gif';
 import FadeInComponent from '@home/common/FadeInComponent';
 const text =
   '중앙대학교 멋쟁이사자처럼은 중앙대 학생들로 이루어진 IT 창업 동아리입니다. \n테크 기반의 아이디어를 실현하기위해 기획, 디자인, 개발 트랙 간의 끊임없는 소통을 추구하며\n다양한 프로젝트 활동을 통해 기술적 성장을 도모하고 협업 역량을 끌어올립니다.';
-const IntroduceSection = ({ innerRef }: { innerRef: MutableRefObject<null> }) => {
+const IntroduceSection = ({ innerRef }: { innerRef: MutableRefObject<null>; }) => {
   return (
     <FadeInComponent>
       <Wrapper ref={innerRef}>
@@ -43,6 +43,8 @@ const Wrapper = styled.div`
   flex-direction: column;
   align-items: center;
   width: 100%;
+  scroll-snap-align: start;
+  min-height: 100vh;
 `;
 
 const ImageWrapper = styled.div`

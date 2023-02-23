@@ -24,9 +24,6 @@ const ScrollBar = () => {
   );
 };
 const Wrapper = styled.div`
-  @media(max-width: 900px) {
-    display: none;
-  };
   position: fixed;
   bottom: 0;
   left: 0;

@@ -12,7 +12,7 @@ const defaultFadeInAnimation: Variants = {
   },
 };
 
-const FadeInComponent = ({ children, variants }: { children: ReactElement; variants?: Variants }) => {
+const FadeInComponent = ({ children, variants }: { children: ReactElement; variants?: Variants; }) => {
   const ref = useRef(null);
   const isInView = useInView(ref);
   const controls = useAnimation();

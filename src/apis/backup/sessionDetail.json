@@ -1,0 +1,18 @@
+{
+    "id": 1,
+    "title": "2022 첫번째 세션!",
+    "topic" : "Object, Class",
+    "thumbnail": [
+        "https://cau-likelion.s3.ap-northeast-2.amazonaws.com/project-img/9%E1%84%80%E1%85%B5/Rectangle_336-1.png",
+        "https://cau-likelion.s3.ap-northeast-2.amazonaws.com/project-img/9%E1%84%80%E1%85%B5/Rectangle_336-2.png",
+        "https://cau-likelion.s3.ap-northeast-2.amazonaws.com/project-img/9%E1%84%80%E1%85%B5/Rectangle_336-3.png",
+        "https://cau-likelion.s3.ap-northeast-2.amazonaws.com/project-img/9%E1%84%80%E1%85%B5/Rectangle_336-4.png"
+    ],
+    "date": "2022.01.23",
+    "description": "ah ha so you think I kinda like you, think you can get me I think so yaya 밤새 난 이불을 뒤척뒤척 상상의 바다를 첨벙첨벙 liar liar liar oh 말도 안 돼 ah ha so you think I kinda like you, think you can get me I think so yaya 밤새 난 이불을 뒤척뒤척 상상의 바다를 첨벙첨벙 liar liar liar oh 말도 안 돼ah ha so you think I kinda like you, think you can get me I think so yaya 밤새 난 이불을 뒤척뒤척 상상의 바다를 첨벙첨벙 liar liar liar oh 말도 안 돼 ",
+    "session" : 1,
+    "presenter": "이동길",
+    "track": "프론트엔드",
+    "reference": ["session/pdf1","https://github.com/cau-likelion-org"]
+
+}
