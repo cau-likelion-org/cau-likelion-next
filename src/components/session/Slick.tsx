@@ -32,8 +32,6 @@ const Slick:React.FC<ModalProps> = ({trackData, trackName}) => {
     }
 
 
-
-
     const settings={
         infinite: true,
         speed: 1000,
@@ -61,16 +59,10 @@ const Slick:React.FC<ModalProps> = ({trackData, trackName}) => {
                 settings:{
                     slidesToShow: slidesToShowArr[3],
                     slidesToScroll:slidesToShowArr[3],
-            }},
-
-        ]
-    }
-
-
+            }},]}
 
     return (
         <Wrapper>
-            
             <StSlider  {...settings}>
                 {trackData.slice(0).reverse().map((data)=>{
                     return(
@@ -84,8 +76,6 @@ const Slick:React.FC<ModalProps> = ({trackData, trackName}) => {
                     )
                     })}
             </StSlider>
-            
-            
         </Wrapper>
         
     );
