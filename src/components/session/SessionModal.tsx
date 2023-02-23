@@ -120,16 +120,16 @@ flex-direction: column;
 align-items: center;
 z-index: 10000;
 margin: auto;
+padding-bottom: 20rem;
 
 position: absolute;
 top: ${(props) => props.visible ?'5%': '15%'};
 background: #FFFFFF;
 box-shadow: 10px 10px 60px rgba(0, 0, 0, 0.4);
 border-radius: 24px;
-overflow: scroll;
+overflow: auto;
 
 ${(props) => modalSettings(props.visible)};
-
 
 
 //<전체보기> 눌렀을 때 모달창 초기 높이, 너비
