@@ -34,12 +34,12 @@ const CauMailAuthenticationBox = ({
   const [isErrorModalOn, setIsErrorModalOn] = useState(false);
 
   const handleEmailRequestButton = async () => {
-    getEmailSecret(accessTokenOnce, refreshTokenOnce, emailValue);
+    getEmailSecret({ access: accessTokenOnce, refresh: refreshTokenOnce }, emailValue);
     setIsEmailModalOn(!isEmailModalOn);
   };
 
   const handleSecretKeyButton = async () => {
-    const response = await postEmailSecret(accessTokenOnce, refreshTokenOnce, secretValue);
+    const response = await postEmailSecret({ access: accessTokenOnce, refresh: refreshTokenOnce }, secretValue);
     if (response) setIsAuthenticated(true);
     else setIsErrorModalOn(true);
   };
