@@ -15,7 +15,9 @@ const SessionDetail = ({sessionDetailStaticData}:{sessionDetailStaticData:ISessi
     const {data, isLoading} = useQuery<ISessionDetail>(['sessionDetail', router.query.project_id], ()=>
         getSessionDetail(router.query.session_id as string),
         )
-
+    if(router.isFallback){
+        return <div>로딩중</div>
+    }
     return (
         <Wrapper>
             <Carousel images={isLoading ? sessionDetailStaticData.thumbnail : data!.thumbnail}/>

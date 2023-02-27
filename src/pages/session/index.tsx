@@ -3,7 +3,7 @@ import LayoutArchiving from '@common/layout/LayoutArchiving';
 import SessionSection from '@session/SessionSection';
 import { ReactElement } from 'react';
 import { TRACK_NAME } from '@utils/constant';
-import { getSessions } from 'src/apis/session';
+import { getSessions } from 'src/apis/session'; 
 import { InferGetStaticPropsType } from 'next';
 
 const SessionList = ({sessionStaticData}:InferGetStaticPropsType<typeof getStaticProps>) => {
