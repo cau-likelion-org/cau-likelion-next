@@ -1,5 +1,6 @@
-import { TodayAttendanceData, TodayAttendanceListData } from '@@types/request';
+import { TodayAttendanceData, TodayAttendanceListData, UserAttendance } from '@@types/request';
 import axios from 'axios';
+import { url } from '.';
 
 export function getAttendance() {
   return axios
@@ -21,22 +22,48 @@ export function getAttendanceList() {
     .then((res) => res.data);
 }
 
-export const getUserAttendance = async (username: string) => {
-  // const response = await axios.get<UserAttendance>(
-  //     `${url}/attendance`,
-  //     {
-  //         params: {
-  //             name: username
-  //         }
+export const getUserAttendance = async (accessToken: string) => {
+  // const response = await axios.get(
+  //   `${url}/attendance`,
+  //   {
+  //     headers: {
+  //       Authorization: `Bearer ${accessToken}`
   //     }
+  //   }
   // );
-  // return response.data;
+  // return response.data as UserAttendance;
   return {
     name: '윤선영',
+    track: 2,
     absence: 3,
     truancy: 1,
     tardiness: 2,
   };
+};
+
+export const getTotalAttendance = async (accessToken: string) => {
+  // const response = await axios.get(
+  //   `${url}/attendance`,
+  //   {
+  //     headers: {
+  //       Authorization: `Bearer ${accessToken}`
+  //     }
+  //   }
+  // );
+  // return response.data as UserAttendance[];
+  return [{
+    name: '윤선영',
+    track: 2,
+    absence: 3,
+    truancy: 1,
+    tardiness: 2,
+  }, {
+    name: '김솔',
+    track: 0,
+    absence: 3,
+    truancy: 1,
+    tardiness: 2,
+  }];
 };
 
 export const getAssignments = () => {
