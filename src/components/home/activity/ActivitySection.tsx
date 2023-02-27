@@ -5,11 +5,16 @@ import Image from 'next/image';
 import FadeInComponent from '@home/common/FadeInComponent';
 import 활동 from '@image/활동기록.png';
 import CircleComponent from './component/CircleComponent';
-import { title } from 'process';
 
 const ActivitySection = () => {
-  const titleArray = ['정기세션', '아이디어톤', '해커톤', '중앙톤', '스터디'];
-  const textArray = ['트랙별 심화 세션', '아이디어', '실제 구현', '중앙대 자체 해커톤', '같이 공부하며 성장하기'];
+  const titleArray = ['정기세션', '아이디어톤', '해커톤', '중커톤', '스터디'];
+  const textArray = [
+    '트랙별 심화 세션',
+    '해커톤을 위한 청사진',
+    '직접 아이디어 구현',
+    '중앙대 자체 해커톤',
+    '같이 공부하며 성장하기',
+  ];
   return (
     <FadeInComponent>
       <Wrapper>
