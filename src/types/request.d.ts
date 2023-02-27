@@ -68,8 +68,20 @@ export interface UserProfile {
   generation: number;
 }
 
+export interface UserScore {
+  name: string;
+  track: number;
+  absence: number;  // 결석
+  truancy: number; // 무단결석
+  tardiness: number; // 지각
+  notSubmitted: number;
+  lateSubmitted: number;
+  totalScore: number;
+}
+
 export interface UserAttendance {
   name: string; // 이름
+  track: number;
   absence: number;  // 결석
   truancy: number; // 무단결석
   tardiness: number; // 지각
@@ -77,11 +89,12 @@ export interface UserAttendance {
 
 export interface UserAssignment {
   name: string; // 이름
+  track: number;
   notSubmitted: number;
   lateSubmitted: number;
 }
 
-export interface AttendanceTotalScore {
+export interface TotalScoreParams {
   notSubmitted: number;
   lateSubmitted: number;
   absence: number;
