@@ -61,7 +61,7 @@ const Title = styled.div`
   line-height: 100%;
   text-align: center;
   color: #fefeff;
-  @media (max-width: 400px) {
+  @media (max-width: 500px) {
     font-size: 13px;
   }
 `;
@@ -75,7 +75,7 @@ const Text = styled.div`
   font-weight: 500;
   font-family: 'Pretendard';
   margin-top: 10px;
-  @media (max-width: 400px) {
+  @media (max-width: 500px) {
     font-size: 10px;
   }
 `;
@@ -93,8 +93,8 @@ const ImageWrapper = styled.div`
     height: 140px;
   }
   @media (max-width: 450px) {
-    width: 80px;
-    height: 80px;
+    width: 90px;
+    height: 90px;
   }
 
   filter: brightness(50%);
