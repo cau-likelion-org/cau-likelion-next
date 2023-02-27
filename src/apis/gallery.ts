@@ -5,19 +5,16 @@ import galleryDetailBackupData from './backup/galleryDetail.json';
 
 export async function getGalleries() {
   try {
-    const res = await axios.get<ArchivingArrayType<IGalleryData>>(
-      `https://286eb829-af4d-43ed-b788-0e8e70ae0820.mock.pstmn.io/galleries`,
-    );
+    const res = await axios.get<ArchivingArrayType<IGalleryData>>(`/galleries/gallery/`);
     return res.data;
   } catch (err) {
+    console.log(err);
     return new Promise<ArchivingArrayType<IGalleryData>>((resolve) => resolve(galleryBackupData));
   }
 }
 export async function getGalleryDetail(id: string) {
   try {
-    const res = await axios.get<IGalleryDetail>(
-      `https://286eb829-af4d-43ed-b788-0e8e70ae0820.mock.pstmn.io/gallery/${id}`,
-    );
+    const res = await axios.get<IGalleryDetail>(`/galleries/gallery/${id}`);
     return res.data;
   } catch (err) {
     return new Promise<IGalleryDetail>((resolve) => resolve(galleryDetailBackupData as any));
