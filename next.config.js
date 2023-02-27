@@ -55,6 +55,10 @@ const nextConfig = {
         source: '/api/:path*',
         destination: `${process.env.NEXT_PUBLIC_API_KEY}/api/:path*/`,
       },
+      {
+        source: '/:path*',
+        destination: `${process.env.NEXT_PUBLIC_API_KEY}/:path*/`,
+      },
     ];
   },
 };
