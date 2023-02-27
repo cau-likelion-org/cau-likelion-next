@@ -25,12 +25,9 @@ const Title = styled.div`
   font-size: 1.7rem;
   margin-right: 3rem;
   word-spacing: 25px;
-<<<<<<< HEAD
   @media (max-width: 900px) {
     font-size: 1.5rem;
   }
-=======
->>>>>>> c11c1f16dc937071ef92f3bdfdbae3896e83dcc9
 `;
 const Input = styled.div`
   display: flex;
@@ -44,12 +41,9 @@ const Input = styled.div`
   background-color: ${Primary.light};
   border-radius: 15px;
   color: ${GreyScale.default};
-<<<<<<< HEAD
   @media (max-width: 900px) {
     font-size: 1.5rem;
     height: 5rem;
     width: 15rem;
   }
-=======
->>>>>>> c11c1f16dc937071ef92f3bdfdbae3896e83dcc9
 `;

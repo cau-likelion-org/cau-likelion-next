@@ -42,12 +42,9 @@ const TrackTitle = styled.div`
   font-weight: 900;
   font-size: 1.7rem;
   color: ${(props) => props.color};
-<<<<<<< HEAD
   @media (max-width: 900px) {
     font-size: 1rem;
   }
-=======
->>>>>>> c11c1f16dc937071ef92f3bdfdbae3896e83dcc9
 `;
 const AttendanceCheckWrapper = styled.div`
   flex-basis: 90%;

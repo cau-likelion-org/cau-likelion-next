@@ -98,12 +98,9 @@ const Container = styled.div<{ img: string }>`
   @media (max-width: 1536px) {
     height: 300px;
   }
-<<<<<<< HEAD
   @media (max-width: 900px) {
     height: 200px;
   }
-=======
->>>>>>> c11c1f16dc937071ef92f3bdfdbae3896e83dcc9
   position: relative;
   border-radius: 20px;
   display: flex;
@@ -115,13 +112,8 @@ const TitleText = styled.div`
   font-family: 'Pretendard';
   font-style: normal;
   font-weight: 700;
-<<<<<<< HEAD
   font-size: 4rem;
   line-height: 5rem;
-=======
-  font-size: 5rem;
-  line-height: 153.02%;
->>>>>>> c11c1f16dc937071ef92f3bdfdbae3896e83dcc9
   color: #ffffff;
 `;
 
@@ -129,11 +121,7 @@ const SubText = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-<<<<<<< HEAD
   padding: 1.3rem 3.3rem;
-=======
-  padding: 13px 33px;
->>>>>>> c11c1f16dc937071ef92f3bdfdbae3896e83dcc9
   background-color: #33333399;
   border-radius: 100px;
   border: 1px solid rgba(255, 255, 255, 0.5);
@@ -146,17 +134,10 @@ const SubText = styled.div`
 
 const Top = styled.div`
   z-index: 2;
-<<<<<<< HEAD
   flex-basis: 15%;
   display: flex;
   align-items: center;
   margin: 1rem 2rem;
-=======
-  flex-basis: 20%;
-  display: flex;
-  align-items: center;
-  margin: 0 30px;
->>>>>>> c11c1f16dc937071ef92f3bdfdbae3896e83dcc9
   justify-content: space-between;
 `;
 

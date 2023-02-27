@@ -35,11 +35,7 @@ const Wrapper = styled.div`
   align-items: center;
   width: 100%;
   gap: 40px;
-  height: 100%;
-  min-height: 100vh;
-  scroll-snap-align: start;
 `;
-
 const AlignWrapper = styled.div`
   width: 100%;
   margin-top: 10%;

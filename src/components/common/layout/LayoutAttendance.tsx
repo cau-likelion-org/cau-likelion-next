@@ -7,7 +7,7 @@ import Footer from '@common/footer/Footer';
 import Lion from '@image/background.png';
 import MobileNavBar from '@common/header/MobileNavBar';
 
-export default function LayoutAttendance({ children }: { children: ReactElement; }) {
+export default function LayoutAttendance({ children }: { children: ReactElement }) {
   return (
     <>
       <PageContainer>

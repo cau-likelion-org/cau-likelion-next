@@ -44,13 +44,9 @@ const Wrapper = styled.div<{ isLandingLayout: boolean; }>`
   justify-content: center;
   gap: 2.5rem;
   position: relative;
-<<<<<<< HEAD
   @media(min-width: 900px){
     scroll-snap-align: ${(props) => props.isLandingLayout && 'end'};
   }
-=======
-  scroll-snap-align: ${(props) => props.isLandingLayout && 'end'};
->>>>>>> c11c1f16dc937071ef92f3bdfdbae3896e83dcc9
 `;
 
 const TitleText = styled.div`
@@ -74,10 +70,6 @@ const CopyrightWrapper = styled.div`
   font-style: normal;
   font-weight: 500;
   font-size: 1.2rem;
-<<<<<<< HEAD
-=======
-  line-height: 32px;
->>>>>>> c11c1f16dc937071ef92f3bdfdbae3896e83dcc9
   text-align: center;
   color: ${GreyScale.default};
 `;
