@@ -5,50 +5,47 @@ import Link from 'next/link';
 import { IHoverButton } from './NavBar';
 
 interface IHoverButtonProps {
-    hover: IHoverButton['hover'];
-    dropdown: IHoverButton['dropdown'];
+  hover: IHoverButton['hover'];
+  dropdown: IHoverButton['dropdown'];
 }
 
 const HoverButton = ({ hover, dropdown }: IHoverButtonProps) => {
-    const [dropdownVisibility, setDropdownVisibility] = useState(false);
-    const ref = useRef() as React.MutableRefObject<HTMLDivElement>;
+  const [dropdownVisibility, setDropdownVisibility] = useState(false);
+  const ref = useRef() as React.MutableRefObject<HTMLDivElement>;
 
+  const handleMouseOver = useCallback(() => setDropdownVisibility(true), []);
+  const handleMouseOut = useCallback(() => setDropdownVisibility(false), []);
 
-    const handleMouseOver = useCallback(() => setDropdownVisibility(true), []);
-    const handleMouseOut = useCallback(() => setDropdownVisibility(false), []);
+  useEffect(() => {
+    const c = ref.current;
+    if (!c) return;
+    c.addEventListener('mouseover', handleMouseOver);
+    c.addEventListener('mouseout', handleMouseOut);
 
-    useEffect(() => {
-        const c = ref.current;
-        if (!c) return;
-        c.addEventListener('mouseover', handleMouseOver);
-        c.addEventListener('mouseout', handleMouseOut);
+    return () => {
+      c.removeEventListener('mouseover', handleMouseOver);
+      c.removeEventListener('mouseout', handleMouseOut);
+    };
+  }, [ref, handleMouseOut, handleMouseOver]);
 
-        return () => {
-            c.removeEventListener('mouseover', handleMouseOver);
-            c.removeEventListener('mouseout', handleMouseOut);
-        };
-
-    }, [ref, handleMouseOut, handleMouseOver]);
-
-    return (
-        <Button onMouseOver={handleMouseOver} onMouseOut={handleMouseOut} ref={ref}>
-            {hover.title}
-            {dropdownVisibility &&
-                <DropdownList onMouseOver={handleMouseOver} onMouseOut={handleMouseOut} ref={ref}>
-                    {dropdown.map((d, i) => (
-                        <>
-                            {
-                                d.routing &&
-                                <Link key={i} href={d.routing}>
-                                    <Button className='hover'>{d.title}</Button>
-                                </Link>
-                            }
-                        </>
-                    ))}
-                </DropdownList>
-            }
-        </Button>
-    );
+  return (
+    <Button onMouseOver={handleMouseOver} onMouseOut={handleMouseOut} ref={ref}>
+      {hover.title}
+      {dropdownVisibility && (
+        <DropdownList onMouseOver={handleMouseOver} onMouseOut={handleMouseOut} ref={ref}>
+          {dropdown.map((d, i) => (
+            <>
+              {d.routing && (
+                <Link key={d.routing + i} href={d.routing}>
+                  <Button className="hover">{d.title}</Button>
+                </Link>
+              )}
+            </>
+          ))}
+        </DropdownList>
+      )}
+    </Button>
+  );
 };
 
 export default HoverButton;
@@ -68,29 +65,26 @@ const Button = styled.div`
   cursor: pointer;
   position: relative;
 
-  &.hover{
+  &.hover {
     border-radius: 5px;
     font-weight: 500;
-    &:hover{
-        background-color: ${GreyScale.light};
+    &:hover {
+      background-color: ${GreyScale.light};
     }
   }
-
 `;
 
-
 const DropdownList = styled.div`
-    display: flex;
-    flex-direction: column;
-    position: absolute;
-    padding: 0.8rem;
-    width: 100%;
-    top: 3.5rem;
-    z-index: 1;
-    border-radius: 1rem;
-    background-color: ${BackgroundColor};
-    border-radius: 1rem;
-    background-color: ${BackgroundColor};
-    box-shadow: 3px 3px 20px 0px #00000014;
-
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  padding: 0.8rem;
+  width: 100%;
+  top: 3.5rem;
+  z-index: 1;
+  border-radius: 1rem;
+  background-color: ${BackgroundColor};
+  border-radius: 1rem;
+  background-color: ${BackgroundColor};
+  box-shadow: 3px 3px 20px 0px #00000014;
 `;

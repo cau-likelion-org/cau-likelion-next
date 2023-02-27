@@ -26,15 +26,7 @@ const ActivitySection = () => {
       <Wrapper>
         <RowWrapper>
           <ImageWrapper>
-            <Image
-              src={QuestionLion}
-              width={'372px'}
-              height={'372px'}
-              layout="fill"
-              objectFit="fill"
-              objectPosition="center"
-              alt="소개하는 사자"
-            />
+            <Image src={QuestionLion} layout="fill" objectFit="fill" objectPosition="center" alt="소개하는 사자" />
           </ImageWrapper>
           <TitleText>중앙대 멋사의 다양한 활동</TitleText>
         </RowWrapper>

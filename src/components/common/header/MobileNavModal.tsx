@@ -1,5 +1,5 @@
 import { BackgroundColor } from '@utils/constant/color';
-import { accessToken } from '@utils/state';
+import { token } from '@utils/state';
 import React, { useEffect, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
@@ -8,7 +8,7 @@ import NavButton from './NavButton';
 import NavProfileCard from './NavProfileCard';
 
 const MobileNavModal = ({ isModalOn }: { isModalOn: boolean }) => {
-  const tokenState = useRecoilValue(accessToken);
+  const { access: tokenState } = useRecoilValue(token);
   const [visibilityAnimation, setVisibilityAnimation] = useState(false);
   const [repeat, setRepeat] = useState<any>(null);
 
