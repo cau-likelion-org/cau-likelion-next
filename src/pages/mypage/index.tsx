@@ -8,50 +8,32 @@ import { getUserProfile } from 'src/apis/account';
 import NameCard from '@mypage/component/NameCard';
 import { getAssignments, getUserAttendance } from 'src/apis/attendance';
 import styled from 'styled-components';
-import MyAttendanceSection from '@mypage/MyAttendanceSection';
 import ProfileCard from '@mypage/component/ProfileCard';
 import { GreyScale } from '@utils/constant/color';
+import { TRACK_NAME } from '@utils/constant';
+import { checkGeneration } from '@utils/index';
+import MyScoreSection from '@mypage/MyScoreSection';
+import TotalScoreSection from '@mypage/TotalScoreSection';
 
 const MyPage = () => {
     const tokenState = useRecoilValue(accessToken);
-    const [userAssignmentData, setUserAssignmentData] = useState<UserAssignment>({ name: '', lateSubmitted: 0, notSubmitted: 0 });
+    const [isActiveGeneration, setIsActiveGeneration] = useState(false);
+    const [userAssignmentData, setUserAssignmentData] = useState<UserAssignment>({ name: '', track: 0, lateSubmitted: 0, notSubmitted: 0 });
 
     const { data: userProfile, isLoading: profileLoading, error: profileError } = useQuery<UserProfile, AxiosError>(
         ['userProfile', tokenState],
         () => getUserProfile(tokenState)
     );
 
-    const { data: userAttendance, isLoading: attendanceLoading, error: attendanceError } = useQuery<UserAttendance, AxiosError>(
-        ['userAttendance', userProfile?.name],
-        () => getUserAttendance(userProfile!.name),
-        {
-            enabled: !!userProfile
-        }
-    );
-
-    const { data: userAssignment, isLoading: assignmentLoading, error: assignmentError } = useQuery(
-        ['userAssignment'],
-        () => getAssignments().then(res => res.data.filter((d: any) =>
-            d['이름'] == userProfile!.name
-        )),
-        {
-            enabled: !!userProfile
-        }
-    );
-
     useEffect(() => {
-        if (userAssignment) {
-            setUserAssignmentData({
-                name: userAssignment['이름'],
-                lateSubmitted: userAssignment[0]['과제 지각제출'],
-                notSubmitted: userAssignment[0]['과제 미제출']
-            });
+        if (userProfile && checkGeneration(userProfile.generation)) {
+            setIsActiveGeneration(true);
         }
-    }, [userAssignment]);
+    }, [userProfile, isActiveGeneration]);
 
     return (
         <>
-            {userProfile && userAttendance && userAssignment &&
+            {userProfile &&
                 <Wrapper>
                     <Header>
                         <NameCard
@@ -60,7 +42,13 @@ const MyPage = () => {
                     </Header>
                     <RowWrapper>
                         <ProfileCard user={userProfile} />
-                        <MyAttendanceSection userAttendance={userAttendance} userAssignment={userAssignmentData} />
+                        {
+                            isActiveGeneration &&
+                                (userProfile.isAdmin) ?
+                                // <TotalScoreSection />
+                                <MyScoreSection userProfile={userProfile} />
+                                : null
+                        }
                     </RowWrapper>
                 </Wrapper>
             }
