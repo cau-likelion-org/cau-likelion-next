@@ -19,6 +19,7 @@ const LayoutLanding = ({ children }: { children: ReactElement; }) => {
 };
 
 export default LayoutLanding;
+
 const PageContainer = styled.div`
   background-color: ${BackgroundColor};
   min-height: calc(100vh - 184px);

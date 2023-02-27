@@ -114,10 +114,6 @@ const Dropdown = styled.div`
     font-style: normal;
     font-weight: 500;
     font-size: 1.4rem;
-<<<<<<< HEAD
-=======
-    line-height: 21px;
->>>>>>> c11c1f16dc937071ef92f3bdfdbae3896e83dcc9
     color: ${GreyScale.default};
     position: relative;
     padding: 1rem;

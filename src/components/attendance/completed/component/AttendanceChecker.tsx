@@ -47,14 +47,11 @@ const Circle = styled.div<{ color: string }>`
     width: 60px;
     height: 60px;
   }
-<<<<<<< HEAD
   @media (max-width: 900px) {
     width: 45px;
     height: 45px;
     margin: 5px;
   }
-=======
->>>>>>> c11c1f16dc937071ef92f3bdfdbae3896e83dcc9
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -77,14 +74,11 @@ const ImageWrapper = styled.div`
     width: 60px;
     height: 60px;
   }
-<<<<<<< HEAD
   @media (max-width: 900px) {
     width: 45px;
     height: 45px;
     margin: 5px;
   }
-=======
->>>>>>> c11c1f16dc937071ef92f3bdfdbae3896e83dcc9
 `;
 const ImageText = styled.div`
   position: absolute;
@@ -100,10 +94,7 @@ const ImageText = styled.div`
     top: 35%;
     left: 20%;
   }
-<<<<<<< HEAD
   @media (max-width: 900px) {
     font-size: 10px;
   }
-=======
->>>>>>> c11c1f16dc937071ef92f3bdfdbae3896e83dcc9
 `;
