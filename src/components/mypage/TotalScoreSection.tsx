@@ -1,6 +1,6 @@
 import { UserAttendance, UserScore } from '@@types/request';
 import { ATTENDANCE_CATEGORY_NAME, TRACK_NAME } from '@utils/constant';
-import { GreyScale } from '@utils/constant/color';
+import { BackgroundColor, GreyScale } from '@utils/constant/color';
 import { getTotalNameObject, getTotalScore } from '@utils/index';
 import { accessToken } from '@utils/state';
 import React, { useEffect, useState } from 'react';
@@ -50,7 +50,7 @@ const TotalScoreSection = () => {
         <Wrapper>
             <ScoreHeader />
             <ScoreWrapper>
-                <ScoreRow>
+                <ScoreRow index={0}>
                     <ScoreTitle index={0}>이름</ScoreTitle>
                     <ScoreTitle index={1}>트랙</ScoreTitle>
                     {Array.from({ length: 6 }, (_, i) => (
@@ -59,7 +59,7 @@ const TotalScoreSection = () => {
                 </ScoreRow>
                 {
                     totalScoreArray.map((userScore, i) => (
-                        <ScoreRow key={i}>
+                        <ScoreRow index={i + 1} key={i}>
                             <Score>{userScore.name}</Score>
                             <Score>{TRACK_NAME[userScore.track]}</Score>
                             <Score>{userScore.absence}</Score>
@@ -97,9 +97,10 @@ const ScoreWrapper = styled.div`
     overflow: hidden;
 `;
 
-const ScoreRow = styled.div`
+const ScoreRow = styled.div<{ index: number; }>`
     display: flex;
     width: 100%;
+    background-color: ${props => props.index % 2 == 0 ? GreyScale.light : BackgroundColor};
 `;
 
 const ScoreTitle = styled.div<{ index: number; }>`
@@ -112,7 +113,6 @@ const ScoreTitle = styled.div<{ index: number; }>`
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: ${GreyScale.light};
     border-right: ${props => props.index == 7 ? 'none' : '1px solid gray'};
 `;
 

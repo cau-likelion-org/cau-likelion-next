@@ -52,16 +52,16 @@ const MyScoreSection = ({ userProfile }: { userProfile: UserProfile; }) => {
                     <>
                         <ScoreRow>
                             {Array.from({ length: 6 }, (_, i) => (
-                                <ScoreTitle key={i}>{ATTENDANCE_CATEGORY_NAME[i]}</ScoreTitle>
+                                <ScoreTitle index={i} key={i}>{ATTENDANCE_CATEGORY_NAME[i]}</ScoreTitle>
                             ))}
                         </ScoreRow>
                         <ScoreRow>
-                            <Score >{userAttendance.absence}</Score>
-                            <Score >{userAttendance.truancy}</Score>
-                            <Score >{userAttendance.tardiness}</Score>
-                            <Score >{userAssignment[0]['과제 미제출']}</Score>
+                            <Score>{userAttendance.absence}</Score>
+                            <Score>{userAttendance.truancy}</Score>
+                            <Score>{userAttendance.tardiness}</Score>
+                            <Score>{userAssignment[0]['과제 미제출']}</Score>
                             <Score>{userAssignment[0]['과제 지각제출']}</Score>
-                            <Score>{totalScore}</Score>
+                            <Score type={'total'}>{totalScore}</Score>
                         </ScoreRow>
                     </>
                 }
@@ -81,7 +81,6 @@ const Wrapper = styled.div`
 const ScoreWrapper = styled.div`
     margin: 3rem 0;
     width: 100%;
-    min-height: 86px;
     border-radius: 10px;
     display: flex;
     flex-direction: column;
@@ -93,11 +92,25 @@ const ScoreWrapper = styled.div`
 const ScoreRow = styled.div`
     display: flex;
     width: 100%;
-    border-right: 1px solid gray;
 `;
 
-const ScoreTitle = styled.div`
+const ScoreTitle = styled.div<{ index: number; }>`
     font-family: 'Pretendard';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 1.4rem;
+    flex-basis: 50%;
+    padding: 1rem 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: ${GreyScale.light};
+    border-right: ${props => props.index == 5 ? 'none' : '1px solid gray'};
+`;
+
+const Score = styled.div<{ type?: string; }>`
+    font-family: 'Pretendard';
+    padding: 0.8rem 0;
     font-style: normal;
     font-weight: 500;
     font-size: 1.4rem;
@@ -105,9 +118,6 @@ const ScoreTitle = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: ${GreyScale.light};
-`;
-
-const Score = styled(ScoreTitle)`
     background-color: #FEFEFE;
+    border-right: ${props => props.type == 'total' ? 'none' : '1px solid gray'};
 `;

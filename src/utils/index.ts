@@ -1,5 +1,3 @@
-// 각종 utils,추후 추가 및 수정
-
 import { TotalScoreParams, UserScore } from "@@types/request";
 import { TRACK_INDEX } from "./constant";
 
