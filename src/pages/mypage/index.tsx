@@ -18,7 +18,6 @@ import TotalScoreSection from '@mypage/TotalScoreSection';
 const MyPage = () => {
     const tokenState = useRecoilValue(accessToken);
     const [isActiveGeneration, setIsActiveGeneration] = useState(false);
-    const [userAssignmentData, setUserAssignmentData] = useState<UserAssignment>({ name: '', track: 0, lateSubmitted: 0, notSubmitted: 0 });
 
     const { data: userProfile, isLoading: profileLoading, error: profileError } = useQuery<UserProfile, AxiosError>(
         ['userProfile', tokenState],
@@ -45,9 +44,8 @@ const MyPage = () => {
                         {
                             isActiveGeneration &&
                                 (userProfile.isAdmin) ?
-                                // <TotalScoreSection />
-                                <MyScoreSection userProfile={userProfile} />
-                                : null
+                                <TotalScoreSection />
+                                : <MyScoreSection userProfile={userProfile} />
                         }
                     </RowWrapper>
                 </Wrapper>
