@@ -31,9 +31,9 @@ export const checkGeneration = (generation: number) => {
 
 
 export const getTotalNameObject = (data: any): { [name: string]: UserScore; } => {
-    let totalNameArray: { [name: string]: UserScore; } = {};
+    let totalNameObject: { [name: string]: UserScore; } = {};
     data.forEach((user: any, i: number) => {
-        totalNameArray[user['이름']] = {
+        totalNameObject[user['이름']] = {
             name: user['이름'],
             track: TRACK_INDEX[user['트랙']],
             lateSubmitted: user['과제 지각제출'],
@@ -44,5 +44,5 @@ export const getTotalNameObject = (data: any): { [name: string]: UserScore; } =>
             totalScore: 0,
         };
     });
-    return totalNameArray;
+    return totalNameObject;
 };

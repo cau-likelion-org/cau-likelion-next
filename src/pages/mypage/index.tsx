@@ -1,4 +1,4 @@
-import { UserAssignment, UserAttendance, UserProfile } from '@@types/request';
+import { UserProfile } from '@@types/request';
 import { accessToken } from '@utils/state';
 import { AxiosError } from 'axios';
 import React, { useEffect, useState } from 'react';
@@ -6,11 +6,9 @@ import { useQuery } from 'react-query';
 import { useRecoilValue } from 'recoil';
 import { getUserProfile } from 'src/apis/account';
 import NameCard from '@mypage/component/NameCard';
-import { getAssignments, getUserAttendance } from 'src/apis/attendance';
 import styled from 'styled-components';
 import ProfileCard from '@mypage/component/ProfileCard';
 import { GreyScale } from '@utils/constant/color';
-import { TRACK_NAME } from '@utils/constant';
 import { checkGeneration } from '@utils/index';
 import MyScoreSection from '@mypage/MyScoreSection';
 import TotalScoreSection from '@mypage/TotalScoreSection';
@@ -42,10 +40,10 @@ const MyPage = () => {
                     <RowWrapper>
                         <ProfileCard user={userProfile} />
                         {
-                            isActiveGeneration &&
-                                (userProfile.isAdmin) ?
-                                <TotalScoreSection />
-                                : <MyScoreSection userProfile={userProfile} />
+                            isActiveGeneration ?
+                                userProfile.isAdmin ?
+                                    <TotalScoreSection />
+                                    : <MyScoreSection userProfile={userProfile} /> : null
                         }
                     </RowWrapper>
                 </Wrapper>

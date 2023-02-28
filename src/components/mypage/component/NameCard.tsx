@@ -1,4 +1,4 @@
-import { Basic, GreyScale, Primary } from '@utils/constant/color';
+import { Basic } from '@utils/constant/color';
 import React from 'react';
 import styled from 'styled-components';
 

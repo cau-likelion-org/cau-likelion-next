@@ -31,10 +31,6 @@ const MyScoreSection = ({ userProfile }: { userProfile: UserProfile; }) => {
     );
 
     useEffect(() => {
-        console.log(userAssignment);
-    }, [userAssignment]);
-
-    useEffect(() => {
         if (userAttendance && userAssignment) {
             const score = getTotalScore({
                 'absence': userAttendance.absence,

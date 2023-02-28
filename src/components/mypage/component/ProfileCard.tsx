@@ -1,6 +1,6 @@
 import { UserProfile } from '@@types/request';
 import { TRACK_NAME } from '@utils/constant';
-import { BackgroundColor, Basic, GreyScale, Primary } from '@utils/constant/color';
+import { Basic, GreyScale, Primary } from '@utils/constant/color';
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import UserEditModal from './UserEditModal';
