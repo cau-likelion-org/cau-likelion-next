@@ -8,11 +8,20 @@ import { useQuery } from 'react-query';
 import { useRecoilValue } from 'recoil';
 import { getAssignments, getTotalAttendance } from 'src/apis/attendance';
 import styled from 'styled-components';
+import ScoreEditModal from './component/ScoreEditModal';
 import ScoreHeader from './component/ScoreHeader';
+import { TiPencil } from 'react-icons/ti';
 
 const TotalScoreSection = () => {
     const tokenValue = useRecoilValue(accessToken);
     const [totalScoreArray, setTotalScoreArray] = useState<UserScore[]>([]);
+    const [isEditModalOn, setIsEditModalOn] = useState(false);
+    const [clickedUser, setClickedUser] = useState<UserScore>({} as UserScore);
+
+    const handleScoreEditModal = (userScore: UserScore) => {
+        setIsEditModalOn(!isEditModalOn);
+        setClickedUser(userScore);
+    };
 
     const { data: totalAssignment, isLoading: totalAssignmentLoading, error: totalAssignmentError } = useQuery(
         ['userAssignment'], () => getAssignments().then(res => res.data)
@@ -47,32 +56,38 @@ const TotalScoreSection = () => {
 
 
     return (
-        <Wrapper>
-            <ScoreHeader />
-            <ScoreWrapper>
-                <ScoreRow index={0}>
-                    <ScoreTitle index={0}>이름</ScoreTitle>
-                    <ScoreTitle index={1}>트랙</ScoreTitle>
-                    {Array.from({ length: 6 }, (_, i) => (
-                        <ScoreTitle index={i + 2} key={i}>{ATTENDANCE_CATEGORY_NAME[i]}</ScoreTitle>
-                    ))}
-                </ScoreRow>
-                {
-                    totalScoreArray.map((userScore, i) => (
-                        <ScoreRow index={i + 1} key={i}>
-                            <Score>{userScore.name}</Score>
-                            <Score>{TRACK_NAME[userScore.track]}</Score>
-                            <Score>{userScore.absence}</Score>
-                            <Score>{userScore.truancy}</Score>
-                            <Score>{userScore.tardiness}</Score>
-                            <Score>{userScore.notSubmitted}</Score>
-                            <Score>{userScore.lateSubmitted}</Score>
-                            <Score type={'total'}>{userScore.totalScore}</Score>
-                        </ScoreRow>
-                    ))
-                }
-            </ScoreWrapper>
-        </Wrapper>
+        <>
+            <Wrapper>
+                <ScoreHeader />
+                <ScoreWrapper>
+                    <ScoreRow index={0}>
+                        <ScoreTitle index={0}>이름</ScoreTitle>
+                        <ScoreTitle index={1}>트랙</ScoreTitle>
+                        {Array.from({ length: 6 }, (_, i) => (
+                            <ScoreTitle index={i + 2} key={i}>{ATTENDANCE_CATEGORY_NAME[i]}</ScoreTitle>
+                        ))}
+                    </ScoreRow>
+                    {
+                        totalScoreArray.map((userScore, i) => (
+                            <ScoreRow index={i + 1} key={i}>
+                                <Score>
+                                    {userScore.name}
+                                    <EditButton onClick={() => handleScoreEditModal(userScore)} />
+                                </Score>
+                                <Score>{TRACK_NAME[userScore.track]}</Score>
+                                <Score>{userScore.absence}</Score>
+                                <Score>{userScore.truancy}</Score>
+                                <Score>{userScore.tardiness}</Score>
+                                <Score>{userScore.notSubmitted}</Score>
+                                <Score>{userScore.lateSubmitted}</Score>
+                                <Score type={'total'}>{userScore.totalScore}</Score>
+                            </ScoreRow>
+                        ))
+                    }
+                </ScoreWrapper>
+            </Wrapper>
+            {isEditModalOn ? <ScoreEditModal targetUserScore={clickedUser} isEditModalOn={isEditModalOn} handleScoreEditModal={handleScoreEditModal} /> : null}
+        </>
     );
 };
 export default TotalScoreSection;
@@ -127,4 +142,9 @@ const Score = styled.div<{ type?: string; }>`
     justify-content: center;
     align-items: center;
     border-right: ${props => props.type == 'total' ? 'none' : '1px solid gray'};
+`;
+
+const EditButton = styled(TiPencil)`
+    cursor: pointer;
+    margin-left: 2px;
 `;
