@@ -18,4 +18,8 @@ const Wrapper = styled.div`
   gap: 32px;
   margin: 30px 0;
   width: 100%;
+
+  @media(max-width: 900px) {
+        flex-direction:column-reverse;
+    }
 `;

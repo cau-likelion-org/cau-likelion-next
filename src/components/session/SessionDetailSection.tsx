@@ -9,11 +9,14 @@ const SessionDetailSection = ({ sessionDetail }: { sessionDetail: ISessionDetail
         <Wrapper>
             <LeftWrapper>
                     <DateText>{sessionDetail.date}</DateText>
+
                     <TitleText>{sessionDetail.title}</TitleText>
                     <PresenterText>
                         <b>진행자</b>
                         {sessionDetail.presenter}
                     </PresenterText>
+
+                    
             </LeftWrapper>
 
 
@@ -38,7 +41,6 @@ const SessionDetailSection = ({ sessionDetail }: { sessionDetail: ISessionDetail
                 null}
 
             </RightWrapper>
-
         
         </Wrapper>
     );
@@ -49,19 +51,34 @@ export default SessionDetailSection;
 const Wrapper = styled.div`
     display: flex;
     justify-content: center;
-    /* align-items: center; */
     gap: 3rem;
+
+    @media(max-width: 900px) {
+        flex-direction: column;
+}
 `;
 
 const LeftWrapper = styled.div`
     display: flex;
     flex-direction: column;
     margin-top: 5rem;
+
+    @media(max-width: 900px) {
+        padding: 2rem;
+    }
+
+    div{
+        display: flex;
+    }
 ` 
 
 const RightWrapper = styled.div`
     flex-basis: 70%;
     padding: 2rem;
+
+    @media(max-width: 900px) {
+        padding: 0rem;
+    }
 `;
 
 const TitleText = styled.div`
@@ -84,6 +101,8 @@ const PresenterText = styled.div`
     font-weight: 500;
     font-size: 1.4rem;
     gap: 1rem;
+
+    
 `
 
 const TopicText = styled.div`
@@ -96,6 +115,10 @@ const TopicText = styled.div`
     line-height: 2.5rem;
     font-family: 'Pretendard';
     font-style: normal;
+
+    @media(max-width: 900px) {
+        padding: 0rem 3rem;
+    }
     
 `
 
