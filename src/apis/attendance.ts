@@ -1,4 +1,4 @@
-import { TodayAttendanceData, TodayAttendanceListData, UserAttendance } from '@@types/request';
+import { TodayAttendanceData, TodayAttendanceListData, UserAttendance, UserScore } from '@@types/request';
 import axios from 'axios';
 import { url } from '.';
 
@@ -71,3 +71,20 @@ export const getAssignments = () => {
   return data;
 };
 
+export function patchUserScore(userScore: UserAttendance, accessToken: string) {
+  return axios.patch(
+    `${url}/attendance`,
+    {
+      name: userScore.name,
+      track: userScore.track,
+      truancy: userScore.truancy,
+      absence: userScore.absence,
+      tardiness: userScore.tardiness,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    }
+  );
+}

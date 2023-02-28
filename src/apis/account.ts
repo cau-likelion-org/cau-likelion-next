@@ -82,7 +82,7 @@ export const getUserProfile = async (accessToken: string) => {
         name: '윤선영',
         generation: 11,
         track: 2,
-        isAdmin: false
+        isAdmin: true
     };
 };
 
