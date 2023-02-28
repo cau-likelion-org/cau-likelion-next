@@ -54,6 +54,7 @@ justify-content: space-between;
 align-items: center;
 margin: 3rem;
 width: 100%;
+z-index: 10;
 
 @media (max-width:700px){
     margin: 3rem 0 5rem 0;
