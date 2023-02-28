@@ -9,6 +9,7 @@ import { useQuery } from 'react-query';
 import { useRecoilValue } from 'recoil';
 import { getAssignments, getUserAttendance } from 'src/apis/attendance';
 import styled from 'styled-components';
+import ScoreHeader from './component/ScoreHeader';
 
 const MyScoreSection = ({ userProfile }: { userProfile: UserProfile; }) => {
 
@@ -45,23 +46,26 @@ const MyScoreSection = ({ userProfile }: { userProfile: UserProfile; }) => {
 
     return (
         <Wrapper>
-            {userAttendance && userAssignment &&
-                <>
-                    <AttendanceRow>
-                        {Array.from({ length: 6 }, (_, i) => (
-                            <AttendanceTitle key={i}>{ATTENDANCE_CATEGORY_NAME[i]}</AttendanceTitle>
-                        ))}
-                    </AttendanceRow>
-                    <AttendanceRow>
-                        <AttendanceScore >{userAttendance.absence}</AttendanceScore>
-                        <AttendanceScore >{userAttendance.truancy}</AttendanceScore>
-                        <AttendanceScore >{userAttendance.tardiness}</AttendanceScore>
-                        <AttendanceScore >{userAssignment[0]['과제 미제출']}</AttendanceScore>
-                        <AttendanceScore >{userAssignment[0]['과제 지각제출']}</AttendanceScore>
-                        <AttendanceScore>{totalScore}</AttendanceScore>
-                    </AttendanceRow>
-                </>
-            }
+            <ScoreHeader />
+            <ScoreWrapper>
+                {userAttendance && userAssignment &&
+                    <>
+                        <ScoreRow>
+                            {Array.from({ length: 6 }, (_, i) => (
+                                <ScoreTitle key={i}>{ATTENDANCE_CATEGORY_NAME[i]}</ScoreTitle>
+                            ))}
+                        </ScoreRow>
+                        <ScoreRow>
+                            <Score >{userAttendance.absence}</Score>
+                            <Score >{userAttendance.truancy}</Score>
+                            <Score >{userAttendance.tardiness}</Score>
+                            <Score >{userAssignment[0]['과제 미제출']}</Score>
+                            <Score>{userAssignment[0]['과제 지각제출']}</Score>
+                            <Score>{totalScore}</Score>
+                        </ScoreRow>
+                    </>
+                }
+            </ScoreWrapper>
         </Wrapper>
     );
 };
@@ -70,6 +74,11 @@ export default MyScoreSection;
 
 
 const Wrapper = styled.div`
+    display: flex;
+    flex-direction: column;
+`;
+
+const ScoreWrapper = styled.div`
     margin: 3rem 0;
     width: 100%;
     min-height: 86px;
@@ -81,13 +90,13 @@ const Wrapper = styled.div`
     overflow: hidden;
 `;
 
-const AttendanceRow = styled.div`
+const ScoreRow = styled.div`
     display: flex;
     width: 100%;
     border-right: 1px solid gray;
 `;
 
-const AttendanceTitle = styled.div`
+const ScoreTitle = styled.div`
     font-family: 'Pretendard';
     font-style: normal;
     font-weight: 500;
@@ -99,6 +108,6 @@ const AttendanceTitle = styled.div`
     background-color: ${GreyScale.light};
 `;
 
-const AttendanceScore = styled(AttendanceTitle)`
+const Score = styled(ScoreTitle)`
     background-color: #FEFEFE;
 `;

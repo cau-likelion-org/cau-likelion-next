@@ -8,6 +8,7 @@ import { useQuery } from 'react-query';
 import { useRecoilValue } from 'recoil';
 import { getAssignments, getTotalAttendance } from 'src/apis/attendance';
 import styled from 'styled-components';
+import ScoreHeader from './component/ScoreHeader';
 
 const TotalScoreSection = () => {
     const tokenValue = useRecoilValue(accessToken);
@@ -47,35 +48,44 @@ const TotalScoreSection = () => {
 
     return (
         <Wrapper>
-            <AttendanceRow>
-                <AttendanceTitle index={0}>이름</AttendanceTitle>
-                <AttendanceTitle index={1}>트랙</AttendanceTitle>
-                {Array.from({ length: 6 }, (_, i) => (
-                    <AttendanceTitle index={i + 2} key={i}>{ATTENDANCE_CATEGORY_NAME[i]}</AttendanceTitle>
-                ))}
-            </AttendanceRow>
-            {
-                totalScoreArray.map((userScore, i) => (
-                    <AttendanceRow key={i}>
-                        <AttendanceScore>{userScore.name}</AttendanceScore>
-                        <AttendanceScore>{TRACK_NAME[userScore.track]}</AttendanceScore>
-                        <AttendanceScore>{userScore.absence}</AttendanceScore>
-                        <AttendanceScore>{userScore.truancy}</AttendanceScore>
-                        <AttendanceScore>{userScore.tardiness}</AttendanceScore>
-                        <AttendanceScore>{userScore.notSubmitted}</AttendanceScore>
-                        <AttendanceScore>{userScore.lateSubmitted}</AttendanceScore>
-                        <AttendanceScore type={'total'}>{userScore.totalScore}</AttendanceScore>
-                    </AttendanceRow>
-                ))
-            }
+            <ScoreHeader />
+            <ScoreWrapper>
+                <ScoreRow>
+                    <ScoreTitle index={0}>이름</ScoreTitle>
+                    <ScoreTitle index={1}>트랙</ScoreTitle>
+                    {Array.from({ length: 6 }, (_, i) => (
+                        <ScoreTitle index={i + 2} key={i}>{ATTENDANCE_CATEGORY_NAME[i]}</ScoreTitle>
+                    ))}
+                </ScoreRow>
+                {
+                    totalScoreArray.map((userScore, i) => (
+                        <ScoreRow key={i}>
+                            <Score>{userScore.name}</Score>
+                            <Score>{TRACK_NAME[userScore.track]}</Score>
+                            <Score>{userScore.absence}</Score>
+                            <Score>{userScore.truancy}</Score>
+                            <Score>{userScore.tardiness}</Score>
+                            <Score>{userScore.notSubmitted}</Score>
+                            <Score>{userScore.lateSubmitted}</Score>
+                            <Score type={'total'}>{userScore.totalScore}</Score>
+                        </ScoreRow>
+                    ))
+                }
+            </ScoreWrapper>
         </Wrapper>
     );
 };
 export default TotalScoreSection;
 
 
-
 const Wrapper = styled.div`
+    display: flex;
+    flex-direction: column;
+`;
+
+
+
+const ScoreWrapper = styled.div`
     margin: 3rem 0;
     width: 100%;
     min-height: 86px;
@@ -87,15 +97,16 @@ const Wrapper = styled.div`
     overflow: hidden;
 `;
 
-const AttendanceRow = styled.div`
+const ScoreRow = styled.div`
     display: flex;
     width: 100%;
 `;
 
-const AttendanceTitle = styled.div<{ index: number; }>`
+const ScoreTitle = styled.div<{ index: number; }>`
     font-family: 'Pretendard';
     font-style: normal;
     font-weight: 500;
+    padding: 1rem 0;
     font-size: 1.4rem;
     flex-basis: 100%;
     display: flex;
@@ -105,11 +116,12 @@ const AttendanceTitle = styled.div<{ index: number; }>`
     border-right: ${props => props.index == 7 ? 'none' : '1px solid gray'};
 `;
 
-const AttendanceScore = styled.div<{ type?: string; }>`
-     font-family: 'Pretendard';
+const Score = styled.div<{ type?: string; }>`
+    font-family: 'Pretendard';
     font-style: normal;
     font-weight: 500;
     font-size: 1.4rem;
+    padding: 0.8rem 0;
     flex-basis: 100%;
     display: flex;
     justify-content: center;
