@@ -16,13 +16,13 @@ const TrackSection = () => {
     copy[i] = true;
     setIsClicked(copy);
   };
-
+  const text =
+    '기획, 디자인, 프론트엔드, 백엔드 트랙으로 나뉘어 개별 세션, 스터디가 진행됩니다.\n각 트랙의 세부 활동에 대해 알아볼까요?';
   return (
     <FadeInComponent>
       <Wrapper>
         <TitleText>트랙 소개</TitleText>
-        <Text>기획, 디자인, 프론트엔드, 백엔드 트랙으로 나뉘어 개별 세션, 스터디가 진행됩니다.</Text>
-        <Text>각 트랙의 세부 활동에 대해 알아볼까요?</Text>
+        <Text>{text}</Text>
         <TrackWrapper>
           <CenterWrapper>
             <ButtonsWrapper>
@@ -58,11 +58,6 @@ const Wrapper = styled.div`
   flex-direction: column;
   align-items: center;
   width: 100%;
-  @media(min-width: 900px) {
-    scroll-snap-align: start;
-    min-height: 100vh;
-    height: 100%;
-  }
 `;
 
 const TitleText = styled.div`
@@ -78,15 +73,23 @@ const TitleText = styled.div`
   margin-left: 15px;
   margin-right: 15px;
   margin-bottom: 1.5rem;
+  @media (max-width: 1376px) {
+    font-size: 2.5rem;
+  }
 `;
 
 const Text = styled.div`
   font-family: 'Pretendard';
   font-weight: 500;
-  line-height: 2.5rem;;
+  line-height: 2.5rem;
   font-size: 1.7rem;
   padding: 0.8rem 0;
   text-align: center;
+  white-space: pre-wrap;
+  @media (max-width: 900px) {
+    text-align: left;
+    white-space: normal;
+  }
 `;
 const TrackWrapper = styled.div`
   width: 100%;
@@ -96,8 +99,8 @@ const TrackWrapper = styled.div`
 const ButtonsWrapper = styled.div`
   display: flex;
   justify-content: space-between;
-  @media(max-width: 900px){
-    width: 90%;
+  @media (max-width: 900px) {
+    width: 100%;
     justify-content: space-around;
   }
   width: 80%;

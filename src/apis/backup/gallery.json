@@ -3,31 +3,31 @@
     {
       "id": 1,
       "title": "갤러리1",
-      "category": "2020.10.20",
+      "date": "2020.10.20",
       "thumbnail": "https://cau-likelion.s3.ap-northeast-2.amazonaws.com/project-img/9%E1%84%80%E1%85%B5/Rectangle_336-1.png"
     },
     {
       "id": 2,
       "title": "갤러리1",
-      "category": "2020.10.20",
+      "date": "2020.10.20",
       "thumbnail": "https://cau-likelion.s3.ap-northeast-2.amazonaws.com/project-img/9%E1%84%80%E1%85%B5/Rectangle_336-1.png"
     },
     {
       "id": 3,
       "title": "갤러리1",
-      "category": "2022.12.20",
+      "date": "2022.12.20",
       "thumbnail": "https://cau-likelion.s3.ap-northeast-2.amazonaws.com/project-img/9%E1%84%80%E1%85%B5/Rectangle_336-1.png"
     },
     {
       "id": 4,
       "title": "갤러리1",
-      "category": "날짜",
+      "date": "날짜",
       "thumbnail": "https://cau-likelion.s3.ap-northeast-2.amazonaws.com/project-img/9%E1%84%80%E1%85%B5/Rectangle_336-1.png"
     },
     {
       "id": 5,
       "title": "갤러리1",
-      "category": "날짜",
+      "date": "날짜",
       "thumbnail": "https://cau-likelion.s3.ap-northeast-2.amazonaws.com/project-img/9%E1%84%80%E1%85%B5/Rectangle_336-1.png"
     }
   ],
@@ -35,25 +35,25 @@
     {
       "id": 6,
       "title": "갤러리1",
-      "category": "날짜",
+      "date": "날짜",
       "thumbnail": "https://cau-likelion.s3.ap-northeast-2.amazonaws.com/project-img/9%E1%84%80%E1%85%B5/Rectangle_336-1.png"
     },
     {
       "id": 7,
       "title": "갤러리1",
-      "category": "날짜",
+      "date": "날짜",
       "thumbnail": "https://cau-likelion.s3.ap-northeast-2.amazonaws.com/project-img/9%E1%84%80%E1%85%B5/Rectangle_336-1.png"
     },
     {
       "id": 8,
       "title": "갤러리1",
-      "category": "날짜",
+      "date": "날짜",
       "thumbnail": "https://cau-likelion.s3.ap-northeast-2.amazonaws.com/project-img/9%E1%84%80%E1%85%B5/Rectangle_336-1.png"
     },
     {
       "id": 9,
       "title": "갤러리1",
-      "category": "날짜",
+      "date": "날짜",
       "thumbnail": "https://cau-likelion.s3.ap-northeast-2.amazonaws.com/project-img/9%E1%84%80%E1%85%B5/Rectangle_336-1.png"
     }
   ]

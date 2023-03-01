@@ -34,17 +34,9 @@ const ProjectSection = () => {
 };
 
 export default ProjectSection;
-
 const Wrapper = styled.div`
+  height: 100%;
   width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  @media(min-width: 900px){
-    scroll-snap-align: start; 
-    height: 100%;
-    min-height: 100vh;
-  }
 `;
 const TitleWrapper = styled.div`
   margin-top: 3.2rem;
@@ -56,13 +48,19 @@ const TitleWrapper = styled.div`
 const Title = styled.div`
   font-family: 'Pretendard';
   font-weight: 700;
-  font-size: 30px;
+  font-size: 3rem;
+  @media (max-width: 900px) {
+    font-size: 2.5rem;
+  }
 `;
 const Text = styled.div`
   font-family: 'Pretendard';
   font-weight: 500;
   font-size: 17px;
   margin-top: 23px;
+  @media (max-width: 900px) {
+    font-size: 1.5rem;
+  }
 `;
 const ButtonWrapper = styled.div`
   display: flex;

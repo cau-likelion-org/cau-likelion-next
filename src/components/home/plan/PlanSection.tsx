@@ -16,14 +16,14 @@ const fadeInAnimation: Variants = {
 };
 const PlanSection = () => {
   return (
-    <Wrapper>
-      <FadeInComponent variants={fadeInAnimation}>
+    <FadeInComponent variants={fadeInAnimation}>
+      <Wrapper>
         <AlignWrapper>
           <TitleText>연간 일정</TitleText>
           <PlanBox />
         </AlignWrapper>
-      </FadeInComponent>
-    </Wrapper>
+      </Wrapper>
+    </FadeInComponent>
   );
 };
 
@@ -35,13 +35,9 @@ const Wrapper = styled.div`
   align-items: center;
   width: 100%;
   gap: 40px;
-  @media(min-width: 900px){
-    scroll-snap-align: start; 
-    min-height: 100vh;
-    height: 100%;
-  }
 `;
 const AlignWrapper = styled.div`
+  width: 100%;
   margin-top: 10%;
 `;
 
@@ -55,4 +51,7 @@ const TitleText = styled.div`
   font-size: 3.7rem;
   text-align: center;
   margin: 15px 0;
+  @media (max-width: 900px) {
+    font-size: 2rem;
+  }
 `;

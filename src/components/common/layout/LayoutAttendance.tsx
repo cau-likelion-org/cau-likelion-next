@@ -7,7 +7,7 @@ import Footer from '@common/footer/Footer';
 import Lion from '@image/background.png';
 import MobileNavBar from '@common/header/MobileNavBar';
 
-export default function LayoutAttendance({ children }: { children: ReactElement; }) {
+export default function LayoutAttendance({ children }: { children: ReactElement }) {
   return (
     <>
       <PageContainer>
@@ -32,5 +32,8 @@ const PageContainer = styled.div`
     left: 0;
     right: 0;
     background-image: url(${Lion.src});
+    @media (max-width: 900px) {
+      background-size: 900px;
+    }
   }
 `;

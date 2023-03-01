@@ -1,5 +1,5 @@
-import { UserProfile } from '@@types/request';
-import { accessToken } from '@utils/state';
+import { UserAttendance, UserProfile } from '@@types/request';
+import { token } from '@utils/state';
 import { AxiosError } from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
@@ -14,42 +14,42 @@ import MyScoreSection from '@mypage/MyScoreSection';
 import TotalScoreSection from '@mypage/TotalScoreSection';
 
 const MyPage = () => {
-    const tokenState = useRecoilValue(accessToken);
-    const [isActiveGeneration, setIsActiveGeneration] = useState(false);
+  const tokenState = useRecoilValue(token);
+  const [isActiveGeneration, setIsActiveGeneration] = useState(false);
 
-    const { data: userProfile, isLoading: profileLoading, error: profileError } = useQuery<UserProfile, AxiosError>(
-        ['userProfile', tokenState],
-        () => getUserProfile(tokenState)
-    );
+  const { data: userProfile, isLoading: profileLoading, error: profileError } = useQuery<UserProfile, AxiosError>(
+    ['userProfile', tokenState],
+    () => getUserProfile(tokenState)
+  );
 
-    useEffect(() => {
-        if (userProfile && checkGeneration(userProfile.generation)) {
-            setIsActiveGeneration(true);
-        }
-    }, [userProfile, isActiveGeneration]);
+  useEffect(() => {
+    if (userProfile && checkGeneration(userProfile.generation)) {
+      setIsActiveGeneration(true);
+    }
+  }, [userProfile, isActiveGeneration]);
 
-    return (
-        <>
-            {userProfile &&
-                <Wrapper>
-                    <Header>
-                        <NameCard
-                            name={userProfile.name}
-                            generation={userProfile?.generation} />
-                    </Header>
-                    <RowWrapper>
-                        <ProfileCard user={userProfile} />
-                        {
-                            isActiveGeneration ?
-                                userProfile.isAdmin ?
-                                    <TotalScoreSection />
-                                    : <MyScoreSection userProfile={userProfile} /> : null
-                        }
-                    </RowWrapper>
-                </Wrapper>
+  return (
+    <>
+      {userProfile &&
+        <Wrapper>
+          <Header>
+            <NameCard
+              name={userProfile.name}
+              generation={userProfile?.generation} />
+          </Header>
+          <RowWrapper>
+            <ProfileCard user={userProfile} />
+            {
+              isActiveGeneration ?
+                userProfile.is_admin ?
+                  <TotalScoreSection />
+                  : <MyScoreSection userProfile={userProfile} /> : null
             }
-        </>
-    );
+          </RowWrapper>
+        </Wrapper>
+      }
+    </>
+  );
 };
 
 export default MyPage;
@@ -61,15 +61,15 @@ const Wrapper = styled.div`
 `;
 
 const Header = styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-    font-family: 'Inter';
-    font-style: normal;
-    font-weight: 400;
-    font-size: 1.6rem;
-    color: ${GreyScale.default};
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 1.6rem;
+  color: ${GreyScale.default};
 `;
 
 const RowWrapper = styled.div`
@@ -79,9 +79,7 @@ const RowWrapper = styled.div`
     width: 100%;
     gap: 35px;
 
-    @media(max-width: 900px){
-        flex-direction: column;
-        
-    }
+  @media (max-width: 900px) {
+    flex-direction: column;
+  }
 `;
-

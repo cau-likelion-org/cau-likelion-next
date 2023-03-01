@@ -10,13 +10,11 @@ import InputBox from './InputBox';
 
 import { getAttendance, postAttendance } from 'src/apis/attendance';
 
-const AttendanceBox = () => {
+const AttendanceBox = ({ data }: { data: TodayAttendanceData }) => {
   const router = useRouter();
   const InputRef = useRef<HTMLInputElement>(null);
 
-  const { data, isLoading } = useQuery<TodayAttendanceData>(['attendance'], getAttendance);
-
-  if (data && data.isComplete) {
+  if (data.isComplete) {
     router.push('/attendance/completed');
   }
 
@@ -38,12 +36,6 @@ const AttendanceBox = () => {
   const handleEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') handleClick();
   };
-  if (isLoading)
-    return (
-      <Wrapper>
-        <Title>로딩중...</Title>
-      </Wrapper>
-    );
 
   return (
     <Wrapper>
@@ -77,6 +69,10 @@ const Title = styled.div`
   font-family: 'Pretendard';
   font-size: 3rem;
   font-weight: 700;
+  @media (max-width: 900px) {
+    margin-top: 30px;
+    font-size: 2.5rem;
+  }
 `;
 const Square = styled.div`
   width: 9px;
@@ -88,6 +84,9 @@ const Square = styled.div`
 const SquareWrapper = styled.div`
   display: flex;
   margin: 3.8rem 0;
+  @media (max-width: 900px) {
+    margin: 2rem;
+  }
 `;
 const PasswordWrapper = styled.div`
   display: flex;
@@ -102,6 +101,9 @@ const PasswordTitle = styled.div`
   font-weight: 500;
   font-size: 1.7rem;
   margin-right: 3rem;
+  @media (max-width: 900px) {
+    font-size: 1.5rem;
+  }
 `;
 const PasswordInput = styled.input`
   width: 25rem;
@@ -111,6 +113,11 @@ const PasswordInput = styled.input`
   border-style: none;
   font-size: 1.7rem;
   text-align: center;
+  @media (max-width: 900px) {
+    font-size: 1.5rem;
+    height: 5rem;
+    width: 15rem;
+  }
 `;
 
 const SubmitButton = styled.div`
@@ -128,4 +135,10 @@ const SubmitButton = styled.div`
   font-weight: 700;
   font-size: 21px;
   margin-top: 20px;
+  @media (max-width: 900px) {
+    width: 80px;
+    font-size: 15px;
+    margin-top: 0px;
+    height: 30px;
+  }
 `;

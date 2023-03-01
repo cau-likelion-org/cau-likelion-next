@@ -1,44 +1,54 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { login } from 'src/apis/account';
-import { useRecoilValue } from 'recoil';
-import { accessToken } from '@utils/state';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import cookie from 'react-cookies';
 import { useMutation } from 'react-query';
+import { token } from '@utils/state';
 
 const Google = () => {
-    const router = useRouter();
-    const { code: code } = router.query;
-    const tokenState = useRecoilValue(accessToken);
-
-    const loginHandler = useMutation({
-        mutationFn: ({ code, accessToken }: { code: string | string[]; accessToken: string; }) => login(code, accessToken),
-        onSuccess: (res) => {
-            if (!res.is_active) {
-                router.push({
-                    pathname: '/signup',
-                    query: { accessToken: res.accessToken }
-                }, '/signup');
-            }
-            else if (res.is_active) {
-                router.push('/');
-            }
-        },
-        onError: (res) => {
-            router.push('/login/failed');
-        }
-    });
-
-    useEffect(() => {
-        if (code) loginHandler.mutate({ code, accessToken: tokenState });
+  const router = useRouter();
+  const { code: code } = router.query;
+  const [{ access, refresh }, setToken] = useRecoilState(token);
+  useEffect(() => {
+    if (access) {
+      router.push('/');
+    }
+  }, []);
+  const loginHandler = useMutation({
+    mutationFn: ({ code }: { code: string | string[] }) => login(code),
+    onSuccess: (res) => {
+      console.log(res);
+      if (!res.is_active) {
+        router.push(
+          {
+            pathname: '/signup',
+            query: { accessToken: res.token.access, refreshToken: res.token.refresh },
+          },
+          '/signup',
+        );
+      } else if (res.is_active) {
+        setToken((prev) => {
+          const obj = { ...prev };
+          obj.access = res.token.access;
+          obj.refresh = res.token.refresh;
+          return obj;
+        });
+        console.log(access);
         router.push('/');
-    }, [router, loginHandler, code, tokenState]);
+      }
+    },
+    onError: (res) => {
+      router.push('/login/failed', undefined, { shallow: true });
+    },
+  });
 
-    return (
-        <div>
-            로딩중
-        </div>
-    );
+  useEffect(() => {
+    if (code) loginHandler.mutate({ code });
+    router.push('/', undefined, { shallow: true });
+  }, [code]);
+
+  return <div>로딩중</div>;
 };
 
 export default Google;

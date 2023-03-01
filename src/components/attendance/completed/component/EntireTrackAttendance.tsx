@@ -5,6 +5,7 @@ import { getAttendanceList } from 'src/apis/attendance';
 import Track from './TrackAttendance';
 import { Primary, Secondary } from '@utils/constant/color';
 import { ITrackController } from './componentType';
+import Loading from '@common/loading/Loading';
 
 const trackController: Record<MemberStack, ITrackController> = {
   pm: {
@@ -37,7 +38,7 @@ const EntireTrackAttendance = () => {
   const trackStacks = Object.keys(trackController) as MemberStack[];
   const { data, isLoading } = useQuery<TodayAttendanceListData>(['getAttendanceList'], getAttendanceList);
 
-  if (isLoading) return <div>로딩중</div>;
+  if (isLoading) return <Loading />;
 
   return (
     <>
