@@ -4,6 +4,7 @@ import backupPostData from './backup/postAttendance.json';
 import backupList from './backup/attendanceList.json';
 import axios from 'axios';
 import { url } from '.';
+import { IToken } from '@utils/state';
 
 export function getAttendance() {
   return axios
@@ -31,7 +32,7 @@ export function getAttendanceList() {
     .catch((err) => backupList);
 }
 
-export const getUserAttendance = async (accessToken: string) => {
+export const getUserAttendance = async (accessToken: IToken) => {
   // const response = await axios.get(
   //   `${url}/attendance`,
   //   {
@@ -50,7 +51,7 @@ export const getUserAttendance = async (accessToken: string) => {
   };
 };
 
-export const getTotalAttendance = async (accessToken: string) => {
+export const getTotalAttendance = async (accessToken: IToken) => {
   // const response = await axios.get(
   //   `${url}/attendance`,
   //   {
@@ -80,7 +81,7 @@ export const getAssignments = () => {
   return data;
 };
 
-export function patchUserScore(userScore: UserAttendance, accessToken: string) {
+export function patchUserScore(userScore: UserAttendance, accessToken: IToken) {
   return axios.patch(
     `${url}/attendance`,
     {

@@ -1,8 +1,8 @@
 import { UserAttendance, UserProfile, UserScore } from '@@types/request';
 import FormSendButton from '@signup/component/FormSendButton';
 import { BackgroundColor, Basic, GreyScale } from '@utils/constant/color';
-import { accessToken } from '@utils/state';
-import React, { useState } from 'react';
+import { IToken, token } from '@utils/state';
+import React from 'react';
 import { useMutation } from 'react-query';
 import { useRecoilValue } from 'recoil';
 import { patchUserScore } from 'src/apis/attendance';
@@ -19,13 +19,13 @@ interface ScoreEditModalProps {
 }
 
 const ScoreEditModal = ({ targetUserScore, isEditModalOn, handleScoreEditModal }: ScoreEditModalProps) => {
-    const tokenState = useRecoilValue(accessToken);
+    const tokenState = useRecoilValue(token);
     const [truancyValue, onChangeTruancyValue] = useInput(Number(targetUserScore.truancy), /^[0-9]*$/);
     const [tardinessValue, onChangeTardinessValue] = useInput(Number(targetUserScore.tardiness), /^[0-9]*$/);
     const [absenceValue, onChangeAbsenceValue] = useInput(Number(targetUserScore.absence), /^[0-9]*$/);
 
     const editUserScore = useMutation({
-        mutationFn: ({ userScore, accessToken }: { userScore: UserAttendance; accessToken: string; }) => patchUserScore(userScore, accessToken),
+        mutationFn: ({ userScore, accessToken }: { userScore: UserAttendance; accessToken: IToken; }) => patchUserScore(userScore, accessToken),
         onSuccess: (res) => {
             if (res.status === 200) {
                 () => getTotalAttendance(tokenState);

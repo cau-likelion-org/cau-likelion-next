@@ -11,7 +11,7 @@ export const getUserProfile = async (token: IToken) => {
     name: '윤선영',
     generation: 11,
     track: 2,
-    isAdmin: true
+    is_admin: true
   };
 };
 

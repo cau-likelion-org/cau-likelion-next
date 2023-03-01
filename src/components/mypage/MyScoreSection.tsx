@@ -2,7 +2,7 @@ import { UserAttendance, UserProfile } from '@@types/request';
 import { ATTENDANCE_CATEGORY_NAME } from '@utils/constant';
 import { GreyScale } from '@utils/constant/color';
 import { getTotalScore } from '@utils/index';
-import { accessToken } from '@utils/state';
+import { token } from '@utils/state';
 import { AxiosError } from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
@@ -14,7 +14,7 @@ import ScoreHeader from './component/ScoreHeader';
 const MyScoreSection = ({ userProfile }: { userProfile: UserProfile; }) => {
 
     const [totalScore, setTotalScore] = useState<number>(0);
-    const tokenValue = useRecoilValue(accessToken);
+    const tokenValue = useRecoilValue(token);
 
     const { data: userAttendance, isLoading: attendanceLoading, error: attendanceError } = useQuery<UserAttendance, AxiosError>(
         ['userAttendance'],

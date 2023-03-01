@@ -1,4 +1,4 @@
-import { UserAttendance, UserProfile } from '@@types/request';
+import { UserProfile } from '@@types/request';
 import { token } from '@utils/state';
 import { AxiosError } from 'axios';
 import React, { useEffect, useState } from 'react';

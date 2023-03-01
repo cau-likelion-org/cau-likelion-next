@@ -2,7 +2,7 @@ import { UserAttendance, UserScore } from '@@types/request';
 import { ATTENDANCE_CATEGORY_NAME, TRACK_NAME } from '@utils/constant';
 import { BackgroundColor, GreyScale } from '@utils/constant/color';
 import { getTotalNameObject, getTotalScore } from '@utils/index';
-import { accessToken } from '@utils/state';
+import { token } from '@utils/state';
 import React, { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 import { useRecoilValue } from 'recoil';
@@ -13,7 +13,7 @@ import ScoreHeader from './component/ScoreHeader';
 import { TiPencil } from 'react-icons/ti';
 
 const TotalScoreSection = () => {
-    const tokenValue = useRecoilValue(accessToken);
+    const tokenValue = useRecoilValue(token);
     const [totalScoreArray, setTotalScoreArray] = useState<UserScore[]>([]);
     const [isEditModalOn, setIsEditModalOn] = useState(false);
     const [clickedUser, setClickedUser] = useState<UserScore>({} as UserScore);
