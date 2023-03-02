@@ -4,10 +4,11 @@ import Card from '@archiving/Card';
 import { Primary } from '@utils/constant/color';
 import back from '@image/back.png';
 import Image from 'next/image';
+import { ISessionData } from '@@types/request';
 
 type  ModalProps = {
     trackName: string,
-    trackData: { id: number; title: string, category:string, thumbnail:string}[];
+    trackData: ISessionData[];
     handleClose: (e: React.MouseEvent<HTMLElement, MouseEvent>) => void,
     visible:boolean,
 };
@@ -57,7 +58,7 @@ const SessionModal:React.FC<ModalProps> = ({trackData, trackName, handleClose, v
                         link='/session'
                         thumbnail={data.thumbnail}
                         title={data.title}
-                        category={`${data.category}차 세션`} />
+                        category={`${data.degree}차 세션`} />
                         )
                     })}
             </CardWrapper>

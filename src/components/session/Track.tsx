@@ -2,10 +2,11 @@ import React from 'react';
 import styled, {css} from 'styled-components';
 import {useState} from 'react';
 import SessionModal from './SessionModal';
+import { ISessionData } from '@@types/request';
 
 type  TrackProps = {
     track: string,
-    trackData: { id: number; title: string, category:string, thumbnail:string}[],
+    trackData: ISessionData[],
 };
 
 const Track: React.FC<TrackProps> = ({track, trackData}) => {

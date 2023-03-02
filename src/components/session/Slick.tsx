@@ -4,10 +4,11 @@ import Card from '@archiving/Card';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+import { ISessionData } from '@@types/request';
 
 type  ModalProps = {
     trackName: string;
-    trackData: { id: number; title: string, category:string, thumbnail:string}[];
+    trackData: ISessionData[];
 };
 
 
@@ -65,7 +66,7 @@ const Slick:React.FC<ModalProps> = ({trackData, trackName}) => {
                         link='/session'
                         thumbnail={data.thumbnail}
                         title={data.title}
-                        category={`${data.category}차 세션`} />
+                        category={`${data.degree}차 세션`} />
                     )
                     })}
             </StSlider>
