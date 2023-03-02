@@ -39,28 +39,46 @@ const Wrapper = styled.div`
   border-radius: 25px;
   box-shadow: 10px 10px 50px rgba(68, 64, 105, 0.08);
   cursor: pointer;
+
   @media (min-width: 1920px) {
     width: 380px;
     height: 400px;
   }
-  @media (min-width: 360px) and (max-width: 1919px) {
+  @media (min-width: 901px) and (max-width: 1919px) {
     width: 330px;
     height: 370px;
   }
+  @media (min-width: 431px) and (max-width: 901px) {
+    width: 231px;
+    height: 259px;
+  }
+  @media (min-width: 360px) and (max-width: 430px) {
+    width: 231px;
+    height: 259px;
+  }
 `;
+
 const ImageWrapper = styled.div`
   position: relative;
 
   border-top-left-radius: 25px;
   border-top-right-radius: 25px;
 
-  @media (min-width: 360px) and (max-width: 1919px) {
-    width: 330px;
-    height: 200px;
-  }
   @media (min-width: 1920px) {
     width: 380px;
     height: 250px;
+  }
+  @media (min-width: 901px) and (max-width: 1919px) {
+    width: 330px;
+    height: 200px;
+  }
+  @media (min-width: 431px) and (max-width: 900px) {
+    width: 231px;
+    height: 140px;
+  }
+  @media (min-width: 360px) and (max-width: 430px) {
+    width: 231px;
+    height: 140px;
   }
 `;
 const TextWrapper = styled.div`
@@ -88,12 +106,18 @@ const Category = styled.div`
   justify-content: center;
   align-items: center;
 `;
+
 const ProjectTitle = styled.div`
   font-size: 2.3rem;
   font-weight: 700;
   font-family: 'Pretendard';
   margin: 10px 0;
+
+  @media (max-width: 900px){
+    font-size: 1.7rem;
+  }
 `;
+
 const ProjectDesc = styled.div`
   font-size: 1.7rem;
   font-weight: 500;

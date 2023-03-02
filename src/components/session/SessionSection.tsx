@@ -3,11 +3,12 @@ import styled from 'styled-components';
 import Track from './Track';
 import Arrow from './Arrow';
 import Slick from './Slick';
+import { ISessionData } from '@@types/request';
 
 
 type  SessionProps = {
     trackName: string;
-    trackData: { id: number; title: string, category:string, thumbnail:string}[];
+    trackData: ISessionData[];
 };
 
 const SessionSection:React.FC<SessionProps> =({trackName, trackData}) => {
