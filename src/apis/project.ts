@@ -3,7 +3,7 @@ import axios from 'axios';
 import projectBackupData from './backup/project.json';
 export async function getProjects() {
   try {
-    const res = await axios.get<ArchivingArrayType<IProjectData>>(`/projects/project/`);
+    const res = await axios.get<ArchivingArrayType<IProjectData>>(`/api/projects/project/`);
     return res.data;
   } catch (err) {
     console.log(err);

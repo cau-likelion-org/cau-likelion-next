@@ -4,7 +4,7 @@ import backupData from './backup/projectDetail.json';
 export async function getProjectDetail(id: string) {
   try {
     const res = await axios.get<IProjectDetail>(
-      `/projects/project/${id}`,
+      `/api/projects/project/${id}`,
       //내맘대로 적은 url임 이런 api없음 바꿔줘야댐
     );
     return res.data;
