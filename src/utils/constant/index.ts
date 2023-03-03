@@ -1,5 +1,7 @@
 // example
 
+export const GENERATION_CHECKER = 2012;
+
 export enum MENU {
   SESSION,
   GALLERY,

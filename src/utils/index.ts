@@ -1,5 +1,5 @@
 import { TotalScoreParams, UserScore } from "@@types/request";
-import { TRACK_INDEX } from "./constant";
+import { GENERATION_CHECKER, TRACK_INDEX } from "./constant";
 
 export const toDateString = (date?: Date, formatter = "-") => {
     if (!date) return "";
@@ -22,14 +22,13 @@ export const getTotalScore = (data: TotalScoreParams) => {
 
 export const checkGeneration = (generation: number) => {
     let year = new Date().getFullYear();
-    if (year - generation == 2012) return true;
+    if (year - generation == GENERATION_CHECKER) return true;
     return false;
 };
 
 
-
-export const getTotalNameObject = (data: any): { [name: string]: UserScore; } => {
-    let totalNameObject: { [name: string]: UserScore; } = {};
+export const getTotalNameObject = (data: any): Record<string, UserScore> => {
+    let totalNameObject: Record<string, UserScore> = {};
     data.forEach((user: any, i: number) => {
         totalNameObject[user['이름']] = {
             name: user['이름'],

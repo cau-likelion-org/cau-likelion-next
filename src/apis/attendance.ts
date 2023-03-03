@@ -5,6 +5,7 @@ import backupList from './backup/attendanceList.json';
 import axios from 'axios';
 import { url } from '.';
 import { IToken } from '@utils/state';
+import { getAuthAxios } from './authAxios';
 
 export function getAttendance() {
   return axios
@@ -32,15 +33,9 @@ export function getAttendanceList() {
     .catch((err) => backupList);
 }
 
-export const getUserAttendance = async (accessToken: IToken) => {
-  // const response = await axios.get(
-  //   `${url}/mypage/attendance/`,
-  //   {
-  //     headers: {
-  //       Authorization: `Bearer ${accessToken}`
-  //     }
-  //   }
-  // );
+export const getUserAttendance = async (token: IToken) => {
+  // const authAxios = getAuthAxios(token);
+  // const response = await authAxios.get(`/mypage/attendance`);
   // return response.data as UserAttendance;
   return {
     name: '윤선영',
@@ -51,16 +46,11 @@ export const getUserAttendance = async (accessToken: IToken) => {
   };
 };
 
-export const getTotalAttendance = async (accessToken: IToken) => {
-  // const response = await axios.get(
-  //   `${url}/mypage/attendance/`,
-  //   {
-  //     headers: {
-  //       Authorization: `Bearer ${accessToken}`
-  //     }
-  //   }
-  // );
+export const getTotalAttendance = async (token: IToken) => {
+  // const authAxios = getAuthAxios(token);
+  // const response = await authAxios.get(`/mypage/attendance`);
   // return response.data as UserAttendance[];
+
   return [{
     name: '윤선영',
     track: 2,
