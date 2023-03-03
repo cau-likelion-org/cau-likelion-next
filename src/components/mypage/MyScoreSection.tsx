@@ -23,7 +23,7 @@ const MyScoreSection = ({ userProfile }: { userProfile: UserProfile; }) => {
 
     const { data: userAssignment, isLoading: assignmentLoading, error: assignmentError } = useQuery(
         ['userAssignment'],
-        () => getAssignments().then(res => res.data.filter((user: any) =>
+        () => getAssignments().then(data => data.filter((user: any) =>
             user['이름'] == userProfile!.name
         )),
         {

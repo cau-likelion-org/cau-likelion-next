@@ -24,7 +24,7 @@ const TotalScoreSection = () => {
     };
 
     const { data: totalAssignment, isLoading: totalAssignmentLoading, error: totalAssignmentError } = useQuery(
-        ['userAssignment'], () => getAssignments().then(res => res.data)
+        ['userAssignment'], getAssignments
     );
 
     const { data: totalAttendance, isLoading: totalAttendanceLoading, error: totalAttendanceError } = useQuery(
