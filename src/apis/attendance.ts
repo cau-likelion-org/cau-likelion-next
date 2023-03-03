@@ -34,7 +34,7 @@ export function getAttendanceList() {
 
 export const getUserAttendance = async (accessToken: IToken) => {
   // const response = await axios.get(
-  //   `${url}/attendance`,
+  //   `${url}/mypage/attendance/`,
   //   {
   //     headers: {
   //       Authorization: `Bearer ${accessToken}`
@@ -53,7 +53,7 @@ export const getUserAttendance = async (accessToken: IToken) => {
 
 export const getTotalAttendance = async (accessToken: IToken) => {
   // const response = await axios.get(
-  //   `${url}/attendance`,
+  //   `${url}/mypage/attendance/`,
   //   {
   //     headers: {
   //       Authorization: `Bearer ${accessToken}`
@@ -77,13 +77,15 @@ export const getTotalAttendance = async (accessToken: IToken) => {
 };
 
 export const getAssignments = () => {
-  const data = axios.get(`https://notion-api.splitbee.io/v1/table/${process.env.NEXT_PUBLIC_NOTION_DATABASE_ID}`);
+  const data = axios.get(
+    `https://notion-api.splitbee.io/v1/table/${process.env.NEXT_PUBLIC_NOTION_DATABASE_ID}`
+  ).then(res => res.data);
   return data;
 };
 
 export function patchUserScore(userScore: UserAttendance, accessToken: IToken) {
-  return axios.patch(
-    `${url}/attendance`,
+  return axios.post(
+    `${url}/mypage/attendance/`,
     {
       name: userScore.name,
       track: userScore.track,
