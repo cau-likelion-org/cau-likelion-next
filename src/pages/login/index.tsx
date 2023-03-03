@@ -38,7 +38,7 @@ const StWrapper = styled.div`
     padding: 100px 150px 100px 150px;
   }
   padding: 100px 360px 100px 360px;
-  @media (max-width: 900px) {
+  @media (max-width: 1200px) {
     padding: 0px;
     width: 100%;
     height: 100%;
@@ -54,7 +54,7 @@ const StContentsWrapper = styled.div`
   padding-top: 10rem;
 
   width: 120rem;
-  @media (max-width: 900px) {
+  @media (max-width: 1200px) {
     width: 100%;
     padding: 0;
   }
@@ -65,7 +65,7 @@ const StBorderWrapper = styled.div`
   width: 120rem;
   height: 100rem;
   padding-top: 10rem;
-  @media (max-width: 900px) {
+  @media (max-width: 1200px) {
     display: none;
   }
 `;

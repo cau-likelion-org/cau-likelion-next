@@ -19,12 +19,15 @@ const RightSection = () => {
 
 export default RightSection;
 const StCustomWrapper = styled(SectionWrapper)`
-  @media (max-width: 900px) {
+  @media (max-width: 1200px) {
     border-style: solid;
     border-radius: 25px;
     border-color: #1a21bd;
     border-width: 2px;
-  } ;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+  }
 `;
 const StTextWrapper = styled.div`
   display: flex;

@@ -29,7 +29,7 @@ const SectionWrapper = styled.div`
   justify-content: flex-end;
   width: 60rem;
   height: 50rem;
-  @media (max-width: 900px) {
+  @media (max-width: 1200px) {
     display: none;
   }
 `;

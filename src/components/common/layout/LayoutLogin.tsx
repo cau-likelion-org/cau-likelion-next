@@ -21,7 +21,7 @@ const PageContainer = styled.div`
   min-height: calc(100vh - 184px);
   width: 100%;
   padding: 0 360px;
-  @media (max-width: 900px) {
+  @media (max-width: 1200px) {
     width: 100%;
     padding: 0;
   }
