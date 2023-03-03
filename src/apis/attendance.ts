@@ -78,7 +78,8 @@ export function editUserScore(userScore: UserAttendance, token: IToken) {
   return authAxios.post(
     `${url}/mypage/attendance/`,
     {
-      user_id: userScore.user_id,
+      name: userScore.name,
+      track: userScore.track,
       truancy: userScore.truancy,
       absence: userScore.absence,
       tardiness: userScore.tardiness,
