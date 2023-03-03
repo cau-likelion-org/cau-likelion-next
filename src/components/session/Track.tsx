@@ -2,10 +2,11 @@ import React from 'react';
 import styled, {css} from 'styled-components';
 import {useState} from 'react';
 import SessionModal from './SessionModal';
+import { ISessionData } from '@@types/request';
 
 type  TrackProps = {
     track: string,
-    trackData: { id: number; title: string, category:string, thumbnail:string}[],
+    trackData: ISessionData[],
 };
 
 const Track: React.FC<TrackProps> = ({track, trackData}) => {
@@ -54,10 +55,20 @@ justify-content: space-between;
 align-items: center;
 margin: 3rem;
 width: 100%;
+z-index: 10;
+
+@media (max-width:700px){
+    margin: 3rem 0 5rem 0;
+
+    a{
+    font-size: 1.8rem;
+}
+
+}
+
 `
 
 const StShowAll = styled.div`
 color: #1A21BD;
 font-size: 1.4rem;
 `
-

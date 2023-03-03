@@ -4,10 +4,11 @@ import Card from '@archiving/Card';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+import { ISessionData } from '@@types/request';
 
 type  ModalProps = {
     trackName: string;
-    trackData: { id: number; title: string, category:string, thumbnail:string}[];
+    trackData: ISessionData[];
 };
 
 
@@ -35,34 +36,27 @@ const Slick:React.FC<ModalProps> = ({trackData, trackName}) => {
     const settings={
         infinite: true,
         speed: 1000,
-        variableWidth: true,
         swipeToSlide: true,
         touchMove: true,
+        variableWidth: true,
 
         responsive:[
-            {breakpoint: 1920,
-            settings:{
-                slidesToShow: slidesToShowArr[0],
-                slidesToScroll:slidesToShowArr[0],
-            }},
-            {breakpoint: 1660,
+            {breakpoint:900,
                 settings:{
-                    slidesToShow: slidesToShowArr[1],
-                    slidesToScroll: slidesToShowArr[1],
-            }},
-            {breakpoint:1220,
-                settings:{
-                    slidesToShow: slidesToShowArr[3],
-                    slidesToScroll:slidesToShowArr[3],
+                    variableWidth: true,
             }},
             {breakpoint:600,
                 settings:{
-                    slidesToShow: slidesToShowArr[3],
-                    slidesToScroll:slidesToShowArr[3],
-            }},]}
+                    variableWidth: false,
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
+            }},
+        ]
+        }
 
     return (
         <Wrapper>
+            <>
             <StSlider  {...settings}>
                 {trackData.slice(0).reverse().map((data)=>{
                     return(
@@ -72,10 +66,11 @@ const Slick:React.FC<ModalProps> = ({trackData, trackName}) => {
                         link='/session'
                         thumbnail={data.thumbnail}
                         title={data.title}
-                        category={`${data.category}차 세션`} />
+                        category={`${data.degree}차 세션`} />
                     )
                     })}
             </StSlider>
+            </>
         </Wrapper>
         
     );
@@ -87,9 +82,13 @@ const Wrapper = styled.div`
 margin: 0;
 padding: 0;
 width: 70vw;
+
 `;
 
 const StSlider = styled(Slider)`
+display: flex;
+justify-content: center;
+align-items: center;
 height: 45rem;
 
 .slick-prev,
@@ -101,13 +100,20 @@ height: 45rem;
     z-index: 1;
     opacity: 0%;
     cursor: pointer;
-
 }
 
-.slick-prev{ margin-left: -3rem;}
+.slick-prev{ margin-left: -3rem; }
 
 .slick-next{ margin-right: -3rem;}
 
 .slick-slide { padding: 40px 30px;}
+
+@media (min-width: 821px) and (max-width: 900px) {
+    height: 33rem;
+}
+
+@media (min-width: 360px) and (max-width: 820px) {
+    height: 30rem;
+}
 
 `

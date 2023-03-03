@@ -24,6 +24,11 @@ const Wrapper = styled.div`
   justify-content: center;
   align-items: center;
   gap: 3rem;
+  @media (max-width: 900px){
+    flex-direction: column;
+    align-items: start;
+    gap: 1rem;
+  }
 `;
 
 const LeftWrapper = styled.div`
@@ -31,6 +36,9 @@ const LeftWrapper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+  @media (max-width: 900px){
+    padding: 4rem 2rem 0rem 2rem;
+  }
 `;
 
 const TitleText = styled.div`
@@ -51,6 +59,9 @@ const DateText = styled(TitleText)`
 const RightWrapper = styled.div`
   flex-basis: 70%;
   padding: 2rem;
+  @media (max-width: 900px){
+    padding: 2rem 2rem 0rem 2rem;
+  }
 `;
 
 const DescriptionBox = styled.div`
@@ -65,4 +76,5 @@ const DescriptionBox = styled.div`
   justify-content: center;
   align-items: center;
   word-wrap: break-word;
+  @media(max-width:900px){padding:0rem;}
 `;

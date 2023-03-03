@@ -5,18 +5,16 @@ import { ReactElement } from 'react';
 import { TRACK_NAME } from '@utils/constant';
 import { getSessions } from 'src/apis/session'; 
 import { InferGetStaticPropsType } from 'next';
+import { ArchivingArrayType, ISessionData } from '@@types/request';
+import { useQuery } from 'react-query';
 
-const SessionList = ({sessionStaticData}:InferGetStaticPropsType<typeof getStaticProps>) => {
-    const pm = sessionStaticData[0];
-    const design = sessionStaticData[1];
-    const front = sessionStaticData[2];
-    const back = sessionStaticData[3]
-
+const SessionList = ({sessionStaticData}:{sessionStaticData:ArchivingArrayType<ISessionData>}) => {
+    const {data,isLoading}=useQuery(['sessionData'],getSessions);
+    
     return (
         <>
         <Header pageName="세션" introduce="중앙대 멋사에서 진행한 세션을 소개합니다!" />
-
-        {[pm, design, front, back].map((data,i)=>{
+        {Object.values(isLoading?sessionStaticData:data!).map((data,i)=>{
             return(
             <SessionSection key={i} trackName={TRACK_NAME[i]} trackData={data}/>
             )

@@ -16,9 +16,9 @@ const Category = styled.div`
   font-family: 'Inter';
   font-style: normal;
   font-weight: 400;
-  font-size: 21px;
+  font-size: 17px;
   @media (max-width: 1550px) {
-    font-size: 1.5rem;
+    font-size: 1rem;
   }
 `;
 const Title = styled.div`
@@ -26,11 +26,14 @@ const Title = styled.div`
   font-style: normal;
   font-weight: 900;
   font-size: 4rem;
+  margin-top: 10px;
+  margin-bottom: 20px;
   @media (max-width: 1550px) {
     font-size: 2.3rem;
   }
-  margin-top: 10px;
-  margin-bottom: 20px;
+  @media (max-width: 700px) {
+    font-size: 2rem;
+  }
 `;
 const Wrapper = styled.div`
   &hr {

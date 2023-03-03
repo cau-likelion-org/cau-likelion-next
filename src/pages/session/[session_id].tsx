@@ -6,9 +6,9 @@ import {useQuery} from 'react-query';
 import { ISessionDetail } from '@@types/request';
 import Carousel from '@archiving/Carousel';
 import LayoutArchiving from '@common/layout/LayoutArchiving';
-import { getSessionDetail } from 'src/apis/sessionDetail';
 import { GetStaticPaths } from 'next';
 import { GreyScale } from '@utils/constant/color';
+import { getSessionDetail } from 'src/apis/sessionDetail';
 
 const SessionDetail = ({sessionDetailStaticData}:{sessionDetailStaticData:ISessionDetail;}) => {
     const router = useRouter();
@@ -20,9 +20,8 @@ const SessionDetail = ({sessionDetailStaticData}:{sessionDetailStaticData:ISessi
     }
     return (
         <Wrapper>
-            <Carousel images={isLoading ? sessionDetailStaticData.thumbnail : data!.thumbnail}/>
+            <StCarousel images={isLoading ? sessionDetailStaticData.thumbnail : data!.thumbnail}/>
             <SessionDetailSection sessionDetail={sessionDetailStaticData}/>
-            <hr/>
         </Wrapper>
     );
 };
@@ -62,4 +61,8 @@ const Wrapper=styled.div`
         background: ${GreyScale.light};
     }
     
+`
+
+const StCarousel = styled(Carousel)`
+cursor: pointer;
 `

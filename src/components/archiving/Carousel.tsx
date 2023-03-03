@@ -68,6 +68,9 @@ const CarouselWrapper = styled.div`
   border-radius: 30px;
   border: none;
   overflow: hidden;
+  @media(max-width:900px){
+    height:30vh;
+  }
 `;
 const DiamondWrapper = styled.div`
   display: flex;
