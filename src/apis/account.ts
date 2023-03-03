@@ -37,15 +37,16 @@ export const getUserAttendance = async (username: string) => {
 };
 
 
-export function login(code: string | string[], accessToken: string) {
-  return axios.post<LoginResponse>(
-    `/login`,
-    {
+export function login(code: string | string[]) {
+  return axios
+    .post<LoginResponse>(`/api/accounts/google/callback/`, {
       code: code,
-      accessToken: accessToken
-    }
-  ).then((res) => res.data);
+    })
+    .then((res) => {
+      return res.data;
+    });
 }
+
 
 export function getNewToken(refresh_code: string) {
   return axios
