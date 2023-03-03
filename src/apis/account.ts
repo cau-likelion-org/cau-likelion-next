@@ -1,45 +1,41 @@
-import { LoginResponse, RequestSignUpForm, UserAttendance, UserProfile } from '@@types/request';
+import { LoginResponse, RequestSignUpForm } from '@@types/request';
 import { IToken } from '@utils/state';
-import axios, { AxiosInstance } from 'axios';
+import axios from 'axios';
 import { getAuthAxios } from './authAxios';
+
+export interface IMutationProps {
+  form: RequestSignUpForm;
+  accessToken: string;
+  refreshToken: string;
+}
+
 
 export const getUserProfile = async (token: IToken) => {
   // const authAxios = getAuthAxios(token);
-  // const response = await authAxios.get(`/api/accounts/profile/`);
+  // const response = await authAxios.get(`/api/profile/`);
   // return response.data.data.user as UserProfile;
   return {
     name: '윤선영',
     generation: 11,
     track: 2,
-    is_admin: true
+    is_admin: false
   };
 };
 
-export const getUserAttendance = async (username: string) => {
-  // const response = await axios.get<UserAttendance>(
-  //     `${url}/attendance`,
-  //     {
-  //         params: {
-  //             name: username
-  //         }
-  //     }
-  // );
-  // return response.data;
-  return {
-    name: '윤선영',
-    absence: 3,
-    truancy: 1,
-    tardiness: 2,
-    notSubmitted: 3,
-    lateSubmitted: 1,
-    totalScore: 1.5,
-  };
+export const putUserProfile = async (props: IMutationProps) => {
+  const axiosInstance = getAuthAxios({ access: props.accessToken, refresh: props.refreshToken });
+  const response = await axiosInstance.put(`/api/mypage/profile`, {
+    name: props.form.name,
+    generation: props.form.generation,
+    track: props.form.track,
+    is_admin: props.form.is_admin,
+  });
+  return response.data;
 };
-
 
 export function login(code: string | string[]) {
   return axios
-    .post<LoginResponse>(`/api/accounts/google/callback/`, {
+    .post<LoginResponse>(`/api/google/callback/`, {
       code: code,
     })
     .then((res) => {
@@ -50,7 +46,7 @@ export function login(code: string | string[]) {
 
 export function getNewToken(refresh_code: string) {
   return axios
-    .post(`/api/auths/token/refresh/`, {
+    .post(`/api/token/`, {
       refresh: refresh_code,
     })
     .then((res) => {

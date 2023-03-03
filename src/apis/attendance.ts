@@ -73,20 +73,15 @@ export const getAssignments = () => {
   return data;
 };
 
-export function patchUserScore(userScore: UserAttendance, accessToken: IToken) {
-  return axios.post(
+export function editUserScore(userScore: UserAttendance, token: IToken) {
+  const authAxios = getAuthAxios(token);
+  return authAxios.post(
     `${url}/mypage/attendance/`,
     {
-      name: userScore.name,
-      track: userScore.track,
+      user_id: userScore.user_id,
       truancy: userScore.truancy,
       absence: userScore.absence,
       tardiness: userScore.tardiness,
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`
-      }
     }
   );
 }

@@ -5,7 +5,7 @@ import { IToken, token } from '@utils/state';
 import React from 'react';
 import { useMutation } from 'react-query';
 import { useRecoilValue } from 'recoil';
-import { patchUserScore } from 'src/apis/attendance';
+import { editUserScore } from 'src/apis/attendance';
 import useInput from 'src/hooks/useInput';
 import styled from 'styled-components';
 import { HiXMark } from 'react-icons/hi2';
@@ -24,8 +24,8 @@ const ScoreEditModal = ({ targetUserScore, isEditModalOn, handleScoreEditModal }
     const [tardinessValue, onChangeTardinessValue] = useInput(Number(targetUserScore.tardiness), /^[0-9]*$/);
     const [absenceValue, onChangeAbsenceValue] = useInput(Number(targetUserScore.absence), /^[0-9]*$/);
 
-    const editUserScore = useMutation({
-        mutationFn: ({ userScore, accessToken }: { userScore: UserAttendance; accessToken: IToken; }) => patchUserScore(userScore, accessToken),
+    const editScore = useMutation({
+        mutationFn: ({ userScore, accessToken }: { userScore: UserAttendance; accessToken: IToken; }) => editUserScore(userScore, accessToken),
         onSuccess: (res) => {
             if (res.status === 200) {
                 () => getTotalAttendance(tokenState);
@@ -35,7 +35,7 @@ const ScoreEditModal = ({ targetUserScore, isEditModalOn, handleScoreEditModal }
 
     const handleSubmit = () => {
         if (tokenState) {
-            editUserScore.mutate({
+            editScore.mutate({
                 userScore: {
                     name: targetUserScore.name,
                     track: targetUserScore.track,
