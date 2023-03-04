@@ -3,6 +3,7 @@ import axios from 'axios';
 import Axios from 'axios';
 import { getNewToken } from './account';
 
+
 export const getAuthAxios = (token: IToken) => {
   const authAxios = Axios.create({
     headers: {
