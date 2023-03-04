@@ -2,32 +2,35 @@ import { GreyScale } from '@utils/constant/color';
 import { token } from '@utils/state';
 import Link from 'next/link';
 import React from 'react';
+import { useQuery } from 'react-query';
 import { useRecoilValue } from 'recoil';
+import { getUserProfile } from 'src/apis/account';
 import styled from 'styled-components';
 
 const NavProfileCard = () => {
   const tokenState = useRecoilValue(token);
+  const { data } = useQuery(['profile'], () => getUserProfile(tokenState));
+  if (tokenState.access && data)
+    return (
+      <Wrapper>
+        <Link href="/mypage">
+          <Name>
+            <span>{data?.name}</span>님
+          </Name>
+        </Link>
+        <Link href="/mypage">
+          <MyButton>MY</MyButton>
+        </Link>
+      </Wrapper>
+    );
 
   return (
     <Wrapper>
-      {tokenState ? (
-        <>
-          <Link href="/mypage">
-            <Name>
-              <span>윤선영</span>님
-            </Name>
-          </Link>
-          <Link href="/mypage">
-            <MyButton>MY</MyButton>
-          </Link>
-        </>
-      ) : (
-        <Link href="/login">
-          <Name>
-            <span>로그인</span>
-          </Name>
-        </Link>
-      )}
+      <Link href="/login">
+        <Name>
+          <span>로그인</span>
+        </Name>
+      </Link>
     </Wrapper>
   );
 };
