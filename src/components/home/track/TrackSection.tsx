@@ -64,7 +64,7 @@ const TitleText = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  font-family: 'Pretendard';
+  font-family: 'GmarketSans';
   font-style: normal;
   font-weight: 900;
   font-size: 3.7rem;
@@ -79,7 +79,7 @@ const TitleText = styled.div`
 `;
 
 const Text = styled.div`
-  font-family: 'Pretendard';
+  font-family: 'GmarketSans';
   font-weight: 500;
   line-height: 2.5rem;
   font-size: 1.7rem;

@@ -16,15 +16,15 @@ const Category = styled.div`
   font-family: 'Inter';
   font-style: normal;
   font-weight: 400;
-  font-size: 17px;
+  font-size: 1.4rem;
   @media (max-width: 1550px) {
-    font-size: 1rem;
+    font-size: 1.2rem;
   }
 `;
 const Title = styled.div`
-  font-family: 'Pretendard';
+  font-family: 'GmarketSans';
   font-style: normal;
-  font-weight: 900;
+  font-weight: 700;
   font-size: 4rem;
   margin-top: 10px;
   margin-bottom: 20px;

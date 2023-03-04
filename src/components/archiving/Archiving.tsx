@@ -58,6 +58,7 @@ const ArchivingIndex = styled.div`
   font-weight: 900;
   font-size: 2.3rem;
   margin-bottom: 20px;
+  font-family: 'GmarketSans';
 `;
 
 const CardWrapper = styled.div`

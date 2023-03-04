@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Basic, GreyScale} from '@utils/constant/color';
+import { Basic, GreyScale } from '@utils/constant/color';
 
 import { ISessionDetail } from '@@types/request';
 
@@ -8,15 +8,15 @@ const SessionDetailSection = ({ sessionDetail }: { sessionDetail: ISessionDetail
     return (
         <Wrapper>
             <LeftWrapper>
-                    <DateText>{sessionDetail.date}</DateText>
+                <DateText>{sessionDetail.date}</DateText>
 
-                    <TitleText>{sessionDetail.title}</TitleText>
-                    <PresenterText>
-                        <b>진행자</b>
-                        {sessionDetail.presenter}
-                    </PresenterText>
+                <TitleText>{sessionDetail.title}</TitleText>
+                <PresenterText>
+                    <b>진행자</b>
+                    {sessionDetail.presenter}
+                </PresenterText>
 
-                    
+
             </LeftWrapper>
 
 
@@ -30,18 +30,18 @@ const SessionDetailSection = ({ sessionDetail }: { sessionDetail: ISessionDetail
                     {sessionDetail.description}
                 </DescriptionBox>
 
-                {sessionDetail.reference ? 
-                <ReferenceBox>
-                    <b> 세션 자료 </b>
-                    {sessionDetail.reference.map((data,i)=>{
-                        return(<div key={i}>{data}</div>)
-                    })}
-                </ReferenceBox>
-                :
-                null}
+                {sessionDetail.reference ?
+                    <ReferenceBox>
+                        <b> 세션 자료 </b>
+                        {sessionDetail.reference.map((data, i) => {
+                            return (<div key={i}>{data}</div>);
+                        })}
+                    </ReferenceBox>
+                    :
+                    null}
 
             </RightWrapper>
-        
+
         </Wrapper>
     );
 };
@@ -70,7 +70,7 @@ const LeftWrapper = styled.div`
     div{
         display: flex;
     }
-` 
+`;
 
 const RightWrapper = styled.div`
     flex-basis: 70%;
@@ -82,7 +82,7 @@ const RightWrapper = styled.div`
 `;
 
 const TitleText = styled.div`
-    font-family: 'Pretendard';
+    font-family: 'GmarketSans';
     font-style: normal;
     font-weight: 900;
     font-size: 3rem;
@@ -103,7 +103,7 @@ const PresenterText = styled.div`
     gap: 1rem;
 
     
-`
+`;
 
 const TopicText = styled.div`
     display: flex;
@@ -120,7 +120,7 @@ const TopicText = styled.div`
         padding: 0rem 3rem;
     }
     
-`
+`;
 
 const DescriptionBox = styled.div`
     padding: 3rem;

@@ -22,7 +22,7 @@ const Wrapper = styled.div`
 `;
 
 const TitleText = styled.div`
-    font-family: 'Pretendard';
+    font-family: 'GmarketSans';
     font-style: normal;
     font-weight: 900;
     font-size: 2.5rem;

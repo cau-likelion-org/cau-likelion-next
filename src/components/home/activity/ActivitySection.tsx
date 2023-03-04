@@ -80,9 +80,9 @@ const ImageWrapper = styled.div`
 const TitleText = styled.div`
   display: flex;
   justify-content: flex-start;
-  font-family: 'Pretendard';
+  font-family: 'GmarketSans';
   font-style: normal;
-  font-weight: 900;
+  font-weight: 800;
   font-size: 2.7rem;
   line-height: 4rem;
   margin: 2.5rem 0;

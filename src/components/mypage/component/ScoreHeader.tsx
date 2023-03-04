@@ -21,7 +21,7 @@ const ScoreHeader = () => {
 export default ScoreHeader;
 
 const TitleText = styled.div`
-    font-family: 'Pretendard';
+    font-family: 'GmarketSans';
     font-style: normal;
     font-weight: 700;
     font-size: 1.7rem;
