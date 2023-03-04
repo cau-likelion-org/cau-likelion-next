@@ -65,7 +65,8 @@ interface ResponseData<T> {
 export interface TodayAttendanceData {
   name: string;
   track: MemberStackKor;
-  isComplete: boolean;
+  attendance_result: 1 | 2;
+
 }
 export type TodayAttendanceListData = Record<MemberStack, string[]>;
 
