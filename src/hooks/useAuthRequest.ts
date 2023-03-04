@@ -2,7 +2,7 @@ import { token } from '@utils/state';
 import axios from 'axios';
 import Axios from 'axios';
 import { useRecoilState } from 'recoil';
-import { getAcessToken } from 'src/apis/account';
+import { getNewToken } from 'src/apis/account';
 
 export const useAuthRequest = () => {
   const [{ access, refresh }, setToken] = useRecoilState(token);
@@ -23,7 +23,7 @@ export const useAuthRequest = () => {
       if (status !== 401) {
         return Promise.reject(error);
       }
-      const { access: newAccessToken } = await getAcessToken(refresh);
+      const { access: newAccessToken } = await getNewToken(refresh);
       config.headers.Authorization = `Bearer ${newAccessToken}`;
       setToken((prevToken) => {
         const newToken = { ...prevToken };

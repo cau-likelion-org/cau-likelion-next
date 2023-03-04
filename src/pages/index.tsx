@@ -7,7 +7,7 @@ import IntroduceSection from '@home/introduction/IntroduceSection';
 import ProjectSection from '@home/project/ProjectSection';
 import TrackSection from '@home/track/TrackSection';
 import ActivitySection from '@home/activity/ActivitySection';
-import ScrollBar from '@home/scrollBar/ScrollBar';
+import ScrollBar from '@home/ScrollBar/ScrollBar';
 
 import More from '@image/home_more.svg';
 import LayoutLanding from '@common/layout/LayoutLanding';
