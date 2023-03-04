@@ -3,7 +3,7 @@ import TeamIntroduction from './TeamIntroductionSection';
 import styled from 'styled-components';
 import { IProjectDetail } from '@@types/request';
 
-const DetailMainSection = ({ data }: { data: IProjectDetail }) => {
+const DetailMainSection = ({ data }: { data: IProjectDetail; }) => {
   return (
     <Wrapper>
       <TeamIntroduction projectData={data} />

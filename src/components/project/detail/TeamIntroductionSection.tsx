@@ -1,8 +1,8 @@
 import { IProjectDetail } from '@@types/request';
 import styled from 'styled-components';
-import DevStacks from './component/TeamIntroduction/DevStacks';
-import LinkButton from './component/TeamIntroduction/LinkButton';
-import TeamMember from './component/TeamIntroduction/TeamMember';
+import DevStacks from './component/teamIntroduction/DevStacks';
+import LinkButton from './component/teamIntroduction/LinkButton';
+import TeamMember from './component/teamIntroduction/TeamMember';
 
 const TeamIntroduction = ({ projectData }: { projectData: IProjectDetail; }) => {
   return (
