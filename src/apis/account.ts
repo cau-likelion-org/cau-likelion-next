@@ -1,4 +1,4 @@
-import { LoginResponse, RequestSignUpForm } from '@@types/request';
+import { LoginResponse, RequestSignUpForm, UserProfile } from '@@types/request';
 import { IToken } from '@utils/state';
 import axios from 'axios';
 import { getAuthAxios } from './authAxios';
@@ -11,15 +11,15 @@ export interface IMutationProps {
 
 
 export const getUserProfile = async (token: IToken) => {
-  // const authAxios = getAuthAxios(token);
-  // const response = await authAxios.get(`/api/profile/`);
-  // return response.data.data.user as UserProfile;
-  return {
-    name: '윤선영',
-    generation: 11,
-    track: 2,
-    is_admin: true
-  };
+  const authAxios = getAuthAxios(token);
+  const response = await authAxios.get(`/api/profile`);
+  return response.data.data.user as UserProfile;
+  // return {
+  //   name: '윤선영',
+  //   generation: 11,
+  //   track: 2,
+  //   is_admin: true
+  // };
 };
 
 export const putUserProfile = async (props: IMutationProps) => {
@@ -35,7 +35,7 @@ export const putUserProfile = async (props: IMutationProps) => {
 
 export function login(code: string | string[]) {
   return axios
-    .post<LoginResponse>(`/api/google/callback/`, {
+    .post<LoginResponse>(`/api/google/callback`, {
       code: code,
     })
     .then((res) => {
@@ -46,11 +46,10 @@ export function login(code: string | string[]) {
 
 export function getNewToken(refresh_code: string) {
   return axios
-    .post(`/api/token/`, {
+    .post(`/api/token`, {
       refresh: refresh_code,
     })
     .then((res) => {
-      console.log(res);
       return res.data;
     });
 }

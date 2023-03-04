@@ -1,6 +1,21 @@
-import { IArchivingData, ArchivingArrayType, ISessionData } from '@@types/request';
+import { ISessionDetail, ArchivingArrayType, ISessionData } from '@@types/request';
 import axios from 'axios';
-import backupData from './backup/sessionData.json';
+import sessionBackupData from './backup/sessionData.json';
+import sessionDetailBackupData from './backup/sessionDetail.json';
+
+export async function getSessionDetail(id: string) {
+    try {
+        const res = await axios.get<ISessionDetail>(
+            `https://286eb829-af4d-43ed-b788-0e8e70ae0820.mock.pstmn.io/session/${id}`,
+        );
+
+        return res.data;
+    } catch (err) {
+        console.log(err);
+        return new Promise<ISessionDetail>((resolve) => resolve(sessionDetailBackupData as any));
+    }
+
+}
 
 export async function getSessions() {
     try {
@@ -10,6 +25,6 @@ export async function getSessions() {
         return res.data;
     } catch (err) {
         console.log(err);
-        return new Promise<ArchivingArrayType<ISessionData>>((resolve)=> resolve(backupData));
+        return new Promise<ArchivingArrayType<ISessionData>>((resolve) => resolve(sessionBackupData));
     }
-    }
+}

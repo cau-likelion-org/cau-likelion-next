@@ -8,7 +8,7 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import { useMutation } from 'react-query';
 import { useRecoilState } from 'recoil';
-import { IMutationProps, putUserProfile } from 'src/apis/signUp';
+import { signUp, SignUpMutationProps } from 'src/apis/signUp';
 import useInput from 'src/hooks/useInput';
 import styled from 'styled-components';
 import CauMailAuthenticationBox from './component/CauMailAuthenticationBox';
@@ -16,6 +16,7 @@ import DropdownMenuBox from './component/DropdownMenuBox';
 import FormSendButton from './component/FormSendButton';
 import TextInputBox from './component/TextInputBox';
 import ToggleBox from './component/ToggleBox';
+import cookie from "react-cookies";
 
 const SignUpFormSection = () => {
   const track = [TRACK_NAME[TRACK.PM], TRACK_NAME[TRACK.DESIGN], TRACK_NAME[TRACK.FRONTEND], TRACK_NAME[TRACK.BACKEND]];
@@ -50,7 +51,7 @@ const SignUpFormSection = () => {
   }, [nameValue, generationValue, emailValue, emailSecretValue, isAuthenticated]);
 
   const signUpFormPost = useMutation({
-    mutationFn: (props: IMutationProps) => putUserProfile(props),
+    mutationFn: (props: SignUpMutationProps) => signUp(props),
     onSuccess: (res: any) => {
       if (res) {
         setToken((prev) => {
@@ -59,6 +60,8 @@ const SignUpFormSection = () => {
           obj.refresh = refreshToken as string;
           return obj;
         });
+        cookie.save('access', accessToken as string, { path: '/' });
+        cookie.save('refresh', refreshToken as string, { path: '/' });
         router.push('/signup/success');
       }
     },
@@ -75,7 +78,7 @@ const SignUpFormSection = () => {
         },
         accessToken,
         refreshToken,
-      } as IMutationProps);
+      } as SignUpMutationProps);
     }
   };
 

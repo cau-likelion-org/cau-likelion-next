@@ -16,7 +16,7 @@ const Google = () => {
     }
   }, []);
   const loginHandler = useMutation({
-    mutationFn: ({ code }: { code: string | string[] }) => login(code),
+    mutationFn: ({ code }: { code: string | string[]; }) => login(code),
     onSuccess: (res) => {
       console.log(res);
       if (!res.is_active) {
@@ -34,7 +34,11 @@ const Google = () => {
           obj.refresh = res.token.refresh;
           return obj;
         });
-        console.log(access);
+        cookie.save('access', res.token.access, { path: '/' });
+        cookie.save('refresh', res.token.refresh, { path: '/' });
+        //회원가입 안된사람 vs 된 사람
+        //리코일 아톰에다가 api쳐서 설정하는거어떰
+
         router.push('/');
       }
     },
