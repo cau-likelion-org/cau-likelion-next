@@ -7,9 +7,11 @@ import { useQuery } from 'react-query';
 import { TodayAttendanceData } from '@@types/request';
 import { getAttendance } from 'src/apis/attendance';
 import Loading from '@common/loading/Loading';
-
+import { useRecoilValue } from "recoil";
+import { token } from '@utils/state';
 const IncompletedSection = () => {
-  const { data, isLoading } = useQuery<TodayAttendanceData>(['attendance'], getAttendance);
+  const tokens = useRecoilValue(token);
+  const { data, isLoading } = useQuery<TodayAttendanceData>(['attendance'], () => getAttendance(tokens));
   if (isLoading) return <Loading />;
   return (
     <CircleWrapper>

@@ -2,6 +2,7 @@ import React, { KeyboardEventHandler, useRef } from 'react';
 import { useRouter } from 'next/router';
 import { useMutation, useQuery } from 'react-query';
 import styled from 'styled-components';
+import { useRecoilValue } from 'recoil';
 
 import { TodayAttendanceData } from '@@types/request';
 import { Primary } from '@utils/constant/color';
@@ -9,17 +10,19 @@ import { Primary } from '@utils/constant/color';
 import InputBox from './InputBox';
 
 import { getAttendance, postAttendance } from 'src/apis/attendance';
+import { token } from '@utils/state';
 
-const AttendanceBox = ({ data }: { data: TodayAttendanceData }) => {
+const AttendanceBox = ({ data }: { data: TodayAttendanceData; }) => {
   const router = useRouter();
   const InputRef = useRef<HTMLInputElement>(null);
+  const tokens = useRecoilValue(token);
 
-  if (data.isComplete) {
+  if (data.attendance_result === 1) {
     router.push('/attendance/completed');
   }
 
   const attendancePost = useMutation({
-    mutationFn: (password: string) => postAttendance(password),
+    mutationFn: (password: string) => postAttendance(password, tokens),
     onSuccess: (res) => {
       if (res.status === 200) {
         router.push('/attendance/completed');
