@@ -14,7 +14,7 @@ import { getUserProfile } from 'src/apis/account';
 import useInput from 'src/hooks/useInput';
 import styled from 'styled-components';
 import { HiXMark } from 'react-icons/hi2';
-import { putUserProfile } from 'src/apis/signUp';
+import { putUserProfile } from 'src/apis/account';
 
 interface UserEditModalProps {
   userProfile: UserProfile;
@@ -37,7 +37,7 @@ const UserEditModal = ({ userProfile, isEditModalOn, handleUserEditModal }: User
   }, [nameValue, generationValue, isEditModalOn]);
 
   const editUserProfile = useMutation({
-    mutationFn: ({ userProfile, tokenState }: { userProfile: UserProfile; tokenState: IToken }) =>
+    mutationFn: ({ userProfile, tokenState }: { userProfile: UserProfile; tokenState: IToken; }) =>
       putUserProfile({ form: userProfile, accessToken: tokenState.access, refreshToken: tokenState.refresh }),
     onSuccess: (res) => {
       if (res.status === 200) {
