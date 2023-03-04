@@ -1,7 +1,7 @@
 import { IToken } from '@utils/state';
 import axios from 'axios';
 import Axios from 'axios';
-import { getAcessToken } from './account';
+import { getNewToken } from './account';
 
 export const getAuthAxios = (token: IToken) => {
   const authAxios = Axios.create({
@@ -19,7 +19,7 @@ export const getAuthAxios = (token: IToken) => {
       if (status !== 401) {
         return Promise.reject(error);
       }
-      const { access: newAccessToken } = await getAcessToken(token.refresh);
+      const { access: newAccessToken } = await getNewToken(token.refresh);
 
       config.headers.Authorization = `Bearer ${newAccessToken}`;
       return axios(config);

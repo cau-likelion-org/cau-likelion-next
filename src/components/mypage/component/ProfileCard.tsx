@@ -1,11 +1,11 @@
 import { UserProfile } from '@@types/request';
 import { TRACK_NAME } from '@utils/constant';
-import { BackgroundColor, Basic, GreyScale, Primary } from '@utils/constant/color';
+import { Basic, GreyScale, Primary } from '@utils/constant/color';
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import UserEditModal from './UserEditModal';
 
-const ProfileCard = ({ user }: { user: UserProfile }) => {
+const ProfileCard = ({ user }: { user: UserProfile; }) => {
   const [isEditModalOn, setIsEditModalOn] = useState(false);
 
   const handleUserEditModal = () => {
@@ -42,18 +42,18 @@ const ProfileCard = ({ user }: { user: UserProfile }) => {
 export default ProfileCard;
 
 const Wrapper = styled.div`
-  width: 180px;
-  height: 140px;
-  padding: 2rem;
-  background-color: ${Primary.light};
-  border-radius: 10px;
-  display: flex;
-  flex-direction: column;
+    width: 50%;
+    height: 140px;
+    padding: 2rem;
+    background-color: ${Primary.light};
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
 
-  @media (max-width: 900px) {
-    width: 90%;
-    height: 200px;
-  }
+    @media(min-width: 900px){
+        width: 200px;
+        height: 200px;
+    }
 `;
 
 const NameRow = styled.div`

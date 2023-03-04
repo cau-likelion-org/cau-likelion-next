@@ -1,56 +1,53 @@
-import { UserAttendance, UserProfile } from '@@types/request';
+import { UserProfile } from '@@types/request';
 import { token } from '@utils/state';
 import { AxiosError } from 'axios';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 import { useRecoilValue } from 'recoil';
-import { getUserAttendance, getUserProfile } from 'src/apis/account';
+import { getUserProfile } from 'src/apis/account';
 import NameCard from '@mypage/component/NameCard';
 import styled from 'styled-components';
-import MyAttendanceSection from '@mypage/MyAttendanceSection';
 import ProfileCard from '@mypage/component/ProfileCard';
 import { GreyScale } from '@utils/constant/color';
-import { useRouter } from 'next/router';
+import { checkGeneration } from '@utils/index';
+import MyScoreSection from '@mypage/MyScoreSection';
+import TotalScoreSection from '@mypage/TotalScoreSection';
 
 const MyPage = () => {
   const tokenState = useRecoilValue(token);
-  const router = useRouter();
-  useEffect(() => {
-    if (!tokenState.access) {
-      router.push('/login');
-    }
-  }, []);
-  const {
-    data: userProfile,
-    isLoading: profileLoading,
-    error: profileError,
-  } = useQuery<UserProfile, AxiosError>(['userProfile', tokenState], () => getUserProfile(tokenState));
+  const [isActiveGeneration, setIsActiveGeneration] = useState(false);
 
-  const {
-    data: userAttendance,
-    isLoading: attendanceLoading,
-    error: attendanceError,
-  } = useQuery<UserAttendance, AxiosError>(
-    ['userAttendance', userProfile?.name],
-    () => getUserAttendance(userProfile!.name),
-    {
-      enabled: !!userProfile,
-    },
+  const { data: userProfile, isLoading: profileLoading, error: profileError } = useQuery<UserProfile, AxiosError>(
+    ['userProfile', tokenState],
+    () => getUserProfile(tokenState)
   );
-  console.log(userProfile);
+
+  useEffect(() => {
+    if (userProfile && checkGeneration(userProfile.generation)) {
+      setIsActiveGeneration(true);
+    }
+  }, [userProfile, isActiveGeneration]);
+
   return (
     <>
-      {userProfile && userAttendance && (
+      {userProfile &&
         <Wrapper>
           <Header>
-            <NameCard name={userProfile.name} generation={userProfile?.generation} />
+            <NameCard
+              name={userProfile.name}
+              generation={userProfile?.generation} />
           </Header>
           <RowWrapper>
             <ProfileCard user={userProfile} />
-            <MyAttendanceSection userAttendance={userAttendance} />
+            {
+              isActiveGeneration ?
+                userProfile.is_admin ?
+                  <TotalScoreSection />
+                  : <MyScoreSection userProfile={userProfile} /> : null
+            }
           </RowWrapper>
         </Wrapper>
-      )}
+      }
     </>
   );
 };
@@ -58,8 +55,9 @@ const MyPage = () => {
 export default MyPage;
 
 const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
 `;
 
 const Header = styled.div`
@@ -75,11 +73,11 @@ const Header = styled.div`
 `;
 
 const RowWrapper = styled.div`
-  margin-top: 5rem;
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  gap: 35px;
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    gap: 35px;
 
   @media (max-width: 900px) {
     flex-direction: column;

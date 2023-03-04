@@ -1,4 +1,4 @@
-import React,  { useRef } from 'react';
+import React, { useRef } from 'react';
 import styled from 'styled-components';
 import Image from 'next/image';
 import googleLogo from '@image/pngwing.com.png';
@@ -8,10 +8,9 @@ import googleLogo from '@image/pngwing.com.png';
 const LoginButton = () => {
     const loginUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}&response_type=code&redirect_uri=${process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI}&scope=${process.env.NEXT_PUBLIC_GOOGLE_SCOPE}`;
 
-    const handleClick=()=>{
-        window.location.assign(loginUrl)
-        console.log(loginUrl);
-    }
+    const handleClick = () => {
+        window.location.assign(loginUrl);
+    };
 
     return (
         <ButtonWrapper>
@@ -52,7 +51,7 @@ align-items: center;
 
 }
     
-`
+`;
 
 const Button = styled.button`
 width: 360px;
@@ -68,4 +67,4 @@ z-index: 20;
 p{
     margin-right: 100px;
 }
-`
+`;

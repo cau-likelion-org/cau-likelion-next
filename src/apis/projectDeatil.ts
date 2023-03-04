@@ -9,7 +9,6 @@ export async function getProjectDetail(id: string) {
     );
     return res.data;
   } catch (err) {
-    console.log(err);
     return new Promise<IProjectDetail>((resolve) => resolve(backupData as any));
   }
 }

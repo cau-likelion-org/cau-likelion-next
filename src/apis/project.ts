@@ -8,7 +8,6 @@ export async function getProjects() {
     );
     return res.data;
   } catch (err) {
-    console.log(err);
     return new Promise<ArchivingArrayType<IProjectData>>((resolve) => resolve(projectBackupData));
   }
 }
