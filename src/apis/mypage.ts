@@ -19,7 +19,6 @@ export const getUserAttendance = async (token: IToken) => {
 export const getTotalAttendance = async (token: IToken) => {
     const authAxios = getAuthAxios(token);
     const response = await authAxios.get(`/api/mypage/attendance`);
-    console.log(response.data);
     return response.data as UserAttendance[];
 
     // return [{
