@@ -34,5 +34,8 @@ const PageContainer = styled.div`
   @media (max-width: 1280px) {
     padding: 100px 100px 100px 100px;
   }
-  padding: 100px 160px 100px 160px;
+  @media (max-width: 900px) {
+    padding:70px 20px;
+  }
+  
 `;
