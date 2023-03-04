@@ -1,4 +1,4 @@
-import { UserAttendance, UserScore } from '@@types/request';
+import { UserAssignment, UserAttendance, UserScore } from '@@types/request';
 import { ATTENDANCE_CATEGORY_NAME, TRACK_NAME } from '@utils/constant';
 import { BackgroundColor, GreyScale } from '@utils/constant/color';
 import { getTotalNameObject, getTotalScore } from '@utils/index';
@@ -33,23 +33,17 @@ const TotalScoreSection = () => {
 
     useEffect(() => {
         if (totalAttendance && totalAssignment) {
-            let tmpObject = getTotalNameObject(totalAssignment);
-            if (tmpObject && totalAttendance.length) {
+            const tmpObject = getTotalNameObject(totalAssignment);
+            totalAttendance.length &&
                 totalAttendance.forEach((userAttendance: UserAttendance, i: number) => {
-                    if (tmpObject[userAttendance.name].track == userAttendance.track) {
-                        tmpObject[userAttendance.name].tardiness = userAttendance.tardiness;
-                        tmpObject[userAttendance.name].truancy = userAttendance.truancy;
-                        tmpObject[userAttendance.name].absence = userAttendance.absence;
-                        tmpObject[userAttendance.name].totalScore = getTotalScore({
-                            'notSubmitted': tmpObject[userAttendance.name].notSubmitted,
-                            'lateSubmitted': tmpObject[userAttendance.name].lateSubmitted,
-                            'absence': tmpObject[userAttendance.name].absence,
-                            'truancy': tmpObject[userAttendance.name].truancy,
-                            'tardiness': tmpObject[userAttendance.name].tardiness,
-                        });
+                    const target = tmpObject[userAttendance.name];
+                    if (target.track === userAttendance.track) {
+                        target.tardiness = userAttendance.tardiness;
+                        target.truancy = userAttendance.truancy;
+                        target.absence = userAttendance.absence;
+                        target.totalScore = getTotalScore(target);
                     }
                 });
-            }
             setTotalScoreArray(Object.values(tmpObject));
         }
     }, [totalAssignment, totalAttendance]);

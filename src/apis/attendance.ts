@@ -1,18 +1,18 @@
-import { TodayAttendanceData, TodayAttendanceListData, UserAttendance } from '@@types/request';
-import backupData from './backup/attendance.json';
-import backupPostData from './backup/postAttendance.json';
-import backupList from './backup/attendanceList.json';
-import axios from 'axios';
-import { url } from '.';
+import { TodayAttendanceData, TodayAttendanceListData } from '@@types/request';
 import { IToken } from '@utils/state';
 import { getAuthAxios } from './authAxios';
+import { toDateString } from '@utils/index';
 
 export function getAttendance(token: IToken) {
   const authAxios = getAuthAxios(token);
+  const today = new Date();
   return authAxios
-    .get<TodayAttendanceData>(`api/attendance`)
-    .then((res) => res.data)
-    .catch((err) => backupData as TodayAttendanceData);
+    .get<TodayAttendanceData>(`api/attendance`, {
+      params: {
+        date: toDateString(today),
+      }
+    })
+    .then((res) => res.data);
 }
 export function postAttendance(password: string, token: IToken) {
   const authAxios = getAuthAxios(token);

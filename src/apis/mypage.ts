@@ -23,17 +23,17 @@ export const getTotalAttendance = async (token: IToken) => {
     return response.data as UserAttendance[];
 
     // return [{
-    //   name: '윤선영',
-    //   track: 2,
-    //   absence: 3,
-    //   truancy: 1,
-    //   tardiness: 2,
+    //     name: '윤선영',
+    //     track: 2,
+    //     absence: 3,
+    //     truancy: 1,
+    //     tardiness: 2,
     // }, {
-    //   name: '김솔',
-    //   track: 0,
-    //   absence: 3,
-    //   truancy: 1,
-    //   tardiness: 2,
+    //     name: '김솔',
+    //     track: 0,
+    //     absence: 3,
+    //     truancy: 1,
+    //     tardiness: 2,
     // }];
 };
 

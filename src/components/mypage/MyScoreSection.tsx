@@ -7,7 +7,7 @@ import { AxiosError } from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 import { useRecoilValue } from 'recoil';
-import { getAssignments, getUserAttendance } from 'src/apis/attendance';
+import { getAssignments, getUserAttendance } from 'src/apis/mypage';
 import styled from 'styled-components';
 import ScoreHeader from './component/ScoreHeader';
 

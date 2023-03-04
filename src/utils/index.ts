@@ -14,9 +14,9 @@ export const isEmptyString = (str: string) => {
     else return false;
 };
 
-export const getTotalScore = (data: TotalScoreParams) => {
-    const defaultScore = 3;
-    const totalScore = defaultScore - (1 * data.absence + 0.2 * data.lateSubmitted + 1 * data.notSubmitted + 0.5 * data.tardiness + 1.5 * data.truancy);
+export const getTotalScore = (target: TotalScoreParams) => {
+    let defaultScore = 3;
+    const totalScore = defaultScore - (1 * target.absence + 0.2 * target.lateSubmitted + 1 * target.notSubmitted + 0.5 * target.tardiness + 1.5 * target.truancy);
     return totalScore;
 };
 
@@ -25,7 +25,6 @@ export const checkGeneration = (generation: number) => {
     if (year - generation == GENERATION_CHECKER) return true;
     return false;
 };
-
 
 export const getTotalNameObject = (data: any): Record<string, UserScore> => {
     let totalNameObject: Record<string, UserScore> = {};
