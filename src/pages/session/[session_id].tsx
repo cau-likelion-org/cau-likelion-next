@@ -1,32 +1,32 @@
 import SessionDetailSection from '@session/SessionDetailSection';
-import {ReactElement} from 'react';
+import { ReactElement } from 'react';
 import styled from 'styled-components';
 import { useRouter } from 'next/router';
-import {useQuery} from 'react-query';
+import { useQuery } from 'react-query';
 import { ISessionDetail } from '@@types/request';
 import Carousel from '@archiving/Carousel';
 import LayoutArchiving from '@common/layout/LayoutArchiving';
 import { GetStaticPaths } from 'next';
 import { GreyScale } from '@utils/constant/color';
-import { getSessionDetail } from 'src/apis/sessionDetail';
+import { getSessionDetail } from 'src/apis/session';
 
-const SessionDetail = ({sessionDetailStaticData}:{sessionDetailStaticData:ISessionDetail;}) => {
+const SessionDetail = ({ sessionDetailStaticData }: { sessionDetailStaticData: ISessionDetail; }) => {
     const router = useRouter();
-    const {data, isLoading} = useQuery<ISessionDetail>(['sessionDetail', router.query.project_id], ()=>
+    const { data, isLoading } = useQuery<ISessionDetail>(['sessionDetail', router.query.project_id], () =>
         getSessionDetail(router.query.session_id as string),
-        )
-    if(router.isFallback){
-        return <div>로딩중</div>
+    );
+    if (router.isFallback) {
+        return <div>로딩중</div>;
     }
     return (
         <Wrapper>
-            <StCarousel images={isLoading ? sessionDetailStaticData.thumbnail : data!.thumbnail}/>
-            <SessionDetailSection sessionDetail={sessionDetailStaticData}/>
+            <StCarousel images={isLoading ? sessionDetailStaticData.thumbnail : data!.thumbnail} />
+            <SessionDetailSection sessionDetail={sessionDetailStaticData} />
         </Wrapper>
     );
 };
 
-SessionDetail.getLayout = function getLayout(page:ReactElement){
+SessionDetail.getLayout = function getLayout(page: ReactElement) {
     return <LayoutArchiving>{page}</LayoutArchiving>;
 };
 
@@ -51,7 +51,7 @@ export async function getStaticProps({ params }: { params: { session_id: string;
 export default SessionDetail;
 
 
-const Wrapper=styled.div`
+const Wrapper = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -61,8 +61,8 @@ const Wrapper=styled.div`
         background: ${GreyScale.light};
     }
     
-`
+`;
 
 const StCarousel = styled(Carousel)`
 cursor: pointer;
-`
+`;
