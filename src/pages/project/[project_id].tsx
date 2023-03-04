@@ -7,13 +7,13 @@ import DetailMainSection from '@project/detail/DetailMainSection';
 import Carousel from '@archiving/Carousel';
 import LayoutArchiving from '@common/layout/LayoutArchiving';
 
-import { getProjectDetail } from 'src/apis/projectDeatil';
+import { getProjectDetail } from 'src/apis/project';
 
 import { IProjectDetail } from '@@types/request';
 import { GreyScale } from '@utils/constant/color';
 import { GetStaticPaths } from 'next';
 
-const ProjectDetail = ({ projectDetailStaticData }: { projectDetailStaticData: IProjectDetail }) => {
+const ProjectDetail = ({ projectDetailStaticData }: { projectDetailStaticData: IProjectDetail; }) => {
   const router = useRouter();
   const { data, isLoading } = useQuery<IProjectDetail>(['projectDeatil', router.query.project_id], () =>
     getProjectDetail(router.query.project_id as string),
@@ -41,7 +41,7 @@ export const getStaticPaths: GetStaticPaths = (async) => {
   };
 };
 
-export async function getStaticProps({ params }: { params: { project_id: string } }) {
+export async function getStaticProps({ params }: { params: { project_id: string; }; }) {
   const projectDetailStaticData = await getProjectDetail(params.project_id);
   return {
     props: {

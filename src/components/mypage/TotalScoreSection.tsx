@@ -6,7 +6,7 @@ import { token } from '@utils/state';
 import React, { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 import { useRecoilValue } from 'recoil';
-import { getAssignments, getTotalAttendance } from 'src/apis/attendance';
+import { getAssignments, getTotalAttendance } from 'src/apis/mypage';
 import styled from 'styled-components';
 import ScoreEditModal from './component/ScoreEditModal';
 import ScoreHeader from './component/ScoreHeader';
@@ -34,7 +34,7 @@ const TotalScoreSection = () => {
     useEffect(() => {
         if (totalAttendance && totalAssignment) {
             let tmpObject = getTotalNameObject(totalAssignment);
-            if (tmpObject) {
+            if (tmpObject && totalAttendance.length) {
                 totalAttendance.forEach((userAttendance: UserAttendance, i: number) => {
                     if (tmpObject[userAttendance.name].track == userAttendance.track) {
                         tmpObject[userAttendance.name].tardiness = userAttendance.tardiness;
