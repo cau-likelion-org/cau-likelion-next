@@ -20,10 +20,6 @@ const RightSection = () => {
 export default RightSection;
 const StCustomWrapper = styled(SectionWrapper)`
   @media (max-width: 1200px) {
-    border-style: solid;
-    border-radius: 80px;
-    border-color: #1a21bd;
-    border-width: 4px;
     height: 100%;
     align-items: center;
     justify-content: center;
