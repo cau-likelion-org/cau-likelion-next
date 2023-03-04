@@ -67,13 +67,13 @@ const TitleText = styled.div`
   font-family: 'GmarketSans';
   font-style: normal;
   font-weight: 900;
-  font-size: 3.7rem;
   width: 100%;
   text-align: center;
   margin-left: 15px;
   margin-right: 15px;
   margin-bottom: 1.5rem;
-  @media (max-width: 1376px) {
+  font-size: 3rem;
+  @media (max-width: 900px) {
     font-size: 2.5rem;
   }
 `;

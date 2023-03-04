@@ -83,16 +83,11 @@ const TitleText = styled.div`
   font-family: 'GmarketSans';
   font-style: normal;
   font-weight: 800;
-  font-size: 2.7rem;
   line-height: 4rem;
   margin: 2.5rem 0;
-
-  @media (max-width: 1550px) {
-    font-size: 3rem;
-  }
-
+  font-size: 3rem;
   @media (max-width: 900px) {
-    font-size: 2.5rem;
     justify-content: center;
+    font-size: 2.5rem;
   }
 `;

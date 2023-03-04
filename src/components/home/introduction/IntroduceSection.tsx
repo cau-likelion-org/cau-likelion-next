@@ -17,7 +17,7 @@ const IntroduceSection = ({ innerRef }: { innerRef: MutableRefObject<null>; }) =
         <ImageWrapper>
           <Image src={IntroLion} layout="fill" objectFit="fill" objectPosition="center" alt="소개하는 사자" />
         </ImageWrapper>
-        <TitleText>중앙대학교 멋사를 소개합니다!</TitleText>
+        <TitleText>중앙대학교 멋사를 소개합니다</TitleText>
         <SubText>{text}</SubText>
         <PhotoCardWrapper>
           <PhotoCard title={'정기세션 모아보기'} subtitle={'정기세션'} thumbnail={session.src} routing={'/session'} />
