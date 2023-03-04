@@ -108,7 +108,6 @@ top: 0;
 left: 0;
 bottom: 0;
 right: 0;
-margin: auto;
 background: rgba(0, 0, 0, 0.3);
 z-index: 9999;
 overflow: hidden;
@@ -127,9 +126,8 @@ background: #FFFFFF;
 box-shadow: 10px 10px 60px rgba(0, 0, 0, 0.4);
 border-radius: 24px;
 overflow: auto;
-padding-bottom: 10rem;
-padding: 0 5rem;
-top: 5%;
+padding: 2rem 5rem;
+top: 3%;
 
 ::-webkit-scrollbar {
     display: none;
@@ -140,17 +138,17 @@ ${(props) => modalSettings(props.visible)};
 
 //<전체보기> 눌렀을 때 모달창 초기 높이, 너비
 @media (min-width: 1920px) {
-    max-height: 100rem; 
+    max-height: 80vh; 
     width: 150rem;
 }
 
 @media (min-width: 1661px) and (max-width: 1919px) {
-    max-height: 100rem; 
+    max-height: 80vh; 
     width:120rem; 
 }
 
 @media (min-width: 901px) and (max-width: 1660px) {
-    max-height: 100rem; 
+    max-height: 80vhvh; 
     width: 100rem; 
 }
 
@@ -201,6 +199,8 @@ gap: 20px;
 grid-template-columns: 1fr 1fr 1fr;
 -ms-overflow-style: none; 
 scrollbar-width: none;
+
+height: 60rem;
 
 ::-webkit-scrollbar {
     display: none; 
