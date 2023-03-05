@@ -7,10 +7,15 @@ import { IMenu } from './NavBar';
 import NavButton from './NavButton';
 import NavProfileCard from './NavProfileCard';
 
-const MobileNavModal = ({ isModalOn }: { isModalOn: boolean }) => {
+const MobileNavModal = ({ isModalOn }: { isModalOn: boolean; }) => {
   const { access: tokenState } = useRecoilValue(token);
   const [visibilityAnimation, setVisibilityAnimation] = useState(false);
   const [repeat, setRepeat] = useState<any>(null);
+  const [isLogin, setIsLogin] = useState(false);
+
+  useEffect(() => {
+    if (tokenState) setIsLogin(true);
+  }, [tokenState]);
 
   const menu: IMenu[] = [
     { title: '프로젝트', routing: '/project' },
@@ -39,7 +44,7 @@ const MobileNavModal = ({ isModalOn }: { isModalOn: boolean }) => {
         <Wrapper className={isModalOn ? 'slide-fade-in-dropdown' : 'slide-fade-out-dropdown'}>
           <NavProfileCard />
           <ButtonWrapper>
-            {tokenState && <NavButton title={'출석체크'} routing={'/attendance'} />}
+            {isLogin && <NavButton title={'출석체크'} routing={'/attendance'} />}
             {menu.map((m, i) => (
               <NavButton key={i} title={m.title} routing={m.routing} />
             ))}
@@ -52,7 +57,7 @@ const MobileNavModal = ({ isModalOn }: { isModalOn: boolean }) => {
 
 export default MobileNavModal;
 
-const Layer = styled.div<{ isModalOn: boolean }>`
+const Layer = styled.div<{ isModalOn: boolean; }>`
   max-width: 100vw;
   width: 100%;
   display: ${(props) => (props.isModalOn ? 'block' : 'none')};
