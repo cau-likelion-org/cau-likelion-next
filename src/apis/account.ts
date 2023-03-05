@@ -24,7 +24,7 @@ export const getUserProfile = async (token: IToken) => {
 
 export const putUserProfile = async (props: IMutationProps) => {
   const axiosInstance = getAuthAxios({ access: props.accessToken, refresh: props.refreshToken });
-  const response = await axiosInstance.put(`/api/mypage/profile`, {
+  const response = await axiosInstance.put(`/api/profile`, {
     name: props.form.name,
     generation: props.form.generation,
     track: props.form.track,
