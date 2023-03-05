@@ -2,16 +2,19 @@
 
 import { atom } from 'recoil';
 import { v1 } from 'uuid';
+import cookie from 'react-cookies';
 
 export interface IToken {
   access: string;
   refresh: string;
 }
+
 export const token = atom<IToken>({
-  key: `tokenoken/${v1()}`,
-  // default: cookie.load('accessToken')
+  key: `token/${v1()}`,
   default: {
-    access: '',
-    refresh: '',
-  },
+    access: cookie.load('access'),
+    refresh: cookie.load('refresh')
+    // access: '',
+    // refresh: ''
+  }
 });
