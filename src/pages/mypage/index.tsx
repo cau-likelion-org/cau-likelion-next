@@ -20,7 +20,6 @@ const MyPage = () => {
   const [isLogin, setIsLogin] = useState(false);
   const user = useRecoilValue(userInfo);
   const router = useRouter();
-  console.log(user);
 
   const { data: userProfile, isLoading: profileLoading, error: profileError } = useQuery<UserProfile, AxiosError>(
     ["userProfile", user],
