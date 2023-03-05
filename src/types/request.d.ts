@@ -47,14 +47,14 @@ export interface IGalleryDetail extends IGalleryData {
 export type ArchivingArrayType<T> = Record<string, T[]>;
 
 export interface ISessionDetail extends IArchivingData {
-  session: number,
-  presenter: string,
-  thumbnail: string[],
-  track: string,
-  topic: string,
-  description: string,
-  date: string,
-  reference?: string[],
+  session: number;
+  presenter: string;
+  thumbnail: string[];
+  track: string;
+  topic: string;
+  description: string;
+  date: string;
+  reference?: string[];
 }
 
 interface ResponseData<T> {
@@ -64,9 +64,8 @@ interface ResponseData<T> {
 
 export interface TodayAttendanceData {
   name: string;
-  track: MemberStackKor;
+  track: number;
   attendance_result: 1 | 2;
-
 }
 export type TodayAttendanceListData = Record<MemberStack, string[]>;
 
@@ -95,7 +94,7 @@ export interface UserProfile {
 export interface UserScore {
   name: string;
   track: number;
-  absence: number;  // 결석
+  absence: number; // 결석
   truancy: number; // 무단결석
   tardiness: number; // 지각
   notSubmitted: number;
@@ -106,7 +105,7 @@ export interface UserScore {
 export interface UserAttendance {
   name: string; // 이름
   track: number;
-  absence: number;  // 결석
+  absence: number; // 결석
   truancy: number; // 무단결석
   tardiness: number; // 지각
 }
