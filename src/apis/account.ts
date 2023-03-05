@@ -40,8 +40,7 @@ export function login(code: string | string[]) {
     })
     .then((res) => {
       return res.data;
-    })
-    .catch((error) => console.log(error));
+    });
 }
 
 
