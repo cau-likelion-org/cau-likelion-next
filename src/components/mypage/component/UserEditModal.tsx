@@ -10,7 +10,6 @@ import { IToken, token, userInfo } from '@utils/state';
 import React, { useEffect, useState } from 'react';
 import { useMutation } from 'react-query';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { getUserProfile } from 'src/apis/account';
 import useInput from 'src/hooks/useInput';
 import styled from 'styled-components';
 import { HiXMark } from 'react-icons/hi2';
@@ -48,7 +47,7 @@ const UserEditModal = ({ userProfile, isEditModalOn, handleUserEditModal }: User
   });
 
   const handleSubmit = () => {
-    if (isFormActivated && tokenState) {
+    if (isFormActivated && tokenState.access) {
       editUserProfile.mutate({
         userProfile: {
           name: nameValue,

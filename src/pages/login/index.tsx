@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect } from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import LayoutLogin from '@common/layout/LayoutLogin';
@@ -11,9 +11,13 @@ import { token } from '@utils/state';
 const Login = () => {
   const router = useRouter();
   const tokenState = useRecoilValue(token);
+  const [isLogin, setIsLogin] = useState(false);
 
   useEffect(() => {
-    if (tokenState) router.push('/');
+    if (tokenState.access) {
+      setIsLogin(true);
+      router.push('/');
+    }
   }, [tokenState]);
 
   return (

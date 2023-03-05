@@ -25,20 +25,27 @@ const MyPage = () => {
     ["userProfile", user],
     () => getUserProfile(tokenState),
     {
-      enabled: !!tokenState
+      enabled: !!tokenState.access
     }
   );
 
   useEffect(() => {
-    if (tokenState) setIsLogin(true);
-    else router.push('/login');
+    if (tokenState.access) setIsLogin(true);
+    else {
+      setIsLogin(false);
+      router.push('/login');
+    }
   }, [tokenState]);
 
   useEffect(() => {
     if (userProfile && checkGeneration(userProfile.generation)) {
       setIsActiveGeneration(true);
     }
-  }, [userProfile, isActiveGeneration]);
+    else {
+      setIsActiveGeneration(false);
+    }
+  }, [userProfile]);
+
 
   return (
     <>
