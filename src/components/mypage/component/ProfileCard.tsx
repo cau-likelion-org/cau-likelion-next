@@ -1,6 +1,7 @@
 import { UserProfile } from '@@types/request';
 import { TRACK_NAME } from '@utils/constant';
 import { Basic, GreyScale, Primary } from '@utils/constant/color';
+import { checkGeneration } from '@utils/index';
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import UserEditModal from './UserEditModal';
@@ -23,7 +24,7 @@ const ProfileCard = ({ user }: { user: UserProfile; }) => {
           <DescriptionWrapper>
             <DescriptionRow>
               <BlueText>{user.generation}기</BlueText>
-              <Text>{user.is_admin ? '운영진' : '아기사자'}</Text>
+              <Text>{user.is_admin ? '운영진' : checkGeneration(user.generation) ? '아기사자' : '어른사자'}</Text>
             </DescriptionRow>
             <DescriptionRow>
               <BlueText>트랙</BlueText>

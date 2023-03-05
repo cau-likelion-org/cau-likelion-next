@@ -1,5 +1,5 @@
 import { UserProfile } from '@@types/request';
-import { token } from '@utils/state';
+import { token, userInfo } from '@utils/state';
 import { AxiosError } from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
@@ -12,21 +12,40 @@ import { GreyScale } from '@utils/constant/color';
 import { checkGeneration } from '@utils/index';
 import MyScoreSection from '@mypage/MyScoreSection';
 import TotalScoreSection from '@mypage/TotalScoreSection';
+import { useRouter } from 'next/router';
 
 const MyPage = () => {
   const tokenState = useRecoilValue(token);
   const [isActiveGeneration, setIsActiveGeneration] = useState(false);
+  const [isLogin, setIsLogin] = useState(false);
+  const user = useRecoilValue(userInfo);
+  const router = useRouter();
 
   const { data: userProfile, isLoading: profileLoading, error: profileError } = useQuery<UserProfile, AxiosError>(
-    ['userProfile', tokenState],
-    () => getUserProfile(tokenState)
+    ["userProfile", user],
+    () => getUserProfile(tokenState),
+    {
+      enabled: !!tokenState.access
+    }
   );
+
+  useEffect(() => {
+    if (tokenState.access) setIsLogin(true);
+    else {
+      setIsLogin(false);
+      router.push('/login');
+    }
+  }, [tokenState]);
 
   useEffect(() => {
     if (userProfile && checkGeneration(userProfile.generation)) {
       setIsActiveGeneration(true);
     }
-  }, [userProfile, isActiveGeneration]);
+    else {
+      setIsActiveGeneration(false);
+    }
+  }, [userProfile]);
+
 
   return (
     <>

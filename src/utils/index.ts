@@ -30,6 +30,7 @@ export const getTotalNameObject = (data: any): Record<string, UserScore> => {
     let totalNameObject: Record<string, UserScore> = {};
     data.forEach((user: any, i: number) => {
         totalNameObject[user['이름']] = {
+            user_id: 0,
             name: user['이름'],
             track: TRACK_INDEX[user['트랙']],
             lateSubmitted: user['과제 지각제출'],
