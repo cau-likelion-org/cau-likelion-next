@@ -78,10 +78,10 @@ const Wrapper = styled.div`
   top: 0;
   left: 0;
   @media (max-width: 1440px) {
-    padding: 0 250px;
+    padding: 0 190px;
   }
   @media (max-width: 1280px) {
-    padding: 0 150px;
+    padding: 0 90px;
   }
   padding: 0 360px;
   align-items: center;
