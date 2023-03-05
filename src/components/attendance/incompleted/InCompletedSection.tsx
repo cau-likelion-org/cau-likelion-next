@@ -7,11 +7,24 @@ import { useQuery } from 'react-query';
 import { TodayAttendanceData } from '@@types/request';
 import { getAttendance } from 'src/apis/attendance';
 import Loading from '@common/loading/Loading';
-import { useRecoilValue } from "recoil";
+import { useRecoilValue } from 'recoil';
 import { token } from '@utils/state';
+import { useRouter } from 'next/router';
+import { AxiosError } from 'axios';
 const IncompletedSection = () => {
   const tokens = useRecoilValue(token);
-  const { data, isLoading } = useQuery<TodayAttendanceData>(['attendance'], () => getAttendance(tokens));
+  const router = useRouter();
+  const { data, isLoading } = useQuery<TodayAttendanceData, AxiosError>(['attendance'], () => getAttendance(tokens), {
+    onError: (error) => {
+      if (error.response?.status == 400) {
+        alert('출석 가능일이 아닙니다!');
+        router.push('/');
+      }
+      if (error.response?.status == 405) {
+        router.push('/attendance/completed');
+      }
+    },
+  });
   if (isLoading) return <Loading />;
   return (
     <CircleWrapper>
