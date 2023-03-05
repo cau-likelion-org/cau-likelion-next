@@ -24,5 +24,12 @@ export function postAttendance(password: string, token: IToken) {
 }
 export function getAttendanceList(token: IToken) {
   const authAxios = getAuthAxios(token);
-  return authAxios.get<TodayAttendanceListData>(`/api/attendance/list`).then((res) => res.data);
+  const today = new Date();
+  return authAxios
+    .get<TodayAttendanceListData>(`/api/attendance/list`, {
+      params: {
+        date: toDateString(today),
+      },
+    })
+    .then((res) => res.data);
 }
