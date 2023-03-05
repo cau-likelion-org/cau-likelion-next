@@ -12,15 +12,25 @@ import { GreyScale } from '@utils/constant/color';
 import { checkGeneration } from '@utils/index';
 import MyScoreSection from '@mypage/MyScoreSection';
 import TotalScoreSection from '@mypage/TotalScoreSection';
+import { useRouter } from 'next/router';
 
 const MyPage = () => {
   const tokenState = useRecoilValue(token);
   const [isActiveGeneration, setIsActiveGeneration] = useState(false);
+  const [isLogin, setIsLogin] = useState(false);
+  const router = useRouter();
 
   const { data: userProfile, isLoading: profileLoading, error: profileError } = useQuery<UserProfile, AxiosError>(
-    ['userProfile', tokenState],
-    () => getUserProfile(tokenState)
+    'userProfile',
+    () => getUserProfile(tokenState), {
+    enabled: !!tokenState
+  }
   );
+
+  useEffect(() => {
+    if (tokenState) setIsLogin(true);
+    else router.push('/login');
+  }, [tokenState]);
 
   useEffect(() => {
     if (userProfile && checkGeneration(userProfile.generation)) {
