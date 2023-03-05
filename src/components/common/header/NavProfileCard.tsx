@@ -9,7 +9,13 @@ import styled from 'styled-components';
 
 const NavProfileCard = () => {
   const tokenState = useRecoilValue(token);
-  const { data } = useQuery(['profile'], () => getUserProfile(tokenState));
+  const { data, isLoading, error } = useQuery(
+    ['profile'],
+    () => getUserProfile(tokenState),
+    {
+      enabled: !!tokenState.access
+    }
+  );
   if (tokenState.access && data)
     return (
       <Wrapper>
