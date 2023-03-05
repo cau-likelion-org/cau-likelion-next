@@ -35,7 +35,6 @@ const ScoreEditModal = ({ targetUserScore, isEditModalOn, handleScoreEditModal }
 
     const handleSubmit = () => {
         if (tokenState) {
-            console.log(targetUserScore.user_id);
             editScore.mutate({
                 userScore: {
                     user_id: targetUserScore.user_id,
