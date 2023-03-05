@@ -1,4 +1,4 @@
-import { UserAttendance } from "@@types/request";
+import { RequestEditUserScore, UserAttendance } from "@@types/request";
 import { IToken } from "@utils/state";
 import axios from "axios";
 import { getAuthAxios } from "./authAxios";
@@ -43,13 +43,12 @@ export const getAssignments = () => {
     return data;
 };
 
-export function editUserScore(userScore: UserAttendance, token: IToken) {
+export function editUserScore(userScore: RequestEditUserScore, token: IToken) {
     const authAxios = getAuthAxios(token);
     return authAxios.post(
         `/api/mypage/attendance/`,
         {
-            name: userScore.name,
-            track: userScore.track,
+            user_id: userScore.user_id,
             truancy: userScore.truancy,
             absence: userScore.absence,
             tardiness: userScore.tardiness,

@@ -1,5 +1,5 @@
 import { UserProfile } from '@@types/request';
-import { token } from '@utils/state';
+import { token, userInfo } from '@utils/state';
 import { AxiosError } from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
@@ -18,13 +18,16 @@ const MyPage = () => {
   const tokenState = useRecoilValue(token);
   const [isActiveGeneration, setIsActiveGeneration] = useState(false);
   const [isLogin, setIsLogin] = useState(false);
+  const user = useRecoilValue(userInfo);
   const router = useRouter();
+  console.log(user);
 
   const { data: userProfile, isLoading: profileLoading, error: profileError } = useQuery<UserProfile, AxiosError>(
-    'userProfile',
-    () => getUserProfile(tokenState), {
-    enabled: !!tokenState
-  }
+    ["userProfile", user],
+    () => getUserProfile(tokenState),
+    {
+      enabled: !!tokenState
+    }
   );
 
   useEffect(() => {
