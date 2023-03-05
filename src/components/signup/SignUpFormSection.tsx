@@ -95,7 +95,7 @@ const SignUpFormSection = () => {
         <TextInputBox
           title={'기수'}
           description={'마지막 활동 기수를 숫자로 입력해주세요.'}
-          placeholder={'11'}
+          placeholder={'기수를 입력해주세요.'}
           value={generationValue}
           onChange={onChangeGeneration}
         />
