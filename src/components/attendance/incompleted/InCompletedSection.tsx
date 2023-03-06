@@ -15,12 +15,18 @@ const IncompletedSection = () => {
   const tokens = useRecoilValue(token);
   const router = useRouter();
   const { data, isLoading } = useQuery<TodayAttendanceData, AxiosError>(['attendance'], () => getAttendance(tokens), {
+    retry: false,
     onError: (error) => {
       if (error.response?.status == 400) {
         alert('출석 가능일이 아닙니다!');
         router.push('/');
       }
       if (error.response?.status == 405) {
+        router.push('/attendance/completed');
+      }
+    },
+    onSuccess: (data) => {
+      if (data.attendance_result === 2) {
         router.push('/attendance/completed');
       }
     },
