@@ -11,15 +11,12 @@ import InputBox from './InputBox';
 
 import { getAttendance, postAttendance } from 'src/apis/attendance';
 import { token } from '@utils/state';
+import { TRACK_NAME } from '@utils/constant';
 
-const AttendanceBox = ({ data }: { data: TodayAttendanceData; }) => {
+const AttendanceBox = ({ data }: { data: TodayAttendanceData }) => {
   const router = useRouter();
   const InputRef = useRef<HTMLInputElement>(null);
   const tokens = useRecoilValue(token);
-
-  if (data.attendance_result === 1) {
-    router.push('/attendance/completed');
-  }
 
   const attendancePost = useMutation({
     mutationFn: (password: string) => postAttendance(password, tokens),
@@ -28,12 +25,14 @@ const AttendanceBox = ({ data }: { data: TodayAttendanceData; }) => {
         router.push('/attendance/completed');
       }
     },
+    onError: (error) => {
+      alert('비밀번호가 틀렸습니다!');
+    },
   });
 
   const handleClick = () => {
     if (InputRef.current) {
-      if (InputRef.current.value === '1234') attendancePost.mutate(InputRef.current.value);
-      else alert('비밀번호가 맞지 않습니다.');
+      attendancePost.mutate(InputRef.current.value);
     }
   };
   const handleEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -49,7 +48,7 @@ const AttendanceBox = ({ data }: { data: TodayAttendanceData; }) => {
         ))}
       </SquareWrapper>
       <InputBox title={'이 름'} detail={data!.name} />
-      <InputBox title={'트 랙'} detail={data!.track} />
+      <InputBox title={'트 랙'} detail={TRACK_NAME[data!.track]} />
       <PasswordWrapper>
         <PasswordTitle>비밀번호</PasswordTitle>
         <PasswordInput type="password" ref={InputRef} required onKeyDown={handleEnter} />

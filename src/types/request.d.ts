@@ -64,9 +64,8 @@ interface ResponseData<T> {
 
 export interface TodayAttendanceData {
   name: string;
-  track: MemberStackKor;
+  track: number;
   attendance_result: 1 | 2;
-
 }
 export type TodayAttendanceListData = Record<MemberStack, string[]>;
 
@@ -96,7 +95,7 @@ export interface UserScore {
   user_id: number;
   name: string;
   track: number;
-  absence: number;  // 결석
+  absence: number; // 결석
   truancy: number; // 무단결석
   tardiness: number; // 지각
   notSubmitted: number;
@@ -108,7 +107,7 @@ export interface UserAttendance {
   user_id: number;
   name: string; // 이름
   track: number;
-  absence: number;  // 결석
+  absence: number; // 결석
   truancy: number; // 무단결석
   tardiness: number; // 지각
 }

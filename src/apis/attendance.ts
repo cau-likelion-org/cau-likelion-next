@@ -7,27 +7,29 @@ export function getAttendance(token: IToken) {
   const authAxios = getAuthAxios(token);
   const today = new Date();
   return authAxios
-    .get<TodayAttendanceData>(`api/attendance`, {
+    .get(`api/attendance`, {
       params: {
         date: toDateString(today),
-      }
+      },
     })
-    .then((res) => res.data);
+    .then((res) => {
+      return res.data.data as TodayAttendanceData;
+    });
 }
 export function postAttendance(password: string, token: IToken) {
   const authAxios = getAuthAxios(token);
-  return authAxios
-    .post(
-      'api/attendance',
-      {
-        password: password,
-      },
-    );
+  return authAxios.post('api/attendance', {
+    password: password,
+  });
 }
 export function getAttendanceList(token: IToken) {
   const authAxios = getAuthAxios(token);
+  const today = new Date();
   return authAxios
-    .get<TodayAttendanceListData>(`/api/attendance/list`)
-    .then((res) => res.data);
+    .get(`/api/attendance/list`, {
+      params: {
+        date: toDateString(today),
+      },
+    })
+    .then((res) => res.data.data as TodayAttendanceListData);
 }
-

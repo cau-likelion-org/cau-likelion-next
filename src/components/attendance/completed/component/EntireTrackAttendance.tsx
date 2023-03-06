@@ -7,30 +7,30 @@ import { Primary, Secondary } from '@utils/constant/color';
 import { ITrackController } from './componentType';
 import Loading from '@common/loading/Loading';
 import { token } from '@utils/state';
-import { useRecoilValue } from "recoil";
+import { useRecoilValue } from 'recoil';
 
 const trackController: Record<MemberStack, ITrackController> = {
   pm: {
     title: '기획',
-    arrayLength: 6,
+    arrayLength: 5,
     color: Primary.light,
     titleColor: Primary.default,
   },
   design: {
     title: '디자인',
-    arrayLength: 6,
+    arrayLength: 4,
     color: '#FFF2EB',
     titleColor: Secondary.default,
   },
   frontend: {
     title: '프론트엔드',
-    arrayLength: 12,
+    arrayLength: 10,
     color: '#ECFDE8',
     titleColor: '#36CA60',
   },
   backend: {
     title: '백엔드',
-    arrayLength: 12,
+    arrayLength: 10,
     color: '#FDF3FF',
     titleColor: '#F33EA0',
   },
