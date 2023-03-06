@@ -1,20 +1,47 @@
 import React from 'react';
 import styled from 'styled-components';
 import QuestionLion from '@image/가치_물음표 사자.gif';
-import Image from 'next/image';
+import Image, { StaticImageData } from 'next/image';
 import FadeInComponent from '@home/common/FadeInComponent';
-import 활동 from '@image/활동기록.png';
 import CircleComponent from './component/CircleComponent';
-
+import 해커톤 from '@image/해커톤.png';
+import 아이디어톤 from '@image/아이디어톤.png';
+import 스터디 from '@image/스터디.png';
+import 정기세션 from '@image/정기세션.png';
+import 중커톤 from '@image/중커톤.png';
+export interface IActivityData {
+  title: string;
+  text: string;
+  image: StaticImageData;
+}
 const ActivitySection = () => {
-  const titleArray = ['정기세션', '아이디어톤', '해커톤', '중커톤', '스터디'];
-  const textArray = [
-    '트랙별 심화 세션',
-    '해커톤을 위한 청사진',
-    '직접 아이디어 구현',
-    '중앙대 자체 해커톤',
-    '같이 공부하며 성장하기',
-  ];
+  const data = [
+    {
+      title: '정기세션',
+      text: '트랙별 심화 세션',
+      image: 정기세션,
+    },
+    {
+      title: '아이디어톤',
+      text: '해커톤을 위한 청사진',
+      image: 아이디어톤,
+    },
+    {
+      title: '해커톤',
+      text: '직접 아이디어 구현',
+      image: 해커톤,
+    },
+    {
+      title: '중커톤',
+      text: '중앙대 자체 해커톤',
+      image: 중커톤,
+    },
+    {
+      title: '스터디',
+      text: '같이 공부하며 성장하기',
+      image: 스터디,
+    },
+  ] as IActivityData[];
   return (
     <FadeInComponent>
       <Wrapper>
@@ -24,12 +51,12 @@ const ActivitySection = () => {
         <TitleText>멋사의 다양한 활동</TitleText>
         <ThreeCircleWrapper>
           {Array.from({ length: 3 }).map((_, index) => (
-            <CircleComponent key={index} src={활동.src} title={titleArray[index]} text={textArray[index]} />
+            <CircleComponent key={index} data={data[index]} />
           ))}
         </ThreeCircleWrapper>
         <TwoCircleWrapper>
           {Array.from({ length: 2 }).map((_, index) => (
-            <CircleComponent key={index + 3} src={활동.src} title={titleArray[index + 3]} text={textArray[index + 3]} />
+            <CircleComponent key={index + 3} data={data[index + 3]} />
           ))}
         </TwoCircleWrapper>
       </Wrapper>

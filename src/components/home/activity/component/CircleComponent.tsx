@@ -1,17 +1,18 @@
 import { Primary } from '@utils/constant/color';
-import Image from 'next/image';
+import Image, { StaticImageData } from 'next/image';
 import React from 'react';
 import styled from 'styled-components';
+import { IActivityData } from '../ActivitySection';
 
-const CircleComponent = ({ src, title, text }: { src: string; title: string; text: string }) => {
+const CircleComponent = ({ data }: { data: IActivityData }) => {
   return (
     <Wrapper>
       <ImageWrapper>
-        <CustomImage src={src} alt="이미지" layout="fill" objectFit="cover"></CustomImage>
+        <CustomImage src={data.image} alt="이미지" layout="fill" objectFit="cover"></CustomImage>
       </ImageWrapper>
       <TextWrapper>
-        <Title>{title}</Title>
-        <Text>{text}</Text>
+        <Title>{data.title}</Title>
+        <Text>{data.text}</Text>
       </TextWrapper>
     </Wrapper>
   );
