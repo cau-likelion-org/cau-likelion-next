@@ -18,10 +18,17 @@ const RightSection = () => {
 export default RightSection;
 
 const StCustomWrapper = styled(SectionWrapper)`
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-left: 10rem;
+
+
   @media (max-width: 1200px) {
     height: 100%;
     align-items: center;
     justify-content: center;
+    margin: 0rem;
   }
 `;
 
@@ -30,13 +37,23 @@ const StTextWrapper = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin-bottom: 15rem;
+  margin-top: 5rem;
+
+  @media (max-width: 1200px){
+    margin-bottom: 10rem;
+  }
+
+  p{
+    text-align: center;
+    width: 25rem;
+  }
+ 
 
   .logoTxt {
     font-family: 'Inter';
     font-style: normal;
     font-weight: 900;
-    font-size: 5rem;
+    font-size: 4rem;
     margin: 0;
   }
 
@@ -44,7 +61,7 @@ const StTextWrapper = styled.div`
     font-family: 'Inter';
     font-style: normal;
     font-weight: 500;
-    font-size: 2.1rem;
+    font-size: 1.8rem;
     color: #fb5101;
     margin: 0;
   }

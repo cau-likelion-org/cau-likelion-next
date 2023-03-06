@@ -49,8 +49,8 @@ const BorderSectionWrapper = styled.div`
     display: flex;
     left: 0;
     right: 0;
-    top: 15rem;
-    height: 70rem;
+    top: 25rem;
+    height: 50rem;
     border-bottom: 4px #1a21bd solid;
     border-bottom-right-radius: 70px;
 
@@ -75,8 +75,8 @@ const BorderSectionWrapper = styled.div`
   span:nth-child(2) {
     left: 0;
     right: 0;
-    top: 15rem;
-    height: 70rem;
+    top: 25rem;
+    height: 50rem;
     width: 100%;
 
     border-right: 4px #1a21bd solid;
@@ -90,7 +90,7 @@ const BorderSectionWrapper = styled.div`
     position: absolute;
     left: 0;
     right: 0;
-    height: 70rem;
+    height: 50rem;
     width: 99%;
     border-right: 20px #ffffff solid;
     border-radius: 70px;
@@ -119,11 +119,11 @@ const BorderSectionWrapper = styled.div`
 
   //border-top
   span:nth-child(3) {
-    left: 60rem;
+    left: 55rem;
     right: 0;
-    top: 15rem;
-    height: 70rem;
-    width: 50%;
+    top: 25rem;
+    height: 50rem;
+    width: 45%;
     border-top: 4px #1a21bd solid;
     border-radius: 70px;
     z-index: 0;
@@ -135,7 +135,7 @@ const BorderSectionWrapper = styled.div`
     left: 0;
     right: 0;
     top: -1rem;
-    height: 70rem;
+    height: 50rem;
     width: 100%;
     border-top: 20px #ffffff solid;
     border-radius: 70px;
@@ -157,17 +157,17 @@ const BorderSectionWrapper = styled.div`
       border-left: 4px #ffffff solid;
     }
     100% {
-      height: 60rem;
+      height: 40rem;
       border-left: 4px #1a21bd solid;
     }
   }
 
   //border-left
   span:nth-child(4) {
-    left: 60rem;
+    left: 55rem;
     right: 0;
-    top: 15rem;
-    height: 60rem;
+    top: 25rem;
+    height: 40rem;
     width: 50%;
     border-top-left-radius: 70px;
     z-index: 5;
@@ -190,9 +190,9 @@ const BorderSectionWrapper = styled.div`
 
   .aniDiamond {
     position: absolute;
-    left: 59.7rem;
+    left: 54.7rem;
     right: 0;
-    top: 75rem;
+    top: 65rem;
     opacity: 0%;
 
     animation-name: diamond;

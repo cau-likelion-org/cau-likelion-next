@@ -16,9 +16,11 @@ const LoginButton = () => {
         <ButtonWrapper>
             <Button className='google' onClick={handleClick}>
                 <Image src={googleLogo} alt='구글' width='38px' height='38px' />
-                <p>구글로 로그인하기</p>
+                <p className='googleText'>구글로 로그인하기</p>
             </Button>
-            <Button className='likelion'>LIKE LION 계정으로 로그인이 가능합니다.</Button>
+            <GreyButton className='likelion'>
+                <p>LIKE LION 계정으로 로그인이 가능합니다.</p>
+            </GreyButton>
         </ButtonWrapper>
     );
 };
@@ -30,41 +32,55 @@ display: flex;
 flex-direction: column;
 justify-content: center;
 align-items: center;
+font-size: 1rem;
 
 .google{
     display: flex;
-    justify-content: space-between;
     align-items: center;
 
-    font-size: 1.7rem;
-    border: 2px solid #858585;
+    border: 1px solid #858585;
     background-color: white;
     margin-bottom: 2rem;
 
 }
 
 .likelion{
-    font-size: 1.4rem;
     color: #858585;
     background-color: #F5F5F5;
     border: none;
 
 }
+
+p{
+    @media(max-width: 900px){
+        font-size:0.8rem;}
+    }
     
 `;
 
 const Button = styled.button`
-width: 360px;
-height: 60px;
-font-family: 'Pretendard';
-font-style: normal;
-font-weight: 500;
+    display: flex;
+    justify-content: space-between;
 
-border-radius: 70px;
+    width: 25rem;
+    height: 5rem;
+    font-family: 'Pretendard';
+    font-style: normal;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: 70px;
+    z-index: 20;
 
-z-index: 20;
+    .googleText{margin-right: 5rem;}
 
-p{
-    margin-right: 100px;
-}
+
+`;
+
+const GreyButton = styled(Button)`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: default;
+
+    p{text-align: center;}
 `;

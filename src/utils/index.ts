@@ -1,4 +1,4 @@
-import { TotalScoreParams, UserScore } from "@@types/request";
+import { ArchivingArrayType, IGalleryData, IProjectData, TotalScoreParams, UserScore } from "@@types/request";
 import { GENERATION_CHECKER, TRACK_INDEX } from "./constant";
 
 export const toDateString = (date?: Date, formatter = "-") => {
@@ -7,6 +7,14 @@ export const toDateString = (date?: Date, formatter = "-") => {
     const month = ("0" + (1 + date.getMonth())).slice(-2);
     const day = ("0" + date.getDate()).slice(-2);
     return year + formatter + month + formatter + day;
+};
+
+export const concatDateString = (startDate: string, endDate: string) => {
+    const startDateArray = startDate.split('-');
+    const endDateArray = endDate.split('-');
+    const newStartDate = startDateArray.join('.');
+    const newEndDate = endDateArray.join('.');
+    return newStartDate + '~' + newEndDate;
 };
 
 export const isEmptyString = (str: string) => {
@@ -42,4 +50,9 @@ export const getTotalNameObject = (data: any): Record<string, UserScore> => {
         };
     });
     return totalNameObject;
+};
+
+export const sortArchivingListDesc = <T extends IGalleryData | IProjectData>(data: ArchivingArrayType<T>): Array<[string, T[]]> => {
+    const newData = Object.entries(data).sort((year, _) => Number(year));
+    return newData.reverse();
 };

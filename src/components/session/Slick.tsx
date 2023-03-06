@@ -6,73 +6,59 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import { ISessionData } from '@@types/request';
 
-type  ModalProps = {
+type ModalProps = {
     trackName: string;
     trackData: ISessionData[];
 };
 
 
-const Slick:React.FC<ModalProps> = ({trackData, trackName}) => {
-    const length = trackData.length;
-    const slidesToShowArr = setSlidesToShow();
+const Slick: React.FC<ModalProps> = ({ trackData, trackName }) => {
 
-    function setSlidesToShow(){
-        let arr=[]
-        let i = 4;
-
-        while(i>0){
-            if(length<i){
-                arr.push(length)
-            }
-            else{
-                arr.push(i)
-            }
-            i--;
-        }
-        return[...arr];
-    }
-
-
-    const settings={
+    const settings = {
         infinite: true,
         speed: 1000,
         swipeToSlide: true,
         touchMove: true,
         variableWidth: true,
 
-        responsive:[
-            {breakpoint:900,
-                settings:{
+        responsive: [
+            {
+                breakpoint: 900,
+                settings: {
                     variableWidth: true,
-            }},
-            {breakpoint:600,
-                settings:{
+                }
+            },
+            {
+                breakpoint: 600,
+                settings: {
                     variableWidth: false,
                     slidesToShow: 1,
                     slidesToScroll: 1,
-            }},
+                }
+            },
         ]
-        }
+    };
 
     return (
         <Wrapper>
             <>
-            <StSlider  {...settings}>
-                {trackData.slice(0).reverse().map((data)=>{
-                    return(
-                        <Card
-                        key={data.id}
-                        id= {data.id}
-                        link='/session'
-                        thumbnail={data.thumbnail}
-                        title={data.title}
-                        category={`${data.degree}차 세션`} />
-                    )
+                <StSlider  {...settings}>
+                    {trackData.slice(0).reverse().map((data) => {
+                        return (
+                            <Card
+                                key={data.id}
+                                id={data.id}
+                                link='/session'
+                                // thumbnail={data.thumbnail}
+                                thumbnail={'https://cau-likelion.s3.ap-northeast-2.amazonaws.com/project-img/9%E1%84%80%E1%85%B5/Rectangle_336-1.png'}
+                                title={data.title}
+                                category={`${data.degree}차 세션`} />
+                        );
                     })}
-            </StSlider>
+                </StSlider>
             </>
         </Wrapper>
-        
+
     );
 };
 
@@ -116,4 +102,4 @@ height: 45rem;
     height: 30rem;
 }
 
-`
+`;

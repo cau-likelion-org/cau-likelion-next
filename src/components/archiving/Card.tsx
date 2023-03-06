@@ -19,7 +19,7 @@ const Card = ({ id, thumbnail, title, description, dev_stack, category, link }: 
           <CustomImage src={thumbnail} alt="썸네일" layout="fill" objectFit="fill" objectPosition="center" />
         </ImageWrapper>
         <TextWrapper>
-          <Category>{category}</Category>
+          <Category link={link}>{category}</Category>
           <ProjectTitle>{title}</ProjectTitle>
           {description && <ProjectDesc>{description}</ProjectDesc>}
           {dev_stack && <div></div>}
@@ -37,18 +37,23 @@ const CustomImage = styled(Image)`
 
 const Wrapper = styled.div`
   border-radius: 25px;
-  box-shadow: 10px 10px 50px rgba(68, 64, 105, 0.08);
   cursor: pointer;
+  box-shadow: 3px 3px 12px rgba(68, 64, 105, 0.08);
+  margin: 10px;
+
 
   @media (min-width: 1920px) {
     width: 380px;
     height: 400px;
   }
+
   @media (min-width: 901px) and (max-width: 1919px) {
+    box-shadow: 10px 10px 50px rgba(68, 64, 105, 0.08);
     width: 330px;
     height: 370px;
   }
   @media (min-width: 431px) and (max-width: 901px) {
+
     width: 231px;
     height: 259px;
   }
@@ -87,23 +92,22 @@ const TextWrapper = styled.div`
   padding: 20px;
 
   @media (min-width: 360px) and (max-width: 1919px) {
-    width: 330px;
+    /* width: 330px; */
   }
   @media (min-width: 1920px) {
     width: 380px;
   }
 `;
-const Category = styled.div`
+const Category = styled.div<{ link: string; }>`
   border-radius: 25px;
-  border: 1px solid ${GreyScale.default};
-  max-width: 25%;
+  // border: 1px solid ${GreyScale.default};
+  border: ${props => props.link === 'gallery' ? 'none' : '1px solid ${GreyScale.default}'};
   font-family: 'Pretendard';
   font-style: normal;
   font-weight: 500;
   font-size: 1.2rem;
   display: flex;
   padding: 0.3rem 0;
-  justify-content: center;
   align-items: center;
 `;
 

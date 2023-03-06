@@ -1,8 +1,9 @@
 import React from 'react';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 import { useState } from 'react';
 import SessionModal from './SessionModal';
 import { ISessionData } from '@@types/request';
+import { Primary } from '@utils/constant/color';
 
 type TrackProps = {
     track: string,
@@ -19,10 +20,9 @@ const Track: React.FC<TrackProps> = ({ track, trackData }) => {
         position: fixed; 
         width: 100%;
         `;
-
     };
 
-    const handleClose = (e: React.MouseEvent<HTMLElement, MouseEvent>): void => {
+    const handleClose = () => {
         setVisible(false);
 
         document.body.style.cssText = `
@@ -33,17 +33,15 @@ const Track: React.FC<TrackProps> = ({ track, trackData }) => {
     return (
         <>
             <StWrapper>
-                <a>{track}</a>
+                <TrackTitle>{track}</TrackTitle>
                 <StShowAll onClick={handleClick}>전체보기 &gt;</StShowAll>
             </StWrapper>
-
             <SessionModal
                 trackData={trackData}
                 trackName={track}
                 handleClose={handleClose}
                 visible={visible} />
         </>
-
     );
 };
 
@@ -60,16 +58,16 @@ z-index: 10;
 
 @media (max-width:700px){
     margin: 3rem 0 5rem 0;
-
-    a{
-    font-size: 1.8rem;
-}
-
 }
 
 `;
 
 const StShowAll = styled.div`
-color: #1A21BD;
-font-size: 1.4rem;
+color: ${Primary.default};
+font-size: 1.3rem;
+`;
+
+const TrackTitle = styled.div`
+    font-size: 2.3rem;
+    color: #464646;
 `;

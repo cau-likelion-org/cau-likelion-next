@@ -36,6 +36,7 @@ const Title = styled.div`
   }
 `;
 const Wrapper = styled.div`
+  min-width: 280px;
   &hr {
     color: ${GreyScale.light};
   }
