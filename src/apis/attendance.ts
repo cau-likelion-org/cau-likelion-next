@@ -26,10 +26,10 @@ export function getAttendanceList(token: IToken) {
   const authAxios = getAuthAxios(token);
   const today = new Date();
   return authAxios
-    .get<TodayAttendanceListData>(`/api/attendance/list`, {
+    .get(`/api/attendance/list`, {
       params: {
         date: toDateString(today),
       },
     })
-    .then((res) => res.data);
+    .then((res) => res.data.data as TodayAttendanceListData);
 }
