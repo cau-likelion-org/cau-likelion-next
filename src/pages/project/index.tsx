@@ -9,8 +9,8 @@ import { getProjects } from 'src/apis/project';
 const ProjectList = ({ projectStaticData }: InferGetStaticPropsType<typeof getStaticProps>) => {
   return (
     <>
-      <Header pageName="프로젝트" introduce="중앙대 멋사에서 함께한 프로젝트를 소개해요!" />
-      <SearchSection />
+      <Header pageName="프로젝트" introduce="멋사와 함께한 프로젝트" />
+      {/* <SearchSection /> */}
       <ProjectsSection staticData={projectStaticData} />
     </>
   );
