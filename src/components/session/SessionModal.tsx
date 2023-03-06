@@ -1,15 +1,16 @@
 import React,{useState,useEffect} from 'react';
 import styled, {keyframes, css} from 'styled-components';
 import Card from '@archiving/Card';
-import { Primary } from '@utils/constant/color';
+import { Primary, GreyScale } from '@utils/constant/color';
 import back from '@image/back.png';
 import Image from 'next/image';
 import { ISessionData } from '@@types/request';
+import { MdKeyboardArrowLeft } from 'react-icons/md';
 
 type  ModalProps = {
     trackName: string,
     trackData: ISessionData[];
-    handleClose: (e: React.MouseEvent<HTMLElement, MouseEvent>) => void,
+    handleClose: () => void,
     visible:boolean,
 };
 
@@ -42,7 +43,7 @@ const SessionModal:React.FC<ModalProps> = ({trackData, trackName, handleClose, v
             <ModalHeader>
                 <ButtonWrapper>
                     <div>
-                        <BackArrow src={back} className='arrow' width="30px" height="30px" alt='뒤로가기' onClick={handleClose}/>
+                        <MdKeyboardArrowLeft size={30} color={GreyScale.default} onClick={handleClose}/>
                         <a>{trackName}</a>
                     </div>
                     <UploadButton>+</UploadButton>
@@ -114,20 +115,32 @@ overflow: hidden;
 
 visibility: ${(props)=> props.visible ? 'visible' : 'hidden'};
 animation: ${(props)=>props.visible ? fadeIn : fadeOut} 0.5s ease-out;
+
+@media (max-width:900px){
+    display: none;
+}
 `
 
 const StModalWrapper = styled.div<{ visible: boolean }>`
 display: flex;
-flex-direction: column;
-align-items: center;
+justify-content: center;
 z-index: 10000;
 position: absolute;
 background: #FFFFFF;
-box-shadow: 10px 10px 60px rgba(0, 0, 0, 0.4);
 border-radius: 24px;
-overflow: auto;
-padding: 2rem 5rem;
-top: 3%;
+overflow-y: scroll;
+height: 100vh;
+box-shadow: 10px 10px 60px rgba(0, 0, 0, 0.4);
+
+
+@media(min-width: 900px) {
+    overflow: auto;
+    top: 3%;
+    flex-direction: column;
+    align-items: center;    
+    justify-content: space-around;
+
+}
 
 ::-webkit-scrollbar {
     display: none;
@@ -148,14 +161,16 @@ ${(props) => modalSettings(props.visible)};
 }
 
 @media (min-width: 901px) and (max-width: 1660px) {
-    max-height: 80vhvh; 
+    max-height: 80vh; 
     width: 100rem; 
 }
 
 @media (max-width: 900px) {
-    height: 100vh; 
+    min-height: 100vh;
     width: 100%; 
-    top: 0;
+    top:0;
+    left: 0;
+    padding: 3rem 0;
     border-radius: 0px;
 }
 
@@ -193,29 +208,26 @@ div{
 `
 
 const CardWrapper = styled.div`
-display: grid;
-background-color: white;
-gap: 20px;
-grid-template-columns: 1fr 1fr 1fr;
--ms-overflow-style: none; 
-scrollbar-width: none;
+    height: 100%;
+    display: grid;
+    background-color: white;
+    gap: 20px;
+    grid-template-columns: 1fr 1fr 1fr;
+    -ms-overflow-style: none; 
+    scrollbar-width: none;
+    margin: 13rem 0 3rem 0;
+    ::-webkit-scrollbar {
+        display: none; 
+    }
+    overflow: scroll;
+    @media (min-width: 1920px) {grid-template-columns: 1fr 1fr 1fr; gap: 20px;};
 
-height: 60rem;
+    @media (min-width: 901px) and (max-width: 1660px) {grid-template-columns: 1fr 1fr; gap: 30px;};
 
-::-webkit-scrollbar {
-    display: none; 
-}
+    @media (min-width:600px) and (max-width: 900px) { grid-template-columns: 1fr 1fr; gap:30px; };
 
-overflow-y: visible;
-
-@media (min-width: 1920px) {grid-template-columns: 1fr 1fr 1fr; gap: 20px;}
-
-@media (min-width: 901px) and (max-width: 1660px) {grid-template-columns: 1fr 1fr; gap: 30px;}
-
-@media (min-width:600px) and (max-width: 900px) { grid-template-columns: 1fr 1fr; gap:30px; padding-top: 15rem;}
-
-@media (min-width: 360px) and (max-width: 601px) {grid-template-columns: 1fr; gap: 30px; padding-top: 15rem;}
-`
+    @media (min-width: 360px) and (max-width: 601px) {grid-template-columns: 1fr; gap: 30px; };
+`;
 
 
 const UploadButton = styled.button`
@@ -230,6 +242,8 @@ border-radius: 50%;
 font-size: 30px;
 color: white;
 background-color: ${Primary.default};
+
+display: none;
 `;
 
 const BackArrow = styled(Image)`

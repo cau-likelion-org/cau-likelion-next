@@ -119,7 +119,7 @@ const BorderSectionWrapper = styled.div`
 
   //border-top
   span:nth-child(3) {
-    left: 60rem;
+    left: 50rem;
     right: 0;
     top: 15rem;
     height: 70rem;
@@ -164,7 +164,7 @@ const BorderSectionWrapper = styled.div`
 
   //border-left
   span:nth-child(4) {
-    left: 60rem;
+    left: 50rem;
     right: 0;
     top: 15rem;
     height: 60rem;
@@ -190,7 +190,7 @@ const BorderSectionWrapper = styled.div`
 
   .aniDiamond {
     position: absolute;
-    left: 59.7rem;
+    left: 49.7rem;
     right: 0;
     top: 75rem;
     opacity: 0%;

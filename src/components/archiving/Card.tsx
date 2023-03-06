@@ -37,18 +37,23 @@ const CustomImage = styled(Image)`
 
 const Wrapper = styled.div`
   border-radius: 25px;
-  box-shadow: 10px 10px 50px rgba(68, 64, 105, 0.08);
   cursor: pointer;
+  box-shadow: 3px 3px 12px rgba(68, 64, 105, 0.08);
+  margin: 10px;
+
 
   @media (min-width: 1920px) {
     width: 380px;
     height: 400px;
   }
+
   @media (min-width: 901px) and (max-width: 1919px) {
+    box-shadow: 10px 10px 50px rgba(68, 64, 105, 0.08);
     width: 330px;
     height: 370px;
   }
   @media (min-width: 431px) and (max-width: 901px) {
+
     width: 231px;
     height: 259px;
   }
@@ -87,7 +92,7 @@ const TextWrapper = styled.div`
   padding: 20px;
 
   @media (min-width: 360px) and (max-width: 1919px) {
-    width: 330px;
+    /* width: 330px; */
   }
   @media (min-width: 1920px) {
     width: 380px;

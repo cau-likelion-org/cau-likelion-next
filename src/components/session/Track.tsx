@@ -22,7 +22,7 @@ const Track: React.FC<TrackProps> = ({track, trackData}) => {
         
     }
 
-    const handleClose = (e: React.MouseEvent<HTMLElement, MouseEvent>): void  =>{
+    const handleClose = () => {
         setVisible(false);
         
         document.body.style.cssText = `
