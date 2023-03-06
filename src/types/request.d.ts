@@ -47,7 +47,7 @@ export interface IGalleryDetail extends IGalleryData {
 export type ArchivingArrayType<T> = Record<string, T[]>;
 
 export interface ISessionDetail extends IArchivingData {
-  session: number,
+  degree: number,
   presenter: string,
   thumbnail: string[],
   track: string,

@@ -20,9 +20,7 @@ const Track: React.FC<TrackProps> = ({ track, trackData }) => {
         width: 100%;
         `;
 
-    };
-
-    const handleClose = (e: React.MouseEvent<HTMLElement, MouseEvent>): void => {
+    const handleClose = () => {
         setVisible(false);
 
         document.body.style.cssText = `

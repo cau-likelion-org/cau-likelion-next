@@ -9,6 +9,14 @@ export const toDateString = (date?: Date, formatter = "-") => {
     return year + formatter + month + formatter + day;
 };
 
+export const concatDateString = (startDate: string, endDate: string) => {
+    const startDateArray = startDate.split('-');
+    const endDateArray = endDate.split('-');
+    const newStartDate = startDateArray.join('.');
+    const newEndDate = endDateArray.join('.');
+    return newStartDate + '~' + newEndDate;
+};
+
 export const isEmptyString = (str: string) => {
     if (str.length == 0) return true;
     else return false;
