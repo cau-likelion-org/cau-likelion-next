@@ -53,7 +53,7 @@ const TitleText = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  font-family: 'Inter';
+  font-family: 'GmarketSans';
   font-style: normal;
   font-weight: 900;
   font-size: 1.8rem;

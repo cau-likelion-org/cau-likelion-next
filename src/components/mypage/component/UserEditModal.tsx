@@ -6,15 +6,14 @@ import ToggleBox from '@signup/component/ToggleBox';
 import { TRACK, TRACK_INDEX, TRACK_NAME } from '@utils/constant';
 import { BackgroundColor, Basic } from '@utils/constant/color';
 import { isEmptyString } from '@utils/index';
-import { IToken, token } from '@utils/state';
+import { IToken, token, userInfo } from '@utils/state';
 import React, { useEffect, useState } from 'react';
 import { useMutation } from 'react-query';
-import { useRecoilValue } from 'recoil';
-import { getUserProfile } from 'src/apis/account';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import useInput from 'src/hooks/useInput';
 import styled from 'styled-components';
 import { HiXMark } from 'react-icons/hi2';
-import { putUserProfile } from 'src/apis/signUp';
+import { putUserProfile } from 'src/apis/account';
 
 interface UserEditModalProps {
   userProfile: UserProfile;
@@ -25,6 +24,7 @@ interface UserEditModalProps {
 const UserEditModal = ({ userProfile, isEditModalOn, handleUserEditModal }: UserEditModalProps) => {
   const track = [TRACK_NAME[TRACK.PM], TRACK_NAME[TRACK.DESIGN], TRACK_NAME[TRACK.FRONTEND], TRACK_NAME[TRACK.BACKEND]];
   const [nameValue, onChangeName] = useInput(userProfile.name);
+  const [user, setUser] = useRecoilState(userInfo);
   const [generationValue, onChangeGeneration] = useInput(String(userProfile.generation), /^[0-9]*$/);
   const [toggleIsClicked, setToggleIsClicked] = useState(userProfile.is_admin ? [false, true] : [true, false]);
   const [dropdownValue, setDropdownValue] = useState(track[userProfile.track]);
@@ -37,17 +37,17 @@ const UserEditModal = ({ userProfile, isEditModalOn, handleUserEditModal }: User
   }, [nameValue, generationValue, isEditModalOn]);
 
   const editUserProfile = useMutation({
-    mutationFn: ({ userProfile, tokenState }: { userProfile: UserProfile; tokenState: IToken }) =>
+    mutationFn: ({ userProfile, tokenState }: { userProfile: UserProfile; tokenState: IToken; }) =>
       putUserProfile({ form: userProfile, accessToken: tokenState.access, refreshToken: tokenState.refresh }),
     onSuccess: (res) => {
-      if (res.status === 200) {
-        () => getUserProfile(tokenState);
+      if (res.message === 'success') {
+        setUser(userProfile);
       }
     },
   });
 
   const handleSubmit = () => {
-    if (isFormActivated && tokenState) {
+    if (isFormActivated && tokenState.access) {
       editUserProfile.mutate({
         userProfile: {
           name: nameValue,

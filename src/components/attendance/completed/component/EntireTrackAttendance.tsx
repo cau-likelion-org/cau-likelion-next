@@ -6,6 +6,8 @@ import Track from './TrackAttendance';
 import { Primary, Secondary } from '@utils/constant/color';
 import { ITrackController } from './componentType';
 import Loading from '@common/loading/Loading';
+import { token } from '@utils/state';
+import { useRecoilValue } from "recoil";
 
 const trackController: Record<MemberStack, ITrackController> = {
   pm: {
@@ -36,7 +38,8 @@ const trackController: Record<MemberStack, ITrackController> = {
 
 const EntireTrackAttendance = () => {
   const trackStacks = Object.keys(trackController) as MemberStack[];
-  const { data, isLoading } = useQuery<TodayAttendanceListData>(['getAttendanceList'], getAttendanceList);
+  const tokens = useRecoilValue(token);
+  const { data, isLoading } = useQuery<TodayAttendanceListData>(['getAttendanceList'], () => getAttendanceList(tokens));
 
   if (isLoading) return <Loading />;
 

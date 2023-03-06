@@ -64,22 +64,22 @@ const TitleText = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  font-family: 'Pretendard';
+  font-family: 'GmarketSans';
   font-style: normal;
   font-weight: 900;
-  font-size: 3.7rem;
   width: 100%;
   text-align: center;
   margin-left: 15px;
   margin-right: 15px;
   margin-bottom: 1.5rem;
-  @media (max-width: 1376px) {
+  font-size: 3rem;
+  @media (max-width: 900px) {
     font-size: 2.5rem;
   }
 `;
 
 const Text = styled.div`
-  font-family: 'Pretendard';
+  font-family: 'GmarketSans';
   font-weight: 500;
   line-height: 2.5rem;
   font-size: 1.7rem;

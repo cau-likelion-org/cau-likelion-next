@@ -51,7 +51,7 @@ const BlurBackground = styled.div`
   border-radius: 20px;
 `;
 
-const Container = styled.div<{ img: string }>`
+const Container = styled.div<{ img: string; }>`
   &:hover {
     .blur {
       opacity: 1;
@@ -109,7 +109,7 @@ const Container = styled.div<{ img: string }>`
 `;
 
 const TitleText = styled.div`
-  font-family: 'Pretendard';
+  font-family: 'GmarketSans';
   font-style: normal;
   font-weight: 700;
   font-size: 4rem;

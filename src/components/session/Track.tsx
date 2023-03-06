@@ -1,34 +1,32 @@
 import React from 'react';
-import styled, {css} from 'styled-components';
-import {useState} from 'react';
+import styled, { css } from 'styled-components';
+import { useState } from 'react';
 import SessionModal from './SessionModal';
 import { ISessionData } from '@@types/request';
 
-type  TrackProps = {
+type TrackProps = {
     track: string,
     trackData: ISessionData[],
 };
 
-const Track: React.FC<TrackProps> = ({track, trackData}) => {
-    const [visible, setVisible]= useState(false);
+const Track: React.FC<TrackProps> = ({ track, trackData }) => {
+    const [visible, setVisible] = useState(false);
 
-    const handleClick = (e: React.MouseEvent<HTMLElement, MouseEvent>): void  =>{
+    const handleClick = (e: React.MouseEvent<HTMLElement, MouseEvent>): void => {
         setVisible(true);
 
         document.body.style.cssText = `
         position: fixed; 
         width: 100%;
         `;
-        
-    }
 
     const handleClose = () => {
         setVisible(false);
-        
+
         document.body.style.cssText = `
         position: ''; 
         width: ''`;
-    }
+    };
 
     return (
         <>
@@ -37,11 +35,11 @@ const Track: React.FC<TrackProps> = ({track, trackData}) => {
                 <StShowAll onClick={handleClick}>전체보기 &gt;</StShowAll>
             </StWrapper>
 
-            <SessionModal 
+            <SessionModal
                 trackData={trackData}
                 trackName={track}
                 handleClose={handleClose}
-                visible={visible}/>
+                visible={visible} />
         </>
 
     );
@@ -51,6 +49,7 @@ export default Track;
 
 const StWrapper = styled.div`
 display: flex;
+font-family: 'GmarketSans';
 justify-content: space-between;
 align-items: center;
 margin: 3rem;
@@ -66,9 +65,9 @@ z-index: 10;
 
 }
 
-`
+`;
 
 const StShowAll = styled.div`
 color: #1A21BD;
 font-size: 1.4rem;
-`
+`;

@@ -22,9 +22,9 @@ export const isEmptyString = (str: string) => {
     else return false;
 };
 
-export const getTotalScore = (data: TotalScoreParams) => {
-    const defaultScore = 3;
-    const totalScore = defaultScore - (1 * data.absence + 0.2 * data.lateSubmitted + 1 * data.notSubmitted + 0.5 * data.tardiness + 1.5 * data.truancy);
+export const getTotalScore = (target: TotalScoreParams) => {
+    let defaultScore = 3;
+    const totalScore = defaultScore - (1 * target.absence + 0.2 * target.lateSubmitted + 1 * target.notSubmitted + 0.5 * target.tardiness + 1.5 * target.truancy);
     return totalScore;
 };
 
@@ -34,11 +34,11 @@ export const checkGeneration = (generation: number) => {
     return false;
 };
 
-
 export const getTotalNameObject = (data: any): Record<string, UserScore> => {
     let totalNameObject: Record<string, UserScore> = {};
     data.forEach((user: any, i: number) => {
         totalNameObject[user['이름']] = {
+            user_id: 0,
             name: user['이름'],
             track: TRACK_INDEX[user['트랙']],
             lateSubmitted: user['과제 지각제출'],

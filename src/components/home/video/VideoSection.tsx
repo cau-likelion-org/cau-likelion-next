@@ -1,28 +1,22 @@
+import Image from 'next/image';
 import styled from 'styled-components';
+import hack from '@image/hack-your-life.gif';
 
 const VideoSection = () => {
   return (
     <Wrapper>
-      <Video autoPlay muted>
-        {/* <source src={'/image/top_hack_your_life.mp4'} type="video/mp4" /> */}
-        <source src={'/image/hackyourlife 최종수정.mp4'} type="video/mp4" />
-      </Video>
+      <Image src={hack} width={1206} height={600} objectFit="contain" alt="gif" />
     </Wrapper>
   );
 };
 
 export default VideoSection;
 
-const Video = styled.video`
-  width: 100%;
-  margin-top:50px;
-`;
-
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  @media(min-width:900px){
+  @media (min-width: 900px) {
     scroll-snap-align: start;
     min-height: 70vh;
     height: 100%;

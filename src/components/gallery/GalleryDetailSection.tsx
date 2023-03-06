@@ -3,7 +3,7 @@ import { Basic, GreyScale } from '@utils/constant/color';
 import React from 'react';
 import styled from 'styled-components';
 
-const GalleryDetailSection = ({ galleryDetail }: { galleryDetail: IGalleryDetail }) => {
+const GalleryDetailSection = ({ galleryDetail }: { galleryDetail: IGalleryDetail; }) => {
   return (
     <Wrapper>
       <LeftWrapper>
@@ -42,7 +42,7 @@ const LeftWrapper = styled.div`
 `;
 
 const TitleText = styled.div`
-  font-family: 'Pretendard';
+  font-family: 'GmarketSans';
   font-style: normal;
   font-weight: 900;
   font-size: 3rem;

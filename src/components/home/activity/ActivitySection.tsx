@@ -80,19 +80,14 @@ const ImageWrapper = styled.div`
 const TitleText = styled.div`
   display: flex;
   justify-content: flex-start;
-  font-family: 'Pretendard';
+  font-family: 'GmarketSans';
   font-style: normal;
-  font-weight: 900;
-  font-size: 2.7rem;
+  font-weight: 800;
   line-height: 4rem;
   margin: 2.5rem 0;
-
-  @media (max-width: 1550px) {
-    font-size: 3rem;
-  }
-
+  font-size: 3rem;
   @media (max-width: 900px) {
-    font-size: 2.5rem;
     justify-content: center;
+    font-size: 2.5rem;
   }
 `;

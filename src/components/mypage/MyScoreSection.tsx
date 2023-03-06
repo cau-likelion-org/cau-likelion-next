@@ -7,7 +7,7 @@ import { AxiosError } from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 import { useRecoilValue } from 'recoil';
-import { getAssignments, getUserAttendance } from 'src/apis/attendance';
+import { getAssignments, getUserAttendance } from 'src/apis/mypage';
 import styled from 'styled-components';
 import ScoreHeader from './component/ScoreHeader';
 
@@ -18,7 +18,10 @@ const MyScoreSection = ({ userProfile }: { userProfile: UserProfile; }) => {
 
     const { data: userAttendance, isLoading: attendanceLoading, error: attendanceError } = useQuery<UserAttendance, AxiosError>(
         ['userAttendance'],
-        () => getUserAttendance(tokenValue)
+        () => getUserAttendance(tokenValue),
+        {
+            enabled: !!tokenValue.access
+        }
     );
 
     const { data: userAssignment, isLoading: assignmentLoading, error: assignmentError } = useQuery(

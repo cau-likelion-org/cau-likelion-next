@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import CAULogo from '@image/cau사자.png';
 import NavButton from './NavButton';
@@ -23,6 +23,11 @@ export interface IMenu {
 
 const NavBar = () => {
   const { access: tokenState } = useRecoilValue(token);
+  const [isLogin, setIsLogin] = useState(false);
+
+  useEffect(() => {
+    if (tokenState) setIsLogin(true);
+  }, [tokenState]);
 
   const hover: IHoverButton['hover'] = { title: '아카이빙' };
   const dropdown: IHoverButton['dropdown'] = [
@@ -30,12 +35,12 @@ const NavBar = () => {
     { title: '추억', routing: '/gallery' },
   ];
 
-  const menuDataSelector = (tokenState: string): IMenu[] => {
+  const menuDataSelector = (): IMenu[] => {
     const resultArray = [
       { title: '프로젝트', routing: '/project' },
-      { title: tokenState ? 'MY' : 'Log in', routing: tokenState ? '/mypage' : 'login' },
+      { title: isLogin ? 'MY' : 'Log in', routing: isLogin ? '/mypage' : 'login' },
     ];
-    if (tokenState) {
+    if (isLogin) {
       const [project, login] = resultArray;
       return [project, { title: '출석체크', routing: '/attendance' }, login];
     }
@@ -56,8 +61,8 @@ const NavBar = () => {
       </LogoWrapper>
       <ButtonWrapper>
         <HoverButton hover={hover} dropdown={dropdown} />
-        {menuDataSelector(tokenState).map(({ title, routing }, index) => (
-          <NavButton key={index} title={title} routing={routing} />
+        {menuDataSelector().map(({ title, routing }, index) => (
+          <NavButton key={index + routing} title={title} routing={routing} />
         ))}
       </ButtonWrapper>
     </Wrapper>
@@ -73,10 +78,10 @@ const Wrapper = styled.div`
   top: 0;
   left: 0;
   @media (max-width: 1440px) {
-    padding: 0 250px;
+    padding: 0 190px;
   }
   @media (max-width: 1280px) {
-    padding: 0 150px;
+    padding: 0 90px;
   }
   padding: 0 360px;
   align-items: center;

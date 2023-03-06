@@ -46,7 +46,7 @@ const TitleWrapper = styled.div`
   flex-direction: column;
 `;
 const Title = styled.div`
-  font-family: 'Pretendard';
+  font-family: 'GmarketSans';
   font-weight: 700;
   font-size: 3rem;
   @media (max-width: 900px) {
@@ -54,7 +54,7 @@ const Title = styled.div`
   }
 `;
 const Text = styled.div`
-  font-family: 'Pretendard';
+  font-family: 'GmarketSans';
   font-weight: 500;
   font-size: 17px;
   margin-top: 23px;

@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-
 import { SectionWrapper } from '../../common/SectionWrapper';
 import LoginButton from './LoginButton';
 
@@ -11,13 +10,13 @@ const RightSection = () => {
         <p className="logoTxt"> LIKELION </p>
         <p className="subTxt"> at Chung-ang Univeristy </p>
       </StTextWrapper>
-
       <LoginButton />
     </StCustomWrapper>
   );
 };
 
 export default RightSection;
+
 const StCustomWrapper = styled(SectionWrapper)`
   @media (max-width: 1200px) {
     height: 100%;
@@ -25,12 +24,12 @@ const StCustomWrapper = styled(SectionWrapper)`
     justify-content: center;
   }
 `;
+
 const StTextWrapper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-
   margin-bottom: 15rem;
 
   .logoTxt {

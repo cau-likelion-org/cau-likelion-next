@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import LayoutLogin from '@common/layout/LayoutLogin';
@@ -6,7 +6,22 @@ import ContentsSection from 'src/components/login/contents/ContentsSection';
 import BorderSection from 'src/components/login/border/BorderSection';
 import LayoutArchiving from '@common/layout/LayoutArchiving';
 
+import { useRouter } from 'next/router';
+import { useRecoilValue } from 'recoil';
+import { token } from '@utils/state';
+
 const Login = () => {
+  const router = useRouter();
+  const tokenState = useRecoilValue(token);
+  const [isLogin, setIsLogin] = useState(false);
+
+  useEffect(() => {
+    if (tokenState.access) {
+      setIsLogin(true);
+      router.push('/');
+    }
+  }, [tokenState]);
+
   return (
     <StWrapper>
       <StContentsWrapper>

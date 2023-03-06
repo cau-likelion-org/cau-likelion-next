@@ -1,15 +1,15 @@
-import { UserAttendance, UserProfile, UserScore } from '@@types/request';
+import { RequestEditUserScore, UserAttendance, UserProfile, UserScore } from '@@types/request';
 import FormSendButton from '@signup/component/FormSendButton';
 import { BackgroundColor, Basic, GreyScale } from '@utils/constant/color';
 import { IToken, token } from '@utils/state';
 import React from 'react';
 import { useMutation } from 'react-query';
 import { useRecoilValue } from 'recoil';
-import { editUserScore } from 'src/apis/attendance';
+import { editUserScore } from 'src/apis/mypage';
 import useInput from 'src/hooks/useInput';
 import styled from 'styled-components';
 import { HiXMark } from 'react-icons/hi2';
-import { getTotalAttendance } from 'src/apis/attendance';
+import { getTotalAttendance } from 'src/apis/mypage';
 import { ATTENDANCE_CATEGORY_NAME, TRACK_NAME } from '@utils/constant';
 
 interface ScoreEditModalProps {
@@ -25,7 +25,7 @@ const ScoreEditModal = ({ targetUserScore, isEditModalOn, handleScoreEditModal }
     const [absenceValue, onChangeAbsenceValue] = useInput(Number(targetUserScore.absence), /^[0-9]*$/);
 
     const editScore = useMutation({
-        mutationFn: ({ userScore, accessToken }: { userScore: UserAttendance; accessToken: IToken; }) => editUserScore(userScore, accessToken),
+        mutationFn: ({ userScore, accessToken }: { userScore: RequestEditUserScore; accessToken: IToken; }) => editUserScore(userScore, accessToken),
         onSuccess: (res) => {
             if (res.status === 200) {
                 () => getTotalAttendance(tokenState);
@@ -34,11 +34,10 @@ const ScoreEditModal = ({ targetUserScore, isEditModalOn, handleScoreEditModal }
     });
 
     const handleSubmit = () => {
-        if (tokenState) {
+        if (tokenState.access) {
             editScore.mutate({
                 userScore: {
-                    name: targetUserScore.name,
-                    track: targetUserScore.track,
+                    user_id: targetUserScore.user_id,
                     truancy: truancyValue,
                     absence: absenceValue,
                     tardiness: tardinessValue
