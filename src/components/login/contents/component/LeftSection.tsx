@@ -28,7 +28,7 @@ const SectionWrapper = styled.div`
   flex-direction: column;
   justify-content: flex-end;
   width: 60rem;
-  height: 50rem;
+  height: 40rem;
   @media (max-width: 1200px) {
     display: none;
   }
@@ -48,6 +48,6 @@ const StTextWrapper = styled.div`
     font-family: 'Inter';
     font-style: normal;
     font-weight: 900;
-    font-size: 8rem;
+    font-size: 7.5rem;
   }
 `;

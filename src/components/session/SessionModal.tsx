@@ -1,5 +1,5 @@
-import React,{useState,useEffect} from 'react';
-import styled, {keyframes, css} from 'styled-components';
+import React, { useState, useEffect } from 'react';
+import styled, { keyframes, css } from 'styled-components';
 import Card from '@archiving/Card';
 import { Primary, GreyScale } from '@utils/constant/color';
 import back from '@image/back.png';
@@ -7,65 +7,67 @@ import Image from 'next/image';
 import { ISessionData } from '@@types/request';
 import { MdKeyboardArrowLeft } from 'react-icons/md';
 
-type  ModalProps = {
+type ModalProps = {
     trackName: string,
     trackData: ISessionData[];
     handleClose: () => void,
-    visible:boolean,
+    visible: boolean,
 };
 
 
-const SessionModal:React.FC<ModalProps> = ({trackData, trackName, handleClose, visible}) => {
+const SessionModal: React.FC<ModalProps> = ({ trackData, trackName, handleClose, visible }) => {
     const [isOpen, setIsOpen] = useState(false);
 
     useEffect(() => {
         let timeoutId: NodeJS.Timeout;
         if (visible) {
             setIsOpen(true);
-        } 
+        }
         else {
             timeoutId = setTimeout(() => setIsOpen(false), 500);
         }
-    
+
         return () => {
             if (timeoutId !== undefined) {
-            clearTimeout(timeoutId);
-        }};
+                clearTimeout(timeoutId);
+            }
+        };
     }, [visible]);
-    
+
     return (
         <>
-        {isOpen && 
-        <>
-        <StModalLayer onClick={handleClose} visible={visible}/>
+            {isOpen &&
+                <>
+                    <StModalLayer onClick={handleClose} visible={visible} />
 
-        <StModalWrapper visible={visible}>
-            <ModalHeader>
-                <ButtonWrapper>
-                    <div>
-                        <MdKeyboardArrowLeft size={30} color={GreyScale.default} onClick={handleClose}/>
-                        <a>{trackName}</a>
-                    </div>
-                    <UploadButton>+</UploadButton>
-                </ButtonWrapper>
-            </ModalHeader>
+                    <StModalWrapper visible={visible}>
+                        <ModalHeader>
+                            <ButtonWrapper>
+                                <div>
+                                    <MdKeyboardArrowLeft size={30} color={GreyScale.default} onClick={handleClose} />
+                                    <a>{trackName}</a>
+                                </div>
+                                <UploadButton>+</UploadButton>
+                            </ButtonWrapper>
+                        </ModalHeader>
 
-            <CardWrapper>
-                {trackData.slice(0).reverse().map((data,i)=>{
-                    return(
-                        <Card
-                        key={data.id}
-                        id= {data.id}
-                        link='/session'
-                        thumbnail={data.thumbnail}
-                        title={data.title}
-                        category={`${data.degree}차 세션`} />
-                        )
-                    })}
-            </CardWrapper>
-        </StModalWrapper>
-        </>
-        }
+                        <CardWrapper>
+                            {trackData.slice(0).reverse().map((data, i) => {
+                                return (
+                                    <Card
+                                        key={data.id}
+                                        id={data.id}
+                                        link='/session'
+                                        // thumbnail={data.thumbnail}
+                                        thumbnail={' https://cau-likelion.s3.ap-northeast-2.amazonaws.com/project-img/9%E1%84%80%E1%85%B5/Rectangle_336-1.png'}
+                                        title={data.title}
+                                        category={`${data.degree}차 세션`} />
+                                );
+                            })}
+                        </CardWrapper>
+                    </StModalWrapper>
+                </>
+            }
         </>
     );
 };
@@ -85,12 +87,12 @@ const fadeOut = keyframes`
 const slideIn = keyframes`
     0% { transform: translateY(100%);}
     100% { transform: translateY(0); }
-`
+`;
 
 const slideOut = keyframes`
     0% { transform: translateY(0); }
     100% { transform: translateY(100%);}
-`
+`;
 
 const modalSettings = (visible: boolean) => css`
 visibility: ${visible ? 'visible' : 'hidden'};
@@ -100,7 +102,7 @@ transition: visibility 0.3s ease-out;
 `;
 
 
-const StModalLayer = styled.div<{ visible: boolean }>`
+const StModalLayer = styled.div<{ visible: boolean; }>`
 display: flex;
 justify-content: center;
 
@@ -113,15 +115,15 @@ background: rgba(0, 0, 0, 0.3);
 z-index: 9999;
 overflow: hidden;
 
-visibility: ${(props)=> props.visible ? 'visible' : 'hidden'};
-animation: ${(props)=>props.visible ? fadeIn : fadeOut} 0.5s ease-out;
+visibility: ${(props) => props.visible ? 'visible' : 'hidden'};
+animation: ${(props) => props.visible ? fadeIn : fadeOut} 0.5s ease-out;
 
 @media (max-width:900px){
     display: none;
 }
-`
+`;
 
-const StModalWrapper = styled.div<{ visible: boolean }>`
+const StModalWrapper = styled.div<{ visible: boolean; }>`
 display: flex;
 justify-content: center;
 z-index: 10000;
@@ -174,7 +176,7 @@ ${(props) => modalSettings(props.visible)};
     border-radius: 0px;
 }
 
-`
+`;
 
 
 const ModalHeader = styled.div`
@@ -192,7 +194,7 @@ z-index: 10001;
 background-color: #FFFFFF;
 border-bottom: solid 0.2rem #D7D7D7;
 }
-`
+`;
 
 const ButtonWrapper = styled.div`
 display:flex;
@@ -205,7 +207,7 @@ div{
     align-items: center;
     gap: 20px;
 }
-`
+`;
 
 const CardWrapper = styled.div`
     height: 100%;
@@ -252,4 +254,4 @@ visibility: hidden;
 @media (max-width:900px){
     visibility: visible;
 }
-`
+`;

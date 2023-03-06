@@ -1,25 +1,17 @@
-import { ArchivingArrayType, IGalleryData, IGalleryDetail } from '@@types/request';
+import { ArchivingArrayType, IGalleryData, IGalleryDetail, ResponseData } from '@@types/request';
 import axios from 'axios';
-import galleryBackupData from './backup/gallery.json';
-import galleryDetailBackupData from './backup/galleryDetail.json';
 
 export async function getGalleries() {
-  try {
-    const res = await axios.get<ArchivingArrayType<IGalleryData>>(
-      `https://286eb829-af4d-43ed-b788-0e8e70ae0820.mock.pstmn.io/galleries`,
-    );
-    return res.data;
-  } catch (err) {
-    return new Promise<ArchivingArrayType<IGalleryData>>((resolve) => resolve(galleryBackupData));
-  }
+  const data = await axios.get<ResponseData<ArchivingArrayType<IGalleryData>>>(
+    'https://api.cau-likelion.org/api/gallery',
+  ).then(res => res.data.data);
+  return data;
 }
+
 export async function getGalleryDetail(id: string) {
-  try {
-    const res = await axios.get<IGalleryDetail>(
-      `https://286eb829-af4d-43ed-b788-0e8e70ae0820.mock.pstmn.io/gallery/${id}`,
-    );
-    return res.data;
-  } catch (err) {
-    return new Promise<IGalleryDetail>((resolve) => resolve(galleryDetailBackupData as any));
-  }
+  const data = await axios.get<ResponseData<IGalleryDetail>>(
+    `https://api.cau-likelion.org/api/gallery/${id}`,
+  ).then(res => res.data.data);
+  console.log(data);
+  return data;
 }

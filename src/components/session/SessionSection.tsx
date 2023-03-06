@@ -6,33 +6,33 @@ import Slick from './Slick';
 import { ISessionData } from '@@types/request';
 
 
-type  SessionProps = {
+type SessionProps = {
     trackName: string;
     trackData: ISessionData[];
 };
 
-const SessionSection:React.FC<SessionProps> =({trackName, trackData}) => {
-    
+const SessionSection: React.FC<SessionProps> = ({ trackName, trackData }) => {
+    const length = trackData.length;
+    console.log(length);
+
     return (
         <>
-        <StWrapper>
-            <Track track={trackName} trackData={trackData} />
-
-            <StSlideWrapper>
-                <Arrow direction='left' />
-                <Slick
-                    trackData={trackData}
-                    trackName={trackName}/>
-                <Arrow direction='right' />
-            </StSlideWrapper>
-
-        </StWrapper>
+            <StWrapper>
+                <Track track={trackName} trackData={trackData} />
+                <StSlideWrapper>
+                    <Arrow direction='left' length={length} />
+                    <Slick
+                        trackData={trackData}
+                        trackName={trackName} />
+                    <Arrow direction='right' length={length} />
+                </StSlideWrapper>
+            </StWrapper>
         </>
     );
-}
+};
 export default SessionSection;
 
-const StWrapper= styled.div`
+const StWrapper = styled.div`
 display: flex;
 flex-direction: column;
 align-items: center;
@@ -44,7 +44,7 @@ font-size: 4rem;
 width: 100%;
 
 @media (max-width: 1550px) { font-size: 2.3rem;}
-`
+`;
 
 const StSlideWrapper = styled.div`
     display: flex;

@@ -19,7 +19,7 @@ const Card = ({ id, thumbnail, title, description, dev_stack, category, link }: 
           <CustomImage src={thumbnail} alt="썸네일" layout="fill" objectFit="fill" objectPosition="center" />
         </ImageWrapper>
         <TextWrapper>
-          <Category>{category}</Category>
+          <Category link={link}>{category}</Category>
           <ProjectTitle>{title}</ProjectTitle>
           {description && <ProjectDesc>{description}</ProjectDesc>}
           {dev_stack && <div></div>}
@@ -98,17 +98,16 @@ const TextWrapper = styled.div`
     width: 380px;
   }
 `;
-const Category = styled.div`
+const Category = styled.div<{ link: string; }>`
   border-radius: 25px;
-  border: 1px solid ${GreyScale.default};
-  max-width: 25%;
+  // border: 1px solid ${GreyScale.default};
+  border: ${props => props.link === 'gallery' ? 'none' : '1px solid ${GreyScale.default}'};
   font-family: 'Pretendard';
   font-style: normal;
   font-weight: 500;
   font-size: 1.2rem;
   display: flex;
   padding: 0.3rem 0;
-  justify-content: center;
   align-items: center;
 `;
 
