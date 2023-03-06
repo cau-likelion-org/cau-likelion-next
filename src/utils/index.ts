@@ -25,7 +25,8 @@ export const isEmptyString = (str: string) => {
 export const getTotalScore = (target: TotalScoreParams) => {
     let defaultScore = 3;
     const totalScore = defaultScore - (1 * target.absence + 0.2 * target.lateSubmitted + 1 * target.notSubmitted + 0.5 * target.tardiness + 1.5 * target.truancy);
-    return totalScore;
+
+    return Number(totalScore.toFixed(1)) > 0 ? Number(totalScore.toFixed(1)) : 0;
 };
 
 export const checkGeneration = (generation: number) => {
