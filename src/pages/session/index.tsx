@@ -34,7 +34,6 @@ export async function getStaticProps({ params }: { params: { track: string; }; }
         },
         revalidate: 86400,
     };
-    console.log(sessionStaticData);
 }
 
 export default SessionList;
