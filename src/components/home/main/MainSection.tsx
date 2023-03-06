@@ -53,9 +53,9 @@ const MainSection = ({ clickMore }: { clickMore: () => void; }) => {
         </RightSection>
       </MainWrapper>
 
-      <MoreWrapper onClick={clickMore}>
-        <Text>더 알아보기</Text>
-        <ArrowCircle>
+      <MoreWrapper>
+        <Text onClick={clickMore}>더 알아보기</Text>
+        <ArrowCircle onClick={clickMore}>
           <HiOutlineArrowDown className='arrow' color={Primary.default} />
         </ArrowCircle>
       </MoreWrapper>
@@ -159,7 +159,7 @@ const ImagesWrapper = styled.div`
   }
 
   @media (max-width:1440px){
-    bottom: 18rem;
+    bottom: 13rem;
   }
 
   @media (max-width:900px){
@@ -189,11 +189,16 @@ const GenerationDiaWrapper = styled.div`
   z-index:1;
   margin-bottom: -9.4rem; 
 
+  @media(max-width:1600px){
+    width: 15rem;
+    height: 15rem;
+    margin-bottom: -8rem; 
+  }
+
   @media(max-width:1440px){
     width: 14rem;
     height: 14rem;
-    margin-bottom: -7.3rem; 
-
+    margin-bottom: -8.3rem; 
   }
 
   @media(max-width:900px){
@@ -221,7 +226,6 @@ const GenerationDiaWrapper = styled.div`
     width: 6rem;
     height: 6rem;
     margin-bottom: -2.7rem;
-
   }
   
 `;
@@ -421,6 +425,8 @@ const ArrowCircle = styled.div`
     align-items: center;
     border-radius: 100%;
     width: 5rem;
+    cursor: pointer;
+
     height: 5rem;
     border: 2px solid ${Primary.default};
     box-shadow: 1rem 1rem 1rem 0rem #2B22784D;
@@ -452,6 +458,7 @@ const ArrowCircle = styled.div`
 
 const Text = styled.div`
     display: flex;
+    cursor: pointer;
     justify-content: center;
     align-items: center;
     font-family: 'GmarketSans';
