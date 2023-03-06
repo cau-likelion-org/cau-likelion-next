@@ -1,27 +1,24 @@
 import styled from 'styled-components';
 import { ReactElement, useRef } from 'react';
-
-import VideoSection from '@home/video/VideoSection';
+import MainSection from '@home/main/MainSection';
 import PlanSection from '@home/plan/PlanSection';
 import IntroduceSection from '@home/introduction/IntroduceSection';
 import ProjectSection from '@home/project/ProjectSection';
 import TrackSection from '@home/track/TrackSection';
 import ActivitySection from '@home/activity/ActivitySection';
 import ScrollBar from '@home/scrollBar/ScrollBar';
-
-import More from '@image/home_more.svg';
 import LayoutLanding from '@common/layout/LayoutLanding';
 
 function Landing() {
   const ref = useRef(null);
-  const ClickMore = () => {
+  const clickMore = () => {
     (ref as any).current.scrollIntoView({ behavior: 'smooth' });
   };
+
   return (
     <SectionWrapper>
       <ScrollBar />
-      <VideoSection />
-      <More onClick={ClickMore} />
+      <MainSection clickMore={clickMore} />
       <IntroduceSection innerRef={ref} />
       <ActivitySection />
       <TrackSection />
