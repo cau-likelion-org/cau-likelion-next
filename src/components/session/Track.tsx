@@ -19,6 +19,7 @@ const Track: React.FC<TrackProps> = ({ track, trackData }) => {
         position: fixed; 
         width: 100%;
         `;
+    };
 
     const handleClose = () => {
         setVisible(false);
@@ -34,14 +35,12 @@ const Track: React.FC<TrackProps> = ({ track, trackData }) => {
                 <a>{track}</a>
                 <StShowAll onClick={handleClick}>전체보기 &gt;</StShowAll>
             </StWrapper>
-
             <SessionModal
                 trackData={trackData}
                 trackName={track}
                 handleClose={handleClose}
                 visible={visible} />
         </>
-
     );
 };
 
