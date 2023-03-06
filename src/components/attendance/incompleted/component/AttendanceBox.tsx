@@ -18,16 +18,15 @@ const AttendanceBox = ({ data }: { data: TodayAttendanceData }) => {
   const InputRef = useRef<HTMLInputElement>(null);
   const tokens = useRecoilValue(token);
 
-  if (data.attendance_result === 1) {
-    router.push('/attendance/completed');
-  }
-
   const attendancePost = useMutation({
     mutationFn: (password: string) => postAttendance(password, tokens),
     onSuccess: (res) => {
       if (res.status === 200) {
         router.push('/attendance/completed');
       }
+    },
+    onError: (error) => {
+      alert('비밀번호가 틀렸습니다!');
     },
   });
 
