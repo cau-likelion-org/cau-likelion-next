@@ -13,6 +13,7 @@ import { checkGeneration } from '@utils/index';
 import MyScoreSection from '@mypage/MyScoreSection';
 import TotalScoreSection from '@mypage/TotalScoreSection';
 import { useRouter } from 'next/router';
+import MakeAttendanceButton from '@mypage/component/MakeAttendanceButton';
 
 const MyPage = () => {
   const tokenState = useRecoilValue(token);
@@ -21,13 +22,13 @@ const MyPage = () => {
   const user = useRecoilValue(userInfo);
   const router = useRouter();
 
-  const { data: userProfile, isLoading: profileLoading, error: profileError } = useQuery<UserProfile, AxiosError>(
-    ["userProfile", user],
-    () => getUserProfile(tokenState),
-    {
-      enabled: !!tokenState.access
-    }
-  );
+  const {
+    data: userProfile,
+    isLoading: profileLoading,
+    error: profileError,
+  } = useQuery<UserProfile, AxiosError>(['userProfile', user], () => getUserProfile(tokenState), {
+    enabled: !!tokenState.access,
+  });
 
   useEffect(() => {
     if (tokenState.access) setIsLogin(true);
@@ -40,33 +41,31 @@ const MyPage = () => {
   useEffect(() => {
     if (userProfile && checkGeneration(userProfile.generation)) {
       setIsActiveGeneration(true);
-    }
-    else {
+    } else {
       setIsActiveGeneration(false);
     }
   }, [userProfile]);
 
-
   return (
     <>
-      {userProfile &&
+      {userProfile && (
         <Wrapper>
           <Header>
-            <NameCard
-              name={userProfile.name}
-              generation={userProfile?.generation} />
+            <NameCard name={userProfile.name} generation={userProfile?.generation} />
+            {userProfile.is_admin && <MakeAttendanceButton />}
           </Header>
           <RowWrapper>
             <ProfileCard user={userProfile} />
-            {
-              isActiveGeneration ?
-                userProfile.is_admin ?
-                  <TotalScoreSection />
-                  : <MyScoreSection userProfile={userProfile} /> : null
-            }
+            {isActiveGeneration ? (
+              userProfile.is_admin ? (
+                <TotalScoreSection />
+              ) : (
+                <MyScoreSection userProfile={userProfile} />
+              )
+            ) : null}
           </RowWrapper>
         </Wrapper>
-      }
+      )}
     </>
   );
 };
@@ -74,16 +73,14 @@ const MyPage = () => {
 export default MyPage;
 
 const Wrapper = styled.div`
-    display: flex;
-    flex-direction: column;
-    width: 100%;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 `;
 
 const Header = styled.div`
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
+  align-items: center;
   font-family: 'Inter';
   font-style: normal;
   font-weight: 400;
@@ -92,11 +89,11 @@ const Header = styled.div`
 `;
 
 const RowWrapper = styled.div`
-    margin-top: 2rem;
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    gap: 35px;
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  gap: 35px;
 
   @media (max-width: 900px) {
     flex-direction: column;
