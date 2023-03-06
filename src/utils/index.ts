@@ -1,4 +1,4 @@
-import { TotalScoreParams, UserScore } from "@@types/request";
+import { ArchivingArrayType, IGalleryData, IProjectData, TotalScoreParams, UserScore } from "@@types/request";
 import { GENERATION_CHECKER, TRACK_INDEX } from "./constant";
 
 export const toDateString = (date?: Date, formatter = "-") => {
@@ -50,4 +50,9 @@ export const getTotalNameObject = (data: any): Record<string, UserScore> => {
         };
     });
     return totalNameObject;
+};
+
+export const sortArchivingListDesc = <T extends IGalleryData | IProjectData>(data: ArchivingArrayType<T>): Array<[string, T[]]> => {
+    const newData = Object.entries(data).sort((year, _) => Number(year));
+    return newData.reverse();
 };
