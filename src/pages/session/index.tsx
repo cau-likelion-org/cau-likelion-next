@@ -12,12 +12,12 @@ const SessionList = ({ sessionStaticData }: { sessionStaticData: ArchivingArrayT
 
     return (
         <>
-        <Header pageName="세션" introduce="멋사에서 진행한 세션" />
-        {Object.values(isLoading?sessionStaticData:data!).map((data,i)=>{
-            return(
-            <SessionSection key={i} trackName={TRACK_NAME[i]} trackData={data}/>
-            )
-        })}
+            <Header pageName="세션" introduce="멋사에서 진행한 세션" />
+            {Object.values(isLoading ? sessionStaticData : data!).map((data, i) => {
+                return (
+                    <SessionSection key={i} trackName={TRACK_NAME[i]} trackData={data} />
+                );
+            })}
         </>
     );
 };
@@ -34,6 +34,7 @@ export async function getStaticProps({ params }: { params: { track: string; }; }
         },
         revalidate: 86400,
     };
+    console.log(sessionStaticData);
 }
 
 export default SessionList;
