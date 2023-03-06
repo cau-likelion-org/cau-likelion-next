@@ -7,12 +7,12 @@ import { ReactElement } from 'react';
 import { getGalleries } from 'src/apis/gallery';
 import styled from 'styled-components';
 
-const GalleryList = ({ galleryStaticData }: { galleryStaticData: ArchivingArrayType<IGalleryData> }) => {
+const GalleryList = ({ galleryStaticData }: { galleryStaticData: ArchivingArrayType<IGalleryData>; }) => {
   return (
     <>
       <Header pageName="추억" introduce="멋사와 함께 한 추억" />
       {/* <ButtonWrapper> */}
-        {/* <WriteButton>+</WriteButton> */}
+      {/* <WriteButton>+</WriteButton> */}
       {/* </ButtonWrapper> */}
       <GalleryListSection staticData={galleryStaticData} />
     </>
@@ -33,10 +33,6 @@ export async function getStaticProps() {
   };
 }
 export default GalleryList;
-
-const Wrapper = styled.div`
-  margin-top: 5rem;
-`;
 
 const WriteButton = styled.button`
   border: none;
