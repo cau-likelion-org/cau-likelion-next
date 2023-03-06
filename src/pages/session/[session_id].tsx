@@ -10,59 +10,56 @@ import { GetStaticPaths } from 'next';
 import { GreyScale } from '@utils/constant/color';
 import { getSessionDetail } from 'src/apis/session';
 
-const SessionDetail = ({ sessionDetailStaticData }: { sessionDetailStaticData: ISessionDetail; }) => {
-    const router = useRouter();
-    const { data, isLoading } = useQuery<ISessionDetail>(['sessionDetail', router.query.project_id], () =>
-        getSessionDetail(router.query.session_id as string),
-    );
-    if (router.isFallback) {
-        return <div>로딩중</div>;
-    }
-    return (
-        <Wrapper>
-            <StCarousel images={isLoading ? sessionDetailStaticData.thumbnail : data!.thumbnail} />
-            <SessionDetailSection sessionDetail={sessionDetailStaticData} />
-        </Wrapper>
-    );
+const SessionDetail = ({ sessionDetailStaticData }: { sessionDetailStaticData: ISessionDetail }) => {
+  const router = useRouter();
+  const { data, isLoading } = useQuery<ISessionDetail>(['sessionDetail', router.query.project_id], () =>
+    getSessionDetail(router.query.session_id as string),
+  );
+  if (router.isFallback) {
+    return <div>로딩중</div>;
+  }
+  return (
+    <Wrapper>
+      <StCarousel images={isLoading ? sessionDetailStaticData.thumbnail : data!.thumbnail} />
+      <SessionDetailSection sessionDetail={sessionDetailStaticData} />
+    </Wrapper>
+  );
 };
 
 SessionDetail.getLayout = function getLayout(page: ReactElement) {
-    return <LayoutArchiving>{page}</LayoutArchiving>;
+  return <LayoutArchiving>{page}</LayoutArchiving>;
 };
 
 export const getStaticPaths: GetStaticPaths = (async) => {
-    return {
-        paths: [{ params: { session_id: '8' } }],
-        fallback: true,
-    };
+  return {
+    paths: [],
+    fallback: true,
+  };
 };
 
-export async function getStaticProps({ params }: { params: { session_id: string; }; }) {
-    const sessionDeatilStaticData = await getSessionDetail(params.session_id);
-    return {
-        props: {
-            sessionDetailStaticData: sessionDeatilStaticData,
-        },
-        revalidate: 86400,
-    };
+export async function getStaticProps({ params }: { params: { session_id: string } }) {
+  const sessionDeatilStaticData = await getSessionDetail(params.session_id);
+  return {
+    props: {
+      sessionDetailStaticData: sessionDeatilStaticData,
+    },
+    revalidate: 86400,
+  };
 }
-
 
 export default SessionDetail;
 
-
 const Wrapper = styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    height: 100%;
-    &hr {
-        background: ${GreyScale.light};
-    }
-    
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  &hr {
+    background: ${GreyScale.light};
+  }
 `;
 
 const StCarousel = styled(Carousel)`
-cursor: pointer;
+  cursor: pointer;
 `;

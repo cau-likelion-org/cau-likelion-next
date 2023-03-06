@@ -36,7 +36,7 @@ ProjectDetail.getLayout = function getLayout(page: ReactElement) {
 
 export const getStaticPaths: GetStaticPaths = (async) => {
   return {
-    paths: [{ params: { project_id: '1' } }],
+    paths: [],
     fallback: true,
   };
 };

@@ -11,7 +11,7 @@ import { GetStaticPaths } from 'next';
 import { getGalleryDetail } from 'src/apis/gallery';
 import GalleryDetailSection from '@gallery/GalleryDetailSection';
 
-const GalleryDetail = ({ galleryDetailStaticData }: { galleryDetailStaticData: IGalleryDetail; }) => {
+const GalleryDetail = ({ galleryDetailStaticData }: { galleryDetailStaticData: IGalleryDetail }) => {
   const router = useRouter();
   const { data, isLoading } = useQuery<IGalleryDetail>(['galleryDeatil', router.query.project_id], () =>
     getGalleryDetail(router.query.project_id as string),
@@ -35,12 +35,12 @@ GalleryDetail.getLayout = function getLayout(page: ReactElement) {
 
 export const getStaticPaths: GetStaticPaths = (async) => {
   return {
-    paths: [{ params: { gallery_id: '1' } }],
+    paths: [],
     fallback: true,
   };
 };
 
-export async function getStaticProps({ params }: { params: { gallery_id: string; }; }) {
+export async function getStaticProps({ params }: { params: { gallery_id: string } }) {
   const galleryDeatilStaticData = await getGalleryDetail(params.gallery_id);
   return {
     props: {
