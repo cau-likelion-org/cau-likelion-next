@@ -13,8 +13,6 @@ type SessionProps = {
 
 const SessionSection: React.FC<SessionProps> = ({ trackName, trackData }) => {
     const length = trackData.length;
-    console.log(length);
-
     return (
         <>
             <StWrapper>

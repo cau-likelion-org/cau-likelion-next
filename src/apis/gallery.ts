@@ -12,6 +12,5 @@ export async function getGalleryDetail(id: string) {
   const data = await axios.get<ResponseData<IGalleryDetail>>(
     `https://api.cau-likelion.org/api/gallery/${id}`,
   ).then(res => res.data.data);
-  console.log(data);
   return data;
 }

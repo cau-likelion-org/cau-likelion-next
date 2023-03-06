@@ -29,10 +29,9 @@ const MakeAttendacneModal = () => {
   };
 
   const make = useMutation({
-    mutationFn: ({ date, password }: { date: string; password: string }) => makeAttendance(date, password, tokens),
+    mutationFn: ({ date, password }: { date: string; password: string; }) => makeAttendance(date, password, tokens),
     retry: false,
     onSuccess: (res) => {
-      console.log(res);
       alert('생성 성공!');
       router.push('/mypage');
     },
