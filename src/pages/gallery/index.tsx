@@ -10,10 +10,10 @@ import styled from 'styled-components';
 const GalleryList = ({ galleryStaticData }: { galleryStaticData: ArchivingArrayType<IGalleryData> }) => {
   return (
     <>
-      <Header pageName="추억" introduce="중앙대 멋사와 함께 한 추억들" />
-      <ButtonWrapper>
-        <WriteButton>+</WriteButton>
-      </ButtonWrapper>
+      <Header pageName="추억" introduce="멋사와 함께 한 추억" />
+      {/* <ButtonWrapper> */}
+        {/* <WriteButton>+</WriteButton> */}
+      {/* </ButtonWrapper> */}
       <GalleryListSection staticData={galleryStaticData} />
     </>
   );
