@@ -94,7 +94,6 @@ const LeftSection = styled.div`
 `;
 
 const RightSection = styled.div`
-  border: solid 1px black;
 `;
 
 const LionWrapper = styled.div`
