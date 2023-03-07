@@ -87,6 +87,8 @@ const DateText = styled(TitleText)`
 `;
 
 const PresenterText = styled.div`
+  font-family: 'Pretendard';
+  font-style: normal;
   display: flex;
   font-weight: 500;
   font-size: 1.4rem;
