@@ -50,6 +50,7 @@ const Wrapper = styled.div`
     border-radius: 10px;
     display: flex;
     flex-direction: column;
+    justify-content: space-around;
 
     @media(min-width: 900px){
         width: 200px;
@@ -68,6 +69,7 @@ const NameRow = styled.div`
 const DescriptionRow = styled.div`
   display: flex;
   gap: 8px;
+  align-items: center;
 `;
 
 const Text = styled.div`
