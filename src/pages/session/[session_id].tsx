@@ -8,19 +8,20 @@ import Carousel from '@archiving/Carousel';
 import LayoutArchiving from '@common/layout/LayoutArchiving';
 import { GetStaticPaths } from 'next';
 import { GreyScale } from '@utils/constant/color';
-import { getSessionDetail } from 'src/apis/session';
+import { getSessionDetail, getSessions } from 'src/apis/session';
+import { getIdFromAsPath, getPaths } from '@utils/index';
 
 const SessionDetail = ({ sessionDetailStaticData }: { sessionDetailStaticData: ISessionDetail }) => {
   const router = useRouter();
   const { data, isLoading } = useQuery<ISessionDetail>(['sessionDetail', router.query.project_id], () =>
-    getSessionDetail(router.query.session_id as string),
+    getSessionDetail(getIdFromAsPath(router.asPath, 'session')),
   );
   if (router.isFallback) {
     return <div>로딩중</div>;
   }
   return (
     <Wrapper>
-      <StCarousel images={isLoading ? sessionDetailStaticData.thumbnail : data!.thumbnail} />
+      <StCarousel images={isLoading ? sessionDetailStaticData.image : data!.image} />
       <SessionDetailSection sessionDetail={sessionDetailStaticData} />
     </Wrapper>
   );
@@ -30,9 +31,11 @@ SessionDetail.getLayout = function getLayout(page: ReactElement) {
   return <LayoutArchiving>{page}</LayoutArchiving>;
 };
 
-export const getStaticPaths: GetStaticPaths = (async) => {
+export const getStaticPaths: GetStaticPaths = async () => {
+  const sessionsArray = await getSessions();
+  const paths = getPaths(sessionsArray, 'session');
   return {
-    paths: [],
+    paths,
     fallback: true,
   };
 };

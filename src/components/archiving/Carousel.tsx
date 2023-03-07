@@ -5,10 +5,8 @@ import { AnimatePresence, motion, PanInfo } from 'framer-motion';
 import { useInterval } from 'src/hooks/useInterval';
 import useSlider from 'src/hooks/useSlider';
 
-const Carousel = ({ images }: { images: string[]; }) => {
-  const testImages = ['https://cau-likelion.s3.ap-northeast-2.amazonaws.com/project-img/9%E1%84%80%E1%85%B5/Rectangle_336-1.png', 'https://cau-likelion.s3.ap-northeast-2.amazonaws.com/project-img/9%E1%84%80%E1%85%B5/Rectangle_336-1.png'];
-  const [index, direction, increase, decrease, animateVariant] = useSlider<string>(testImages, 0.1, 1000, false, 'tween');
-  // const [index, direction, increase, decrease, animateVariant] = useSlider<string>(images, 0.1, 1000, false, 'tween');
+const Carousel = ({ images }: { images: string[] }) => {
+  const [index, direction, increase, decrease, animateVariant] = useSlider<string>(images, 0.1, 1000, false, 'tween');
   const [timerBool, setTimerBool] = useState(true);
   const [dragStartX, setdragStartX] = useState(0);
   useInterval(increase, 3000, timerBool);
@@ -28,7 +26,7 @@ const Carousel = ({ images }: { images: string[]; }) => {
             initial="initial"
             animate="visible"
             exit="exit"
-            drag="x"
+            drag={images.length === 1 ? false : 'x'}
             onDragStart={(_, info) => {
               setTimerBool((prev) => (prev = false));
               setdragStartX((prev) => (prev = info.point.x));
@@ -36,8 +34,7 @@ const Carousel = ({ images }: { images: string[]; }) => {
             onDragEnd={handleScroll}
             custom={direction}
           >
-            {/* <CustomImage src={images[index]} alt="img" layout="fill" objectFit="cover" objectPosition="center" /> */}
-            <CustomImage src={testImages[index]} alt="img" layout="fill" objectFit="cover" objectPosition="center" />
+            <CustomImage src={images[index]} alt="img" layout="fill" objectFit="contain" objectPosition="center" />
           </ImageWrapper>
         </AnimatePresence>
       </CarouselWrapper>
@@ -71,8 +68,8 @@ const CarouselWrapper = styled.div`
   border-radius: 30px;
   border: none;
   overflow: hidden;
-  @media(max-width:900px){
-    height:30vh;
+  @media (max-width: 900px) {
+    height: 30vh;
   }
 `;
 const DiamondWrapper = styled.div`

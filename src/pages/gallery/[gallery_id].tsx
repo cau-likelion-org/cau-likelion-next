@@ -8,13 +8,14 @@ import LayoutArchiving from '@common/layout/LayoutArchiving';
 import { IGalleryDetail } from '@@types/request';
 import { GreyScale } from '@utils/constant/color';
 import { GetStaticPaths } from 'next';
-import { getGalleryDetail } from 'src/apis/gallery';
+import { getGalleries, getGalleryDetail } from 'src/apis/gallery';
 import GalleryDetailSection from '@gallery/GalleryDetailSection';
+import { getIdFromAsPath, getPaths } from '@utils/index';
 
 const GalleryDetail = ({ galleryDetailStaticData }: { galleryDetailStaticData: IGalleryDetail }) => {
   const router = useRouter();
-  const { data, isLoading } = useQuery<IGalleryDetail>(['galleryDeatil', router.query.project_id], () =>
-    getGalleryDetail(router.query.project_id as string),
+  const { data, isLoading } = useQuery<IGalleryDetail>(['galleryDeatil', router.asPath], () =>
+    getGalleryDetail(getIdFromAsPath(router.asPath, 'gallery')),
   );
 
   if (router.isFallback) {
@@ -22,7 +23,7 @@ const GalleryDetail = ({ galleryDetailStaticData }: { galleryDetailStaticData: I
   }
   return (
     <Wrapper>
-      <Carousel images={isLoading ? galleryDetailStaticData.thumbnail : data!.thumbnail} />
+      <Carousel images={isLoading ? galleryDetailStaticData.image : data!.image} />
       <GalleryDetailSection galleryDetail={isLoading ? galleryDetailStaticData : data!} />
       <hr />
     </Wrapper>
@@ -33,9 +34,11 @@ GalleryDetail.getLayout = function getLayout(page: ReactElement) {
   return <LayoutArchiving>{page}</LayoutArchiving>;
 };
 
-export const getStaticPaths: GetStaticPaths = (async) => {
+export const getStaticPaths: GetStaticPaths = async () => {
+  const galleriesGenerationArray = await getGalleries();
+  const paths = getPaths(galleriesGenerationArray, 'gallery');
   return {
-    paths: [],
+    paths,
     fallback: true,
   };
 };
