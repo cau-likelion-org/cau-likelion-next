@@ -57,7 +57,7 @@ const Archiving = <Type extends ISessionData | IProjectData | IGalleryData>({
 
 export default Archiving;
 const Wrapper = styled.div`
-  margin-bottom: 30px;
+  margin-bottom: 40px;
 `;
 const ArchivingIndex = styled.div`
   color: #464646;
