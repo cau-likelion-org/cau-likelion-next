@@ -21,7 +21,7 @@ const SessionDetail = ({ sessionDetailStaticData }: { sessionDetailStaticData: I
   }
   return (
     <Wrapper>
-      <StCarousel images={isLoading ? sessionDetailStaticData.thumbnail : data!.thumbnail} />
+      <StCarousel images={isLoading ? sessionDetailStaticData.image : data!.image} />
       <SessionDetailSection sessionDetail={sessionDetailStaticData} />
     </Wrapper>
   );

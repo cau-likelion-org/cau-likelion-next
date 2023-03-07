@@ -36,25 +36,25 @@ export interface IProjectDetail extends IProjectData {
   date: string;
   link: IShareURL[];
   generation: number;
-  thumbnail: string[];
+  image: string[];
 }
 
 export interface IGalleryDetail extends IGalleryData {
   description: string;
-  thumbnail: string[];
+  image: string[];
 }
 
 export type ArchivingArrayType<T> = Record<string, T[]>;
 
 export interface ISessionDetail extends IArchivingData {
-  degree: number,
-  presenter: string,
-  thumbnail: string[],
-  track: string,
-  topic: string,
-  description: string,
-  date: string,
-  reference?: string[],
+  degree: number;
+  presenter: string;
+  image: string[];
+  track: string;
+  topic: string;
+  description: string;
+  date: string;
+  reference?: string[];
 }
 
 interface ResponseData<T> {

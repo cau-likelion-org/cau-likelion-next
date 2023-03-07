@@ -25,7 +25,7 @@ const ProjectDetail = ({ projectDetailStaticData }: { projectDetailStaticData: I
   }
   return (
     <Wrapper>
-      <Carousel images={isLoading ? projectDetailStaticData.thumbnail : data!.thumbnail} />
+      <Carousel images={isLoading ? projectDetailStaticData.image : data!.image} />
       <DetailMainSection data={isLoading ? projectDetailStaticData : data!} />
       <hr />
     </Wrapper>

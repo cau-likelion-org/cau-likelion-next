@@ -14,7 +14,7 @@ import { getIdFromAsPath, getPaths } from '@utils/index';
 
 const GalleryDetail = ({ galleryDetailStaticData }: { galleryDetailStaticData: IGalleryDetail }) => {
   const router = useRouter();
-  const { data, isLoading } = useQuery<IGalleryDetail>(['galleryDeatil', router.query.project_id], () =>
+  const { data, isLoading } = useQuery<IGalleryDetail>(['galleryDeatil', router.asPath], () =>
     getGalleryDetail(getIdFromAsPath(router.asPath, 'gallery')),
   );
 
@@ -23,7 +23,7 @@ const GalleryDetail = ({ galleryDetailStaticData }: { galleryDetailStaticData: I
   }
   return (
     <Wrapper>
-      <Carousel images={isLoading ? galleryDetailStaticData.thumbnail : data!.thumbnail} />
+      <Carousel images={isLoading ? galleryDetailStaticData.image : data!.image} />
       <GalleryDetailSection galleryDetail={isLoading ? galleryDetailStaticData : data!} />
       <hr />
     </Wrapper>
