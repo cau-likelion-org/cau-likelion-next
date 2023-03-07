@@ -22,6 +22,8 @@ const Wrapper = styled.div`
 `;
 const TitleWrapper = styled.div`
   display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
 `;
 const Title = styled.div`
   font-family: 'Pretendard';
@@ -32,10 +34,10 @@ const SubTitle = styled.div`
   font-family: 'Pretendard';
   font-weight: 500;
   font-size: 17px;
-  margin-left: 20px;
   display: flex;
   align-items: center;
   color: ${GreyScale.default};
+  margin-top: 10px;
 `;
 const Description = styled.div`
   font-family: 'Pretendard';
