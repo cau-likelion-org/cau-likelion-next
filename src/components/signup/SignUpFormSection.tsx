@@ -16,11 +16,10 @@ import DropdownMenuBox from './component/DropdownMenuBox';
 import FormSendButton from './component/FormSendButton';
 import TextInputBox from './component/TextInputBox';
 import ToggleBox from './component/ToggleBox';
-import cookie from "react-cookies";
 import LocalStorage from '@utils/localStorage';
 
 const SignUpFormSection = () => {
-  const track = [TRACK_NAME[TRACK.PM], TRACK_NAME[TRACK.DESIGN], TRACK_NAME[TRACK.FRONTEND], TRACK_NAME[TRACK.BACKEND]];
+  const track = [TRACK_NAME[TRACK.PM], TRACK_NAME[TRACK.DESIGN], TRACK_NAME[TRACK.FRONTEND], TRACK_NAME[TRACK.BACKEND], TRACK_NAME[TRACK.ETC]];
   const [nameValue, onChangeName] = useInput('');
   const [generationValue, onChangeGeneration] = useInput('', /^[0-9]*$/);
   const [emailValue, onChangeEmail] = useInput('');

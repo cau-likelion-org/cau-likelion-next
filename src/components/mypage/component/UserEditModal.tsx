@@ -22,7 +22,7 @@ interface UserEditModalProps {
 }
 
 const UserEditModal = ({ userProfile, isEditModalOn, handleUserEditModal }: UserEditModalProps) => {
-  const track = [TRACK_NAME[TRACK.PM], TRACK_NAME[TRACK.DESIGN], TRACK_NAME[TRACK.FRONTEND], TRACK_NAME[TRACK.BACKEND]];
+  const track = [TRACK_NAME[TRACK.PM], TRACK_NAME[TRACK.DESIGN], TRACK_NAME[TRACK.FRONTEND], TRACK_NAME[TRACK.BACKEND], TRACK_NAME[TRACK.ETC]];
   const [nameValue, onChangeName] = useInput(userProfile.name);
   const [profileChanged, setProfileChanged] = useRecoilState(userProfileChanged);
   const [generationValue, onChangeGeneration] = useInput(String(userProfile.generation), /^[0-9]*$/);

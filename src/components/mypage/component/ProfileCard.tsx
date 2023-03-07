@@ -28,7 +28,7 @@ const ProfileCard = ({ user }: { user: UserProfile; }) => {
             </DescriptionRow>
             <DescriptionRow>
               <BlueText>트랙</BlueText>
-              <Text>{TRACK_NAME[user.track]}</Text>
+              <Text>{user.track == 4 ? '운영팀' : TRACK_NAME[user.track]}</Text>
             </DescriptionRow>
           </DescriptionWrapper>
         </Wrapper>
