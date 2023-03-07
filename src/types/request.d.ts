@@ -54,7 +54,7 @@ export interface ISessionDetail extends ISessionData {
   topic: string;
   description: string;
   date: string;
-  reference?: string[];
+  reference?: string;
 }
 
 interface ResponseData<T> {
