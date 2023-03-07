@@ -30,24 +30,28 @@ const Archiving = <Type extends ISessionData | IProjectData | IGalleryData>({
 }) => {
   const [link, title] = getIndexMessageAndURL(archivingType, parseInt(archivingIndex));
   return (
-    <Wrapper>
-      <ArchivingIndex>{title}</ArchivingIndex>
-      <CardWrapper>
-        {archivingData.map((data, index) => (
-          <Card
-            key={index}
-            id={data.id}
-            link={link}
-            // thumbnail={data.thumbnail}
-            thumbnail={'https://cau-likelion.s3.ap-northeast-2.amazonaws.com/project-img/9%E1%84%80%E1%85%B5/Rectangle_336-1.png}'}
-            title={data.title}
-            description={data.description}
-            dev_stack={'dev_stack' in data ? data.dev_stack : undefined}
-            category={getType(data)}
-          />
-        ))}
-      </CardWrapper>
-    </Wrapper>
+    <>
+      {archivingData.length ?
+        <Wrapper>
+          <ArchivingIndex>{title}</ArchivingIndex>
+          <CardWrapper>
+            {archivingData.map((data, index) => (
+              <Card
+                key={index}
+                id={data.id}
+                link={link}
+                thumbnail={data.thumbnail}
+                // thumbnail={'https://cau-likelion.s3.ap-northeast-2.amazonaws.com/project-img/9%E1%84%80%E1%85%B5/Rectangle_336-1.png}'}
+                title={data.title}
+                description={data.description}
+                dev_stack={'dev_stack' in data ? data.dev_stack : undefined}
+                category={getType(data)}
+              />
+            ))}
+          </CardWrapper>
+        </Wrapper>
+        : null}
+    </>
   );
 };
 

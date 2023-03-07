@@ -4,6 +4,7 @@ import Track from './Track';
 import Arrow from './Arrow';
 import Slick from './Slick';
 import { ISessionData } from '@@types/request';
+import EmptyView from '@common/empty/EmptyView';
 
 
 type SessionProps = {
@@ -17,13 +18,17 @@ const SessionSection: React.FC<SessionProps> = ({ trackName, trackData }) => {
         <>
             <StWrapper>
                 <Track track={trackName} trackData={trackData} />
-                <StSlideWrapper>
-                    <Arrow direction='left' length={length} />
-                    <Slick
-                        trackData={trackData}
-                        trackName={trackName} />
-                    <Arrow direction='right' length={length} />
-                </StSlideWrapper>
+                {
+                    trackData.length ?
+                        <StSlideWrapper>
+                            <Arrow direction='left' length={length} />
+                            <Slick
+                                trackData={trackData}
+                                trackName={trackName} />
+                            <Arrow direction='right' length={length} />
+                        </StSlideWrapper> : <EmptyView />
+                }
+
             </StWrapper>
         </>
     );

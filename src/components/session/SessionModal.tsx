@@ -58,8 +58,8 @@ const SessionModal: React.FC<ModalProps> = ({ trackData, trackName, handleClose,
                                         key={data.id}
                                         id={data.id}
                                         link='/session'
-                                        // thumbnail={data.thumbnail}
-                                        thumbnail={' https://cau-likelion.s3.ap-northeast-2.amazonaws.com/project-img/9%E1%84%80%E1%85%B5/Rectangle_336-1.png'}
+                                        thumbnail={data.thumbnail}
+                                        // thumbnail={' https://cau-likelion.s3.ap-northeast-2.amazonaws.com/project-img/9%E1%84%80%E1%85%B5/Rectangle_336-1.png'}
                                         title={data.title}
                                         category={`${data.degree}차 세션`} />
                                 );

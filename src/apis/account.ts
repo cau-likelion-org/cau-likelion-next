@@ -5,8 +5,8 @@ import { getAuthAxios } from './authAxios';
 
 export interface IMutationProps {
   form: RequestSignUpForm;
-  accessToken: string;
-  refreshToken: string;
+  accessToken: string | null;
+  refreshToken: string | null;
 }
 
 

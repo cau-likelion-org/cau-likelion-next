@@ -18,7 +18,7 @@ const ActivitySection = () => {
   const data = [
     {
       title: '정기세션',
-      text: '트랙별 심화 세션',
+      text: '트랙별 정기 세션',
       image: 정기세션,
     },
     {
@@ -28,17 +28,17 @@ const ActivitySection = () => {
     },
     {
       title: '해커톤',
-      text: '직접 아이디어 구현',
+      text: '아이디어 실현의 장',
       image: 해커톤,
     },
     {
       title: '중커톤',
-      text: '중앙대 자체 해커톤',
+      text: '중앙대 멋사만의 해커톤',
       image: 중커톤,
     },
     {
       title: '스터디',
-      text: '같이 공부하며 성장하기',
+      text: '함께 공부하며 성장하기',
       image: 스터디,
     },
   ] as IActivityData[];

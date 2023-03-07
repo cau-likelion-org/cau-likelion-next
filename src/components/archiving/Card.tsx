@@ -48,7 +48,6 @@ const Wrapper = styled.div`
   }
 
   @media (min-width: 901px) and (max-width: 1919px) {
-    box-shadow: 10px 10px 50px rgba(68, 64, 105, 0.08);
     width: 330px;
     height: 370px;
   }

@@ -34,7 +34,9 @@ const Track: React.FC<TrackProps> = ({ track, trackData }) => {
         <>
             <StWrapper>
                 <TrackTitle>{track}</TrackTitle>
-                <StShowAll onClick={handleClick}>전체보기 &gt;</StShowAll>
+                {trackData.length ?
+                    <StShowAll onClick={handleClick}>전체보기 &gt;</StShowAll> : null
+                }
             </StWrapper>
             <SessionModal
                 trackData={trackData}
