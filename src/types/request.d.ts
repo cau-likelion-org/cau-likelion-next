@@ -47,8 +47,7 @@ export interface IGalleryDetail extends IGalleryData {
 
 export type ArchivingArrayType<T> = Record<string, T[]>;
 
-export interface ISessionDetail extends IArchivingData {
-  degree: number;
+export interface ISessionDetail extends ISessionData {
   presenter: string;
   image: string[];
   track: string;
