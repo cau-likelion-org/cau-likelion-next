@@ -13,7 +13,6 @@ import { checkGeneration } from '@utils/index';
 import MyScoreSection from '@mypage/MyScoreSection';
 import TotalScoreSection from '@mypage/TotalScoreSection';
 import { useRouter } from 'next/router';
-import MakeAttendanceButton from '@mypage/component/MakeAttendanceButton';
 
 const MyPage = () => {
   const tokenState = useRecoilValue(token);
@@ -52,7 +51,6 @@ const MyPage = () => {
         <Wrapper>
           <Header>
             <NameCard name={userProfile.name} generation={userProfile?.generation} />
-            {userProfile.is_admin && <MakeAttendanceButton />}
           </Header>
           <RowWrapper>
             <ProfileCard user={userProfile} />

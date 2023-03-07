@@ -1,11 +1,16 @@
 import { BackgroundColor, Primary } from '@utils/constant/color';
 import React from 'react';
 import styled from 'styled-components';
+import MakeAttendanceButton from './MakeAttendanceButton';
 
 const ScoreHeader = () => {
     return (
         <>
-            <TitleText>출석현황</TitleText>
+            <TitleHeader>
+                <TitleText>출석현황</TitleText>
+                <MakeAttendanceButton />
+            </TitleHeader>
+
             <CallOut>
                 <Row><span>기본 점수</span> 3점</Row>
                 <Row><span>지각(5분)</span> -0.5점</Row>
@@ -25,6 +30,12 @@ const TitleText = styled.div`
     font-style: normal;
     font-weight: 700;
     font-size: 1.7rem;
+`;
+
+const TitleHeader = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 `;
 
 const CallOut = styled.div`
