@@ -44,7 +44,6 @@ const MyPage = () => {
       setIsActiveGeneration(false);
     }
   }, [userProfile]);
-  console.log(userProfile);
   return (
     <>
       {userProfile && (

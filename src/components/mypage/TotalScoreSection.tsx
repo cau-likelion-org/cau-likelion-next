@@ -45,7 +45,6 @@ const TotalScoreSection = () => {
 
           if (target.track === userAttendance.track) {
             target.user_id = userAttendance.user_id;
-            console.log(userAttendance.user_id);
             target.tardiness = userAttendance.tardiness;
             target.truancy = userAttendance.truancy;
             target.absence = userAttendance.absence;
