@@ -44,7 +44,7 @@ export function login(code: string | string[]) {
 }
 
 
-export function getNewToken(refresh_code: string) {
+export function getNewToken(refresh_code: string | null) {
   return axios
     .post(`/api/token`, {
       refresh: refresh_code,

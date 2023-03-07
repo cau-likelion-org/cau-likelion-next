@@ -24,8 +24,8 @@ export const postEmailSecret = async (token: IToken, secretValue: string) => {
 
 export interface SignUpMutationProps {
   form: RequestSignUpForm;
-  accessToken: string;
-  refreshToken: string;
+  accessToken: string | null;
+  refreshToken: string | null;
 }
 
 export const signUp = async (props: SignUpMutationProps) => {
