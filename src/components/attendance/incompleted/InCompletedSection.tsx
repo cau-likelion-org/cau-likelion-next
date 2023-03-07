@@ -24,6 +24,10 @@ const IncompletedSection = () => {
       if (error.response?.status == 405) {
         router.push('/attendance/completed');
       }
+      if (error.response?.status == 401) {
+        alert('현재 활동 중인 아기사자가 아닙니다!');
+        router.push('/');
+      }
     },
     onSuccess: (data) => {
       if (data.attendance_result === 2 || data.attendance_result === 1) {
