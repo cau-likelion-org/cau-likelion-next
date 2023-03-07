@@ -34,7 +34,7 @@ const Carousel = ({ images }: { images: string[] }) => {
             onDragEnd={handleScroll}
             custom={direction}
           >
-            <CustomImage src={images[index]} alt="img" layout="fill" objectFit="cover" objectPosition="center" />
+            <CustomImage src={images[index]} alt="img" layout="fill" objectFit="contain" objectPosition="center" />
           </ImageWrapper>
         </AnimatePresence>
       </CarouselWrapper>
