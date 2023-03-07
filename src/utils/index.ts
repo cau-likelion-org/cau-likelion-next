@@ -75,7 +75,7 @@ export const sortArchivingListDesc = <T extends IGalleryData | IProjectData>(
 };
 
 export const getIdFromAsPath = (asPath: string, type: 'project' | 'session' | 'gallery'): string => {
-  const regExp = new RegExp(`/\/${type}\/(.*)/`);
+  const regExp = new RegExp(`\/${type}\/(.*)`);
   const match = asPath.match(regExp);
   return match ? match[1] : '';
 };
