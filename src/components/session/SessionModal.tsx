@@ -42,7 +42,12 @@ const SessionModal: React.FC<ModalProps> = ({ trackData, trackName, handleClose,
             <ModalHeader>
               <ButtonWrapper>
                 <div>
-                  <MdKeyboardArrowLeft size={30} color={GreyScale.default} onClick={handleClose} />
+                  <MdKeyboardArrowLeft
+                    size={30}
+                    color={GreyScale.default}
+                    onClick={handleClose}
+                    style={{ cursor: 'pointer' }}
+                  />
                   <a>{trackName}</a>
                 </div>
                 <UploadButton>+</UploadButton>
@@ -98,7 +103,6 @@ const slideOut = keyframes`
 const modalSettings = (visible: boolean) => css`
   visibility: ${visible ? 'visible' : 'hidden'};
   animation: ${visible ? fadeIn : fadeOut} 0.3s ease-out;
-  animation: ${visible ? slideIn : slideOut} 0.3s ease-out;
   transition: visibility 0.3s ease-out;
 `;
 
@@ -202,6 +206,12 @@ const ButtonWrapper = styled.div`
     align-items: center;
     gap: 20px;
   }
+  @media (max-width: 1920px) {
+    font-size: 25px;
+  }
+  @media (max-width: 900px) {
+    font-size: 20px;
+  }
 `;
 
 const CardWrapper = styled.div`
@@ -212,11 +222,14 @@ const CardWrapper = styled.div`
   grid-template-columns: 1fr 1fr 1fr;
   -ms-overflow-style: none;
   scrollbar-width: none;
-  margin: 13rem 0 3rem 0;
+  margin: 1rem 0 3rem 0;
   ::-webkit-scrollbar {
     display: none;
   }
   overflow: scroll;
+  @media (max-width: 900px) {
+    margin: 13rem 0 3rem 0;
+  }
   @media (min-width: 1920px) {
     grid-template-columns: 1fr 1fr 1fr;
     gap: 20px;
