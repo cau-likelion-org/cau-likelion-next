@@ -1,8 +1,8 @@
-import { UserAssignment, UserAttendance, UserScore } from '@@types/request';
+import { UserAttendance, UserScore } from '@@types/request';
 import { ATTENDANCE_CATEGORY_NAME, TRACK_NAME } from '@utils/constant';
 import { BackgroundColor, GreyScale } from '@utils/constant/color';
 import { getTotalNameObject, getTotalScore } from '@utils/index';
-import { token } from '@utils/state';
+import { token, userScoreChanged } from '@utils/state';
 import React, { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 import { useRecoilValue } from 'recoil';
@@ -17,6 +17,7 @@ const TotalScoreSection = () => {
     const [totalScoreArray, setTotalScoreArray] = useState<UserScore[]>([]);
     const [isEditModalOn, setIsEditModalOn] = useState(false);
     const [clickedUser, setClickedUser] = useState<UserScore>({} as UserScore);
+    const scoreChanged = useRecoilValue(userScoreChanged);
 
     const handleScoreEditModal = (userScore: UserScore) => {
         setIsEditModalOn(!isEditModalOn);
@@ -28,7 +29,7 @@ const TotalScoreSection = () => {
     );
 
     const { data: totalAttendance, isLoading: totalAttendanceLoading, error: totalAttendanceError } = useQuery(
-        ['userAttendance'], () => getTotalAttendance(tokenValue)
+        ['userAttendance', scoreChanged], () => getTotalAttendance(tokenValue)
     );
 
     useEffect(() => {
@@ -37,8 +38,10 @@ const TotalScoreSection = () => {
             totalAttendance.length &&
                 totalAttendance.forEach((userAttendance: UserAttendance, i: number) => {
                     const target = tmpObject[userAttendance.name];
+
                     if (target.track === userAttendance.track) {
                         target.user_id = userAttendance.user_id;
+                        console.log(userAttendance.user_id);
                         target.tardiness = userAttendance.tardiness;
                         target.truancy = userAttendance.truancy;
                         target.absence = userAttendance.absence;

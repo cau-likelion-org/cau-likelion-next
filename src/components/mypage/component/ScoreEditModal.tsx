@@ -1,10 +1,10 @@
 import { RequestEditUserScore, UserAttendance, UserProfile, UserScore } from '@@types/request';
 import FormSendButton from '@signup/component/FormSendButton';
 import { BackgroundColor, Basic, GreyScale } from '@utils/constant/color';
-import { IToken, token } from '@utils/state';
+import { IToken, token, userScoreChanged } from '@utils/state';
 import React from 'react';
 import { useMutation } from 'react-query';
-import { useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { editUserScore } from 'src/apis/mypage';
 import useInput from 'src/hooks/useInput';
 import styled from 'styled-components';
@@ -20,6 +20,7 @@ interface ScoreEditModalProps {
 
 const ScoreEditModal = ({ targetUserScore, isEditModalOn, handleScoreEditModal }: ScoreEditModalProps) => {
     const tokenState = useRecoilValue(token);
+    const [scoreChanged, setScoreChanged] = useRecoilState(userScoreChanged);
     const [truancyValue, onChangeTruancyValue] = useInput(Number(targetUserScore.truancy), /^[0-9]*$/);
     const [tardinessValue, onChangeTardinessValue] = useInput(Number(targetUserScore.tardiness), /^[0-9]*$/);
     const [absenceValue, onChangeAbsenceValue] = useInput(Number(targetUserScore.absence), /^[0-9]*$/);
@@ -29,6 +30,7 @@ const ScoreEditModal = ({ targetUserScore, isEditModalOn, handleScoreEditModal }
         onSuccess: (res) => {
             if (res.status === 200) {
                 () => getTotalAttendance(tokenState);
+                setScoreChanged(!scoreChanged);
             }
         },
     });
@@ -38,9 +40,9 @@ const ScoreEditModal = ({ targetUserScore, isEditModalOn, handleScoreEditModal }
             editScore.mutate({
                 userScore: {
                     user_id: targetUserScore.user_id,
-                    truancy: truancyValue,
-                    absence: absenceValue,
-                    tardiness: tardinessValue
+                    truancy: Number(truancyValue),
+                    absence: Number(absenceValue),
+                    tardiness: Number(tardinessValue)
                 },
                 accessToken: tokenState
             });
