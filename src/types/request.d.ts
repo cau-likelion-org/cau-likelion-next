@@ -16,6 +16,7 @@ export interface IArchivingData {
   title: string;
   thumbnail: string;
   description?: string;
+  subtitle?: string;
 }
 export interface IProjectData extends IArchivingData {
   category: string;

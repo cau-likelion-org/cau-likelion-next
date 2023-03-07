@@ -43,6 +43,7 @@ const Archiving = <Type extends ISessionData | IProjectData | IGalleryData>({
                 thumbnail={data.thumbnail}
                 title={data.title}
                 description={data.description}
+                subtitle={data.subtitle}
                 dev_stack={'dev_stack' in data ? data.dev_stack : undefined}
                 category={getType(data)}
               />
