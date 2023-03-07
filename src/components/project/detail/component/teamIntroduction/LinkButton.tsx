@@ -10,16 +10,31 @@ const ImageObj = {
   web: webLink,
   youtube: youtube,
 };
-const LinkButton = ({ shareURL }: { shareURL: IShareURL[] }) => {
+const LinkButton = ({ shareURL }: { shareURL: IShareURL }) => {
+  const { web: weburl, github: githuburl, youtube: youtubeurl } = shareURL;
   return (
     <Wrapper>
-      {shareURL.map(({ type, src }, index) => (
-        <Link href={src} key={index}>
+      {weburl && (
+        <Link href={weburl}>
           <ImageWrapper>
-            <Image src={ImageObj[type]} alt="icon" layout="fill" objectFit="contain" objectPosition="center" />
+            <Image src={ImageObj.web} alt="icon" layout="fill" objectFit="contain" objectPosition="center" />
           </ImageWrapper>
         </Link>
-      ))}
+      )}
+      {githuburl && (
+        <Link href={githuburl}>
+          <ImageWrapper>
+            <Image src={ImageObj.github} alt="icon" layout="fill" objectFit="contain" objectPosition="center" />
+          </ImageWrapper>
+        </Link>
+      )}
+      {youtubeurl && (
+        <Link href={youtubeurl}>
+          <ImageWrapper>
+            <Image src={ImageObj.youtube} alt="icon" layout="fill" objectFit="contain" objectPosition="center" />
+          </ImageWrapper>
+        </Link>
+      )}
     </Wrapper>
   );
 };

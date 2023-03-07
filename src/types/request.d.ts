@@ -6,8 +6,9 @@ export type ShareURL = 'github' | 'youtube' | 'web';
 export type ArchivingType = 'gallery' | 'session' | 'project';
 
 export interface IShareURL {
-  type: ShareURL;
-  src: string;
+  web: string;
+  github: string;
+  youtube: string;
 }
 
 export interface IArchivingData {
@@ -34,7 +35,7 @@ export interface IProjectDetail extends IProjectData {
   team_name: string;
   team_member: Record<MemberStack, string[]>;
   date: string;
-  link: IShareURL[];
+  link: IShareURL;
   generation: number;
   image: string[];
 }
