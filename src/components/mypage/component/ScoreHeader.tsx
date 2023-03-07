@@ -48,6 +48,8 @@ const TitleHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  font-family: 'Pretendard';
+  font-style: normal;
 `;
 
 const CallOut = styled.div`
@@ -61,6 +63,8 @@ const CallOut = styled.div`
   gap: 6px;
   align-items: center;
   margin: 1rem 0;
+  font-family: 'Pretendard';
+  font-style: normal;
 `;
 
 const Row = styled.div`
