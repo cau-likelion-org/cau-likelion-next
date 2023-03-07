@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import FooterButton from './FooterButton';
 import { GreyScale } from '@utils/constant/color';
 
-const Footer = ({ isLandingLayout }: { isLandingLayout: boolean; }) => {
+const Footer = ({ isLandingLayout }: { isLandingLayout: boolean }) => {
   const FooterButtonData = [
     {
       type: 'instagram',
@@ -12,13 +12,13 @@ const Footer = ({ isLandingLayout }: { isLandingLayout: boolean; }) => {
     },
     {
       type: 'Notion',
-      img: '/image/Notion.png',
-      link: 'https://www.naver.com',
+      img: '/image/likelionCompany.png',
+      link: 'https://www.likelion.net/',
     },
     {
       type: 'mail',
       img: '/image/Mail.png',
-      link: 'mailto:99yunsy@naver.com',
+      link: 'puang@likelion.org',
     },
   ];
 
@@ -37,14 +37,14 @@ const Footer = ({ isLandingLayout }: { isLandingLayout: boolean; }) => {
 
 export default Footer;
 
-const Wrapper = styled.div<{ isLandingLayout: boolean; }>`
+const Wrapper = styled.div<{ isLandingLayout: boolean }>`
   display: flex;
   flex-direction: column;
   width: 100%;
   justify-content: center;
   gap: 2.5rem;
   position: relative;
-  @media(min-width: 900px){
+  @media (min-width: 900px) {
     scroll-snap-align: ${(props) => props.isLandingLayout && 'end'};
   }
 `;
