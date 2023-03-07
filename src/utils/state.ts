@@ -4,19 +4,18 @@ import { atom } from 'recoil';
 import { v1 } from 'uuid';
 import cookie from 'react-cookies';
 import { UserProfile } from '@@types/request';
+import LocalStorage from './localStorage';
 
 export interface IToken {
-  access: string;
-  refresh: string;
+  access: string | null;
+  refresh: string | null;
 }
 
 export const token = atom<IToken>({
   key: `token/${v1()}`,
   default: {
-    access: cookie.load('access'),
-    refresh: cookie.load('refresh')
-    // access: '',
-    // refresh: ''
+    access: LocalStorage.getItem('access'),
+    refresh: LocalStorage.getItem('refresh')
   }
 });
 

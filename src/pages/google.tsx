@@ -6,6 +6,7 @@ import cookie from 'react-cookies';
 import { useMutation } from 'react-query';
 import { token } from '@utils/state';
 import Loading from '@common/loading/Loading';
+import LocalStorage from '@utils/localStorage';
 
 const Google = () => {
   const router = useRouter();
@@ -41,8 +42,8 @@ const Google = () => {
         obj.refresh = res.token.refresh;
         return obj;
       });
-      cookie.save('access', res.token.access, { path: '/' });
-      cookie.save('refresh', res.token.refresh, { path: '/' });
+      LocalStorage.setItem('access', res.token.access);
+      LocalStorage.setItem('refresh', res.token.refresh);
     },
     onError: (res) => {
       router.push('/login/failed', undefined, { shallow: true });
