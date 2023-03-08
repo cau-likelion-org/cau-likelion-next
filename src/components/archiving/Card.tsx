@@ -98,15 +98,16 @@ const TextWrapper = styled.div`
 `;
 const Category = styled.div<{ link: string }>`
   border-radius: 25px;
-  // border: 1px solid ${GreyScale.default};
-  border: ${(props) => (props.link === 'gallery' ? 'none' : '1px solid ${GreyScale.default}')};
+  border: ${(props) => (props.link === '/gallery' ? 'none' : `1px solid ${GreyScale.default}`)};
+  display: flex;
   font-family: 'Pretendard';
   font-style: normal;
   font-weight: 500;
   font-size: 1.2rem;
-  display: flex;
   padding: 0.3rem 0;
   align-items: center;
+  justify-content: center;
+  width: 8rem;
 `;
 
 const ProjectTitle = styled.div`
