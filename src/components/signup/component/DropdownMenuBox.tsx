@@ -91,6 +91,12 @@ const InputRow = styled.div`
     align-items: center;
     gap: 12px;
     padding: 20px;
+
+    @media (max-width: 900px){
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+    }
 `;
 
 const Description = styled.div`
