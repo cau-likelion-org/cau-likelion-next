@@ -4,31 +4,29 @@ import Track from './Track';
 import Arrow from './Arrow';
 import Slick from './Slick';
 import { ISessionData } from '@@types/request';
-import EmptyView from '@common/empty/EmptyView';
 
 type SessionProps = {
-  trackName: string;
-  trackData: ISessionData[];
+    trackName: string;
+    trackData: ISessionData[];
 };
 
 const SessionSection: React.FC<SessionProps> = ({ trackName, trackData }) => {
-  const length = trackData.length;
-  return (
+const length = trackData.length;
+    return (
     <>
-      <StWrapper>
+    {trackData.length? (
+    <StWrapper>
         <Track track={trackName} trackData={trackData} />
-        {trackData.length ? (
-          <StSlideWrapper>
+            <StSlideWrapper>
             <Arrow direction="left" length={length} />
             <Slick trackData={trackData} trackName={trackName} />
             <Arrow direction="right" length={length} />
-          </StSlideWrapper>
-        ) : (
-          <EmptyView />
-        )}
-      </StWrapper>
+        </StSlideWrapper>
+    </StWrapper>
+    ): null
+}
     </>
-  );
+    );
 };
 export default SessionSection;
 
