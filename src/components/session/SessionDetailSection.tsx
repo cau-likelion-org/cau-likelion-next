@@ -43,15 +43,18 @@ const Wrapper = styled.div`
   justify-content: center;
   gap: 3rem;
 
-  @media (max-width: 900px) {
+  @media (max-width: 900px){
     flex-direction: column;
+    align-items: start;
+    gap: 1rem;
   }
 `;
 
 const LeftWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  margin-top: 5rem;
+  align-items: flex-start;
+  /* margin-top: 5rem; */
 
   @media (max-width: 900px) {
     padding: 2rem;
@@ -64,11 +67,7 @@ const LeftWrapper = styled.div`
 
 const RightWrapper = styled.div`
   flex-basis: 70%;
-  padding: 2rem;
 
-  @media (max-width: 900px) {
-    padding: 0rem;
-  }
 `;
 
 const TitleText = styled.div`
@@ -120,7 +119,6 @@ const DescriptionBox = styled.div`
   font-family: 'Pretendard';
   font-style: normal;
   display: flex;
-  justify-content: center;
   align-items: center;
   word-wrap: break-word;
 `;
