@@ -53,6 +53,12 @@ const InputRow = styled.div`
     align-items: center;
     padding: 20px;
     width: 100%;
+
+    @media (max-width: 900px){
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+    }
 `;
 
 const Title = styled.div`

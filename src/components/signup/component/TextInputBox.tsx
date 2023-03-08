@@ -55,6 +55,14 @@ const InputRow = styled.div`
     align-items: center;
     gap: 12px;
     padding: 20px;
+
+    @media (max-width: 900px){
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+
+    }
 `;
 
 const InputBox = styled.input`
@@ -70,7 +78,7 @@ const InputBox = styled.input`
     &.placeholder{
         color: ${GreyScale.default};
     }
-     &:focus {
+    &:focus {
         &::placeholder {
             color: transparent;
         }
