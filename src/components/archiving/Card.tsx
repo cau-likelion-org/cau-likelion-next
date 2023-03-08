@@ -51,13 +51,9 @@ const Wrapper = styled.div`
     width: 330px;
     min-height: 370px;
   }
-  @media (min-width: 431px) and (max-width: 901px) {
-    width: 231px;
-    min-height: 259px;
-  }
-  @media (min-width: 360px) and (max-width: 430px) {
-    width: 231px;
-    min-height: 259px;
+  @media (min-width: 360px) and (max-width: 900px) {
+    width: 300px;
+    min-height: 300px;
   }
 `;
 
@@ -75,12 +71,9 @@ const ImageWrapper = styled.div`
     width: 330px;
     height: 200px;
   }
-  @media (min-width: 431px) and (max-width: 900px) {
-    width: 231px;
-    height: 140px;
-  }
-  @media (min-width: 360px) and (max-width: 430px) {
-    width: 231px;
+
+  @media (min-width: 360px) and (max-width: 900px) {
+    width: 300px;
     height: 140px;
   }
 `;
