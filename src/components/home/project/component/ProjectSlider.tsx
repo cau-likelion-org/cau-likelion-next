@@ -41,7 +41,7 @@ const ProjectData: IProjectInner[] = [
 ];
 
 const ProjectSlider = () => {
-  const [index, direction, increase, decrease, animationVariants] = useSlider<IProjectInner>(
+  const [index, direction, decrease, increase, animationVariants] = useSlider<IProjectInner>(
     ProjectData,
     0.5,
     1000,

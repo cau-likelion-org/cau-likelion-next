@@ -47,7 +47,7 @@ const useSlider = <T>(
       };
     },
   };
-  return [index, direction, decrease, increase, animationVariant as Variants];
+  return [index, direction, increase, decrease, animationVariant as Variants];
 };
 
 export default useSlider;
