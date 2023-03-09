@@ -9,6 +9,7 @@ cau-likelion-next:
       defaultLambda: 'cau-likelion-default-lambda'
       imageLambda: 'cau-likelion-image-lambda'
     timeout: 30
+    memorySize: 1024
     cloudfront:
       comment: 'next deploy' # CloudFront 설명 설정
       distributionId: 'E21RKLVM6ZE7X2'
