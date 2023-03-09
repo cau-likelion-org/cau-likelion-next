@@ -2,7 +2,7 @@ import { AnimatePresence, motion, Variants } from 'framer-motion';
 import styled from 'styled-components';
 import Image from 'next/image';
 
-import { GreyScale } from '@utils/constant/color';
+import { GreyScale, Primary } from '@utils/constant/color';
 
 import { IProjectInner } from './ProjectSlider';
 
@@ -48,6 +48,8 @@ export default Project;
 const ProjectWrapper = styled(motion.div)`
   position: absolute;
   width: 93%;
+  border: 1px solid ${Primary.light};
+  border-radius: 30px;
   display: flex;
   height: 300px;
   margin-left: 4%;

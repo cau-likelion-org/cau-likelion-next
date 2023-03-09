@@ -2,8 +2,9 @@ import styled from 'styled-components';
 import { StaticImageData } from 'next/image';
 
 import { TfiAngleLeft, TfiAngleRight } from 'react-icons/tfi';
-import projectPic from '@image/projectPic.png';
 import projectPic2 from '@image/projectPic2.png';
+import mayI from '@image/메이아이.png';
+import chunghaha from '@image/사플.png';
 
 import Project from './Project';
 import useSlider from 'src/hooks/useSlider';
@@ -17,18 +18,25 @@ export interface IProjectInner {
 }
 const ProjectData: IProjectInner[] = [
   {
-    name: 'Baby Frog',
-    introduce: '아기 개구리를 살려라! 아기 개구리 살리는 서비스, 개굴개굴 baby frog',
-    teamName: '개구리팀',
-    projectType: '2022 아이디어톤',
-    img: projectPic,
+    name: 'MAY I',
+    introduce: '기다리지 마세요, 메이아이하세요. 전문가-리포터 인터뷰 중개 서비스',
+    teamName: '메이아이',
+    projectType: '2022 해커톤',
+    img: mayI,
   },
   {
-    name: '카모마일 알라쁑',
-    introduce: '카모마일, 맥심 커피, 그 중 승자는? 승자를 가려라 서비스, 카모마일',
-    teamName: '캠몸맘임',
-    projectType: '2022 해커톤',
+    name: '카모마일',
+    introduce: '카페, 모두의 마음대로 매일',
+    teamName: '21, 23, 25',
+    projectType: '2022 아이디어톤',
     img: projectPic2,
+  },
+  {
+    name: 'CAU LIKELION',
+    introduce: '우리도 사이트 있다 마, 함 봐바라',
+    teamName: '중하하',
+    projectType: '운영진 사이드 프로젝트',
+    img: chunghaha,
   },
 ];
 

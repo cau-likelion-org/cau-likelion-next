@@ -115,6 +115,7 @@ const Layer = styled.div`
   right: 0;
   background-color: rgba(0, 0, 0, 0.6);
   z-index: 10000;
+  overflow: hidden;
 `;
 
 const Title = styled.div`
@@ -143,6 +144,14 @@ const Wrapper = styled.div`
   box-shadow: 10px 10px 30px 0px #00000014;
   padding: 2rem 5rem;
   z-index: 10001;
+
+  @media (max-width: 900px){
+    width: 100%;
+    height: 100vh;
+    border-radius: 0;
+
+
+  }
 `;
 
 const FormWrapper = styled.div`

@@ -67,7 +67,8 @@ export default Slick;
 const Wrapper = styled.div`
   margin: 0;
   padding: 0;
-  width: 70vw;
+  width: 60vw;
+
 `;
 
 const StSlider = styled(Slider)`
@@ -95,9 +96,6 @@ const StSlider = styled(Slider)`
     margin-right: -3rem;
   }
 
-  .slick-slide {
-    padding: 40px 30px;
-  }
 
   @media (min-width: 821px) and (max-width: 900px) {
     height: 33rem;

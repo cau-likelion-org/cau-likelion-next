@@ -41,6 +41,9 @@ const Wrapper = styled.div`
   box-shadow: 3px 3px 12px rgba(68, 64, 105, 0.08);
   margin: 10px;
   height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
   @media (min-width: 1920px) {
     width: 380px;
@@ -51,9 +54,14 @@ const Wrapper = styled.div`
     width: 330px;
     min-height: 370px;
   }
-  @media (min-width: 360px) and (max-width: 900px) {
+  @media (min-width: 661px) and (max-width: 900px) {
     width: 300px;
     min-height: 300px;
+  }
+  @media (min-width: 360px) and (max-width: 660px){
+    width: 240px;
+    min-height: 270px;
+
   }
 `;
 
@@ -72,9 +80,13 @@ const ImageWrapper = styled.div`
     height: 200px;
   }
 
-  @media (min-width: 360px) and (max-width: 900px) {
+  @media (min-width: 661px) and (max-width: 900px) {
     width: 300px;
     height: 140px;
+  }
+  @media (min-width: 360px) and (max-width: 660px) {
+    width: 250px;
+    height: 130px;
   }
 `;
 const TextWrapper = styled.div`
@@ -91,15 +103,16 @@ const TextWrapper = styled.div`
 `;
 const Category = styled.div<{ link: string }>`
   border-radius: 25px;
-  // border: 1px solid ${GreyScale.default};
-  border: ${(props) => (props.link === 'gallery' ? 'none' : '1px solid ${GreyScale.default}')};
+  border: ${(props) => (props.link === '/gallery' ? 'none' : `1px solid ${GreyScale.default}`)};
+  display: flex;
   font-family: 'Pretendard';
   font-style: normal;
   font-weight: 500;
   font-size: 1.2rem;
-  display: flex;
   padding: 0.3rem 0;
   align-items: center;
+  justify-content: center;
+  width: 8rem;
 `;
 
 const ProjectTitle = styled.div`
