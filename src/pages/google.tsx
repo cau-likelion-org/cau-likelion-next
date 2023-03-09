@@ -24,7 +24,8 @@ const Google = () => {
   }, [code]);
 
   const loginHandler = useMutation({
-    mutationFn: ({ code }: { code: string | string[]; }) => login(code),
+    mutationFn: ({ code }: { code: string | string[] }) => login(code),
+    retry: false,
     onSuccess: (res) => {
       if (!res.is_active) {
         router.push(
@@ -51,6 +52,5 @@ const Google = () => {
   });
   return <Loading />;
 };
-
 
 export default Google;

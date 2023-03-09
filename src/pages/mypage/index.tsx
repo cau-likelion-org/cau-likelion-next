@@ -26,6 +26,7 @@ const MyPage = () => {
     isLoading: profileLoading,
     error: profileError,
   } = useQuery<UserProfile, AxiosError>(['userProfile', profileChanged], () => getUserProfile(tokenState), {
+    retry: false,
     enabled: !!tokenState.access,
   });
 
