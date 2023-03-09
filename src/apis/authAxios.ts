@@ -24,7 +24,8 @@ export const getAuthAxios = (token: IToken) => {
       LocalStorage.setItem('access', newAccessToken);
       LocalStorage.setItem('refresh', refresh);
       config.headers.Authorization = `Bearer ${newAccessToken}`;
-      return axios(config);
+      const response = await axios.get(config.url, config);
+      return Promise.resolve(response);
     },
   );
   return authAxios;

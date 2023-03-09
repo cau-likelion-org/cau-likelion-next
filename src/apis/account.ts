@@ -9,17 +9,10 @@ export interface IMutationProps {
   refreshToken: string | null;
 }
 
-
 export const getUserProfile = async (token: IToken) => {
   const authAxios = getAuthAxios(token);
   const response = await authAxios.get(`/api/profile`);
   return response.data.data.user as UserProfile;
-  // return {
-  //   name: '윤선영',
-  //   generation: 11,
-  //   track: 2,
-  //   is_admin: true
-  // };
 };
 
 export const putUserProfile = async (props: IMutationProps) => {
@@ -42,7 +35,6 @@ export function login(code: string | string[]) {
       return res.data;
     });
 }
-
 
 export function getNewToken(refresh_code: string | null) {
   return axios
