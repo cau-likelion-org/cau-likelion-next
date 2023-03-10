@@ -99,9 +99,8 @@ const TextWrapper = styled.div`
   border-bottom-left-radius: 25px;
   border-bottom-right-radius: 25px;
   padding: 20px;
-
   @media (min-width: 360px) and (max-width: 1919px) {
-    /* width: 330px; */
+    width: 300px;
   }
   @media (min-width: 1920px) {
     width: 380px;
