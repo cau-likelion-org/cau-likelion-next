@@ -16,7 +16,14 @@ const Card = ({ id, thumbnail, title, description, dev_stack, category, link, su
     <Link href={`${link}/${id}`}>
       <Wrapper>
         <ImageWrapper>
-          <CustomImage src={thumbnail} alt="썸네일" layout="fill" objectFit="contain" objectPosition="center" />
+          <CustomImage
+            src={thumbnail}
+            alt="썸네일"
+            layout="fill"
+            objectFit="contain"
+            objectPosition="center"
+            loading="lazy"
+          />
         </ImageWrapper>
         <TextWrapper>
           <Category link={link}>{category}</Category>
@@ -58,10 +65,9 @@ const Wrapper = styled.div`
     width: 300px;
     min-height: 300px;
   }
-  @media (min-width: 360px) and (max-width: 660px){
+  @media (min-width: 360px) and (max-width: 660px) {
     width: 240px;
     min-height: 270px;
-
   }
 `;
 
