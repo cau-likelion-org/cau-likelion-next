@@ -115,7 +115,7 @@ export const TRACK_DESCRIPTION: { [key: number]: { description: string; recommen
   },
   [TRACK.FRONTEND]: {
     description:
-      '프론트엔드 파트은 사용자와 가장 가까운 개발 파트입니다! 웹 클라이언트 개발을 위한 기초부터 심화까지의 스킬들을 배울 수 있어요! HTML, CSS, Javascript를 학습하고 NodeJS, Webpack, Babel을 거쳐 React로 나아갑니다!',
+      '프론트엔드 파트는 사용자와 가장 가까운 개발 파트입니다! 웹 클라이언트 개발을 위한 기초부터 심화까지의 스킬들을 배울 수 있어요! HTML, CSS, Javascript를 학습하고 NodeJS, Webpack, Babel을 거쳐 React로 나아갑니다!',
     recommend:
       'UI/UX에 관심있거나 디자이너와의 협업을 통해 사용자 인터페이스를 시각적으로 구현해내는 과정에 흥미를 느끼시는 분들께 추천해요!',
   },

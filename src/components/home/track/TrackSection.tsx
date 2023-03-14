@@ -17,7 +17,7 @@ const TrackSection = () => {
     setIsClicked(copy);
   };
   const text =
-    '기획, 디자인, 프론트엔드, 백엔드 파트으로 나뉘어 개별 세션, 스터디가 진행됩니다.\n각 파트의 세부 활동에 대해 알아볼까요?';
+    '기획, 디자인, 프론트엔드, 백엔드 파트로 나뉘어 개별 세션, 스터디가 진행됩니다.\n각 파트의 세부 활동에 대해 알아볼까요?';
   return (
     <FadeInComponent>
       <Wrapper>
@@ -39,7 +39,7 @@ const TrackSection = () => {
           <DescriptionWrapper>
             <TrackDescriptionBox
               type="introduction"
-              title={`${TRACK_NAME[track]} 파트은 어떤 것을 공부하나요?`}
+              title={`${TRACK_NAME[track]} 파트는 어떤 것을 공부하나요?`}
               text={TRACK_DESCRIPTION[track].description}
             />
             <TrackDescriptionBox type="recommend" title="추천해요!" text={TRACK_DESCRIPTION[track].recommend} />
