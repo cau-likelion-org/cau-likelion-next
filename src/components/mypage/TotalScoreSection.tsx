@@ -11,7 +11,6 @@ import styled from 'styled-components';
 import ScoreEditModal from './component/ScoreEditModal';
 import ScoreHeader from './component/ScoreHeader';
 import { TiPencil } from 'react-icons/ti';
-import Loading from '@common/loading/Loading';
 
 const TotalScoreSection = () => {
   const tokenValue = useRecoilValue(token);

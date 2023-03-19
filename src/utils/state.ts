@@ -2,8 +2,6 @@
 
 import { atom } from 'recoil';
 import { v1 } from 'uuid';
-import cookie from 'react-cookies';
-import { UserProfile, UserScore } from '@@types/request';
 import LocalStorage from './localStorage';
 
 export interface IToken {

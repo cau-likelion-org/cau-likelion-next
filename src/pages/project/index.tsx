@@ -5,12 +5,12 @@ import ProjectsSection from '@project/projects/ProjectsSection';
 import { InferGetStaticPropsType } from 'next';
 import { ReactElement } from 'react';
 import { getProjects } from 'src/apis/project';
+import styled from 'styled-components';
 
 const ProjectList = ({ projectStaticData }: InferGetStaticPropsType<typeof getStaticProps>) => {
   return (
     <>
       <Header pageName="프로젝트" introduce="멋사와 함께한 프로젝트" />
-      {/* <SearchSection /> */}
       <ProjectsSection staticData={projectStaticData} />
     </>
   );

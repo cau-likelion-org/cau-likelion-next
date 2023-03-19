@@ -6,7 +6,7 @@ import { getProjects } from 'src/apis/project';
 import { sortArchivingListDesc } from '@utils/index';
 import styled from 'styled-components';
 
-const ProjectsSection = ({ staticData }: { staticData: ArchivingArrayType<IProjectData> }) => {
+const ProjectsSection = ({ staticData }: { staticData: ArchivingArrayType<IProjectData>; }) => {
   const { data, isLoading } = useQuery<ArchivingArrayType<IProjectData>>(['projects'], getProjects);
 
   return (
@@ -14,13 +14,14 @@ const ProjectsSection = ({ staticData }: { staticData: ArchivingArrayType<IProje
       {sortArchivingListDesc(isLoading ? staticData : (data as ArchivingArrayType<IProjectData>))!.map(
         ([generation, value]) => (
           <Archiving archivingType={'project'} archivingIndex={generation} archivingData={value} key={generation} />
-        ),
+        )
       )}
     </Wrapper>
   );
 };
 
 export default ProjectsSection;
+
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;

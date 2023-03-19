@@ -1,6 +1,5 @@
 import {
   ArchivingArrayType,
-  IArchivingData,
   IGalleryData,
   IProjectData,
   ISessionData,
