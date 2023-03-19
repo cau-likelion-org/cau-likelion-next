@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import CAULogo from '@image/cau사자.png';
 import { BackgroundColor } from '@utils/constant/color';
