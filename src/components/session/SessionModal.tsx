@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import styled, { keyframes, css } from 'styled-components';
 import Card from '@archiving/Card';
 import { Primary, GreyScale } from '@utils/constant/color';
-import back from '@image/back.png';
 import Image from 'next/image';
 import { ISessionData } from '@@types/request';
 import { MdKeyboardArrowLeft } from 'react-icons/md';
@@ -11,69 +10,47 @@ type ModalProps = {
   trackName: string;
   trackData: ISessionData[];
   handleClose: () => void;
-  visible: boolean;
 };
 
-const SessionModal: React.FC<ModalProps> = ({ trackData, trackName, handleClose, visible }) => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
-    if (visible) {
-      setIsOpen(true);
-    } else {
-      timeoutId = setTimeout(() => setIsOpen(false), 500);
-    }
-
-    return () => {
-      if (timeoutId !== undefined) {
-        clearTimeout(timeoutId);
-      }
-    };
-  }, [visible]);
+const SessionModal = ({ trackData, trackName, handleClose }: ModalProps) => {
 
   return (
     <>
-      {isOpen && (
-        <>
-          <StModalLayer onClick={handleClose} visible={visible} />
+      <StModalLayer onClick={handleClose} />
+      <StModalWrapper>
+        <ModalHeader>
+          <ButtonWrapper>
+            <div>
+              <MdKeyboardArrowLeft
+                size={30}
+                color={GreyScale.default}
+                onClick={handleClose}
+                style={{ cursor: 'pointer' }}
+              />
+              <a>{trackName}</a>
+            </div>
+            <UploadButton>+</UploadButton>
+          </ButtonWrapper>
+        </ModalHeader>
 
-          <StModalWrapper visible={visible}>
-            <ModalHeader>
-              <ButtonWrapper>
-                <div>
-                  <MdKeyboardArrowLeft
-                    size={30}
-                    color={GreyScale.default}
-                    onClick={handleClose}
-                    style={{ cursor: 'pointer' }}
-                  />
-                  <a>{trackName}</a>
-                </div>
-                <UploadButton>+</UploadButton>
-              </ButtonWrapper>
-            </ModalHeader>
-
-            <CardWrapper>
-              {trackData
-                .slice(0)
-                .reverse()
-                .map((data, i) => {
-                  return (
-                    <Card
-                      key={data.id}
-                      id={data.id}
-                      link="/session"
-                      thumbnail={data.thumbnail}
-                      title={data.title}
-                      category={`${data.degree}차 세션`}
-                    />
-                  );
-                })}
-            </CardWrapper>
-          </StModalWrapper>
-        </>
-      )}
+        <CardWrapper>
+          {trackData
+            .slice(0)
+            .reverse()
+            .map((data, i) => {
+              return (
+                <Card
+                  key={data.id}
+                  id={data.id}
+                  link="/session"
+                  thumbnail={data.thumbnail}
+                  title={data.title}
+                  category={`${data.degree}차 세션`}
+                />
+              );
+            })}
+        </CardWrapper>
+      </StModalWrapper>
     </>
   );
 };
@@ -101,12 +78,11 @@ const slideOut = keyframes`
 `;
 
 const modalSettings = (visible: boolean) => css`
-  visibility: ${visible ? 'visible' : 'hidden'};
-  animation: ${visible ? fadeIn : fadeOut} 0.3s ease-out;
+  animation: fadeIn 0.3s ease-out;
   transition: visibility 0.3s ease-out;
 `;
 
-const StModalLayer = styled.div<{ visible: boolean }>`
+const StModalLayer = styled.div`
   display: flex;
   justify-content: center;
 
@@ -119,15 +95,14 @@ const StModalLayer = styled.div<{ visible: boolean }>`
   z-index: 9999;
   overflow: hidden;
 
-  visibility: ${(props) => (props.visible ? 'visible' : 'hidden')};
-  animation: ${(props) => (props.visible ? fadeIn : fadeOut)} 0.5s ease-out;
+  animation: fadeIn 0.5s ease-out;
 
   @media (max-width: 900px) {
     display: none;
   }
 `;
 
-const StModalWrapper = styled.div<{ visible: boolean }>`
+const StModalWrapper = styled.div`
   display: flex;
   justify-content: center;
   z-index: 10000;
@@ -149,8 +124,6 @@ const StModalWrapper = styled.div<{ visible: boolean }>`
   ::-webkit-scrollbar {
     display: none;
   }
-
-  ${(props) => modalSettings(props.visible)};
 
   //<전체보기> 눌렀을 때 모달창 초기 높이, 너비
   @media (min-width: 1920px) {
@@ -265,12 +238,4 @@ const UploadButton = styled.button`
   background-color: ${Primary.default};
 
   display: none;
-`;
-
-const BackArrow = styled(Image)`
-  visibility: hidden;
-
-  @media (max-width: 900px) {
-    visibility: visible;
-  }
 `;
