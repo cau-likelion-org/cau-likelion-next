@@ -6,7 +6,11 @@ const nextConfig = {
   images: {
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-    domains: ['cau-likelion.s3.ap-northeast-2.amazonaws.com', 'chunghaha.s3.ap-northeast-2.amazonaws.com'],
+    domains: [
+      'cau-likelion.s3.ap-northeast-2.amazonaws.com',
+      'chunghaha.s3.ap-northeast-2.amazonaws.com',
+      'dsu3068f46mzk.cloudfront.net',
+    ],
   },
   webpack(config) {
     config.resolve = {
