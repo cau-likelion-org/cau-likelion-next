@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import styled, { keyframes, css } from 'styled-components';
+import React from 'react';
+import styled from 'styled-components';
 import Card from '@archiving/Card';
 import { Primary, GreyScale } from '@utils/constant/color';
-import Image from 'next/image';
 import { ISessionData } from '@@types/request';
 import { MdKeyboardArrowLeft } from 'react-icons/md';
 
@@ -57,30 +56,6 @@ const SessionModal = ({ trackData, trackName, handleClose }: ModalProps) => {
 
 export default SessionModal;
 
-const fadeIn = keyframes`
-    0% { opacity: 0; }
-    100% { opacity: 1; }
-`;
-
-const fadeOut = keyframes`
-    0% { opacity: 1; }
-    100% { opacity: 0; }
-`;
-
-const slideIn = keyframes`
-    0% { transform: translateY(100%);}
-    100% { transform: translateY(0); }
-`;
-
-const slideOut = keyframes`
-    0% { transform: translateY(0); }
-    100% { transform: translateY(100%);}
-`;
-
-const modalSettings = (visible: boolean) => css`
-  animation: fadeIn 0.3s ease-out;
-  transition: visibility 0.3s ease-out;
-`;
 
 const StModalLayer = styled.div`
   display: flex;
@@ -95,7 +70,7 @@ const StModalLayer = styled.div`
   z-index: 9999;
   overflow: hidden;
 
-  animation: fadeIn 0.5s ease-out;
+  animation: 0.5s ease-out;
 
   @media (max-width: 900px) {
     display: none;

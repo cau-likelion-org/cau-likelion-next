@@ -17,30 +17,19 @@ const SessionSection = ({ trackName, trackData }: SessionProps) => {
   const [counter, setCounter] = useState(0);
   const cardNum = trackData.length;
 
-  useEffect(() => {
-    const containerWidth = window.innerWidth * 0.76 - 50;
-    if (window.innerWidth >= 1920) {
-      setCardWidth(400);
-    }
-    else if (window.innerWidth >= 900 && window.innerWidth < 1920) {
-      setCardWidth(350);
-    }
-    else if (window.innerWidth >= 660 && window.innerWidth < 900) {
-      setCardWidth(320);
-    }
-    else if (window.innerWidth >= 445 && window.innerWidth < 660) {
-      setCardWidth(260);
-    }
-    else if (window.innerWidth >= 330 && window.innerWidth < 445) {
-      setCardWidth(200);
-    }
-    else {
-      setCardWidth(150);
-    }
-    setCycleWidth(Math.floor(containerWidth / cardWidth) * cardWidth);
-    setCycleNum(Math.ceil(cardWidth * cardNum / cycleWidth));
-
-  }, [cardWidth, cycleWidth, cardNum]);
+  const getCardWidth = () => {
+    if (window.innerWidth >= 1920)
+      return 400;
+    if (window.innerWidth >= 900)
+      return 350;
+    if (window.innerWidth >= 660)
+      return 320;
+    if (window.innerWidth >= 445)
+      return 260;
+    if (window.innerWidth >= 330)
+      return 200;
+    return 150;
+  };
 
   const leftBtnClickHandler = () => {
     setCounter(counter > 0 ? counter - 1 : cycleNum - 1);
@@ -49,6 +38,14 @@ const SessionSection = ({ trackName, trackData }: SessionProps) => {
   const rightBtnClickHandler = () => {
     setCounter(counter + 1 < cycleNum ? counter + 1 : 0);
   };
+
+  useEffect(() => {
+    const containerWidth = window.innerWidth * 0.76 - 50;
+    setCardWidth(getCardWidth);
+    setCycleWidth(Math.floor(containerWidth / cardWidth) * cardWidth);
+    setCycleNum(Math.ceil(cardWidth * cardNum / cycleWidth));
+
+  }, [cardWidth, cycleWidth, cardNum]);
 
   return (
     <>
