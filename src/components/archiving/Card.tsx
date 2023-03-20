@@ -11,7 +11,7 @@ interface ICardProps extends IArchivingData {
   link: string;
 }
 
-const Card = ({ id, thumbnail, title, description, dev_stack, category, link, subtitle }: ICardProps) => {
+const Card = ({ id, thumbnail, title, dev_stack, category, link, subtitle }: ICardProps) => {
   return (
     <Link href={`${link}/${id}`}>
       <Wrapper>
@@ -38,75 +38,70 @@ const Card = ({ id, thumbnail, title, description, dev_stack, category, link, su
 
 export default Card;
 const CustomImage = styled(Image)`
-  border-top-left-radius: 25px;
-  border-top-right-radius: 25px;
 `;
 
 const Wrapper = styled.div`
-  border-radius: 25px;
+  border-radius: 20px;
   cursor: pointer;
-  box-shadow: 3px 3px 12px rgba(68, 64, 105, 0.08);
-  margin: 10px;
-  height: 100%;
+  box-shadow: 3px 3px 3px 3px rgba(68, 64, 105, 0.08);
   display: flex;
+  margin: 10px;
+  padding: 10px 0;
   flex-direction: column;
+  justify-content: center;
   align-items: center;
-
-  @media (min-width: 1920px) {
-    width: 380px;
-    min-height: 400px;
-  }
-
-  @media (min-width: 901px) and (max-width: 1919px) {
-    width: 330px;
-    min-height: 370px;
-  }
-  @media (min-width: 661px) and (max-width: 900px) {
-    width: 300px;
-    min-height: 300px;
-  }
-  @media (min-width: 360px) and (max-width: 660px) {
-    width: 240px;
-    min-height: 270px;
-  }
 `;
 
 const ImageWrapper = styled.div`
   position: relative;
 
-  border-top-left-radius: 25px;
-  border-top-right-radius: 25px;
+  @media (min-width: 1920px) {
+    width: 360px;
+    height: 240px;
+  }
+
+  @media (min-width: 901px) and (max-width: 1919px) {
+    width: 310px;
+    height: 190px;
+  }
+
+  @media (min-width: 661px) and (max-width: 900px) {
+    width: 280px;
+    height: 130px;
+  }
+
+  @media (min-width: 445px) and (max-width: 660px) {
+    width: 220px;
+    height: 120px;
+  }
+
+  @media (min-width: 330px) and (max-width: 444px) {
+    width: 160px;
+    height: 100px;
+  }
+`;
+const TextWrapper = styled.div`
+  padding: 20px;
 
   @media (min-width: 1920px) {
     width: 380px;
-    height: 250px;
   }
   @media (min-width: 901px) and (max-width: 1919px) {
     width: 330px;
-    height: 200px;
   }
 
   @media (min-width: 661px) and (max-width: 900px) {
     width: 300px;
-    height: 140px;
   }
-  @media (min-width: 360px) and (max-width: 660px) {
-    width: 250px;
-    height: 130px;
+  @media (min-width: 445px) and (max-width: 660px) {
+    width: 240px;
   }
+  @media (min-width: 330px) and (max-width: 444px) {
+    width: 180px;
+  }
+
 `;
-const TextWrapper = styled.div`
-  border-bottom-left-radius: 25px;
-  border-bottom-right-radius: 25px;
-  padding: 20px;
-  @media (min-width: 360px) and (max-width: 1919px) {
-    width: 300px;
-  }
-  @media (min-width: 1920px) {
-    width: 380px;
-  }
-`;
-const Category = styled.div<{ link: string }>`
+const Category = styled.div<{ link: string; }>`
   border-radius: 25px;
   border: ${(props) => (props.link === '/gallery' ? 'none' : `1px solid ${GreyScale.default}`)};
   display: flex;
@@ -141,4 +136,5 @@ const ProjectDesc = styled.div`
   @media (max-width: 1300px) {
     font-size: 10px;
   }
+
 `;

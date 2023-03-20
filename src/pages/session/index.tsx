@@ -6,6 +6,7 @@ import { TRACK_NAME } from '@utils/constant';
 import { getSessions } from 'src/apis/session';
 import { ArchivingArrayType, ISessionData } from '@@types/request';
 import { useQuery } from 'react-query';
+import styled from 'styled-components';
 
 const SessionList = ({ sessionStaticData }: { sessionStaticData: ArchivingArrayType<ISessionData>; }) => {
     const { data, isLoading } = useQuery(['sessionData'], getSessions);
@@ -13,11 +14,13 @@ const SessionList = ({ sessionStaticData }: { sessionStaticData: ArchivingArrayT
     return (
         <>
             <Header pageName="세션" introduce="멋사에서 진행한 세션" />
-            {Object.values(isLoading ? sessionStaticData : data!).map((data, i) => {
-                return (
-                    <SessionSection key={i} trackName={TRACK_NAME[i]} trackData={data} />
-                );
-            })}
+            <Wrapper>
+                {Object.values(isLoading ? sessionStaticData : data!).map((data, i) => {
+                    return (
+                        <SessionSection key={i} trackName={TRACK_NAME[i]} trackData={data} />
+                    );
+                })}
+            </Wrapper>
         </>
     );
 };
@@ -37,3 +40,9 @@ export async function getStaticProps({ params }: { params: { track: string; }; }
 }
 
 export default SessionList;
+
+const Wrapper = styled.div`
+    display: flex;
+    flex-direction: column;
+    margin: 3rem;
+`;

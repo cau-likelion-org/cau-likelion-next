@@ -1,5 +1,3 @@
-// example
-
 export const GENERATION_CHECKER = 2012;
 
 export enum MENU {
@@ -26,7 +24,7 @@ export enum ATTENDANCE_CATEGORY {
   TOTALSCORE,
 }
 
-export const ATTENDANCE_CATEGORY_NAME: { [key: number]: string } = {
+export const ATTENDANCE_CATEGORY_NAME: { [key: number]: string; } = {
   [ATTENDANCE_CATEGORY.ABSENCE]: '결석',
   [ATTENDANCE_CATEGORY.TRUANCY]: '무단결석',
   [ATTENDANCE_CATEGORY.TARDINESS]: '지각',
@@ -53,7 +51,7 @@ export enum DEV_STACK {
   //변동 가능
 }
 
-export const TRACK_INDEX: { [key: string]: number } = {
+export const TRACK_INDEX: { [key: string]: number; } = {
   기획: TRACK.PM,
   디자인: TRACK.DESIGN,
   프론트엔드: TRACK.FRONTEND,
@@ -61,7 +59,7 @@ export const TRACK_INDEX: { [key: string]: number } = {
   기타: TRACK.ETC,
 };
 
-export const TRACK_NAME: { [key: number]: string } = {
+export const TRACK_NAME: { [key: number]: string; } = {
   [TRACK.PM]: '기획',
   [TRACK.DESIGN]: '디자인',
   [TRACK.FRONTEND]: '프론트엔드',
@@ -69,7 +67,7 @@ export const TRACK_NAME: { [key: number]: string } = {
   [TRACK.ETC]: '기타',
 };
 
-export const ACTIVITY_NAME: { [key: number]: string } = {
+export const ACTIVITY_NAME: { [key: number]: string; } = {
   [ACTIVITY.SESSION]: '정기세션',
   [ACTIVITY.IDEATHON]: '아이디어톤',
   [ACTIVITY.HACKATHON]: '해커톤',
@@ -77,7 +75,7 @@ export const ACTIVITY_NAME: { [key: number]: string } = {
   [ACTIVITY.STUDY]: '스터디',
 };
 
-export const ACTIVITY_DESCRIPTION: { [key: number]: { description: string } } = {
+export const ACTIVITY_DESCRIPTION: { [key: number]: { description: string; }; } = {
   [ACTIVITY.SESSION]: {
     description:
       '멋쟁이사자처럼의 커리큘럼은 파트별 정기 세션을 기본으로 합니다. 주 1회 대면 세션을 원칙으로 하며, 운영진들이 열정적인 세션으로 처음 IT 분야에 입문하시는 분들도 따라오실 수 있도록 이끌어드립니다.',
@@ -100,7 +98,7 @@ export const ACTIVITY_DESCRIPTION: { [key: number]: { description: string } } = 
   },
 };
 
-export const TRACK_DESCRIPTION: { [key: number]: { description: string; recommend: string } } = {
+export const TRACK_DESCRIPTION: { [key: number]: { description: string; recommend: string; }; } = {
   [TRACK.PM]: {
     description:
       '기획 파트에서는 고객의 목소리를 들으며 우리 주변에 있는 Pain-Point를 모색하고, SaaS 서비스를 직접 출시해요. 협업에서는 Team Leader 로서 프로젝트의 진행을 리드하고,  디자이너 및 개발자와 협업해요.  덕분에 IT 서비스 출시의 AtoZ를 경험할 수 있어요. 이를 위해 와이어프레임, Flowchart 등 협업에 꼭 필요한 내용들을 설계하는 것을 배워요.',

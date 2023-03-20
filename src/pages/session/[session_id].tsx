@@ -11,7 +11,7 @@ import { GreyScale } from '@utils/constant/color';
 import { getSessionDetail, getSessions } from 'src/apis/session';
 import { getIdFromAsPath, getPaths } from '@utils/index';
 
-const SessionDetail = ({ sessionDetailStaticData }: { sessionDetailStaticData: ISessionDetail }) => {
+const SessionDetail = ({ sessionDetailStaticData }: { sessionDetailStaticData: ISessionDetail; }) => {
   const router = useRouter();
   const { data, isLoading } = useQuery<ISessionDetail>(['sessionDetail', router.query.project_id], () =>
     getSessionDetail(getIdFromAsPath(router.asPath, 'session')),
@@ -19,6 +19,7 @@ const SessionDetail = ({ sessionDetailStaticData }: { sessionDetailStaticData: I
   if (router.isFallback) {
     return <div>로딩중</div>;
   }
+
   return (
     <Wrapper>
       <StCarousel images={isLoading ? sessionDetailStaticData.image : data!.image} />
@@ -40,7 +41,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
   };
 };
 
-export async function getStaticProps({ params }: { params: { session_id: string } }) {
+export async function getStaticProps({ params }: { params: { session_id: string; }; }) {
   const sessionDeatilStaticData = await getSessionDetail(params.session_id);
   return {
     props: {

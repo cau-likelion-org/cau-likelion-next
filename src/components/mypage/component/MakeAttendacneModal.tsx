@@ -7,6 +7,7 @@ import { makeAttendance } from 'src/apis/mypage';
 import { useRecoilValue } from 'recoil';
 import { token } from '@utils/state';
 import { useRouter } from 'next/router';
+
 const MakeAttendacneModal = () => {
   const [date, setDate] = useState('');
   const [password, setPassword] = useState('');

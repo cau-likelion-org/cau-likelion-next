@@ -1,18 +1,17 @@
 import React from 'react';
 import styled from 'styled-components';
-import Image from 'next/image';
-import arrow from '@image/Vector 16.png';
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from 'react-icons/md';
 import { GreyScale } from '@utils/constant/color';
 
-interface ISessionComponent {
+interface ArrowProps {
     direction: string;
-    length: number;
+    cycleNum: number;
+    onClick: () => void;
 }
 
-const Arrow = ({ direction, length }: { direction: string, length: number; }) => {
+const Arrow = ({ direction, cycleNum, onClick }: ArrowProps) => {
     return (
-        <StArrowWrapper length={length}>
+        <StArrowWrapper onClick={onClick} cycleNum={cycleNum}>
             {direction === 'left' ? <MdKeyboardArrowLeft size={30} color={GreyScale.default} /> :
                 <MdKeyboardArrowRight size={30} color={GreyScale.default} />}
         </StArrowWrapper>
@@ -23,8 +22,8 @@ const Arrow = ({ direction, length }: { direction: string, length: number; }) =>
 export default Arrow;
 
 
-const StArrowWrapper = styled.div<{ length: number; }>`
-visibility: ${props => props.length === 0 ? 'hidden' : 'visible'};
-
-padding-left: 2rem;
+const StArrowWrapper = styled.div<{ cycleNum: number; }>`
+    visibility: ${props => props.cycleNum === 1 ? 'hidden' : 'visible'};
+    z-index: 20;
+    cursor: pointer;
 `;

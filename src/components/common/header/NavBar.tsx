@@ -78,12 +78,12 @@ const Wrapper = styled.div`
   top: 0;
   left: 0;
   @media (max-width: 1440px) {
-    padding: 0 190px;
+    padding: 0 100px;
   }
   @media (max-width: 1280px) {
     padding: 0 90px;
   }
-  padding: 0 360px;
+  padding: 0 130px;
   align-items: center;
   justify-content: space-between;
   background-color: ${BackgroundColor};

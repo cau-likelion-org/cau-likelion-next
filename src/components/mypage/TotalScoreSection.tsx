@@ -54,37 +54,42 @@ const TotalScoreSection = () => {
       setTotalScoreArray(Object.values(tmpObject));
     }
   }, [totalAssignment, totalAttendance]);
-
   return (
     <>
       <Wrapper>
         <ScoreHeader isAdmin={true} />
         <ScoreWrapper>
-          <ScoreRow index={0}>
-            <ScoreTitle index={0}>이름</ScoreTitle>
-            <ScoreTitle index={1}>트랙</ScoreTitle>
-            {Array.from({ length: 6 }, (_, i) => (
-              <ScoreTitle index={i + 2} key={i}>
-                {ATTENDANCE_CATEGORY_NAME[i]}
-              </ScoreTitle>
-            ))}
-          </ScoreRow>
-          {totalScoreArray.map((userScore, i) => (
-            <ScoreRow index={i + 1} key={i}>
-              <Score>
-                {userScore.name}
-                <EditButton onClick={() => handleScoreEditModal(userScore)} />
-              </Score>
-              <Score>{TRACK_NAME[userScore.track]}</Score>
-              <Score>{userScore.absence}</Score>
-              <Score>{userScore.truancy}</Score>
-              <Score>{userScore.tardiness}</Score>
-              <Score>{userScore.notSubmitted}</Score>
-              <Score>{userScore.lateSubmitted}</Score>
-              <Score type={'total'}>{userScore.totalScore}</Score>
-            </ScoreRow>
-          ))}
+          {
+            !totalAssignmentLoading && !totalAttendanceLoading &&
+            <>
+              <ScoreRow index={0}>
+                <ScoreTitle index={0}>이름</ScoreTitle>
+                <ScoreTitle index={1}>트랙</ScoreTitle>
+                {Array.from({ length: 6 }, (_, i) => (
+                  <ScoreTitle index={i + 2} key={i}>
+                    {ATTENDANCE_CATEGORY_NAME[i]}
+                  </ScoreTitle>
+                ))}
+              </ScoreRow>
+              {totalScoreArray.map((userScore, i) => (
+                <ScoreRow index={i + 1} key={i}>
+                  <Score>
+                    {userScore.name}
+                    <EditButton onClick={() => handleScoreEditModal(userScore)} />
+                  </Score>
+                  <Score>{TRACK_NAME[userScore.track]}</Score>
+                  <Score>{userScore.absence}</Score>
+                  <Score>{userScore.truancy}</Score>
+                  <Score>{userScore.tardiness}</Score>
+                  <Score>{userScore.notSubmitted}</Score>
+                  <Score>{userScore.lateSubmitted}</Score>
+                  <Score type={'total'}>{userScore.totalScore}</Score>
+                </ScoreRow>
+              ))}
+            </>
+          }
         </ScoreWrapper>
+
       </Wrapper>
       {isEditModalOn ? (
         <ScoreEditModal
@@ -95,6 +100,7 @@ const TotalScoreSection = () => {
       ) : null}
     </>
   );
+
 };
 export default TotalScoreSection;
 
@@ -115,13 +121,13 @@ const ScoreWrapper = styled.div`
   overflow: hidden;
 `;
 
-const ScoreRow = styled.div<{ index: number }>`
+const ScoreRow = styled.div<{ index: number; }>`
   display: flex;
   width: 100%;
   background-color: ${(props) => (props.index % 2 == 0 ? GreyScale.light : BackgroundColor)};
 `;
 
-const ScoreTitle = styled.div<{ index: number }>`
+const ScoreTitle = styled.div<{ index: number; }>`
   font-family: 'Pretendard';
   font-style: normal;
   font-weight: 500;
@@ -134,7 +140,7 @@ const ScoreTitle = styled.div<{ index: number }>`
   border-right: ${(props) => (props.index == 7 ? 'none' : '1px solid gray')};
 `;
 
-const Score = styled.div<{ type?: string }>`
+const Score = styled.div<{ type?: string; }>`
   font-family: 'Pretendard';
   font-style: normal;
   font-weight: 500;

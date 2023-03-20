@@ -1,7 +1,5 @@
 import styled from 'styled-components';
-
 import { Primary } from '@utils/constant/color';
-
 import AttendanceBox from './component/AttendanceBox';
 import { useQuery } from 'react-query';
 import { TodayAttendanceData } from '@@types/request';
@@ -11,6 +9,7 @@ import { useRecoilValue } from 'recoil';
 import { token } from '@utils/state';
 import { useRouter } from 'next/router';
 import { AxiosError } from 'axios';
+
 const IncompletedSection = () => {
   const tokens = useRecoilValue(token);
   const router = useRouter();

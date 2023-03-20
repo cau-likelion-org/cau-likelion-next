@@ -9,6 +9,7 @@ import 아이디어톤 from '@image/아이디어톤.png';
 import 스터디 from '@image/스터디.png';
 import 정기세션 from '@image/정기세션.png';
 import 중커톤 from '@image/중커톤.png';
+
 export interface IActivityData {
   title: string;
   text: string;

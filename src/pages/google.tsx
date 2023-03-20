@@ -1,8 +1,7 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { login } from 'src/apis/account';
-import { useRecoilState, useRecoilValue } from 'recoil';
-import cookie from 'react-cookies';
+import { useRecoilState } from 'recoil';
 import { useMutation } from 'react-query';
 import { token } from '@utils/state';
 import Loading from '@common/loading/Loading';
@@ -24,7 +23,7 @@ const Google = () => {
   }, [code]);
 
   const loginHandler = useMutation({
-    mutationFn: ({ code }: { code: string | string[] }) => login(code),
+    mutationFn: ({ code }: { code: string | string[]; }) => login(code),
     retry: false,
     onSuccess: (res) => {
       if (!res.is_active) {

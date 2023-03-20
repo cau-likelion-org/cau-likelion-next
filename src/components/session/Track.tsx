@@ -10,16 +10,16 @@ type TrackProps = {
   trackData: ISessionData[];
 };
 
-const Track: React.FC<TrackProps> = ({ track, trackData }) => {
+const Track = ({ track, trackData }: TrackProps) => {
   const [visible, setVisible] = useState(false);
 
-  const handleClick = (e: React.MouseEvent<HTMLElement, MouseEvent>): void => {
+  const handleOpen = (e: React.MouseEvent<HTMLElement, MouseEvent>): void => {
     setVisible(true);
 
     document.body.style.cssText = `
         position: fixed; 
         width: 100%;
-        `;
+    `;
   };
 
   const handleClose = () => {
@@ -27,16 +27,19 @@ const Track: React.FC<TrackProps> = ({ track, trackData }) => {
 
     document.body.style.cssText = `
         position: ''; 
-        width: ''`;
+        width: '';
+    `;
   };
 
   return (
     <>
       <StWrapper>
         <TrackTitle>{track}</TrackTitle>
-        {trackData.length ? <StShowAll onClick={handleClick}>전체보기 &gt;</StShowAll> : null}
+        {trackData.length &&
+          <StShowAll onClick={handleOpen}>전체보기 &gt;</StShowAll>}
       </StWrapper>
-      <SessionModal trackData={trackData} trackName={track} handleClose={handleClose} visible={visible} />
+      {visible &&
+        <SessionModal trackData={trackData} trackName={track} handleClose={handleClose} />}
     </>
   );
 };
@@ -48,13 +51,8 @@ const StWrapper = styled.div`
   font-family: 'GmarketSans';
   justify-content: space-between;
   align-items: center;
-  margin: 3rem;
   width: 100%;
-  z-index: 10;
-
-  @media (max-width: 700px) {
-    margin: 3rem 0 5rem 0;
-  }
+  margin: 3rem 0;
 `;
 
 const StShowAll = styled.div`

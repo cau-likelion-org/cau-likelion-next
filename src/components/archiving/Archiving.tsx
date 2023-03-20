@@ -42,7 +42,6 @@ const Archiving = <Type extends ISessionData | IProjectData | IGalleryData>({
                 link={link}
                 thumbnail={data.thumbnail}
                 title={data.title}
-                description={data.description}
                 subtitle={data.subtitle}
                 dev_stack={'dev_stack' in data ? data.dev_stack : undefined}
                 category={getType(data)}
@@ -59,6 +58,7 @@ export default Archiving;
 const Wrapper = styled.div`
   margin-bottom: 40px;
 `;
+
 const ArchivingIndex = styled.div`
   color: #464646;
 
