@@ -13,6 +13,7 @@ type SessionProps = {
 const SessionSection = ({ trackName, trackData }: SessionProps) => {
   const [cardWidth, setCardWidth] = useState(0);
   const [cycleWidth, setCycleWidth] = useState(0);
+  const [cycleNum, setCycleNum] = useState(0);
   const [counter, setCounter] = useState(0);
   const cardNum = trackData.length;
 
@@ -20,38 +21,33 @@ const SessionSection = ({ trackName, trackData }: SessionProps) => {
     const containerWidth = window.innerWidth * 0.76 - 50;
     if (window.innerWidth >= 1920) {
       setCardWidth(400);
-      setCycleWidth(Math.floor(containerWidth / 400) * 400);
     }
     else if (window.innerWidth >= 900 && window.innerWidth < 1920) {
       setCardWidth(350);
-      setCycleWidth(Math.floor(containerWidth / 350) * 350);
     }
     else if (window.innerWidth >= 660 && window.innerWidth < 900) {
       setCardWidth(320);
-      setCycleWidth(Math.floor(containerWidth / 320) * 320);
     }
     else if (window.innerWidth >= 445 && window.innerWidth < 660) {
       setCardWidth(260);
-      setCycleWidth(Math.floor(containerWidth / 260) * 260);
     }
     else if (window.innerWidth >= 330 && window.innerWidth < 445) {
       setCardWidth(200);
-      setCycleWidth(Math.floor(containerWidth / 200) * 200);
     }
     else {
       setCardWidth(150);
-      setCycleWidth(Math.floor(containerWidth / 150) * 150);
     }
-  }, [cardWidth, cycleWidth]);
+    setCycleWidth(Math.floor(containerWidth / cardWidth) * cardWidth);
+    setCycleNum(Math.ceil(cardWidth * cardNum / cycleWidth));
 
-
+  }, [cardWidth, cycleWidth, cardNum]);
 
   const leftBtnClickHandler = () => {
-    setCounter(counter > 0 ? counter - 1 : counter);
+    setCounter(counter > 0 ? counter - 1 : cycleNum - 1);
   };
 
   const rightBtnClickHandler = () => {
-    setCounter(counter + 1 < cardNum ? counter + 1 : counter);
+    setCounter(counter + 1 < cycleNum ? counter + 1 : 0);
   };
 
   return (
@@ -61,9 +57,9 @@ const SessionSection = ({ trackName, trackData }: SessionProps) => {
           <StWrapper>
             <Track track={trackName} trackData={trackData} />
             <StSlideWrapper>
-              <Arrow direction="left" length={cardNum} onClick={leftBtnClickHandler} />
+              <Arrow direction="left" cycleNum={cycleNum} onClick={leftBtnClickHandler} />
               <HiddenLayer>
-                <CardWrapper counter={counter} cardWidth={cardWidth} cycleWidth={cycleWidth}>
+                <CardWrapper counter={counter} cycleWidth={cycleWidth} cycleNum={cycleNum}>
                   {trackData.map((data, i) => (
                     <Card
                       key={data.id}
@@ -75,7 +71,7 @@ const SessionSection = ({ trackName, trackData }: SessionProps) => {
                   ))}
                 </CardWrapper>
               </HiddenLayer>
-              <Arrow direction="right" length={cardNum} onClick={rightBtnClickHandler} />
+              <Arrow direction="right" onClick={rightBtnClickHandler} cycleNum={cycleNum} />
             </StSlideWrapper>
           </StWrapper>
         ) : null
@@ -129,8 +125,7 @@ const StSlideWrapper = styled.div`
   gap: 10px;
 `;
 
-
-const CardWrapper = styled.div<{ counter: number; cardWidth: number; cycleWidth: number; }>`
+const CardWrapper = styled.div<{ counter: number; cycleWidth: number; cycleNum: number; }>`
   transform: ${props => `translateX(${-props.counter * props.cycleWidth}px)`};
   transition: ease-in 0.4s;
   display: flex;
@@ -139,5 +134,6 @@ const CardWrapper = styled.div<{ counter: number; cardWidth: number; cycleWidth:
 const HiddenLayer = styled.div`
   display: flex;
   overflow-x: hidden;
+  width: 100%;
 `;
 

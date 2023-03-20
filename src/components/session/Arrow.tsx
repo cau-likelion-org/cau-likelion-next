@@ -3,9 +3,15 @@ import styled from 'styled-components';
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from 'react-icons/md';
 import { GreyScale } from '@utils/constant/color';
 
-const Arrow = ({ direction, length, onClick }: { direction: string, length: number; onClick: () => void; }) => {
+interface ArrowProps {
+    direction: string;
+    cycleNum: number;
+    onClick: () => void;
+}
+
+const Arrow = ({ direction, cycleNum, onClick }: ArrowProps) => {
     return (
-        <StArrowWrapper length={length} onClick={onClick}>
+        <StArrowWrapper onClick={onClick} cycleNum={cycleNum}>
             {direction === 'left' ? <MdKeyboardArrowLeft size={30} color={GreyScale.default} /> :
                 <MdKeyboardArrowRight size={30} color={GreyScale.default} />}
         </StArrowWrapper>
@@ -16,8 +22,8 @@ const Arrow = ({ direction, length, onClick }: { direction: string, length: numb
 export default Arrow;
 
 
-const StArrowWrapper = styled.div<{ length: number; }>`
-    visibility: ${props => props.length === 0 ? 'hidden' : 'visible'};
+const StArrowWrapper = styled.div<{ cycleNum: number; }>`
+    visibility: ${props => props.cycleNum === 1 ? 'hidden' : 'visible'};
     z-index: 20;
     cursor: pointer;
 `;
