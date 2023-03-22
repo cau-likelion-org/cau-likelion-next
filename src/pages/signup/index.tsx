@@ -1,8 +1,22 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import SignUpFormSection from '@signup/SignUpFormSection';
+import { useRouter } from 'next/router';
+import { useRecoilValue } from 'recoil';
+import { token } from '@utils/state';
 
 const SignUp = () => {
+    const router = useRouter();
+    const tokenState = useRecoilValue(token);
+    const [isLogin, setIsLogin] = useState(false);
+
+    useEffect(() => {
+        if (tokenState.access) {
+            setIsLogin(true);
+            router.push('/');
+        }
+    }, [tokenState]);
+
     return (
         <Wrapper>
             <TitleText>회원정보 입력</TitleText>

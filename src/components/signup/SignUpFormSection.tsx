@@ -33,10 +33,12 @@ const SignUpFormSection = () => {
   const { accessToken, refreshToken } = router.query;
 
   useEffect(() => {
+    console.log(access);
+    console.log(accessToken);
     if (access) {
       router.push('/');
     }
-    if (access == '' && !accessToken) {
+    if (!accessToken) {
       router.push('/login');
     }
     if (
@@ -48,7 +50,7 @@ const SignUpFormSection = () => {
     )
       setIsFormActivated(true);
     else setIsFormActivated(false);
-  }, [nameValue, generationValue, emailValue, emailSecretValue, isAuthenticated]);
+  }, [nameValue, generationValue, emailValue, emailSecretValue, isAuthenticated, accessToken]);
 
   const signUpFormPost = useMutation({
     mutationFn: (props: SignUpMutationProps) => signUp(props),
