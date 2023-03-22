@@ -4,7 +4,7 @@ import { getAuthAxios } from './authAxios';
 
 export const getEmailSecret = async (token: IToken, emailValue: string) => {
   const axiosInstance = getAuthAxios(token);
-  const response = await axiosInstance.get(`/api/caumail`, {
+  const response = await axiosInstance.get(`/caumail`, {
     params: { email: `${emailValue}@cau.ac.kr` },
   });
   return response;
@@ -16,7 +16,7 @@ interface IMailResponse {
 
 export const postEmailSecret = async (token: IToken, secretValue: string) => {
   const axiosInstance = getAuthAxios(token);
-  const response = await axiosInstance.post<IMailResponse>(`/api/caumail`, {
+  const response = await axiosInstance.post<IMailResponse>(`/caumail`, {
     code: secretValue,
   });
   return response.data;
@@ -30,7 +30,7 @@ export interface SignUpMutationProps {
 
 export const signUp = async (props: SignUpMutationProps) => {
   const axiosInstance = getAuthAxios({ access: props.accessToken, refresh: props.refreshToken });
-  const response = await axiosInstance.put(`/api/signup`, {
+  const response = await axiosInstance.put(`/signup`, {
     name: props.form.name,
     generation: props.form.generation,
     track: props.form.track,
