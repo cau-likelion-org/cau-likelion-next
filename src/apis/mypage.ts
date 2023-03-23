@@ -3,18 +3,29 @@ import { IToken } from '@utils/state';
 import axios from 'axios';
 import { getAuthAxios } from './authAxios';
 import { ResponseData } from '@@types/request';
+import { url } from '.';
 
 export const getUserAttendance = async (token: IToken) => {
     const authAxios = getAuthAxios(token);
-    const data = await authAxios.get<ResponseData<UserAttendance>>(`/mypage/attendance`).then(
-        res => res.data.data
-    );
+    const data = await axios.get<ResponseData<UserAttendance>>(`${url}/mypage/attendance`,
+        {
+            headers: {
+                Authorization: `Bearer ${token.access}`
+            }
+        }).then(
+            res => res.data.data
+        );
     return data;
 };
 
 export const getTotalAttendance = async (token: IToken) => {
     const authAxios = getAuthAxios(token);
-    const data = await authAxios.get<ResponseData<UserAttendance[]>>(`/mypage/attendance`)
+    const data = await axios.get<ResponseData<UserAttendance[]>>(`${url}/mypage/attendance`, {
+        headers: {
+            Authorization: `Bearer ${token.access}`
+        }
+    }
+    )
         .then(res => res.data.data);
     return data;
 };
@@ -28,20 +39,30 @@ export const getAssignments = () => {
 
 export function editUserScore(userScore: RequestEditUserScore, token: IToken) {
     const authAxios = getAuthAxios(token);
-    return authAxios.post(`/mypage/attendance/`, {
+    return axios.post(`${url}/mypage/attendance/`, {
         user_id: userScore.user_id,
         truancy: userScore.truancy,
         absence: userScore.absence,
         tardiness: userScore.tardiness,
-    });
+    },
+        {
+            headers: {
+                Authorization: `Bearer ${token.access}`
+            }
+        });
 }
 
 export function makeAttendance(date: string, password: string, token: IToken) {
     const authAxios = getAuthAxios(token);
-    return authAxios
-        .post('/attendance/secret', {
+    return axios
+        .post(`${url}/attendance/secret`, {
             date,
             password,
-        })
+        },
+            {
+                headers: {
+                    Authorization: `Bearer ${token.access}`
+                }
+            })
         .then((res) => res.data.data);
 }
