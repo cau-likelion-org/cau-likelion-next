@@ -3,14 +3,14 @@ import axios from 'axios';
 
 export async function getGalleries() {
   const data = await axios.get<ResponseData<ArchivingArrayType<IGalleryData>>>(
-    'https://api.cau-likelion.org/gallery',
+    'https://api-cau-likelion.shop/gallery',
   ).then(res => res.data.data);
   return data;
 }
 
 export async function getGalleryDetail(id: string) {
   const data = await axios.get<ResponseData<IGalleryDetail>>(
-    `https://api.cau-likelion.org/gallery/${id}`,
+    `https://api-cau-likelion.shop/gallery/${id}`,
   ).then(res => res.data.data);
   return data;
 }
