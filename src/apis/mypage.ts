@@ -8,7 +8,7 @@ import { url } from '.';
 export const getUserAttendance = async (token: IToken) => {
     const authAxios = getAuthAxios(token);
     const data = await authAxios
-        .get<ResponseData<UserAttendance>>(`/mypage/attendance`)
+        .get<ResponseData<UserAttendance>>(`/api/mypage/attendance`)
         .then((res) => res.data.data);
     return data;
 };
@@ -16,7 +16,7 @@ export const getUserAttendance = async (token: IToken) => {
 export const getTotalAttendance = async (token: IToken) => {
     const authAxios = getAuthAxios(token);
     const data = await authAxios
-        .get<ResponseData<UserAttendance[]>>(`/mypage/attendance`)
+        .get<ResponseData<UserAttendance[]>>(`/api/mypage/attendance`)
         .then((res) => res.data.data);
     return data;
 };
@@ -30,7 +30,7 @@ export const getAssignments = () => {
 
 export function editUserScore(userScore: RequestEditUserScore, token: IToken) {
     const authAxios = getAuthAxios(token);
-    return authAxios.post(`/mypage/attendance/`, {
+    return authAxios.post(`/api/mypage/attendance/`, {
         user_id: userScore.user_id,
         truancy: userScore.truancy,
         absence: userScore.absence,
@@ -41,7 +41,7 @@ export function editUserScore(userScore: RequestEditUserScore, token: IToken) {
 export function makeAttendance(date: string, password: string, token: IToken) {
     const authAxios = getAuthAxios(token);
     return authAxios
-        .post(`/attendance/secret`, {
+        .post(`/api/attendance/secret`, {
             date,
             password,
         })
