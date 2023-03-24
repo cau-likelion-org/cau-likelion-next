@@ -1,6 +1,7 @@
 import { LoginResponse, RequestSignUpForm, UserProfile } from '@@types/request';
 import { IToken } from '@utils/state';
 import axios from 'axios';
+import { url } from '.';
 import { getAuthAxios } from './authAxios';
 
 export interface IMutationProps {
@@ -28,7 +29,7 @@ export const putUserProfile = async (props: IMutationProps) => {
 
 export function login(code: string | string[]) {
   return axios
-    .post<LoginResponse>(`/api/google/callback`, {
+    .post<LoginResponse>(`${url}/api/google/callback`, {
       code: code,
     })
     .then((res) => {
@@ -38,7 +39,7 @@ export function login(code: string | string[]) {
 
 export function getNewToken(refresh_code: string | null) {
   return axios
-    .post(`/api/token`, {
+    .post(`${url}/api/token`, {
       refresh: refresh_code,
     })
     .then((res) => {

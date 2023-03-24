@@ -1,5 +1,6 @@
 import { RequestSignUpForm } from '@@types/request';
 import { IToken } from '@utils/state';
+import { url } from '.';
 import { getAuthAxios } from './authAxios';
 
 export const getEmailSecret = async (token: IToken, emailValue: string) => {
