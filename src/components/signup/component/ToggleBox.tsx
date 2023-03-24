@@ -1,6 +1,5 @@
 import { BackgroundColor, Basic, GreyScale, Primary } from '@utils/constant/color';
 import React from 'react';
-import { useState } from 'react';
 import styled from 'styled-components';
 
 interface IProps {

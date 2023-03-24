@@ -37,6 +37,5 @@ export const signUp = async (props: SignUpMutationProps) => {
     track: props.form.track,
     is_admin: props.form.is_admin,
   });
-  console.log(response.data);
   return response.data;
 };
