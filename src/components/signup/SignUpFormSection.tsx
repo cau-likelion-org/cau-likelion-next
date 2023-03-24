@@ -33,8 +33,6 @@ const SignUpFormSection = () => {
   const { accessToken, refreshToken } = router.query;
 
   useEffect(() => {
-    console.log(access);
-    console.log(accessToken);
     if (access) {
       router.push('/');
     }

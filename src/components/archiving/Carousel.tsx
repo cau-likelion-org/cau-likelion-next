@@ -5,7 +5,7 @@ import { AnimatePresence, motion, PanInfo } from 'framer-motion';
 import { useInterval } from 'src/hooks/useInterval';
 import useSlider from 'src/hooks/useSlider';
 
-const Carousel = ({ images }: { images: string[] }) => {
+const Carousel = ({ images }: { images: string[]; }) => {
   const [index, direction, increase, decrease, animateVariant] = useSlider<string>(images, 0.1, 1000, false, 'tween');
   const [timerBool, setTimerBool] = useState(true);
   const [dragStartX, setdragStartX] = useState(0);
@@ -40,7 +40,6 @@ const Carousel = ({ images }: { images: string[] }) => {
               layout="fill"
               objectFit="contain"
               objectPosition="center"
-              loading="lazy"
             />
           </ImageWrapper>
         </AnimatePresence>
