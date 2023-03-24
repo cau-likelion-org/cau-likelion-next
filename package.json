@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "deploy": "serverless --config serverless.yml",
+    "deploy": "serverless --config deploy.yml",
     "deployDev": "serverless --config dev.yml"
   },
   "dependencies": {
