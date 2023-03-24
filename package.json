@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "deploy": "serverless --config serverless.yml",
-    "deploy dev": "serverless --config dev.yml"
+    "deployDev": "serverless --config dev.yml"
   },
   "dependencies": {
     "@next/font": "13.1.1",
