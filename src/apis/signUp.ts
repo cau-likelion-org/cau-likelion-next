@@ -33,11 +33,12 @@ export interface SignUpMutationProps {
 
 export const signUp = async (props: SignUpMutationProps) => {
   const axiosInstance = getAuthAxios({ access: props.accessToken, refresh: props.refreshToken });
-  const response = await axiosInstance.put(`/signup`, {
+  const response = await axiosInstance.put(`/api/signup`, {
     name: props.form.name,
     generation: props.form.generation,
     track: props.form.track,
     is_admin: props.form.is_admin,
   });
+  console.log(response.data);
   return response.data;
 };
