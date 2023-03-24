@@ -8,7 +8,5 @@ cau-likelion-next-dev:
     name:
       defaultLambda: 'cau-likelion-dev-lambda'
       imageLambda: 'cau-likelion-dev-image-lambda'
-    timeout: 30
-    memory: 1024
     cloudfront:
-      comment: 'next deploy'
+      comment: 'next dev deploy'
