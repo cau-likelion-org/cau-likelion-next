@@ -3,14 +3,14 @@ import axios from 'axios';
 
 export async function getProjects() {
   const data = await axios
-    .get<ResponseData<ArchivingArrayType<IProjectData>>>('https://api-cau-likelion.shop/project')
+    .get<ResponseData<ArchivingArrayType<IProjectData>>>('https://api-cau-likelion.shop/api/project')
     .then((res) => res.data.data);
   return data;
 }
 
 export async function getProjectDetail(id: string) {
   const data = await axios
-    .get<ResponseData<IProjectDetail>>(`https://api-cau-likelion.shop/project/${id}`)
+    .get<ResponseData<IProjectDetail>>(`https://api-cau-likelion.shop/api/project/${id}`)
     .then((res) => res.data.data);
   return data;
 }

@@ -1,12 +1,10 @@
 import { RequestSignUpForm } from '@@types/request';
 import { IToken } from '@utils/state';
-import axios from 'axios';
 import { getAuthAxios } from './authAxios';
-import { url } from '.';
 
 export const getEmailSecret = async (token: IToken, emailValue: string) => {
   const axiosInstance = getAuthAxios(token);
-  const response = await axiosInstance.get(`${url}/caumail`, {
+  const response = await axiosInstance.get(`/caumail`, {
     params: { email: `${emailValue}@cau.ac.kr` },
   });
   return response;
