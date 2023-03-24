@@ -6,11 +6,8 @@ import { url } from '.';
 
 export const getEmailSecret = async (token: IToken, emailValue: string) => {
   const axiosInstance = getAuthAxios(token);
-  const response = await axios.get(`${url}/caumail`, {
+  const response = await axiosInstance.get(`${url}/caumail`, {
     params: { email: `${emailValue}@cau.ac.kr` },
-    headers: {
-      Authorization: `Bearer ${token.access}`
-    }
   });
   return response;
 };
@@ -20,17 +17,11 @@ interface IMailResponse {
 }
 
 export const postEmailSecret = async (token: IToken, secretValue: string) => {
-  // const axiosInstance = getAuthAxios(token);
-  // const response = await axiosInstance.post<IMailResponse>(`/caumail`, {
-  //   code: secretValue,
-  // });
-  const response = await axios.post<IMailResponse>(`${url}/caumail`, {
+  const axiosInstance = getAuthAxios(token);
+  const response = await axiosInstance.post<IMailResponse>(`/caumail`, {
     code: secretValue,
-  }, {
-    headers: {
-      Authorization: `Bearer ${token.access}`
-    }
   });
+
   return response.data;
 };
 
@@ -42,15 +33,11 @@ export interface SignUpMutationProps {
 
 export const signUp = async (props: SignUpMutationProps) => {
   const axiosInstance = getAuthAxios({ access: props.accessToken, refresh: props.refreshToken });
-  const response = await axios.put(`${url}/signup`, {
+  const response = await axiosInstance.put(`/signup`, {
     name: props.form.name,
     generation: props.form.generation,
     track: props.form.track,
     is_admin: props.form.is_admin,
-  }, {
-    headers: {
-      Authorization: `Bearer ${props.accessToken}`
-    }
   });
   return response.data;
 };
