@@ -30,7 +30,7 @@ export const getAssignments = () => {
 
 export function editUserScore(userScore: RequestEditUserScore, token: IToken) {
     const authAxios = getAuthAxios(token);
-    return authAxios.post(`/api/mypage/attendance/`, {
+    return authAxios.post(`/api/mypage/attendance`, {
         user_id: userScore.user_id,
         truancy: userScore.truancy,
         absence: userScore.absence,
