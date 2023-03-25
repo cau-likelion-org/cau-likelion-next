@@ -7,8 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "deploy": "cd deployYML && cd .production && serverless",
-    "deployDev": "cd deployYML && cd .dev && serverless"
+    "deploy": "cd deployYML && cd .production && serverless --cwd ../../",
+    "deployDev": "cd deployYML && cd .dev && serverless --cwd ../../"
   },
   "dependencies": {
     "@next/font": "13.1.1",
