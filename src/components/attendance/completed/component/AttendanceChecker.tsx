@@ -30,7 +30,7 @@ const AttendanceChecker = ({ color, displayData, type }: IProps) => {
   const IS_ATTENDANCED = typeof displayData === 'string';
   const setStringThree = (name: string) => {
     const strArray = name.split('');
-    return strArray[0] + ' ' + strArray[1];
+    return strArray[0] + '   ' + strArray[1];
   };
   if (IS_ATTENDANCED)
     return (
@@ -94,6 +94,7 @@ const ImageText = styled.div`
   transform: rotate(-30deg);
   top: 42%;
   left: 25%;
+  white-space: pre-wrap;
   @media (max-width: 1550px) {
     top: 35%;
     left: 20%;
