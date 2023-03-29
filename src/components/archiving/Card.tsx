@@ -22,7 +22,6 @@ const Card = ({ id, thumbnail, title, dev_stack, category, link, subtitle }: ICa
             layout="fill"
             objectFit="contain"
             objectPosition="center"
-            loading="lazy"
           />
         </ImageWrapper>
         <TextWrapper>

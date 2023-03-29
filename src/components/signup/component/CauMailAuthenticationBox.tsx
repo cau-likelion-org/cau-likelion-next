@@ -1,8 +1,6 @@
 import { Basic, GreyScale, Primary } from '@utils/constant/color';
 import React, { Dispatch, SetStateAction, useState } from 'react';
-import { useRecoilValue } from 'recoil';
 import { getEmailSecret, postEmailSecret } from 'src/apis/signUp';
-import { useAuthRequest } from 'src/hooks/useAuthRequest';
 import styled from 'styled-components';
 import EmailErrorModal from './EmailErrorModal';
 import EmailModal from './EmailModal';

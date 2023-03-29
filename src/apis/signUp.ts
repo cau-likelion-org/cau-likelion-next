@@ -1,12 +1,11 @@
 import { RequestSignUpForm } from '@@types/request';
 import { IToken } from '@utils/state';
-import axios from 'axios';
-import { getAuthAxios } from './authAxios';
 import { url } from '.';
+import { getAuthAxios } from './authAxios';
 
 export const getEmailSecret = async (token: IToken, emailValue: string) => {
   const axiosInstance = getAuthAxios(token);
-  const response = await axiosInstance.get(`${url}/caumail`, {
+  const response = await axiosInstance.get(`/api/caumail`, {
     params: { email: `${emailValue}@cau.ac.kr` },
   });
   return response;
@@ -18,7 +17,7 @@ interface IMailResponse {
 
 export const postEmailSecret = async (token: IToken, secretValue: string) => {
   const axiosInstance = getAuthAxios(token);
-  const response = await axiosInstance.post<IMailResponse>(`/caumail`, {
+  const response = await axiosInstance.post<IMailResponse>(`/api/caumail`, {
     code: secretValue,
   });
 
@@ -33,7 +32,7 @@ export interface SignUpMutationProps {
 
 export const signUp = async (props: SignUpMutationProps) => {
   const axiosInstance = getAuthAxios({ access: props.accessToken, refresh: props.refreshToken });
-  const response = await axiosInstance.put(`/signup`, {
+  const response = await axiosInstance.put(`/api/signup`, {
     name: props.form.name,
     generation: props.form.generation,
     track: props.form.track,

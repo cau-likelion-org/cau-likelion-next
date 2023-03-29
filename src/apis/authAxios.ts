@@ -6,6 +6,7 @@ import { getNewToken } from './account';
 
 export const getAuthAxios = (token: IToken) => {
   const authAxios = Axios.create({
+    baseURL: `${process.env.NEXT_PUBLIC_API_KEY}`,
     headers: {
       Authorization: `${token.access}`,
     },
