@@ -28,11 +28,15 @@ interface IProps {
 
 const AttendanceChecker = ({ color, displayData, type }: IProps) => {
   const IS_ATTENDANCED = typeof displayData === 'string';
+  const setStringThree = (name: string) => {
+    const strArray = name.split('');
+    return strArray[0] + ' ' + strArray[1];
+  };
   if (IS_ATTENDANCED)
     return (
       <ImageWrapper>
         <Image src={image[type]} alt={type} width={84} height={84} />
-        <ImageText>{displayData}</ImageText>
+        <ImageText>{displayData.length === 2 ? setStringThree(displayData) : displayData}</ImageText>
       </ImageWrapper>
     );
 
