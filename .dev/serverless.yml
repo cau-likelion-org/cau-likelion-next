@@ -4,7 +4,7 @@ cau-likelion-next-dev:
     deploy: true
     bucketName: 'cau-likelion-dev'
     bucketRegion: 'ap-northeast-2'
-    nextConfigDir: './'
+    nextConfigDir: '../'
     name:
       defaultLambda: 'cau-likelion-dev-lambda'
       imageLambda: 'cau-likelion-dev-image-lambda'
