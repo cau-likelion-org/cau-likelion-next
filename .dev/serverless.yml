@@ -10,3 +10,4 @@ cau-likelion-next-dev:
       imageLambda: 'cau-likelion-dev-image-lambda'
     cloudfront:
       comment: 'next dev deploy'
+      distributionId: 'E22IC449ORKD33'
