@@ -13,8 +13,10 @@ import { IProjectDetail } from '@@types/request';
 import { GreyScale } from '@utils/constant/color';
 import { GetStaticPaths } from 'next';
 import { getIdFromAsPath, getPaths } from '@utils/index';
+import DetailPageHead from 'src/components/meta/DetailPageHead';
+import { ARCHIVING } from '@utils/constant';
 
-const ProjectDetail = ({ projectDetailStaticData }: { projectDetailStaticData: IProjectDetail }) => {
+const ProjectDetail = ({ projectDetailStaticData }: { projectDetailStaticData: IProjectDetail; }) => {
   const router = useRouter();
   const { data, isLoading } = useQuery<IProjectDetail>(['projectDeatil', router.query.project_id], () =>
     getProjectDetail(getIdFromAsPath(router.asPath, 'project')),
@@ -24,11 +26,19 @@ const ProjectDetail = ({ projectDetailStaticData }: { projectDetailStaticData: I
     return <div>로딩중</div>;
   }
   return (
-    <Wrapper>
-      <Carousel images={isLoading ? projectDetailStaticData.image : data!.image} />
-      <DetailMainSection data={isLoading ? projectDetailStaticData : data!} />
-      <hr />
-    </Wrapper>
+    <>
+      <DetailPageHead
+        title={data?.title}
+        canoUrl={`https://cau-likelion.org/project/${data?.id}`}
+        img={data?.thumbnail}
+        category={ARCHIVING.PROJECT}
+        description={data?.subtitle} />
+      <Wrapper>
+        <Carousel images={isLoading ? projectDetailStaticData.image : data!.image} />
+        <DetailMainSection data={isLoading ? projectDetailStaticData : data!} />
+        <hr />
+      </Wrapper>
+    </>
   );
 };
 
@@ -45,7 +55,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
   };
 };
 
-export async function getStaticProps({ params }: { params: { project_id: string } }) {
+export async function getStaticProps({ params }: { params: { project_id: string; }; }) {
   const projectDetailStaticData = await getProjectDetail(params.project_id);
   return {
     props: {

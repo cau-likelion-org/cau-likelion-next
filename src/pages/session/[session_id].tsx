@@ -10,6 +10,8 @@ import { GetStaticPaths } from 'next';
 import { GreyScale } from '@utils/constant/color';
 import { getSessionDetail, getSessions } from 'src/apis/session';
 import { getIdFromAsPath, getPaths } from '@utils/index';
+import DetailPageHead from 'src/components/meta/DetailPageHead';
+import { ARCHIVING } from '@utils/constant';
 
 const SessionDetail = ({ sessionDetailStaticData }: { sessionDetailStaticData: ISessionDetail; }) => {
   const router = useRouter();
@@ -21,10 +23,18 @@ const SessionDetail = ({ sessionDetailStaticData }: { sessionDetailStaticData: I
   }
 
   return (
-    <Wrapper>
-      <StCarousel images={isLoading ? sessionDetailStaticData.image : data!.image} />
-      <SessionDetailSection sessionDetail={sessionDetailStaticData} />
-    </Wrapper>
+    <>
+      <DetailPageHead
+        title={data?.title}
+        canoUrl={`https://cau-likelion.org/session/${data?.id}`}
+        img={data?.thumbnail}
+        category={ARCHIVING.SESSION}
+        description={data?.subtitle} />
+      <Wrapper>
+        <StCarousel images={isLoading ? sessionDetailStaticData.image : data!.image} />
+        <SessionDetailSection sessionDetail={sessionDetailStaticData} />
+      </Wrapper>
+    </>
   );
 };
 
