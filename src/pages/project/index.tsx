@@ -1,15 +1,19 @@
 import Header from '@archiving/Header';
 import LayoutArchiving from '@common/layout/LayoutArchiving';
-import SearchSection from '@project/header/SearchSection';
 import ProjectsSection from '@project/projects/ProjectsSection';
+import { ARCHIVING } from '@utils/constant';
 import { InferGetStaticPropsType } from 'next';
 import { ReactElement } from 'react';
 import { getProjects } from 'src/apis/project';
-import styled from 'styled-components';
+import ListPageHead from 'src/components/meta/ListPageHead';
 
 const ProjectList = ({ projectStaticData }: InferGetStaticPropsType<typeof getStaticProps>) => {
   return (
     <>
+      <ListPageHead
+        category={ARCHIVING.PROJECT}
+        canoUrl={'https://cau-likelion.org/project'}
+      />
       <Header pageName="프로젝트" introduce="멋사와 함께한 프로젝트" />
       <ProjectsSection staticData={projectStaticData} />
     </>
