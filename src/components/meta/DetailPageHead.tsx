@@ -1,26 +1,22 @@
-import { ARCHIVING } from '@utils/constant';
+import { ARCHIVING, META_DESCRIPTION_HEAD } from '@utils/constant';
 import Head from 'next/head';
 import React from 'react';
 
 interface DetailPageHeadProps {
-    title: string;
-    img: string;
+    title?: string;
+    img?: string;
     canoUrl: string;
     category: ARCHIVING;
-    description: string;
+    description?: string;
 }
 
 const DetailPageHead = ({ title, category, img, canoUrl, description }: DetailPageHeadProps) => {
-    const descriptionHead = {
-        [ARCHIVING.SESSION]: "정기세션",
-        [ARCHIVING.GALLERY]: "갤러리",
-        [ARCHIVING.PROJECT]: "프로젝트",
-    };
+
     return (
         <Head>
-            <title>{title}</title>
+            <title>{`${META_DESCRIPTION_HEAD[category]} | ${title}`}</title>
             <meta name='viewport' content="initial-scale=1.0, width=device-width" />
-            <meta name='description' content={`${descriptionHead[category]}|${description} }`} />
+            <meta name='description' content={`${META_DESCRIPTION_HEAD[category]} | ${description}`} />
             <meta name="keywords" content="IT개발, 웹개발, 중앙대학교, 멋쟁이사자처럼, 동아리" />
             <meta property="og:title" content={title} />
             <meta property="og:site_name" content="CAU LION" />

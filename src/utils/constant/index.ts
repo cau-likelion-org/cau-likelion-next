@@ -137,3 +137,9 @@ export const META_DESCRIPTION: { [key: number]: string; } = {
   [ARCHIVING.GALLERY]: "CAU LION의 추억 가득한 갤러리를 둘러보세요.",
   [ARCHIVING.PROJECT]: "CAU LION에서 탄생한 프로젝트들을 소개합니다! 기획자, 디자이너, 개발자가 한마음으로 이뤄낸 프로젝트들을 둘러보세요.",
 };
+
+export const META_DESCRIPTION_HEAD = {
+  [ARCHIVING.SESSION]: "정기세션",
+  [ARCHIVING.GALLERY]: "갤러리",
+  [ARCHIVING.PROJECT]: "프로젝트 소개",
+};
