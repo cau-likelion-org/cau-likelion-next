@@ -9,11 +9,11 @@ import { Primary } from '@utils/constant/color';
 
 import InputBox from './InputBox';
 
-import { getAttendance, postAttendance } from 'src/apis/attendance';
+import { postAttendance } from 'src/apis/attendance';
 import { token } from '@utils/state';
 import { TRACK_NAME } from '@utils/constant';
 
-const AttendanceBox = ({ data }: { data: TodayAttendanceData }) => {
+const AttendanceBox = ({ data }: { data: TodayAttendanceData; }) => {
   const router = useRouter();
   const InputRef = useRef<HTMLInputElement>(null);
   const tokens = useRecoilValue(token);

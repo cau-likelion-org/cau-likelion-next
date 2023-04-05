@@ -11,8 +11,10 @@ import { GetStaticPaths } from 'next';
 import { getGalleries, getGalleryDetail } from 'src/apis/gallery';
 import GalleryDetailSection from '@gallery/GalleryDetailSection';
 import { getIdFromAsPath, getPaths } from '@utils/index';
+import DetailPageHead from 'src/components/meta/DetailPageHead';
+import { ARCHIVING } from '@utils/constant';
 
-const GalleryDetail = ({ galleryDetailStaticData }: { galleryDetailStaticData: IGalleryDetail }) => {
+const GalleryDetail = ({ galleryDetailStaticData }: { galleryDetailStaticData: IGalleryDetail; }) => {
   const router = useRouter();
   const { data, isLoading } = useQuery<IGalleryDetail>(['galleryDeatil', router.asPath], () =>
     getGalleryDetail(getIdFromAsPath(router.asPath, 'gallery')),
@@ -22,11 +24,19 @@ const GalleryDetail = ({ galleryDetailStaticData }: { galleryDetailStaticData: I
     return <div>로딩중</div>;
   }
   return (
-    <Wrapper>
-      <Carousel images={isLoading ? galleryDetailStaticData.image : data!.image} />
-      <GalleryDetailSection galleryDetail={isLoading ? galleryDetailStaticData : data!} />
-      <hr />
-    </Wrapper>
+    <>
+      <DetailPageHead
+        title={data?.title}
+        canoUrl={`https://cau-likelion.org/gallery/${data?.id}`}
+        img={data?.thumbnail}
+        category={ARCHIVING.GALLERY}
+        description={data?.subtitle} />
+      <Wrapper>
+        <Carousel images={isLoading ? galleryDetailStaticData.image : data!.image} />
+        <GalleryDetailSection galleryDetail={isLoading ? galleryDetailStaticData : data!} />
+        <hr />
+      </Wrapper>
+    </>
   );
 };
 
@@ -43,7 +53,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
   };
 };
 
-export async function getStaticProps({ params }: { params: { gallery_id: string } }) {
+export async function getStaticProps({ params }: { params: { gallery_id: string; }; }) {
   const galleryDeatilStaticData = await getGalleryDetail(params.gallery_id);
   return {
     props: {

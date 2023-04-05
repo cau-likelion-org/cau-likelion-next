@@ -2,14 +2,20 @@ import { ArchivingArrayType, IGalleryData } from '@@types/request';
 import Header from '@archiving/Header';
 import LayoutArchiving from '@common/layout/LayoutArchiving';
 import GalleryListSection from '@gallery/GalleryListSection';
+import { ARCHIVING } from '@utils/constant';
 import { Primary } from '@utils/constant/color';
 import { ReactElement } from 'react';
 import { getGalleries } from 'src/apis/gallery';
+import ListPageHead from 'src/components/meta/ListPageHead';
 import styled from 'styled-components';
 
 const GalleryList = ({ galleryStaticData }: { galleryStaticData: ArchivingArrayType<IGalleryData>; }) => {
   return (
     <>
+      <ListPageHead
+        category={ARCHIVING.GALLERY}
+        canoUrl={'https://cau-likelion.org/gallery'}
+      />
       <Header pageName="추억" introduce="멋사와 함께 한 추억" />
       {/* <ButtonWrapper> */}
       {/* <WriteButton>+</WriteButton> */}

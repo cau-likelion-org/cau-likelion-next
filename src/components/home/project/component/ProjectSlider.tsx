@@ -4,7 +4,7 @@ import { StaticImageData } from 'next/image';
 import { TfiAngleLeft, TfiAngleRight } from 'react-icons/tfi';
 import projectPic2 from '@image/projectPic2.png';
 import mayI from '@image/메이아이.png';
-import chunghaha from '@image/사플.png';
+import chunghaha from '@image/logoThumbnail.png';
 
 import Project from './Project';
 import useSlider from 'src/hooks/useSlider';
