@@ -8,6 +8,7 @@ import TrackSection from '@home/track/TrackSection';
 import ActivitySection from '@home/activity/ActivitySection';
 import ScrollBar from '@home/scrollBar/ScrollBar';
 import LayoutLanding from '@common/layout/LayoutLanding';
+import MainPageHead from 'src/components/meta/MainPageHead';
 
 function Landing() {
   const ref = useRef(null);
@@ -16,15 +17,18 @@ function Landing() {
   };
 
   return (
-    <SectionWrapper>
-      <ScrollBar />
-      <MainSection clickMore={clickMore} />
-      <IntroduceSection innerRef={ref} />
-      <ActivitySection />
-      <TrackSection />
-      <ProjectSection />
-      <PlanSection />
-    </SectionWrapper>
+    <>
+      <MainPageHead canoUrl='https://cau-likelion.org/' />
+      <SectionWrapper>
+        <ScrollBar />
+        <MainSection clickMore={clickMore} />
+        <IntroduceSection innerRef={ref} />
+        <ActivitySection />
+        <TrackSection />
+        <ProjectSection />
+        <PlanSection />
+      </SectionWrapper>
+    </>
   );
 }
 Landing.getLayout = function getLayout(page: ReactElement) {
