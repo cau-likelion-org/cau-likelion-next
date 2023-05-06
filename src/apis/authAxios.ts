@@ -3,8 +3,6 @@ import { IToken } from '@utils/state';
 import axios from 'axios';
 import Axios from 'axios';
 import { getNewToken } from './account';
-import { useRouter } from 'next/router';
-import { access } from 'fs';
 
 export const getAuthAxios = (token: IToken) => {
   const authAxios = Axios.create({
@@ -16,7 +14,6 @@ export const getAuthAxios = (token: IToken) => {
   authAxios.interceptors.response.use(
     (res) => res,
     async (error) => {
-      const router = useRouter();
       const {
         config,
         response: { status },
@@ -32,12 +29,10 @@ export const getAuthAxios = (token: IToken) => {
         const response = await axios.get(config.url, config);
         return Promise.resolve(response);
       } catch (err: any) {
-        if (err.response.status == 403) {
-          LocalStorage.removeItem('access');
-          LocalStorage.removeItem('refresh');
-          router.push('/login');
-          return;
-        }
+        LocalStorage.removeItem('access');
+        LocalStorage.removeItem('refresh');
+        window.location.href = window.location.host + '/login';
+        return;
       }
     },
   );
