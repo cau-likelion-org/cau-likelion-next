@@ -29,7 +29,7 @@ const IncompletedSection = () => {
       }
     },
     onSuccess: (data) => {
-      if (data.attendance_result === 2 || data.attendance_result === 1) {
+      if (data && (data.attendance_result === 2 || data.attendance_result === 1)) {
         router.push('/attendance/completed');
       }
     },
