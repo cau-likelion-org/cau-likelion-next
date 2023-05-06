@@ -38,7 +38,7 @@ const NavBar = () => {
   const menuDataSelector = (): IMenu[] => {
     const resultArray = [
       { title: '프로젝트', routing: '/project' },
-      { title: isLogin ? 'MY' : 'Log in', routing: isLogin ? '/mypage' : 'login' },
+      { title: isLogin ? 'MY' : 'Log in', routing: isLogin ? '/mypage' : '/login' },
     ];
     if (isLogin) {
       const [project, login] = resultArray;
