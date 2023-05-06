@@ -31,7 +31,7 @@ export const getAuthAxios = (token: IToken) => {
       } catch (err: any) {
         LocalStorage.removeItem('access');
         LocalStorage.removeItem('refresh');
-        window.location.href = window.location.host + '/login';
+        window.location.href = '/login';
         return;
       }
     },
