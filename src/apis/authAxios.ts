@@ -6,7 +6,6 @@ import { getNewToken } from './account';
 import { useRouter } from 'next/router';
 import { access } from 'fs';
 
-
 export const getAuthAxios = (token: IToken) => {
   const authAxios = Axios.create({
     baseURL: `${process.env.NEXT_PUBLIC_API_KEY}`,
@@ -32,13 +31,14 @@ export const getAuthAxios = (token: IToken) => {
         config.headers.Authorization = `${newAccessToken}`;
         const response = await axios.get(config.url, config);
         return Promise.resolve(response);
-      } catch (err) {
-        LocalStorage.removeItem('access');
-        LocalStorage.removeItem('refresh');
-        router.push('/login');
-        return;
+      } catch (err: any) {
+        if (err.response.status == 403) {
+          LocalStorage.removeItem('access');
+          LocalStorage.removeItem('refresh');
+          router.push('/login');
+          return;
+        }
       }
-
     },
   );
   return authAxios;
