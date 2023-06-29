@@ -1,6 +1,4 @@
 import { BackgroundColor } from '@utils/constant/color';
-import NavBar from '@common/header/NavBar';
-import Footer from '@common/footer/Footer';
 import styled from 'styled-components';
 import { ReactElement } from 'react';
 
