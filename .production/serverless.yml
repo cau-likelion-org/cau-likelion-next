@@ -12,3 +12,4 @@ cau-likelion-next:
     memory: 1024
     cloudfront:
       comment: 'next deploy' # CloudFront 설명 설정
+      distributionId: 'E2G1YIN91GY4FL'
