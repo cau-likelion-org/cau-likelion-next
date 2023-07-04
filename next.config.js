@@ -8,8 +8,8 @@ const nextConfig = {
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     domains: [
       'cau-like-lion.s3.ap-northeast-2.amazonaws.com',
-      'chunghaha.s3.ap-northeast-2.amazonaws.com',
-      'https://d1sgygn8l0lfd5.cloudfront.net',
+      'chunghahaha.s3.ap-northeast-2.amazonaws.com',
+      'd1sgygn8l0lfd5.cloudfront.net',
     ],
   },
   webpack(config) {
