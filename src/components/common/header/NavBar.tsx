@@ -38,11 +38,12 @@ const NavBar = () => {
   const menuDataSelector = (): IMenu[] => {
     const resultArray = [
       { title: '프로젝트', routing: '/project' },
+      { title: '피드', routing: 'https://blog.cau-likelion.org' },
       { title: isLogin ? 'MY' : 'Log in', routing: isLogin ? '/mypage' : '/login' },
     ];
     if (isLogin) {
-      const [project, login] = resultArray;
-      return [project, { title: '출석체크', routing: '/attendance' }, login];
+      const [project, feed, login] = resultArray;
+      return [project, feed, { title: '출석체크', routing: '/attendance' }, login];
     }
     return resultArray;
   };
