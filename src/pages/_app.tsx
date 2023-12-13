@@ -48,7 +48,7 @@ function CauLikeLionNext({ Component, pageProps }: AppPropsWithLayout) {
         ) : (
           getLayout(
             <>
-              <GA ga_id={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS} />
+              <GA />
               <Component {...pageProps} />
             </>,
           )
