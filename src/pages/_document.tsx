@@ -45,7 +45,7 @@ export default class MyDocument extends Document {
           <script src="https://apis.google.com/js/platform.js?onload=init" async defer></script>
         </Head>
         <body>
-          {process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS ? <GA ga_id={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS} /> : null}
+          {/* {process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS ? <GA ga_id={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS} /> : null} */}
           <Main />
           <NextScript />
         </body>
