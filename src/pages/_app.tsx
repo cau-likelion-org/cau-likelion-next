@@ -7,9 +7,8 @@ import React, { ReactElement, ReactNode } from 'react';
 import { NextPage } from 'next';
 import LayoutDefault from '@common/layout/LayoutDefault';
 import { useState, useEffect } from 'react';
-import { Router, useRouter } from 'next/router';
+import { Router } from 'next/router';
 import Loading from '@common/loading/Loading';
-import * as gtag from '../lib/gtag';
 type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode;
 };
@@ -28,19 +27,10 @@ function CauLikeLionNext({ Component, pageProps }: AppPropsWithLayout) {
     const end = () => {
       setLoading(false);
     };
-
-    const handleRouteChange = (url: any) => {
-      gtag.pageview(url);
-    };
-    Router.events.on('routeChangeComplete', handleRouteChange);
-    Router.events.on('hashChangeComplete', handleRouteChange);
-
     Router.events.on('routeChangeStart', start);
     Router.events.on('routeChangeComplete', end);
     Router.events.on('routeChangeError', end);
     return () => {
-      Router.events.off('routeChangeComplete', handleRouteChange);
-      Router.events.off('hashChangeComplete', handleRouteChange);
       Router.events.on('routeChangeStart', start);
       Router.events.on('routeChangeComplete', end);
       Router.events.on('routeChangeError', end);
