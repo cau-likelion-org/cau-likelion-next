@@ -13,6 +13,7 @@ const GA = () => {
     const handleRouteChange = (url: any) => {
       gtag.pageview(url);
     };
+
     router.events.on('routeChangeComplete', handleRouteChange);
     router.events.on('hashChangeComplete', handleRouteChange);
     return () => {
