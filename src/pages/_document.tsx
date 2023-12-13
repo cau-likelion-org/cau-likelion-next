@@ -1,11 +1,7 @@
-import Document, {
-  DocumentContext,
-  Html,
-  Head,
-  Main,
-  NextScript,
-} from 'next/document';
+import Document, { DocumentContext, Html, Head, Main, NextScript } from 'next/document';
 import { ServerStyleSheet } from 'styled-components';
+import Script from 'next/script';
+import GA from 'src/test/GA';
 
 export default class MyDocument extends Document {
   static async getInitialProps(ctx: DocumentContext) {
@@ -14,8 +10,7 @@ export default class MyDocument extends Document {
     try {
       ctx.renderPage = () =>
         originalRenderPage({
-          enhanceApp: (App) => (props) =>
-            sheet.collectStyles(<App {...props} />),
+          enhanceApp: (App) => (props) => sheet.collectStyles(<App {...props} />),
         });
       const initialProps = await Document.getInitialProps(ctx);
       return {
@@ -41,13 +36,18 @@ export default class MyDocument extends Document {
             rel="stylesheet"
           />
           <link href="https://webfontworld.github.io/gmarket/GmarketSans.css" rel="stylesheet" />
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" />
+          <link
+            rel="stylesheet"
+            type="text/css"
+            href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css"
+          />
           <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap" rel="stylesheet" />
           <script src="https://apis.google.com/js/platform.js?onload=init" async defer></script>
         </Head>
         <body>
           <Main />
           <NextScript />
+          {process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS ? <GA ga_id={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS} /> : null}
         </body>
       </Html>
     );
