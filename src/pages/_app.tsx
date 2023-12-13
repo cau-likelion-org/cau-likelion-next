@@ -41,6 +41,7 @@ function CauLikeLionNext({ Component, pageProps }: AppPropsWithLayout) {
     <RecoilRoot>
       <QueryClientProvider client={queryClient}>
         <Head>
+          <GA />
           <title>LikeLionCAU</title>
         </Head>
         {loading ? (
