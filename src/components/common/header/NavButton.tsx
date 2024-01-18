@@ -15,19 +15,16 @@ const NavButton = ({ title, routing, target }: INavBarButton) => {
         <LoginButton>{title}</LoginButton>
       </Link>
     );
-  if (target) {
-    return (
-      <a href={routing} target={target}>
-        <Button>{title}</Button>
-      </a>
-    );
-  } else {
-    return (
-      <Link href={routing} target={target}>
-        <Button>{title}</Button>
-      </Link>
-    );
-  }
+
+  return target ? (
+    <a href={routing}>
+      <Button>{title}</Button>
+    </a>
+  ) : (
+    <Link href={routing} target={target}>
+      <Button>{title}</Button>
+    </Link>
+  );
 };
 
 export default NavButton;
