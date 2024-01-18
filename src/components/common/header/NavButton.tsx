@@ -5,20 +5,21 @@ import styled from 'styled-components';
 interface INavBarButton {
   title: string;
   routing: string;
+  target?: string;
 }
 
-const NavButton = ({ title, routing }: INavBarButton) => {
+const NavButton = ({ title, routing, target }: INavBarButton) => {
   if (title === 'Log in' || title === 'MY')
     return (
-      <Link href={routing}>
+      <a href={routing} target={target}>
         <LoginButton>{title}</LoginButton>
-      </Link>
+      </a>
     );
 
   return (
-    <Link href={routing}>
+    <a href={routing} target={target}>
       <Button>{title}</Button>
-    </Link>
+    </a>
   );
 };
 

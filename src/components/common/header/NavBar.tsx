@@ -19,6 +19,7 @@ export interface IHoverButton {
 export interface IMenu {
   title: string;
   routing: string;
+  target?: string;
 }
 
 const NavBar = () => {
@@ -38,7 +39,8 @@ const NavBar = () => {
   const menuDataSelector = (): IMenu[] => {
     const resultArray = [
       { title: '프로젝트', routing: '/project' },
-      { title: '피드', routing: 'https://blog.cau-likelion.org' },
+      { title: '위키', routing: 'https://wiki.cau-likelion.org', target: '_blank' },
+      { title: '피드', routing: 'https://blog.cau-likelion.org', target: '_blank' },
       { title: isLogin ? 'MY' : 'Log in', routing: isLogin ? '/mypage' : '/login' },
     ];
     if (isLogin) {
@@ -62,8 +64,8 @@ const NavBar = () => {
       </LogoWrapper>
       <ButtonWrapper>
         <HoverButton hover={hover} dropdown={dropdown} />
-        {menuDataSelector().map(({ title, routing }, index) => (
-          <NavButton key={index + routing} title={title} routing={routing} />
+        {menuDataSelector().map(({ title, routing, target }, index) => (
+          <NavButton key={index + routing} title={title} routing={routing} target={target} />
         ))}
       </ButtonWrapper>
     </Wrapper>
