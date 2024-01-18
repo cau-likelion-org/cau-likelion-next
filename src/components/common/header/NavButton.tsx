@@ -8,7 +8,7 @@ interface INavBarButton {
   target?: string;
 }
 
-const NavButton = ({ title, routing, target }: INavBarButton) => {
+const NavButton = ({ title, routing }: INavBarButton) => {
   if (title === 'Log in' || title === 'MY')
     return (
       <Link href={routing}>
@@ -16,12 +16,8 @@ const NavButton = ({ title, routing, target }: INavBarButton) => {
       </Link>
     );
 
-  return target ? (
-    <a href={routing}>
-      <Button>{title}</Button>
-    </a>
-  ) : (
-    <Link href={routing} target={target}>
+  return (
+    <Link href={routing}>
       <Button>{title}</Button>
     </Link>
   );

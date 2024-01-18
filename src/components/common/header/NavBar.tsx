@@ -65,7 +65,7 @@ const NavBar = () => {
       <ButtonWrapper>
         <HoverButton hover={hover} dropdown={dropdown} />
         {menuDataSelector().map(({ title, routing, target }, index) => (
-          <NavButton key={index + routing} title={title} routing={routing} target={target} />
+          <NavButton key={index + routing} title={title} routing={routing} />
         ))}
       </ButtonWrapper>
     </Wrapper>
