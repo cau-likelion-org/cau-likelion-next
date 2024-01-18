@@ -11,16 +11,23 @@ interface INavBarButton {
 const NavButton = ({ title, routing, target }: INavBarButton) => {
   if (title === 'Log in' || title === 'MY')
     return (
-      <a href={routing} target={target}>
+      <Link href={routing} target={target}>
         <LoginButton>{title}</LoginButton>
+      </Link>
+    );
+  if (target) {
+    return (
+      <a href={routing} target={target}>
+        <Button>{title}</Button>
       </a>
     );
-
-  return (
-    <a href={routing} target={target}>
-      <Button>{title}</Button>
-    </a>
-  );
+  } else {
+    return (
+      <Link href={routing} target={target}>
+        <Button>{title}</Button>
+      </Link>
+    );
+  }
 };
 
 export default NavButton;
