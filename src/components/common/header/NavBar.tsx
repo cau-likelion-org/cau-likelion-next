@@ -24,7 +24,7 @@ export interface IMenu {
 
 const NavBar = () => {
   const { access: tokenState } = useRecoilValue(token);
-  const [isLogin, setIsLogin] = useState(false);
+  const [isLogin, setIsLogin] = useState(true);
 
   useEffect(() => {
     if (tokenState) setIsLogin(true);
@@ -44,8 +44,8 @@ const NavBar = () => {
       { title: isLogin ? 'MY' : 'Log in', routing: isLogin ? '/mypage' : '/login' },
     ];
     if (isLogin) {
-      const [project, feed, login] = resultArray;
-      return [project, feed, { title: '출석체크', routing: '/attendance' }, login];
+      const [project, wiki, feed, login] = resultArray;
+      return [project, wiki, feed, { title: '출석체크', routing: '/attendance' }, login];
     }
     return resultArray;
   };
@@ -65,7 +65,7 @@ const NavBar = () => {
       <ButtonWrapper>
         <HoverButton hover={hover} dropdown={dropdown} />
         {menuDataSelector().map(({ title, routing, target }, index) => (
-          <NavButton key={index + routing} title={title} routing={routing} />
+          <NavButton key={index + routing} title={title} routing={routing} target={target} />
         ))}
       </ButtonWrapper>
     </Wrapper>
