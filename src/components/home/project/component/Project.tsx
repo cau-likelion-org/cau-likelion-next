@@ -59,7 +59,7 @@ const ProjectWrapper = styled(motion.div)`
   left: 0;
   bottom: 0;
   right: 0;
-  @media (min-width: 1600px) {
+  @media (min-width: 1850px) {
     height: 500px;
   }
   @media (max-width: 900px) {
