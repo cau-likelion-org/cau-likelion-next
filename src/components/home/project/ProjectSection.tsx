@@ -39,7 +39,7 @@ const Wrapper = styled.div`
   width: 100%;
 `;
 const TitleWrapper = styled.div`
-  margin-top: 3.2rem;
+  margin-top: 4rem;
   display: flex;
   margin-bottom: 4rem;
   align-items: center;

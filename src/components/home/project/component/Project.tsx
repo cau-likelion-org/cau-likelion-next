@@ -51,7 +51,7 @@ const ProjectWrapper = styled(motion.div)`
   border: 1px solid ${Primary.light};
   border-radius: 30px;
   display: flex;
-  height: 300px;
+  height: 290px;
   margin-top: 1rem;
   margin-left: 4%;
   margin-right: 4%;
@@ -59,6 +59,9 @@ const ProjectWrapper = styled(motion.div)`
   left: 0;
   bottom: 0;
   right: 0;
+  @media (min-width: 1600px) {
+    height: 500px;
+  }
   @media (max-width: 900px) {
     height: 250px;
   }
