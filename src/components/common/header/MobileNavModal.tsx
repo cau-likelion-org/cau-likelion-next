@@ -7,7 +7,7 @@ import { IMenu } from './NavBar';
 import NavButton from './NavButton';
 import NavProfileCard from './NavProfileCard';
 
-const MobileNavModal = ({ isModalOn }: { isModalOn: boolean; }) => {
+const MobileNavModal = ({ isModalOn }: { isModalOn: boolean }) => {
   const { access: tokenState } = useRecoilValue(token);
   const [visibilityAnimation, setVisibilityAnimation] = useState(false);
   const [repeat, setRepeat] = useState<any>(null);
@@ -21,6 +21,8 @@ const MobileNavModal = ({ isModalOn }: { isModalOn: boolean; }) => {
     { title: '프로젝트', routing: '/project' },
     { title: '세션', routing: '/session' },
     { title: '추억', routing: '/gallery' },
+    { title: '위키', routing: 'https://wiki.cau-likelion.org', target: '_blank' },
+    { title: '피드', routing: 'https://blog.cau-likelion.org', target: '_blank' },
   ];
 
   useEffect(() => {
@@ -46,7 +48,7 @@ const MobileNavModal = ({ isModalOn }: { isModalOn: boolean; }) => {
           <ButtonWrapper>
             {isLogin && <NavButton title={'출석체크'} routing={'/attendance'} />}
             {menu.map((m, i) => (
-              <NavButton key={i} title={m.title} routing={m.routing} />
+              <NavButton key={i} title={m.title} routing={m.routing} target={m.target} />
             ))}
           </ButtonWrapper>
         </Wrapper>
@@ -57,7 +59,7 @@ const MobileNavModal = ({ isModalOn }: { isModalOn: boolean; }) => {
 
 export default MobileNavModal;
 
-const Layer = styled.div<{ isModalOn: boolean; }>`
+const Layer = styled.div<{ isModalOn: boolean }>`
   max-width: 100vw;
   width: 100%;
   display: ${(props) => (props.isModalOn ? 'block' : 'none')};

@@ -21,7 +21,7 @@ const ProjectSection = () => {
     <FadeInComponent variants={fadeInAnimation}>
       <Wrapper>
         <TitleWrapper>
-          <Title>각 트랙이 모여 함께 만든 프로젝트</Title>
+          <Title>프로젝트 소개</Title>
           <Text>멋쟁이 사자처럼에서 탄생한 서비스들을 소개합니다. </Text>
         </TitleWrapper>
         <ProjectSlider />

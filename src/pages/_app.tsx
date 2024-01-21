@@ -9,6 +9,7 @@ import LayoutDefault from '@common/layout/LayoutDefault';
 import { useState, useEffect } from 'react';
 import { Router } from 'next/router';
 import Loading from '@common/loading/Loading';
+import GA from 'src/test/GA';
 type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode;
 };
@@ -42,7 +43,16 @@ function CauLikeLionNext({ Component, pageProps }: AppPropsWithLayout) {
         <Head>
           <title>LikeLionCAU</title>
         </Head>
-        {loading ? <Loading /> : getLayout(<Component {...pageProps} />)}
+        {loading ? (
+          <Loading />
+        ) : (
+          getLayout(
+            <>
+              <GA />
+              <Component {...pageProps} />
+            </>,
+          )
+        )}
       </QueryClientProvider>
     </RecoilRoot>
   );

@@ -2,9 +2,10 @@ import styled from 'styled-components';
 import { StaticImageData } from 'next/image';
 
 import { TfiAngleLeft, TfiAngleRight } from 'react-icons/tfi';
-import projectPic2 from '@image/projectPic2.png';
-import mayI from '@image/메이아이.png';
-import chunghaha from '@image/logoThumbnail.png';
+import allItChat from '@image/오리챗.png';
+import wiki from '@image/위키.png';
+import huru from '@image/탕후루.png';
+import pass from '@image/휠패스.png';
 
 import Project from './Project';
 import useSlider from 'src/hooks/useSlider';
@@ -16,27 +17,35 @@ export interface IProjectInner {
   projectType: string;
   img: StaticImageData;
 }
+
 const ProjectData: IProjectInner[] = [
   {
-    name: 'MAY I',
-    introduce: '기다리지 마세요, 메이아이하세요. 전문가-리포터 인터뷰 중개 서비스',
-    teamName: '메이아이',
-    projectType: '2022 해커톤',
-    img: mayI,
+    name: '오리챗(All-It-Chat)',
+    introduce: '대학의 경계를 넘는 교환학생 멘토멘티 매칭 서비스',
+    teamName: '오잉',
+    projectType: '2023 해커톤',
+    img: allItChat,
   },
   {
-    name: '카모마일',
-    introduce: '카페, 모두의 마음대로 매일',
-    teamName: '21, 23, 25',
-    projectType: '2022 아이디어톤',
-    img: projectPic2,
+    name: 'CAU LIKELION WIKI',
+    introduce: '중앙대 멋쟁이사자처럼 위키',
+    teamName: '키위',
+    projectType: '2023 사이드프로젝트',
+    img: wiki,
   },
   {
-    name: 'CAU LIKELION',
-    introduce: '우리도 사이트 있다 마, 함 봐바라',
-    teamName: '중하하',
-    projectType: '운영진 사이드 프로젝트',
-    img: chunghaha,
+    name: '학교 앞 탕후루',
+    introduce: '떠나자, 본격 2000년대 테스트 모음집',
+    teamName: '후루후루',
+    projectType: '2023 중커톤',
+    img: huru,
+  },
+  {
+    name: '휠패스',
+    introduce: '휠체어 이용자들의 안전과 편리를 위한, 문화 시설 경로 제공 서비스',
+    teamName: 'BFGGyu',
+    projectType: '2023 해커톤',
+    img: pass,
   },
 ];
 
@@ -71,6 +80,9 @@ const RelativeWrapper = styled.div`
   width: 100%;
   height: 300px;
   @media (max-width: 900px) {
+    height: 250px;
+  }
+  @media (max-width: 600px) {
     height: 150px;
   }
 `;

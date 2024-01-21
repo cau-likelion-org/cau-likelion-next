@@ -5,9 +5,10 @@ import styled from 'styled-components';
 interface INavBarButton {
   title: string;
   routing: string;
+  target?: string;
 }
 
-const NavButton = ({ title, routing }: INavBarButton) => {
+const NavButton = ({ title, routing, target }: INavBarButton) => {
   if (title === 'Log in' || title === 'MY')
     return (
       <Link href={routing}>
@@ -15,7 +16,11 @@ const NavButton = ({ title, routing }: INavBarButton) => {
       </Link>
     );
 
-  return (
+  return target ? (
+    <a href={routing} target={target}>
+      <Button>{title}</Button>
+    </a>
+  ) : (
     <Link href={routing}>
       <Button>{title}</Button>
     </Link>

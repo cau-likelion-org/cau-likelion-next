@@ -33,7 +33,7 @@ const Project = ({
             <ProjectTitle>{ProjectData.name}</ProjectTitle>
             <ProjectText>{ProjectData.introduce}</ProjectText>
             <TeamInfo>
-              <TeamName>{ProjectData.teamName}</TeamName>
+              <TeamName>TEAM {ProjectData.teamName}</TeamName>
               <ProjectType>{ProjectData.projectType}</ProjectType>
             </TeamInfo>
           </TextWrapper>
@@ -52,6 +52,7 @@ const ProjectWrapper = styled(motion.div)`
   border-radius: 30px;
   display: flex;
   height: 300px;
+  margin-top: 1rem;
   margin-left: 4%;
   margin-right: 4%;
   top: 0;
@@ -59,7 +60,10 @@ const ProjectWrapper = styled(motion.div)`
   bottom: 0;
   right: 0;
   @media (max-width: 900px) {
-    height: 150px;
+    height: 250px;
+  }
+  @media (max-width: 600px) {
+    height: 130px;
   }
 `;
 
@@ -110,11 +114,21 @@ const TeamName = styled.div`
   font-weight: 500;
   font-size: 14px;
   margin-right: 15px;
+  width: 50%;
   @media (max-width: 900px) {
     font-size: 10px;
   }
+  @media (max-width: 600px) {
+    width: 30%;
+    font-size: 7px;
+  }
 `;
-const ProjectType = styled(TeamName)``;
+const ProjectType = styled(TeamName)`
+  width: 70%;
+  @media (max-width: 600px) {
+    font-size: 7px;
+  }
+`;
 const TeamInfo = styled.div`
   display: flex;
 `;

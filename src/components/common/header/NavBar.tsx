@@ -19,11 +19,12 @@ export interface IHoverButton {
 export interface IMenu {
   title: string;
   routing: string;
+  target?: string;
 }
 
 const NavBar = () => {
   const { access: tokenState } = useRecoilValue(token);
-  const [isLogin, setIsLogin] = useState(false);
+  const [isLogin, setIsLogin] = useState(true);
 
   useEffect(() => {
     if (tokenState) setIsLogin(true);
@@ -38,11 +39,13 @@ const NavBar = () => {
   const menuDataSelector = (): IMenu[] => {
     const resultArray = [
       { title: '프로젝트', routing: '/project' },
+      { title: '위키', routing: 'https://wiki.cau-likelion.org', target: '_blank' },
+      { title: '피드', routing: 'https://blog.cau-likelion.org', target: '_blank' },
       { title: isLogin ? 'MY' : 'Log in', routing: isLogin ? '/mypage' : '/login' },
     ];
     if (isLogin) {
-      const [project, login] = resultArray;
-      return [project, { title: '출석체크', routing: '/attendance' }, login];
+      const [project, wiki, feed, login] = resultArray;
+      return [project, wiki, feed, { title: '출석체크', routing: '/attendance' }, login];
     }
     return resultArray;
   };
@@ -61,8 +64,8 @@ const NavBar = () => {
       </LogoWrapper>
       <ButtonWrapper>
         <HoverButton hover={hover} dropdown={dropdown} />
-        {menuDataSelector().map(({ title, routing }, index) => (
-          <NavButton key={index + routing} title={title} routing={routing} />
+        {menuDataSelector().map(({ title, routing, target }, index) => (
+          <NavButton key={index + routing} title={title} routing={routing} target={target} />
         ))}
       </ButtonWrapper>
     </Wrapper>
