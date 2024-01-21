@@ -72,6 +72,9 @@ const Wrapper = styled.div`
   flex-direction: column;
   align-items: center;
   width: 100%;
+  @media (min-width: 1850px) {
+    margin-top: 20rem;
+  }
 `;
 
 const ThreeCircleWrapper = styled.div`

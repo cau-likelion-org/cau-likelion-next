@@ -33,21 +33,21 @@ const PlanBox = () => {
   return (
     <BoxContainer>
       <ItemWrapper>
-        <RowWrapper>
+        <DateWrapper>
           {CurriculumData.map((item, i) => (
             <PlanDateItem key={i} date={item.date} />
           ))}
-        </RowWrapper>
+        </DateWrapper>
 
         <RowWrapper>
           <PlanDotItem />
         </RowWrapper>
 
-        <RowWrapper>
+        <TitleWrapper>
           {CurriculumData.map((item, i) => (
             <PlanTitleItem key={i} title={item.title} />
           ))}
-        </RowWrapper>
+        </TitleWrapper>
       </ItemWrapper>
     </BoxContainer>
   );
@@ -83,8 +83,26 @@ const RowWrapper = styled.div`
   display: flex;
   width: 100%;
   justify-content: space-between;
-
   position: relative;
 
+  align-items: center;
+`;
+
+const DateWrapper = styled.div`
+  display: flex;
+  width: 106%;
+  margin-left: 0.5rem;
+  justify-content: space-between;
+  position: relative;
+
+  align-items: center;
+`;
+
+const TitleWrapper = styled.div`
+  display: flex;
+  width: 105%;
+  margin-right: 1.5rem;
+  justify-content: space-between;
+  position: relative;
   align-items: center;
 `;

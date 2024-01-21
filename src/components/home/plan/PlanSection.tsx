@@ -35,6 +35,9 @@ const Wrapper = styled.div`
   align-items: center;
   width: 100%;
   gap: 40px;
+  @media (min-width: 1850px) {
+    margin-top: 20rem;
+  }
 `;
 const AlignWrapper = styled.div`
   width: 100%;

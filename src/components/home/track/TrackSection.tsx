@@ -76,6 +76,9 @@ const TitleText = styled.div`
   @media (max-width: 900px) {
     font-size: 2.5rem;
   }
+  @media (min-width: 1850px) {
+    margin-top: 30rem;
+  }
 `;
 
 const Text = styled.div`

@@ -24,7 +24,7 @@ const Wrapper = styled.div`
   justify-content: center;
   width: 250px;
   height: 250px;
-  @media (max-width: 1376px) {
+  @media (max-width: 1540px) {
     width: 180px;
     height: 180px;
   }
@@ -84,7 +84,7 @@ const ImageWrapper = styled.div`
   position: relative;
   width: 230px;
   height: 230px;
-  @media (max-width: 1376px) {
+  @media (max-width: 1540px) {
     width: 160px;
     height: 160px;
   }
