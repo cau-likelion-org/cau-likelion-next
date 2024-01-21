@@ -79,8 +79,11 @@ const RelativeWrapper = styled.div`
   position: relative;
   width: 100%;
   height: 300px;
+  @media (min-width: 1600px) {
+    height: 500px;
+  }
   @media (max-width: 900px) {
-    height: 250px;
+    height: 300px;
   }
   @media (max-width: 600px) {
     height: 150px;
