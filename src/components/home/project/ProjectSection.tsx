@@ -22,7 +22,7 @@ const ProjectSection = () => {
       <Wrapper>
         <TitleWrapper>
           <Title>프로젝트 소개</Title>
-          <Text>멋쟁이 사자처럼에서 탄생한 서비스들을 소개합니다. </Text>
+          <Text>멋쟁이사자처럼에서 탄생한 서비스들을 소개합니다. </Text>
         </TitleWrapper>
         <ProjectSlider />
         <ButtonWrapper>
@@ -39,11 +39,14 @@ const Wrapper = styled.div`
   width: 100%;
 `;
 const TitleWrapper = styled.div`
-  margin-top: 4rem;
+  margin-top: 6rem;
   display: flex;
   margin-bottom: 4rem;
   align-items: center;
   flex-direction: column;
+  @media (min-width: 1850px) {
+    margin-top: 30rem;
+  }
 `;
 const Title = styled.div`
   font-family: 'GmarketSans';
