@@ -44,21 +44,22 @@ const ImageWrapper = styled.div`
   position: relative;
   width: 180px;
   height: 180px;
+  margin-top: 2rem;
   @media (max-width: 1376px) {
-    width: 100px;
-    height: 100px;
-  }
-  @media (max-width: 1536px) {
     width: 120px;
     height: 120px;
+  }
+  @media (max-width: 1536px) {
+    width: 100px;
+    height: 100px;
   }
 `;
 const PhotoCardWrapper = styled.div`
   display: flex;
   justify-content: center;
-  width: 100%;
+  width: 90%;
   gap: 30px;
-  margin: 50px 0;
+  margin: 30px 0;
   @media (max-width: 1200px) {
     flex-direction: column;
     max-width: 500px;
@@ -75,7 +76,7 @@ const TitleText = styled.div`
   font-family: 'GmarketSans';
   font-style: normal;
   font-weight: 900;
-  font-size: 3rem;
+  font-size: 2.5rem;
   text-align: center;
   margin: 14px 0;
   @media (max-width: 1376px) {
