@@ -18,7 +18,7 @@ const trackController: Record<MemberStack, ITrackController> = {
   },
   design: {
     title: '디자인',
-    arrayLength: 4,
+    arrayLength: 5,
     color: '#FFF2EB',
     titleColor: Secondary.default,
   },
