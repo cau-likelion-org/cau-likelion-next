@@ -53,8 +53,8 @@ const BoxWrapper = styled.div<{ type: string }>`
 const Text = styled(motion.div)`
   font-family: 'Pretendard';
   font-style: normal;
-  font-size: 2rem;
-  line-height: 3rem;
+  font-size: 1.4rem;
+  line-height: 2rem;
   color: black;
   font-weight: 500;
   @media (max-width: 1550px) {
