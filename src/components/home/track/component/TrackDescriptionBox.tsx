@@ -73,4 +73,7 @@ const Text = styled(motion.div)`
 
 const BoldText = styled(Text)`
   font-weight: 700;
+  font-size: 1.8rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid grey;
 `;
