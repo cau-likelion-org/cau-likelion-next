@@ -40,6 +40,7 @@ const BoxWrapper = styled.div<{ type: string }>`
   gap: 3.6rem;
   @media (min-width: 1200px) {
     flex-basis: ${(props) => (props.type === 'recommend' ? '33%' : '66%')};
+    margin-top: 3rem;
     min-height: 370px;
   }
   @media (max-width: 1200px) {
