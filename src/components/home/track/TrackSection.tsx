@@ -58,6 +58,10 @@ const Wrapper = styled.div`
   flex-direction: column;
   align-items: center;
   width: 100%;
+  margin-top: 1rem;
+  @media (min-width: 1800px) {
+    margin-top: 5rem;
+  }
 `;
 
 const TitleText = styled.div`

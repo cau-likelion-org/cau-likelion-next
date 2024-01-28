@@ -39,12 +39,9 @@ const BoxWrapper = styled.div<{ type: string }>`
   flex-direction: column;
   gap: 3.6rem;
   @media (min-width: 1200px) {
-    flex-basis: ${(props) => (props.type === 'recommend' ? '33%' : '66%')};
-    margin-top: 3rem;
-    min-height: 370px;
-  }
-  @media (max-width: 1200px) {
+    flex-basis: ${(props) => (props.type === 'recommend' ? '44%' : '66%')};
     margin: 0;
+    min-height: 370px;
   }
   @media (max-width: 900px) {
     padding: 3rem;
