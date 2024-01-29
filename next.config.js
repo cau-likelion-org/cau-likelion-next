@@ -10,6 +10,7 @@ const nextConfig = {
       'cau-like-lion.s3.ap-northeast-2.amazonaws.com',
       'chunghahaha.s3.ap-northeast-2.amazonaws.com',
       'd1sgygn8l0lfd5.cloudfront.net',
+      'dcpshnp4boilw.cloudfront.net',
     ],
   },
   webpack(config) {
