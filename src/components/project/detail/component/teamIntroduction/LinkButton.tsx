@@ -15,25 +15,25 @@ const LinkButton = ({ shareURL }: { shareURL: IShareURL }) => {
   return (
     <Wrapper>
       {weburl && (
-        <Link href={weburl}>
+        <a href={weburl} target="_blank" rel="noreferrer">
           <ImageWrapper>
             <Image src={ImageObj.web} alt="icon" layout="fill" objectFit="contain" objectPosition="center" />
           </ImageWrapper>
-        </Link>
+        </a>
       )}
       {githuburl && (
-        <Link href={githuburl}>
+        <a href={githuburl} target="_blank" rel="noreferrer">
           <ImageWrapper>
             <Image src={ImageObj.github} alt="icon" layout="fill" objectFit="contain" objectPosition="center" />
           </ImageWrapper>
-        </Link>
+        </a>
       )}
       {youtubeurl && (
-        <Link href={youtubeurl}>
+        <a href={youtubeurl} target="_blank" rel="noreferrer">
           <ImageWrapper>
             <Image src={ImageObj.youtube} alt="icon" layout="fill" objectFit="contain" objectPosition="center" />
           </ImageWrapper>
-        </Link>
+        </a>
       )}
     </Wrapper>
   );
