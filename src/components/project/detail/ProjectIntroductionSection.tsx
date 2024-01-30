@@ -50,6 +50,8 @@ const SubTitle = styled.div`
   margin-top: 10px;
 `;
 const Description = styled.div`
+  display: flex;
+  flex-direction: column;
   font-family: 'Pretendard';
   font-weight: 500;
   font-size: 17px;
