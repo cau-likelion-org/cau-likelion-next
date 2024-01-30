@@ -10,14 +10,17 @@ const ProjectIntroduction = ({ projectData }: { projectData: IProjectDetail }) =
       </TitleWrapper>
       <Description>
         {projectData.description &&
-          projectData.description.split('\n').map((line, key) => {
-            return (
-              <span key={key}>
-                {line}
-                <br />
-              </span>
-            );
-          })}
+          projectData.description
+            .replace(/\\n/g, '\n')
+            .split('\n')
+            .map((line, key) => {
+              return (
+                <span key={key}>
+                  {line}
+                  <br />
+                </span>
+              );
+            })}
       </Description>
     </Wrapper>
   );
@@ -50,6 +53,7 @@ const SubTitle = styled.div`
   margin-top: 10px;
 `;
 const Description = styled.div`
+  margin-top: 0.5rem;
   display: flex;
   flex-direction: column;
   font-family: 'Pretendard';
@@ -58,5 +62,5 @@ const Description = styled.div`
   line-height: 160%;
   height: 100%;
   display: flex;
-  align-items: center;
+  align-items: start;
 `;
