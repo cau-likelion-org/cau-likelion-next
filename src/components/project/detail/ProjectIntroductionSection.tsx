@@ -8,7 +8,17 @@ const ProjectIntroduction = ({ projectData }: { projectData: IProjectDetail }) =
         <Title>{projectData.title}</Title>
         <SubTitle>{projectData.subtitle}</SubTitle>
       </TitleWrapper>
-      <Description>{projectData.description}</Description>
+      <Description>
+        {projectData.description &&
+          projectData.description.split('\n').map((line, key) => {
+            return (
+              <span key={key}>
+                {line}
+                <br />
+              </span>
+            );
+          })}
+      </Description>
     </Wrapper>
   );
 };
