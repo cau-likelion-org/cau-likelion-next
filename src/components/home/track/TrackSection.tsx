@@ -73,10 +73,11 @@ const TitleText = styled.div`
   font-weight: 900;
   width: 100%;
   text-align: center;
+  margin-top: 1rem;
   margin-left: 15px;
   margin-right: 15px;
   margin-bottom: 1.5rem;
-  font-size: 3rem;
+  font-size: 2.5rem;
   @media (max-width: 900px) {
     font-size: 2.5rem;
   }

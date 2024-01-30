@@ -34,14 +34,14 @@ export default TrackDescriptionBox;
 const BoxWrapper = styled.div<{ type: string }>`
   background: #f2f1ff;
   border-radius: 18px;
-  padding: 5rem;
+  padding: 4.5rem;
   display: flex;
   flex-direction: column;
   gap: 3.6rem;
   @media (min-width: 1200px) {
     flex-basis: ${(props) => (props.type === 'recommend' ? '44%' : '66%')};
     margin: 0;
-    min-height: 370px;
+    min-height: 340px;
   }
   @media (max-width: 900px) {
     padding: 3rem;
