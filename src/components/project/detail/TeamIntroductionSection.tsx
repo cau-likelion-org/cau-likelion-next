@@ -4,7 +4,7 @@ import DevStacks from './component/teamIntroduction/DevStacks';
 import LinkButton from './component/teamIntroduction/LinkButton';
 import TeamMember from './component/teamIntroduction/TeamMember';
 
-const TeamIntroduction = ({ projectData }: { projectData: IProjectDetail; }) => {
+const TeamIntroduction = ({ projectData }: { projectData: IProjectDetail }) => {
   return (
     <Wrapper>
       <TeamName>{projectData.team_name}</TeamName>
@@ -35,6 +35,9 @@ const Wrapper = styled.div`
   border-radius: 20px;
   flex-basis: 40%;
   padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
 `;
 const TeamName = styled.div`
   font-family: 'Pretendard';
