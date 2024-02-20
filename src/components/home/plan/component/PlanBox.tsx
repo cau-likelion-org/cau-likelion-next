@@ -62,9 +62,9 @@ const BoxContainer = styled.div`
   border-radius: 30px;
   flex-direction: column;
   justify-content: center;
-  padding: 78px 102px;
-  @media (max-width: 900px) {
-    padding: 3rem;
+  padding: 60px 88px;
+  @media (max-width: 1024px) {
+    padding: 5rem;
   }
   position: relative;
 
@@ -94,8 +94,10 @@ const DateWrapper = styled.div`
   margin-left: 0.5rem;
   justify-content: space-between;
   position: relative;
-
   align-items: center;
+  @media (max-width: 1024px) {
+    padding: 1rem;
+  }
 `;
 
 const TitleWrapper = styled.div`

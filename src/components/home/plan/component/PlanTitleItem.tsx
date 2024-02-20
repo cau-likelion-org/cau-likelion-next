@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-const PlanTitleItem = ({ title }: { title: string; }) => {
+const PlanTitleItem = ({ title }: { title: string }) => {
   return <Title>{title}</Title>;
 };
 
@@ -14,10 +14,11 @@ const Title = styled.div`
   font-family: 'Pretendard';
   font-style: normal;
   text-align: center;
-  @media(min-width:900px){
+  @media (min-width: 1024px) {
     line-height: 30px;
   }
-  @media(max-width:900px){
-    font-size: 1rem;
+  @media (max-width: 1024px) {
+    padding: 1rem;
+    font-size: 1.5rem;
   }
 `;

@@ -13,7 +13,7 @@ const Date = styled.div`
   font-style: normal;
   font-weight: 500;
   font-size: 1.5rem;
-  @media (min-width: 900px) {
+  @media (min-width: 1024px) {
     line-height: 32px;
   }
   text-align: center;
@@ -21,9 +21,9 @@ const Date = styled.div`
   background: #e3e4ff;
   border-radius: 50px;
   padding: 5px 18px;
-  @media (max-width: 900px) {
-    padding: 2px 5px;
-    border-radius: 15px;
-    font-size: 1rem;
+  @media (max-width: 1024px) {
+    padding: 3px 12px;
+    border-radius: 10px;
+    font-size: 1.5rem;
   }
 `;
