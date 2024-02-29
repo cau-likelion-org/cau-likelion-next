@@ -11,7 +11,7 @@ const FailedMessage = () => {
         <Image src={alert} alt="알림" width="20px" height="20px" />
         <StMessageText>알림</StMessageText>
       </div>
-      <StMessageText>로그인 실패: 등록되지 않은 이메일입니다. 올바른 이메일을 입력해주세요.</StMessageText>
+      <StMessageText>등록되지 않은 이메일입니다. 올바른 이메일을 입력해주세요.</StMessageText>
     </MessageWrapper>
   );
 };
@@ -24,9 +24,9 @@ const MessageWrapper = styled.div`
   justify-content: center;
   align-items: center;
 
-  width: 46rem;
+  width: 54rem;
   height: 12rem;
-  padding: 2rem 0;
+  padding: 3rem 0;
 
   background: #f5f5f5;
   border-radius: 20px;
@@ -35,9 +35,9 @@ const MessageWrapper = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-
     div {
       margin-left: 5px;
+      margin-bottom: 1rem;
     }
   }
 `;
@@ -48,4 +48,5 @@ const StMessageText = styled.div`
   font-weight: 500;
   font-size: 17px;
   color: #2d2d2d;
+  margin-top: 1rem;
 `;
