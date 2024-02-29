@@ -15,7 +15,7 @@ const Title = styled.div`
   font-style: normal;
   text-align: center;
   @media (min-width: 1024px) {
-    line-height: 30px;
+    line-height: 20px;
   }
   @media (max-width: 1024px) {
     padding: 1rem;

@@ -10,10 +10,10 @@ const PlanBox = () => {
   const CurriculumData = [
     {
       date: '3월',
-      title: '트랙별\n세션 시작',
+      title: '1학기\n세션 시작',
     },
     {
-      date: '6월',
+      date: '5월',
       title: '아이디어톤',
     },
     {
@@ -22,7 +22,7 @@ const PlanBox = () => {
     },
     {
       date: '9월',
-      title: '트랙별\n스터디 시작',
+      title: '2학기\n세션 시작',
     },
     {
       date: '12월',
