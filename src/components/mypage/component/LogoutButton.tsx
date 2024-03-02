@@ -8,46 +8,46 @@ import { token } from '@utils/state';
 import { useRouter } from 'next/router';
 
 const LogoutButton = () => {
-    const router = useRouter();
-    const [_, setToken] = useRecoilState(token);
-    const handleLogout = () => {
-        LocalStorage.removeItem('access');
-        LocalStorage.removeItem('refresh');
-        setToken({
-            access: null,
-            refresh: null
-        });
-    };
+  const router = useRouter();
+  const [_, setToken] = useRecoilState(token);
+  const handleLogout = () => {
+    LocalStorage.removeItem('access');
+    LocalStorage.removeItem('refresh');
+    setToken({
+      access: null,
+      refresh: null,
+    });
+  };
 
-    return (
-        <Wrapper>
-            <ButtonWrapper onClick={handleLogout}>
-                <Text>로그아웃</Text>
-                {/* <FiLogOut size={15} /> */}
-                <AiOutlinePoweroff size={13} />
-            </ButtonWrapper>
-        </Wrapper>
-    );
+  return (
+    <Wrapper>
+      <ButtonWrapper onClick={handleLogout}>
+        <Text>로그아웃</Text>
+        {/* <FiLogOut size={15} /> */}
+        <AiOutlinePoweroff size={13} />
+      </ButtonWrapper>
+    </Wrapper>
+  );
 };
 
 export default LogoutButton;
 
 const Wrapper = styled.div`
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    justify-content: flex-start;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  justify-content: flex-start;
 `;
 
 const ButtonWrapper = styled.div`
   font-family: 'Pretendard';
   font-style: normal;
   font-weight: 500;
-  font-size: 0.5rem;
+  font-size: 1rem;
   color: ${BackgroundColor};
   background-color: #333333;
   border-radius: 50px;
-  padding: 3px 8px;
+  padding: 3px 10px;
   cursor: pointer;
   display: flex;
   justify-content: center;
@@ -55,5 +55,4 @@ const ButtonWrapper = styled.div`
   gap: 3px;
 `;
 
-const Text = styled.div`
-`;
+const Text = styled.div``;

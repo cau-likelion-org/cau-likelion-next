@@ -81,7 +81,7 @@ const ItemWrapper = styled.div`
 
 const RowWrapper = styled.div`
   display: flex;
-  width: 100%;
+  width: 95%;
   justify-content: space-between;
   position: relative;
 
@@ -90,21 +90,21 @@ const RowWrapper = styled.div`
 
 const DateWrapper = styled.div`
   display: flex;
-  width: 106%;
-  margin-left: 0.5rem;
+  width: 102%;
   justify-content: space-between;
   position: relative;
   align-items: center;
-  @media (max-width: 1024px) {
+  margin-left: 0.5rem;
+  @media (max-width: 1100px) {
     padding: 1rem;
   }
 `;
 
 const TitleWrapper = styled.div`
   display: flex;
-  width: 105%;
-  margin-right: 1.5rem;
+  width: 100%;
   justify-content: space-between;
   position: relative;
   align-items: center;
+  margin-right: 2.5rem;
 `;
