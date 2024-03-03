@@ -1,6 +1,9 @@
 cau-likelion-next:
   component: '@sls-next/serverless-component'
   inputs:
+    runtime:
+      defaultLambda: 'nodejs20.x'
+      apiLambda: 'nodejs20.x'
     deploy: true
     bucketName: 'cau-like-lion2'
     bucketRegion: 'ap-northeast-2'
@@ -12,5 +15,3 @@ cau-likelion-next:
     memory: 1024
     cloudfront:
       comment: 'next deploy'
-      # distributionId: 'E2G1YIN91GY4FL'
-# CloudFront 설명 설정
