@@ -23,7 +23,6 @@ const LogoutButton = () => {
     <Wrapper>
       <ButtonWrapper onClick={handleLogout}>
         <Text>로그아웃</Text>
-        {/* <FiLogOut size={15} /> */}
         <AiOutlinePoweroff size={13} />
       </ButtonWrapper>
     </Wrapper>
