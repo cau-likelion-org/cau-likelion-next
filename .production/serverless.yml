@@ -2,7 +2,7 @@ cau-likelion-next:
   component: '@sls-next/serverless-component'
   inputs:
     deploy: true
-    bucketName: 'cau-like-lion'
+    bucketName: 'cau-like-lion2'
     bucketRegion: 'ap-northeast-2'
     nextConfigDir: '../'
     name:
@@ -11,5 +11,6 @@ cau-likelion-next:
     timeout: 30
     memory: 1024
     cloudfront:
-      comment: 'next deploy' # CloudFront 설명 설정
-      distributionId: 'E2G1YIN91GY4FL'
+      comment: 'next deploy'
+      # distributionId: 'E2G1YIN91GY4FL'
+# CloudFront 설명 설정
