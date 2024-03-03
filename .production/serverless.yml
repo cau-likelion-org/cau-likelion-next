@@ -6,8 +6,8 @@ cau-likelion-next:
     bucketRegion: 'ap-northeast-2'
     nextConfigDir: '../'
     name:
-      defaultLambda: 'cau-likelion-default-lambda'
-      imageLambda: 'cau-likelion-image-lambda'
+      defaultLambda: 'cau-likelion-default-lambda2'
+      imageLambda: 'cau-likelion-image-lambda2'
     timeout: 30
     memory: 1024
     cloudfront:
