@@ -4,6 +4,7 @@ cau-likelion-next:
     runtime:
       defaultLambda: 'nodejs20.x'
       imageLambda: 'nodejs20.x'
+      apiLambda: 'nodejs20.x'
     deploy: true
     bucketName: 'cau-like-lion2'
     bucketRegion: 'ap-northeast-2'
