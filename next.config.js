@@ -11,6 +11,7 @@ const nextConfig = {
       'chunghahaha.s3.ap-northeast-2.amazonaws.com',
       'd1sgygn8l0lfd5.cloudfront.net',
       'dcpshnp4boilw.cloudfront.net',
+      'd1e39uzon1ymuo.cloudfront.net',
     ],
   },
   webpack(config) {
