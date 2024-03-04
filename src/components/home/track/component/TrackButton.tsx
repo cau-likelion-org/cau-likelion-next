@@ -37,6 +37,6 @@ const Button = styled.div<{ isClicked: boolean }>`
   font-family: 'Pretendard';
   font-style: normal;
   font-weight: 700;
-  font-size: 1.7rem;
+  font-size: 1.72rem;
   color: ${(props) => (props.isClicked ? BackgroundColor : 'black')};
 `;
