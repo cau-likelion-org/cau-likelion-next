@@ -48,7 +48,7 @@ const TrackTitle = styled.div`
   }
 `;
 const AttendanceCheckWrapper = styled.div`
-  flex-basis: 100%;
+  flex-basis: 90%;
   display: flex;
   align-items: center;
   flex-wrap: wrap;

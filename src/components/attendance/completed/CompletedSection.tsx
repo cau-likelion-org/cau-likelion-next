@@ -13,7 +13,7 @@ const CompletedSection = () => {
 };
 
 const Wrapper = styled.div`
-  width: 100%;
+  width: 105%;
   margin-top: 100px;
   @media (max-width: 1440px) {
     padding: 0 250px;
