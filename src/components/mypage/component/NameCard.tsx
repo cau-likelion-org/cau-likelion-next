@@ -10,7 +10,7 @@ const NameCard = ({ name, generation }: { name: string; generation: number }) =>
         <span>{generation}</span>기 &nbsp;
         <span>{name}</span>님
       </Text>
-      {/* <LogoutButton /> */}
+      <LogoutButton />
     </Wrapper>
   );
 };

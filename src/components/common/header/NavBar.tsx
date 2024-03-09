@@ -24,7 +24,7 @@ export interface IMenu {
 
 const NavBar = () => {
   const { access: tokenState } = useRecoilValue(token);
-  const [isLogin, setIsLogin] = useState(true);
+  const [isLogin, setIsLogin] = useState(false);
 
   useEffect(() => {
     if (tokenState) setIsLogin(true);
