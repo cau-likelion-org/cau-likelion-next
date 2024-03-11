@@ -1,14 +1,24 @@
 import { BackgroundColor, Primary } from '@utils/constant/color';
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import MakeAttendanceButton from './MakeAttendanceButton';
 
-const ScoreHeader = ({ isAdmin, name }: { isAdmin: boolean; name: string }) => {
+interface UserProps {
+  isAdmin: boolean;
+  name: string;
+}
+
+const ScoreHeader = ({ isAdmin, name }: UserProps) => {
+  const [isPre, setIsPre] = useState<boolean>(false);
+  if (name === '최재영' || name === '박재윤') {
+    setIsPre(true);
+  }
+
   return (
     <>
       <TitleHeader>
         <TitleText>출석현황</TitleText>
-        {isAdmin && (name === '최재영' || name === '박재윤') && <MakeAttendanceButton />}
+        {isPre && <MakeAttendanceButton />}
       </TitleHeader>
 
       <CallOut>
