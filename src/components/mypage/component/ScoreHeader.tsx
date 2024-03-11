@@ -3,12 +3,12 @@ import React from 'react';
 import styled from 'styled-components';
 import MakeAttendanceButton from './MakeAttendanceButton';
 
-const ScoreHeader = ({ isAdmin }: { isAdmin: boolean }) => {
+const ScoreHeader = ({ isAdmin, name }: { isAdmin: boolean; name: string }) => {
   return (
     <>
       <TitleHeader>
         <TitleText>출석현황</TitleText>
-        {isAdmin && <MakeAttendanceButton />}
+        {isAdmin && (name === '최재영' || name === '박재윤') && <MakeAttendanceButton />}
       </TitleHeader>
 
       <CallOut>

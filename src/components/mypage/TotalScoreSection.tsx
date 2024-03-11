@@ -12,7 +12,7 @@ import ScoreEditModal from './component/ScoreEditModal';
 import ScoreHeader from './component/ScoreHeader';
 import { TiPencil } from 'react-icons/ti';
 
-const TotalScoreSection = () => {
+const TotalScoreSection = ({ myName }: { myName: string }) => {
   const tokenValue = useRecoilValue(token);
   const [totalScoreArray, setTotalScoreArray] = useState<UserScore[]>([]);
   const [isEditModalOn, setIsEditModalOn] = useState(false);
@@ -57,10 +57,9 @@ const TotalScoreSection = () => {
   return (
     <>
       <Wrapper>
-        <ScoreHeader isAdmin={true} />
+        <ScoreHeader isAdmin={true} name={myName} />
         <ScoreWrapper>
-          {
-            !totalAssignmentLoading && !totalAttendanceLoading &&
+          {!totalAssignmentLoading && !totalAttendanceLoading && (
             <>
               <ScoreRow index={0}>
                 <ScoreTitle index={0}>이름</ScoreTitle>
@@ -87,9 +86,8 @@ const TotalScoreSection = () => {
                 </ScoreRow>
               ))}
             </>
-          }
+          )}
         </ScoreWrapper>
-
       </Wrapper>
       {isEditModalOn ? (
         <ScoreEditModal
@@ -100,7 +98,6 @@ const TotalScoreSection = () => {
       ) : null}
     </>
   );
-
 };
 export default TotalScoreSection;
 
@@ -121,13 +118,13 @@ const ScoreWrapper = styled.div`
   overflow: hidden;
 `;
 
-const ScoreRow = styled.div<{ index: number; }>`
+const ScoreRow = styled.div<{ index: number }>`
   display: flex;
   width: 100%;
   background-color: ${(props) => (props.index % 2 == 0 ? GreyScale.light : BackgroundColor)};
 `;
 
-const ScoreTitle = styled.div<{ index: number; }>`
+const ScoreTitle = styled.div<{ index: number }>`
   font-family: 'Pretendard';
   font-style: normal;
   font-weight: 500;
@@ -140,7 +137,7 @@ const ScoreTitle = styled.div<{ index: number; }>`
   border-right: ${(props) => (props.index == 7 ? 'none' : '1px solid gray')};
 `;
 
-const Score = styled.div<{ type?: string; }>`
+const Score = styled.div<{ type?: string }>`
   font-family: 'Pretendard';
   font-style: normal;
   font-weight: 500;

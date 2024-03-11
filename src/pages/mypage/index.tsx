@@ -56,7 +56,7 @@ const MyPage = () => {
             <ProfileCard user={userProfile} />
             {isActiveGeneration ? (
               userProfile.is_admin ? (
-                <TotalScoreSection />
+                <TotalScoreSection myName={userProfile.name} />
               ) : (
                 <MyScoreSection userProfile={userProfile} />
               )
