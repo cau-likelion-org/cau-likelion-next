@@ -1,5 +1,5 @@
 import { BackgroundColor, Primary } from '@utils/constant/color';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import MakeAttendanceButton from './MakeAttendanceButton';
 
@@ -10,9 +10,12 @@ interface UserProps {
 
 const ScoreHeader = ({ isAdmin, name }: UserProps) => {
   const [isPre, setIsPre] = useState<boolean>(false);
-  if (name === '최재영' || name === '박재윤') {
-    setIsPre(true);
-  }
+
+  useEffect(() => {
+    if (name === '최재영' || name === '박재윤') {
+      setIsPre(true);
+    }
+  }, [name]);
 
   return (
     <>
