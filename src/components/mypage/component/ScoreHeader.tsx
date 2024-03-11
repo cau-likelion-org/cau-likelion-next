@@ -5,7 +5,7 @@ import MakeAttendanceButton from './MakeAttendanceButton';
 
 interface UserProps {
   isAdmin: boolean;
-  name: string;
+  name?: string;
 }
 
 const ScoreHeader = ({ isAdmin, name }: UserProps) => {
