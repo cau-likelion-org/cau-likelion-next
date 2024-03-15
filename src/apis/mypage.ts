@@ -23,6 +23,7 @@ export const getAssignments = () => {
   const data = axios
     .get(`https://notion-api.splitbee.io/v1/table/${process.env.NEXT_PUBLIC_NOTION_DATABASE_ID}`)
     .then((res) => res.data);
+  console.log(data);
   return data;
 };
 
