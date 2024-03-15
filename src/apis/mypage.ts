@@ -16,7 +16,6 @@ export const getTotalAttendance = async (token: IToken) => {
   const data = await authAxios
     .get<ResponseData<UserAttendance[]>>(`/api/mypage/attendance`)
     .then((res) => res.data.data);
-  console.log(data);
   return data;
 };
 
@@ -24,7 +23,6 @@ export const getAssignments = () => {
   const data = axios
     .get(`https://notion-api.splitbee.io/v1/table/${process.env.NEXT_PUBLIC_NOTION_DATABASE_ID}`)
     .then((res) => res.data);
-  console.log(data);
   return data;
 };
 
