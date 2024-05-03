@@ -1,18 +1,18 @@
-cau-likelion-next:
-  component: '@sls-next/serverless-component'
-  inputs:
-    runtime:
-      defaultLambda: 'nodejs20.x'
-      imageLambda: 'nodejs20.x'
-      apiLambda: 'nodejs20.x'
-    deploy: true
-    bucketName: 'cau-like-lion2'
-    bucketRegion: 'ap-northeast-2'
-    nextConfigDir: '../'
-    name:
-      defaultLambda: 'cau-likelion-default-lambda2'
-      imageLambda: 'cau-likelion-image-lambda2'
-    timeout: 30
-    memory: 1024
-    cloudfront:
-      comment: 'next deploy'
+# cau-likelion-next:
+#   component: '@sls-next/serverless-component'
+#   inputs:
+#     runtime:
+#       defaultLambda: 'nodejs20.x'
+#       imageLambda: 'nodejs20.x'
+#       apiLambda: 'nodejs20.x'
+#     deploy: true
+#     bucketName: 'cau-like-lion2'
+#     bucketRegion: 'ap-northeast-2'
+#     nextConfigDir: '../'
+#     name:
+#       defaultLambda: 'cau-likelion-default-lambda2'
+#       imageLambda: 'cau-likelion-image-lambda2'
+#     timeout: 30
+#     memory: 1024
+#     cloudfront:
+#       comment: 'next deploy'
