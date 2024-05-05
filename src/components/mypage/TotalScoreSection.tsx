@@ -18,6 +18,13 @@ const TotalScoreSection = ({ myName }: { myName: string }) => {
   const [isEditModalOn, setIsEditModalOn] = useState(false);
   const [clickedUser, setClickedUser] = useState<UserScore>({} as UserScore);
   const scoreChanged = useRecoilValue(userScoreChanged);
+  const [isPre, setIsPre] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (myName === '최재영' || myName === '박재윤') {
+      setIsPre(true);
+    }
+  }, [myName]);
 
   const handleScoreEditModal = (userScore: UserScore) => {
     setIsEditModalOn(!isEditModalOn);
@@ -74,7 +81,7 @@ const TotalScoreSection = ({ myName }: { myName: string }) => {
                 <ScoreRow index={i + 1} key={i}>
                   <Score>
                     {userScore.name}
-                    <EditButton onClick={() => handleScoreEditModal(userScore)} />
+                    {isPre && <EditButton onClick={() => handleScoreEditModal(userScore)} />}
                   </Score>
                   <Score>{TRACK_NAME[userScore?.track]}</Score>
                   <Score>{userScore.absence}</Score>
