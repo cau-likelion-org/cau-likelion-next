@@ -19,6 +19,7 @@ const TotalScoreSection = ({ myName }: { myName: string }) => {
   const [clickedUser, setClickedUser] = useState<UserScore>({} as UserScore);
   const scoreChanged = useRecoilValue(userScoreChanged);
   const [isPre, setIsPre] = useState<boolean>(false);
+  const [sortScoreArray, setSortScoreArray] = useState<UserScore[]>([]);
 
   useEffect(() => {
     if (myName === '최재영' || myName === '박재윤') {
@@ -59,8 +60,18 @@ const TotalScoreSection = ({ myName }: { myName: string }) => {
           }
         });
       setTotalScoreArray(Object.values(tmpObject));
+      const sort = totalScoreArray.sort((a: UserScore, b: UserScore) => {
+        if (a.track !== b.track) {
+          return a.track - b.track;
+        }
+        return a.name.localeCompare(b.name, 'ko');
+      });
+      setSortScoreArray(sort);
     }
   }, [totalAssignment, totalAttendance]);
+
+  if (totalScoreArray) {
+  }
   return (
     <>
       <Wrapper>
@@ -77,7 +88,7 @@ const TotalScoreSection = ({ myName }: { myName: string }) => {
                   </ScoreTitle>
                 ))}
               </ScoreRow>
-              {totalScoreArray.map((userScore, i) => (
+              {sortScoreArray.map((userScore, i) => (
                 <ScoreRow index={i + 1} key={i}>
                   <Score>
                     {userScore.name}
