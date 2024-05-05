@@ -43,7 +43,7 @@ const TotalScoreSection = ({ myName }: { myName: string }) => {
         totalAttendance.forEach((userAttendance: UserAttendance, i: number) => {
           const target = tmpObject[userAttendance.name];
 
-          if (target.track === userAttendance.track) {
+          if (target?.track === userAttendance?.track) {
             target.user_id = userAttendance.user_id;
             target.tardiness = userAttendance.tardiness;
             target.truancy = userAttendance.truancy;
@@ -76,7 +76,7 @@ const TotalScoreSection = ({ myName }: { myName: string }) => {
                     {userScore.name}
                     <EditButton onClick={() => handleScoreEditModal(userScore)} />
                   </Score>
-                  <Score>{TRACK_NAME[userScore.track]}</Score>
+                  <Score>{TRACK_NAME[userScore?.track]}</Score>
                   <Score>{userScore.absence}</Score>
                   <Score>{userScore.truancy}</Score>
                   <Score>{userScore.tardiness}</Score>

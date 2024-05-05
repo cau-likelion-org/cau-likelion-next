@@ -36,10 +36,7 @@ const MyScoreSection = ({ userProfile }: { userProfile: UserProfile }) => {
   );
 
   useEffect(() => {
-    console.log('과제 데이터:', userAssignment);
     if (userAttendance && userAssignment) {
-      console.log(userAttendance);
-      console.log(userAssignment);
       const score = getTotalScore({
         absence: userAttendance.absence,
         truancy: userAttendance.truancy,
