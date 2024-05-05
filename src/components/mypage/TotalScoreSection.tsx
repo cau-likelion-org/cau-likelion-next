@@ -68,10 +68,8 @@ const TotalScoreSection = ({ myName }: { myName: string }) => {
       });
       setSortScoreArray(sort);
     }
-  }, [totalAssignment, totalAttendance]);
+  }, [totalAssignment, totalAttendance, totalScoreArray]);
 
-  if (totalScoreArray) {
-  }
   return (
     <>
       <Wrapper>
