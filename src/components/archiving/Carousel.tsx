@@ -1,50 +1,26 @@
-import { useState } from 'react';
+import { useEffect } from 'react';
 import Image from 'next/image';
 import styled from 'styled-components';
-import { AnimatePresence, motion, PanInfo } from 'framer-motion';
-import { useInterval } from 'src/hooks/useInterval';
-import useSlider from 'src/hooks/useSlider';
+import { useDragIndexCarousel, useInterval } from '@rapiders/react-hooks';
 
-const Carousel = ({ images }: { images: string[]; }) => {
-  const [index, direction, increase, decrease, animateVariant] = useSlider<string>(images, 0.1, 1000, false, 'tween');
-  const [timerBool, setTimerBool] = useState(true);
-  const [dragStartX, setdragStartX] = useState(0);
-  useInterval(increase, 3000, timerBool);
+const Carousel = ({ images }: { images: string[] }) => {
+  const { CarouselWrapper, ref, next, index, isDragging } = useDragIndexCarousel(images.length, { infinity: true });
+  const { stop, continueTimer } = useInterval(next, 3000);
 
-  const handleScroll = (_: any, info: PanInfo) => {
-    setTimerBool((prev) => (prev = true));
-    if (dragStartX > info.point.x) increase();
-    else decrease();
-  };
+  useEffect(() => {
+    if (isDragging) stop();
+    else continueTimer();
+  }, [isDragging]);
+
   return (
     <Wrapper>
-      <CarouselWrapper>
-        <AnimatePresence initial={false} custom={direction}>
-          <ImageWrapper
-            key={index}
-            variants={animateVariant}
-            initial="initial"
-            animate="visible"
-            exit="exit"
-            drag={images.length === 1 ? false : 'x'}
-            onDragStart={(_, info) => {
-              setTimerBool((prev) => (prev = false));
-              setdragStartX((prev) => (prev = info.point.x));
-            }}
-            onDragEnd={handleScroll}
-            custom={direction}
-          >
-            <CustomImage
-              src={images[index]}
-              alt="img"
-              layout="fill"
-              objectFit="contain"
-              objectPosition="center"
-            />
-          </ImageWrapper>
-        </AnimatePresence>
+      <CarouselWrapper ref={ref} className="carouselWrapper">
+        {images.map((img) => (
+          <div style={{ width: '100%', backgroundColor: 'white' }} key={img}>
+            <img src={img} draggable={false} style={{ objectFit: 'contain', width: '100%', height: '100%' }} />
+          </div>
+        ))}
       </CarouselWrapper>
-
       <DiamondWrapper>
         {Array.from({ length: images.length }, (_, i) => i).map((i) => (
           <Diamond key={i} color={index === i ? '#1a21bd' : '#F0F1FF'} />
@@ -67,17 +43,7 @@ const CustomImage = styled(Image)`
   cursor: pointer;
   -webkit-user-drag: none;
 `;
-const CarouselWrapper = styled.div`
-  position: relative;
-  width: 100%;
-  height: 50vh;
-  border-radius: 30px;
-  border: none;
-  overflow: hidden;
-  @media (max-width: 900px) {
-    height: 30vh;
-  }
-`;
+
 const DiamondWrapper = styled.div`
   display: flex;
   width: 100%;
@@ -85,13 +51,7 @@ const DiamondWrapper = styled.div`
   align-items: center;
   margin-top: 20px;
 `;
-const ImageWrapper = styled(motion.div)`
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  border-radius: 30px;
-  border: none;
-`;
+
 const Diamond = styled.div`
   width: 7px;
   height: 7px;

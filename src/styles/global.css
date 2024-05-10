@@ -86,3 +86,15 @@ a {
 * {
   box-sizing: border-box;
 }
+
+.carouselWrapper {
+  position: relative;
+  width: 100%;
+  height: 50vh;
+  border-radius: 30px;
+  border: none;
+  overflow: hidden;
+  @media (max-width: 900px) {
+    height: 30vh;
+  }
+}
