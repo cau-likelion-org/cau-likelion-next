@@ -16,7 +16,7 @@ import { getIdFromAsPath, getPaths } from '@utils/index';
 import DetailPageHead from 'src/components/meta/DetailPageHead';
 import { ARCHIVING } from '@utils/constant';
 
-const ProjectDetail = ({ projectDetailStaticData }: { projectDetailStaticData: IProjectDetail; }) => {
+const ProjectDetail = ({ projectDetailStaticData }: { projectDetailStaticData: IProjectDetail }) => {
   const router = useRouter();
   const { data, isLoading } = useQuery<IProjectDetail>(['projectDeatil', router.query.project_id], () =>
     getProjectDetail(getIdFromAsPath(router.asPath, 'project')),
@@ -32,7 +32,8 @@ const ProjectDetail = ({ projectDetailStaticData }: { projectDetailStaticData: I
         canoUrl={`https://cau-likelion.org/project/${data?.id}`}
         img={data?.thumbnail}
         category={ARCHIVING.PROJECT}
-        description={data?.subtitle} />
+        description={data?.subtitle}
+      />
       <Wrapper>
         <Carousel images={isLoading ? projectDetailStaticData.image : data!.image} />
         <DetailMainSection data={isLoading ? projectDetailStaticData : data!} />
@@ -55,7 +56,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
   };
 };
 
-export async function getStaticProps({ params }: { params: { project_id: string; }; }) {
+export async function getStaticProps({ params }: { params: { project_id: string } }) {
   const projectDetailStaticData = await getProjectDetail(params.project_id);
   return {
     props: {
@@ -70,6 +71,10 @@ export default ProjectDetail;
 const Wrapper = styled.div`
   width: 100%;
   height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   &hr {
     background: ${GreyScale.light};
   }

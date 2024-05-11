@@ -14,7 +14,7 @@ import { getIdFromAsPath, getPaths } from '@utils/index';
 import DetailPageHead from 'src/components/meta/DetailPageHead';
 import { ARCHIVING } from '@utils/constant';
 
-const GalleryDetail = ({ galleryDetailStaticData }: { galleryDetailStaticData: IGalleryDetail; }) => {
+const GalleryDetail = ({ galleryDetailStaticData }: { galleryDetailStaticData: IGalleryDetail }) => {
   const router = useRouter();
   const { data, isLoading } = useQuery<IGalleryDetail>(['galleryDeatil', router.asPath], () =>
     getGalleryDetail(getIdFromAsPath(router.asPath, 'gallery')),
@@ -30,7 +30,8 @@ const GalleryDetail = ({ galleryDetailStaticData }: { galleryDetailStaticData: I
         canoUrl={`https://cau-likelion.org/gallery/${data?.id}`}
         img={data?.thumbnail}
         category={ARCHIVING.GALLERY}
-        description={data?.subtitle} />
+        description={data?.subtitle}
+      />
       <Wrapper>
         <Carousel images={isLoading ? galleryDetailStaticData.image : data!.image} />
         <GalleryDetailSection galleryDetail={isLoading ? galleryDetailStaticData : data!} />
@@ -53,7 +54,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
   };
 };
 
-export async function getStaticProps({ params }: { params: { gallery_id: string; }; }) {
+export async function getStaticProps({ params }: { params: { gallery_id: string } }) {
   const galleryDeatilStaticData = await getGalleryDetail(params.gallery_id);
   return {
     props: {
@@ -69,6 +70,7 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   width: 100%;
   height: 100%;
   &hr {

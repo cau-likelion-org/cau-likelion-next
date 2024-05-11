@@ -13,7 +13,7 @@ import { getIdFromAsPath, getPaths } from '@utils/index';
 import DetailPageHead from 'src/components/meta/DetailPageHead';
 import { ARCHIVING } from '@utils/constant';
 
-const SessionDetail = ({ sessionDetailStaticData }: { sessionDetailStaticData: ISessionDetail; }) => {
+const SessionDetail = ({ sessionDetailStaticData }: { sessionDetailStaticData: ISessionDetail }) => {
   const router = useRouter();
   const { data, isLoading } = useQuery<ISessionDetail>(['sessionDetail', router.query.project_id], () =>
     getSessionDetail(getIdFromAsPath(router.asPath, 'session')),
@@ -29,7 +29,8 @@ const SessionDetail = ({ sessionDetailStaticData }: { sessionDetailStaticData: I
         canoUrl={`https://cau-likelion.org/session/${data?.id}`}
         img={data?.thumbnail}
         category={ARCHIVING.SESSION}
-        description={data?.subtitle} />
+        description={data?.subtitle}
+      />
       <Wrapper>
         <StCarousel images={isLoading ? sessionDetailStaticData.image : data!.image} />
         <SessionDetailSection sessionDetail={sessionDetailStaticData} />
@@ -51,7 +52,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
   };
 };
 
-export async function getStaticProps({ params }: { params: { session_id: string; }; }) {
+export async function getStaticProps({ params }: { params: { session_id: string } }) {
   const sessionDeatilStaticData = await getSessionDetail(params.session_id);
   return {
     props: {
@@ -67,6 +68,7 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   width: 100%;
   height: 100%;
   &hr {

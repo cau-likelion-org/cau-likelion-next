@@ -25,12 +25,12 @@ const SessionDetailSection = ({ sessionDetail }: { sessionDetail: ISessionDetail
 
         <DescriptionBox>{sessionDetail.description}</DescriptionBox>
 
-        {sessionDetail.reference ? (
+        {/* {sessionDetail.reference ? (
           <ReferenceBox>
             <b> 세션 자료 </b>
             <div>{sessionDetail.reference}</div>
           </ReferenceBox>
-        ) : null}
+        ) : null} */}
       </RightWrapper>
     </Wrapper>
   );
@@ -42,8 +42,9 @@ const Wrapper = styled.div`
   display: flex;
   justify-content: center;
   gap: 3rem;
-
-  @media (max-width: 900px){
+  /* width: 30%; */
+  margin-top: 3rem;
+  @media (max-width: 900px) {
     flex-direction: column;
     align-items: start;
     gap: 1rem;
@@ -54,8 +55,7 @@ const LeftWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  /* margin-top: 5rem; */
-
+  gap: 1.5rem;
   @media (max-width: 900px) {
     padding: 2rem;
   }
@@ -66,15 +66,18 @@ const LeftWrapper = styled.div`
 `;
 
 const RightWrapper = styled.div`
-  flex-basis: 70%;
-
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-left: 2rem;
+  margin-top: 2rem;
 `;
 
 const TitleText = styled.div`
   font-family: 'GmarketSans';
   font-style: normal;
   font-weight: 900;
-  font-size: 3rem;
+  font-size: 2.3rem;
   margin-bottom: 0.7rem;
   color: ${Basic.default};
 `;
@@ -97,8 +100,8 @@ const PresenterText = styled.div`
 const TopicText = styled.div`
   display: flex;
   gap: 2rem;
-  padding: 3rem 3rem 0 3rem;
-  font-size: 2rem;
+  /* padding: 3rem 3rem 0 3rem; */
+  font-size: 1.8rem;
   color: ${Basic.default};
   font-weight: 500;
   line-height: 2.5rem;
@@ -106,12 +109,12 @@ const TopicText = styled.div`
   font-style: normal;
 
   @media (max-width: 900px) {
-    padding: 0rem 3rem;
+    /* padding: 0rem 3rem; */
   }
 `;
 
 const DescriptionBox = styled.div`
-  padding: 3rem;
+  /* padding: 3rem; */
   font-size: 1.4rem;
   color: ${Basic.default};
   font-weight: 500;
