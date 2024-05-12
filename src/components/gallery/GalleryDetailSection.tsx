@@ -3,7 +3,7 @@ import { Basic, GreyScale } from '@utils/constant/color';
 import React from 'react';
 import styled from 'styled-components';
 
-const GalleryDetailSection = ({ galleryDetail }: { galleryDetail: IGalleryDetail; }) => {
+const GalleryDetailSection = ({ galleryDetail }: { galleryDetail: IGalleryDetail }) => {
   return (
     <Wrapper>
       <LeftWrapper>
@@ -11,7 +11,20 @@ const GalleryDetailSection = ({ galleryDetail }: { galleryDetail: IGalleryDetail
         <DateText>{galleryDetail.date}</DateText>
       </LeftWrapper>
       <RightWrapper>
-        <DescriptionBox>{galleryDetail.description}</DescriptionBox>
+        <DescriptionBox>
+          {galleryDetail.description &&
+            galleryDetail.description
+              .replace(/\\n/g, '\n')
+              .split('\n')
+              .map((line, key) => {
+                return (
+                  <span key={key}>
+                    {line}
+                    <br />
+                  </span>
+                );
+              })}
+        </DescriptionBox>
       </RightWrapper>
     </Wrapper>
   );
@@ -24,7 +37,7 @@ const Wrapper = styled.div`
   justify-content: center;
   align-items: center;
   gap: 3rem;
-  @media (max-width: 900px){
+  @media (max-width: 900px) {
     flex-direction: column;
     align-items: start;
     gap: 1rem;
@@ -36,7 +49,7 @@ const LeftWrapper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  @media (max-width: 900px){
+  @media (max-width: 900px) {
     padding: 4rem 2rem 0rem 2rem;
   }
 `;
@@ -59,7 +72,7 @@ const DateText = styled(TitleText)`
 const RightWrapper = styled.div`
   flex-basis: 70%;
   padding: 2rem;
-  @media (max-width: 900px){
+  @media (max-width: 900px) {
     padding: 2rem 2rem 0rem 2rem;
   }
 `;
@@ -76,5 +89,7 @@ const DescriptionBox = styled.div`
   justify-content: center;
   align-items: center;
   word-wrap: break-word;
-  @media(max-width:900px){padding:0rem;}
+  @media (max-width: 900px) {
+    padding: 0rem;
+  }
 `;
