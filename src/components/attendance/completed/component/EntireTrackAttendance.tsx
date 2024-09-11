@@ -12,7 +12,7 @@ import { useRecoilValue } from 'recoil';
 const trackController: Record<MemberStack, ITrackController> = {
   pm: {
     title: '기획',
-    arrayLength: 5,
+    arrayLength: 4,
     color: Primary.light,
     titleColor: Primary.default,
   },
