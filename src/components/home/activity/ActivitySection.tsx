@@ -111,7 +111,7 @@ const ImageWrapper = styled.div`
 const TitleText = styled.div`
   display: flex;
   justify-content: flex-start;
-  font-family: 'GmarketSans';
+  font-family: 'Gmarket Sans';
   font-style: normal;
   font-weight: 800;
   line-height: 4rem;

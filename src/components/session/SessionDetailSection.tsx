@@ -74,7 +74,7 @@ const RightWrapper = styled.div`
 `;
 
 const TitleText = styled.div`
-  font-family: 'GmarketSans';
+  font-family: 'Gmarket Sans';
   font-style: normal;
   font-weight: 900;
   font-size: 2.3rem;

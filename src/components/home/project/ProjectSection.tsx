@@ -49,7 +49,7 @@ const TitleWrapper = styled.div`
   }
 `;
 const Title = styled.div`
-  font-family: 'GmarketSans';
+  font-family: 'Gmarket Sans';
   font-weight: 700;
   font-size: 3rem;
   @media (max-width: 900px) {
@@ -57,7 +57,7 @@ const Title = styled.div`
   }
 `;
 const Text = styled.div`
-  font-family: 'GmarketSans';
+  font-family: 'Gmarket Sans';
   font-weight: 500;
   font-size: 17px;
   margin-top: 23px;

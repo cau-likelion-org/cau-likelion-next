@@ -51,7 +51,7 @@ const ScoreHeader = ({ isAdmin, name }: UserProps) => {
 export default ScoreHeader;
 
 const TitleText = styled.div`
-  font-family: 'GmarketSans';
+  font-family: 'Gmarket Sans';
   font-style: normal;
   font-weight: 700;
   font-size: 1.7rem;

@@ -33,7 +33,10 @@ export default class MyDocument extends Document {
             href="https://fonts.googleapis.com/css2?family=Inter:wght@400;900;500;600;700;800&display=swap"
             rel="stylesheet"
           />
-          <link href="https://webfontworld.github.io/gmarket/GmarketSans.css" rel="stylesheet" />
+          <link
+            href="https://cdn.jsdelivr.net/gh/leetaewook/gmarket-sans-dynamic-subset/GmarketSans.css"
+            rel="stylesheet"
+          />
           <link
             rel="stylesheet"
             type="text/css"

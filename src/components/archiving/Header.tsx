@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { GreyScale } from '@utils/constant/color';
-const Header = ({ pageName, introduce }: { pageName: string; introduce: string; }) => {
+const Header = ({ pageName, introduce }: { pageName: string; introduce: string }) => {
   return (
     <Wrapper>
       <Category>아카이빙 &gt; {pageName}</Category>
@@ -22,7 +22,7 @@ const Category = styled.div`
   }
 `;
 const Title = styled.div`
-  font-family: 'GmarketSans';
+  font-family: 'Gmarket Sans';
   font-style: normal;
   font-weight: 700;
   font-size: 4rem;

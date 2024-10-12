@@ -65,7 +65,7 @@ const ArchivingIndex = styled.div`
   font-weight: 900;
   font-size: 2.3rem;
   margin-bottom: 20px;
-  font-family: 'GmarketSans';
+  font-family: 'Gmarket Sans';
 `;
 
 const CardWrapper = styled.div`

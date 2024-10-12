@@ -68,7 +68,7 @@ const TitleText = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  font-family: 'GmarketSans';
+  font-family: 'Gmarket Sans';
   font-style: normal;
   font-weight: 900;
   width: 100%;
@@ -87,7 +87,7 @@ const TitleText = styled.div`
 `;
 
 const Text = styled.div`
-  font-family: 'GmarketSans';
+  font-family: 'Gmarket Sans';
   font-weight: 500;
   line-height: 2.5rem;
   font-size: 1.7rem;
