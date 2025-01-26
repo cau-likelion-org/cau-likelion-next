@@ -10,8 +10,7 @@ export async function getProjects() {
 }
 
 export async function getProjectDetail(id: string) {
-  const data = await axios
-    .get<ResponseData<IProjectDetail>>(`${url}/api/project/${id}`)
-    .then((res) => res.data.data);
+  const data = await axios.get<ResponseData<IProjectDetail>>(`${url}/api/project/${id}`).then((res) => res.data.data);
+  console.log(data);
   return data;
 }

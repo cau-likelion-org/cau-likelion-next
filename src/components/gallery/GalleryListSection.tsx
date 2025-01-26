@@ -6,14 +6,16 @@ import { useQuery } from 'react-query';
 import { getGalleries } from 'src/apis/gallery';
 import styled from 'styled-components';
 
-const GalleryListSection = ({ staticData }: { staticData: ArchivingArrayType<IGalleryData>; }) => {
+const GalleryListSection = ({ staticData }: { staticData: ArchivingArrayType<IGalleryData> }) => {
   const { data, isLoading } = useQuery<ArchivingArrayType<IGalleryData>>(['galleries'], getGalleries);
 
   return (
     <Wrapper>
-      {sortArchivingListDesc(isLoading ? staticData : (data as ArchivingArrayType<IGalleryData>))!.map(([year, value]) => (
-        <Archiving archivingType={'gallery'} archivingIndex={year} archivingData={value} key={year} />
-      ))}
+      {sortArchivingListDesc(isLoading ? staticData : (data as ArchivingArrayType<IGalleryData>))!.map(
+        ([year, value]) => (
+          <Archiving archivingType={'gallery'} archivingIndex={year} archivingData={value} key={year} />
+        ),
+      )}
     </Wrapper>
   );
 };

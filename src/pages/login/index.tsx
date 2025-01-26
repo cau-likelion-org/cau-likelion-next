@@ -69,7 +69,7 @@ const StContentsWrapper = styled.div`
   position: relative;
   height: 100rem;
   width: 100rem;
-  
+
   @media (max-width: 1200px) {
     width: 100%;
     padding: 0;
@@ -84,5 +84,4 @@ const StBorderWrapper = styled.div`
   @media (max-width: 1200px) {
     display: none;
   }
-
 `;
