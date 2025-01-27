@@ -9,18 +9,13 @@ import { getGalleries } from 'src/apis/gallery';
 import ListPageHead from 'src/components/meta/ListPageHead';
 import styled from 'styled-components';
 
-const GalleryList = ({ galleryStaticData }: { galleryStaticData: ArchivingArrayType<IGalleryData>; }) => {
+const GalleryList = ({ galleryStaticData }: { galleryStaticData: ArchivingArrayType<IGalleryData> }) => {
   return (
     <>
-      <ListPageHead
-        category={ARCHIVING.GALLERY}
-        canoUrl={'https://cau-likelion.org/gallery'}
-      />
+      <div>점검중입니다.</div>
+      {/* <ListPageHead category={ARCHIVING.GALLERY} canoUrl={'https://cau-likelion.org/gallery'} />
       <Header pageName="추억" introduce="멋사와 함께 한 추억" />
-      {/* <ButtonWrapper> */}
-      {/* <WriteButton>+</WriteButton> */}
-      {/* </ButtonWrapper> */}
-      <GalleryListSection staticData={galleryStaticData} />
+      <GalleryListSection staticData={galleryStaticData} /> */}
     </>
   );
 };
@@ -54,7 +49,6 @@ const WriteButton = styled.button`
   background-color: ${Primary.default};
   margin-left: 27px;
   cursor: pointer;
-
 `;
 
 const ButtonWrapper = styled.div`

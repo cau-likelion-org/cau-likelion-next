@@ -10,12 +10,13 @@ import ListPageHead from 'src/components/meta/ListPageHead';
 const ProjectList = ({ projectStaticData }: InferGetStaticPropsType<typeof getStaticProps>) => {
   return (
     <>
-      <ListPageHead
+      <div>점검중입니다.</div>
+      {/* <ListPageHead
         category={ARCHIVING.PROJECT}
         canoUrl={'https://cau-likelion.org/project'}
       />
       <Header pageName="프로젝트" introduce="멋사와 함께한 프로젝트" />
-      <ProjectsSection staticData={projectStaticData} />
+      <ProjectsSection staticData={projectStaticData} /> */}
     </>
   );
 };
