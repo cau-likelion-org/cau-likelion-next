@@ -12,6 +12,7 @@ const nextConfig = {
       'd1sgygn8l0lfd5.cloudfront.net',
       'dcpshnp4boilw.cloudfront.net',
       'd1e39uzon1ymuo.cloudfront.net',
+      'likelion13bucket.s3.amazonaws.com',
     ],
   },
   webpack(config) {

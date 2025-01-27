@@ -12,6 +12,6 @@ import { IProjectDetail, UploadData } from '@@types/request';
 // }
 
 export async function postGalleryData(data: FormData) {
-  const result = await axios.post(`http://3.36.228.42:8000/api/project`, data);
+  const result = await axios.post(`${process.env.NEXT_PUBLIC_API_KEY}/api/project`, data);
   return result;
 }

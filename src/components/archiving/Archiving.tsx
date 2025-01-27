@@ -33,8 +33,7 @@ const Archiving = <Type extends ISessionData | IProjectData | IGalleryData>({
     <>
       {archivingData.length ? (
         <Wrapper>
-          {/* <ArchivingIndex>{title}</ArchivingIndex> */}
-          <ArchivingIndex>아악</ArchivingIndex>
+          <ArchivingIndex>{title}</ArchivingIndex>
           <CardWrapper>
             {archivingData.map((data, index) => (
               <Card
