@@ -11,6 +11,32 @@ export interface IShareURL {
   youtube: string;
 }
 
+export interface UploadData {
+  title: string;
+  subtitle: string;
+  dev_stack: string;
+  tumbnail: File | null;
+  version: number;
+  team_name: string;
+  team_member: {
+    pm: string[];
+    design: string[];
+    frontend: string[];
+    backend: string[];
+  };
+  start_date: string;
+  end_date: string;
+  description: string;
+  link: {
+    github: string;
+    youtube: string;
+    web: string;
+  };
+  category: string;
+  login_email: string;
+  images: File[];
+}
+
 export interface IArchivingData {
   id: number;
   title: string;

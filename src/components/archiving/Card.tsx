@@ -16,13 +16,7 @@ const Card = ({ id, thumbnail, title, dev_stack, category, link, subtitle }: ICa
     <Link href={`${link}/${id}`}>
       <Wrapper>
         <ImageWrapper>
-          <CustomImage
-            src={thumbnail}
-            alt="썸네일"
-            layout="fill"
-            objectFit="contain"
-            objectPosition="center"
-          />
+          <CustomImage src={thumbnail} alt="썸네일" layout="fill" objectFit="contain" objectPosition="center" />
         </ImageWrapper>
         <TextWrapper>
           <Category link={link}>{category}</Category>
@@ -36,8 +30,7 @@ const Card = ({ id, thumbnail, title, dev_stack, category, link, subtitle }: ICa
 };
 
 export default Card;
-const CustomImage = styled(Image)`
-`;
+const CustomImage = styled(Image)``;
 
 const Wrapper = styled.div`
   border-radius: 20px;
@@ -98,9 +91,8 @@ const TextWrapper = styled.div`
   @media (min-width: 330px) and (max-width: 444px) {
     width: 180px;
   }
-
 `;
-const Category = styled.div<{ link: string; }>`
+const Category = styled.div<{ link: string }>`
   border-radius: 25px;
   border: ${(props) => (props.link === '/gallery' ? 'none' : `1px solid ${GreyScale.default}`)};
   display: flex;
@@ -135,5 +127,4 @@ const ProjectDesc = styled.div`
   @media (max-width: 1300px) {
     font-size: 10px;
   }
-
 `;
