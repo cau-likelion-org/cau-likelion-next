@@ -19,7 +19,13 @@ import ToggleBox from './component/ToggleBox';
 import LocalStorage from '@utils/localStorage';
 
 const SignUpFormSection = () => {
-  const track = [TRACK_NAME[TRACK.PM], TRACK_NAME[TRACK.DESIGN], TRACK_NAME[TRACK.FRONTEND], TRACK_NAME[TRACK.BACKEND], TRACK_NAME[TRACK.ETC]];
+  // const track = [TRACK_NAME[TRACK.PM], TRACK_NAME[TRACK.DESIGN], TRACK_NAME[TRACK.FRONTEND], TRACK_NAME[TRACK.BACKEND], TRACK_NAME[TRACK.ETC]];
+  const track = [
+    TRACK_NAME[TRACK.PM_DESIGN],
+    TRACK_NAME[TRACK.FRONTEND],
+    TRACK_NAME[TRACK.BACKEND],
+    TRACK_NAME[TRACK.ETC],
+  ];
   const [nameValue, onChangeName] = useInput('');
   const [generationValue, onChangeGeneration] = useInput('', /^[0-9]*$/);
   const [emailValue, onChangeEmail] = useInput('');
