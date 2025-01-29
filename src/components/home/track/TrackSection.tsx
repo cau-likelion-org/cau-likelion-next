@@ -8,11 +8,11 @@ import TrackDescriptionBox from './component/TrackDescriptionBox';
 import FadeInComponent from '@home/common/FadeInComponent';
 
 const TrackSection = () => {
-  const [isClicked, setIsClicked] = useState([true, false, false, false]);
+  const [isClicked, setIsClicked] = useState([true, false, false]);
   const track = isClicked.indexOf(true);
 
   const handleClickTrackButton = (i: number) => {
-    const copy: boolean[] = [false, false, false, false];
+    const copy: boolean[] = [false, false, false];
     copy[i] = true;
     setIsClicked(copy);
   };
