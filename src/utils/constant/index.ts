@@ -156,7 +156,7 @@ export const ACTIVITY_DESCRIPTION: { [key: number]: { description: string } } = 
 export const TRACK_DESCRIPTION: { [key: number]: { description: string; recommend: string } } = {
   [TRACK.PM_DESIGN]: {
     description:
-      '기획디자인 파트에서는 고객의 목소리를 들으며 주변의 Pain-point에 맞는 서비스를 기획하고, UI/UX를 설계 및 디자인해요. 협업에서는 서비스 출시까지의 전 과정을 매니징하는 PM으로서 프로젝트 진행을 이끌고 개발자들과 소통해요. 이를 위해 기획산출물 및 디자인 시스템 구축 등 필요한 내용들을 설계하는 것을 배워요. 덕분에 IT 서비스 출시의 A to Z를 경험할 수 있어요',
+      '기획디자인 파트에서는 고객의 목소리를 들으며 주변의 Pain-point에 맞는 서비스를 기획하고, UI/UX를 설계 및 디자인해요. 협업에서는 서비스 출시까지의 전 과정을 매니징하는 PM으로서 프로젝트 진행을 이끌고 개발자들과 소통해요. 이를 위해 기획산출물 및 디자인 시스템 구축 등 필요한 내용들을 설계하는 것을 배워요. 덕분에 IT 서비스 출시의 A to Z를 경험할 수 있어요.',
     recommend:
       '서비스 기획자나 PM, UI/UX 기획자나 PD(프로덕트 디자이너)가 되기 위한 역량을 키우고 싶은 분, 논리적인 근거에 기반하여 고객의 문제를 해결하고 싶은 분, 본인의 아이디어를 실현해보고자 하는 열정이 가득한 분',
   },

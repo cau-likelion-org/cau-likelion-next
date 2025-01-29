@@ -25,7 +25,7 @@ const Button = styled.div<{ isClicked: boolean }>`
     padding: 2rem 1rem;
     border-radius: 20px;
     height: 35px;
-    font-size: 13px;
+    font-size: 12.6px;
   }
   width: 250px;
   height: 68px;
