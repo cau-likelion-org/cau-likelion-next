@@ -21,10 +21,11 @@ const PostAdmin = () => {
   const [end, onChangeEnd] = useInput('');
   const [description, onChangeDescription] = useInput('');
   const [webLink, onChangeWebLink] = useInput('');
+  const [gitLink, onChangeGitLink] = useInput('');
+  const [youtubeLink, onChangeYoutubeLink] = useInput('');
   const [category, onChangeCategory] = useInput('');
   const [thumbnail, setThumbnail] = useState<File | null>(null);
   const [images, setImages] = useState<File[]>([]);
-  const a: string = 'aaa';
   // 파일 업로드 핸들러
   const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -34,11 +35,7 @@ const PostAdmin = () => {
 
   const handleImagesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      // e.target.files가 null이 아니면 Array.from()으로 파일을 배열로 변환하여 추가
-      setImages((prevImages) => [
-        ...prevImages,
-        ...Array.from(e.target.files as FileList), // FileList로 명시적 타입 캐스팅
-      ]);
+      setImages((prevImages) => [...prevImages, ...Array.from(e.target.files as FileList)]);
     }
   };
 
@@ -60,7 +57,7 @@ const PostAdmin = () => {
     formData.append('end_date', end);
     formData.append('description', description);
     formData.append('category', category);
-    formData.append('login_email', 'adsf'); // 로그인 이메일은 임시 데이터
+    formData.append('login_email', 'adsf');
     formData.append(
       'team_member',
       JSON.stringify({
@@ -74,8 +71,8 @@ const PostAdmin = () => {
     formData.append(
       'link',
       JSON.stringify({
-        github: 'fadsf',
-        youtube: 'ffasd',
+        github: gitLink,
+        youtube: youtubeLink,
         web: webLink,
       }),
     );
@@ -114,6 +111,8 @@ const PostAdmin = () => {
       <input type="string" value={end} onChange={onChangeEnd} placeholder="종료 날짜" />
       <input type="string" onChange={onChangeDescription} placeholder="설명"></input>
       <input type="url" value={webLink} onChange={onChangeWebLink} placeholder="웹 링크" />
+      <input type="url" value={gitLink} onChange={onChangeGitLink} placeholder="깃 링크" />
+      <input type="url" value={youtubeLink} onChange={onChangeYoutubeLink} placeholder="깃 링크" />
       <input type="text" value={category} onChange={onChangeCategory} placeholder="카테고리" />
 
       <Title>프로젝트 썸네일 이미지</Title>
