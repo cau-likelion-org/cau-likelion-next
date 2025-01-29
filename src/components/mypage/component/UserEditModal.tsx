@@ -22,7 +22,13 @@ interface UserEditModalProps {
 }
 
 const UserEditModal = ({ userProfile, isEditModalOn, handleUserEditModal }: UserEditModalProps) => {
-  const track = [TRACK_NAME[TRACK.PM], TRACK_NAME[TRACK.DESIGN], TRACK_NAME[TRACK.FRONTEND], TRACK_NAME[TRACK.BACKEND], TRACK_NAME[TRACK.ETC]];
+  // const track = [TRACK_NAME[TRACK.PM], TRACK_NAME[TRACK.DESIGN], TRACK_NAME[TRACK.FRONTEND], TRACK_NAME[TRACK.BACKEND], TRACK_NAME[TRACK.ETC]];
+  const track = [
+    TRACK_NAME[TRACK.PM_DESIGN],
+    TRACK_NAME[TRACK.FRONTEND],
+    TRACK_NAME[TRACK.BACKEND],
+    TRACK_NAME[TRACK.ETC],
+  ];
   const [nameValue, onChangeName] = useInput(userProfile.name);
   const [profileChanged, setProfileChanged] = useRecoilState(userProfileChanged);
   const [generationValue, onChangeGeneration] = useInput(String(userProfile.generation), /^[0-9]*$/);
@@ -37,7 +43,7 @@ const UserEditModal = ({ userProfile, isEditModalOn, handleUserEditModal }: User
   }, [nameValue, generationValue, isEditModalOn]);
 
   const editUserProfile = useMutation({
-    mutationFn: ({ userProfile, tokenState }: { userProfile: UserProfile; tokenState: IToken; }) =>
+    mutationFn: ({ userProfile, tokenState }: { userProfile: UserProfile; tokenState: IToken }) =>
       putUserProfile({ form: userProfile, accessToken: tokenState.access, refreshToken: tokenState.refresh }),
     onSuccess: (res) => {
       if (res.message === 'success') {
@@ -145,12 +151,10 @@ const Wrapper = styled.div`
   padding: 2rem 5rem;
   z-index: 10001;
 
-  @media (max-width: 900px){
+  @media (max-width: 900px) {
     width: 100%;
     height: 100vh;
     border-radius: 0;
-
-
   }
 `;
 
