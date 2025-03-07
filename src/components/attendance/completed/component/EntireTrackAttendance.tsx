@@ -10,29 +10,23 @@ import { token } from '@utils/state';
 import { useRecoilValue } from 'recoil';
 
 const trackController: Record<MemberStack, ITrackController> = {
-  pm: {
-    title: '기획',
-    arrayLength: 4,
+  pm_design: {
+    title: '기획&디자인',
+    arrayLength: 10,
     color: Primary.light,
     titleColor: Primary.default,
   },
-  design: {
-    title: '디자인',
-    arrayLength: 5,
-    color: '#FFF2EB',
-    titleColor: Secondary.default,
-  },
   frontend: {
     title: '프론트엔드',
-    arrayLength: 9,
+    arrayLength: 10,
     color: '#ECFDE8',
-    titleColor: '#36CA60',
+    titleColor: '#5a36ad',
   },
   backend: {
     title: '백엔드',
     arrayLength: 10,
     color: '#FDF3FF',
-    titleColor: '#F33EA0',
+    titleColor: '#edda60',
   },
 };
 
