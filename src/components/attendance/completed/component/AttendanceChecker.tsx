@@ -4,7 +4,6 @@ import Image, { StaticImageData } from 'next/image';
 import { MemberStackKor } from '@@types/request';
 
 import PMattendanceImg from '@image/PMattendance.png';
-import DesignattendanceImg from '@image/Designattendance.png';
 import FrontattendanceImg from '@image/Frontattendance.png';
 import BackattendanceImg from '@image/Backattendance.png';
 
@@ -15,7 +14,7 @@ const borderURL = (inputColor: string) => {
 };
 
 const image: Record<MemberStackKor, StaticImageData> = {
-  기획_디자인: PMattendanceImg,
+  기획디자인: PMattendanceImg,
   프론트엔드: FrontattendanceImg,
   백엔드: BackattendanceImg,
 };

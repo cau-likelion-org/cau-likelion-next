@@ -1,7 +1,7 @@
 import { useQueries } from 'react-query';
 
 export type MemberStack = 'pm_design' | 'frontend' | 'backend';
-export type MemberStackKor = '기획_디자인' | '프론트엔드' | '백엔드';
+export type MemberStackKor = '기획디자인' | '프론트엔드' | '백엔드';
 export type ShareURL = 'github' | 'youtube' | 'web';
 export type ArchivingType = 'gallery' | 'session' | 'project';
 

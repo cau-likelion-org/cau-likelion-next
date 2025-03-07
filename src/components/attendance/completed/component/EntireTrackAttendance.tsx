@@ -11,22 +11,22 @@ import { useRecoilValue } from 'recoil';
 
 const trackController: Record<MemberStack, ITrackController> = {
   pm_design: {
-    title: '기획_디자인',
+    title: '기획디자인',
     arrayLength: 10,
     color: Primary.light,
-    titleColor: Primary.default,
+    titleColor: '#50EB2D',
   },
   frontend: {
     title: '프론트엔드',
     arrayLength: 10,
     color: '#ECFDE8',
-    titleColor: '#5a36ad',
+    titleColor: '#b61714',
   },
   backend: {
     title: '백엔드',
     arrayLength: 10,
     color: '#FDF3FF',
-    titleColor: '#edda60',
+    titleColor: '#F584FF',
   },
 };
 
