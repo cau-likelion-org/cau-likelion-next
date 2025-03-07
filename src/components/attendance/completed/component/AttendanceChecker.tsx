@@ -15,8 +15,7 @@ const borderURL = (inputColor: string) => {
 };
 
 const image: Record<MemberStackKor, StaticImageData> = {
-  기획: PMattendanceImg,
-  디자인: DesignattendanceImg,
+  기획_디자인: PMattendanceImg,
   프론트엔드: FrontattendanceImg,
   백엔드: BackattendanceImg,
 };
