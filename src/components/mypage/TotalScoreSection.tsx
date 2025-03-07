@@ -22,7 +22,7 @@ const TotalScoreSection = ({ myName }: { myName: string }) => {
   const [sortScoreArray, setSortScoreArray] = useState<UserScore[]>([]);
 
   useEffect(() => {
-    if (myName === '최재영' || myName === '박재윤') {
+    if (myName === '박연우' || myName === '조하정') {
       setIsPre(true);
     }
   }, [myName]);
