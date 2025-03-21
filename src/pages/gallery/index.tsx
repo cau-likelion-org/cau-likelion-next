@@ -12,10 +12,9 @@ import styled from 'styled-components';
 const GalleryList = ({ galleryStaticData }: { galleryStaticData: ArchivingArrayType<IGalleryData> }) => {
   return (
     <>
-      <div>점검중입니다.</div>
-      {/* <ListPageHead category={ARCHIVING.GALLERY} canoUrl={'https://cau-likelion.org/gallery'} />
+      <ListPageHead category={ARCHIVING.GALLERY} canoUrl={'https://cau-likelion.org/gallery'} />
       <Header pageName="추억" introduce="멋사와 함께 한 추억" />
-      <GalleryListSection staticData={galleryStaticData} /> */}
+      <GalleryListSection staticData={galleryStaticData} />
     </>
   );
 };
