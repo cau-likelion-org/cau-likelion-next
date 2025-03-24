@@ -20,7 +20,7 @@ const trackController: Record<MemberStack, ITrackController> = {
     title: '프론트엔드',
     arrayLength: 10,
     color: '#ECFDE8',
-    titleColor: '#b61714',
+    titleColor: '#d63f3c',
   },
   backend: {
     title: '백엔드',
