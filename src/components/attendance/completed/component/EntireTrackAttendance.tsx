@@ -14,19 +14,19 @@ const trackController: Record<MemberStack, ITrackController> = {
     title: '기획디자인',
     arrayLength: 10,
     color: Primary.light,
-    titleColor: '#50EB2D',
+    titleColor: '#1627b0',
   },
   frontend: {
     title: '프론트엔드',
     arrayLength: 10,
     color: '#ECFDE8',
-    titleColor: '#d63f3c',
+    titleColor: '#36c25d',
   },
   backend: {
     title: '백엔드',
     arrayLength: 10,
     color: '#FDF3FF',
-    titleColor: '#F584FF',
+    titleColor: '#ef3893',
   },
 };
 

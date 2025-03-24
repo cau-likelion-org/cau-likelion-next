@@ -14,14 +14,13 @@ const SessionList = ({ sessionStaticData }: { sessionStaticData: ArchivingArrayT
 
   return (
     <>
-      <div>점검중입니다.</div>
-      {/* <ListPageHead category={ARCHIVING.SESSION} canoUrl={'https://cau-likelion.org/session'} />
+      <ListPageHead category={ARCHIVING.SESSION} canoUrl={'https://cau-likelion.org/session'} />
       <Header pageName="세션" introduce="멋사에서 진행한 세션" />
       <Wrapper>
         {Object.values(isLoading ? sessionStaticData : data!).map((data, i) => {
           return <SessionSection key={i} trackName={TRACK_NAME[i]} trackData={data} />;
         })}
-      </Wrapper> */}
+      </Wrapper>
     </>
   );
 };
