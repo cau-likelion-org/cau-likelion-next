@@ -76,14 +76,14 @@ export enum DEV_STACK {
 // };
 
 export const TRACK_INDEX: { [key: string]: number } = {
-  기획_디자인: TRACK.PM_DESIGN,
+  기획디자인: TRACK.PM_DESIGN,
   프론트엔드: TRACK.FRONTEND,
   백엔드: TRACK.BACKEND,
   기타: TRACK.ETC,
 };
 
 export const TRACK_NAME: { [key: number]: string } = {
-  [TRACK.PM_DESIGN]: '기획&디자인',
+  [TRACK.PM_DESIGN]: '기획디자인',
   [TRACK.FRONTEND]: '프론트엔드',
   [TRACK.BACKEND]: '백엔드',
   [TRACK.ETC]: '기타',
