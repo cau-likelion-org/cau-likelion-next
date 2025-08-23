@@ -20,7 +20,17 @@ const Card = ({ id, thumbnail, title, dev_stack, category, link, subtitle }: ICa
     <Link href={`${link}/${id}`}>
       <Wrapper>
         <ImageWrapper>
-          <CustomImage src={thumbnail} alt="Thumbnail" layout="fill" objectFit="contain" objectPosition="center" />
+          <CustomImage
+            src={thumbnail}
+            alt="Thumbnail"
+            layout="fill"
+            objectFit="contain"
+            objectPosition="center"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.src = '/image/likelion_thumbnail.png'; // 대체 이미지 경로
+            }}
+          />
         </ImageWrapper>
         <TextWrapper>
           <Category link={link}>{category}</Category>
