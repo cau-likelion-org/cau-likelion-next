@@ -16,7 +16,7 @@ const Card = ({ id, thumbnail, title, dev_stack, category, link, subtitle }: ICa
     <Link href={`${link}/${id}`}>
       <Wrapper>
         <ImageWrapper>
-          <CustomImage src={thumbnail} alt="썸네일" layout="fill" objectFit="contain" objectPosition="center" />
+          <CustomImage src={thumbnail} alt="Thumbnail" layout="fill" objectFit="contain" objectPosition="center" />
         </ImageWrapper>
         <TextWrapper>
           <Category link={link}>{category}</Category>
