@@ -1,6 +1,6 @@
-import React, { KeyboardEventHandler, useRef } from 'react';
+import React, { useRef } from 'react';
 import { useRouter } from 'next/router';
-import { useMutation, useQuery } from 'react-query';
+import { useMutation } from 'react-query';
 import styled from 'styled-components';
 import { useRecoilValue } from 'recoil';
 
@@ -13,7 +13,7 @@ import { postAttendance } from 'src/apis/attendance';
 import { token } from '@utils/state';
 import { TRACK_NAME } from '@utils/constant';
 
-const AttendanceBox = ({ data }: { data: TodayAttendanceData; }) => {
+const AttendanceBox = ({ data }: { data: TodayAttendanceData }) => {
   const router = useRouter();
   const InputRef = useRef<HTMLInputElement>(null);
   const tokens = useRecoilValue(token);
