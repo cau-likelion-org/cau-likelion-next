@@ -1,26 +1,24 @@
 import { useRouter } from 'next/router';
 import { ReactElement } from 'react';
 import styled from 'styled-components';
-import { useQuery } from 'react-query';
 
 import DetailMainSection from '@project/detail/DetailMainSection';
 import Carousel from '@archiving/Carousel';
 import LayoutArchiving from '@common/layout/LayoutArchiving';
 
-import { getProjectDetail, getProjects } from 'src/apis/project';
+import { getProjects } from 'src/apis/project';
 
 import { IProjectDetail } from '@@types/request';
 import { GreyScale } from '@utils/constant/color';
 import { GetStaticPaths } from 'next';
-import { getIdFromAsPath, getPaths } from '@utils/index';
+import { getPaths } from '@utils/index';
 import DetailPageHead from 'src/components/meta/DetailPageHead';
 import { ARCHIVING } from '@utils/constant';
+import useProjectDetail from 'src/apis/queries/useProjectDetail';
 
 const ProjectDetail = ({ projectDetailStaticData }: { projectDetailStaticData: IProjectDetail }) => {
   const router = useRouter();
-  const { data, isLoading } = useQuery<IProjectDetail>(['projectDeatil', router.query.project_id], () =>
-    getProjectDetail(getIdFromAsPath(router.asPath, 'project')),
-  );
+  const { projectDetail: data, isLoading } = useProjectDetail();
 
   if (router.isFallback) {
     return <div>로딩중</div>;

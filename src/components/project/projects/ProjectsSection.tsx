@@ -1,13 +1,12 @@
 import { ArchivingArrayType, IProjectData } from '@@types/request';
 import Archiving from '@archiving/Archiving';
 import React from 'react';
-import { useQuery } from 'react-query';
-import { getProjects } from 'src/apis/project';
 import { sortArchivingListDesc } from '@utils/index';
 import styled from 'styled-components';
+import useProjects from 'src/apis/queries/useProjects';
 
 const ProjectsSection = ({ staticData }: { staticData: ArchivingArrayType<IProjectData> }) => {
-  const { data, isLoading } = useQuery<ArchivingArrayType<IProjectData>>(['projects'], getProjects);
+  const { projects: data, isLoading } = useProjects();
 
   return (
     <Wrapper>
