@@ -6,11 +6,10 @@ import { url } from '.';
 
 export function getAttendance(token: IToken) {
   const authAxios = getAuthAxios(token);
-  const today = new Date();
   return authAxios
     .get(`/api/attendance`, {
       params: {
-        date: toDateString(today),
+        date: toDateString(),
       },
     })
     .then((res) => {
@@ -25,11 +24,10 @@ export function postAttendance(password: string, token: IToken) {
 }
 export function getAttendanceList(token: IToken) {
   const authAxios = getAuthAxios(token);
-  const today = new Date();
   return authAxios
     .get(`/api/attendance/list`, {
       params: {
-        date: toDateString(today),
+        date: toDateString(),
       },
     })
     .then((res) => res.data.data as TodayAttendanceListData);
