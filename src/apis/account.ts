@@ -10,12 +10,6 @@ export interface IMutationProps {
   refreshToken: string | null;
 }
 
-export const getUserProfile = async (token: IToken) => {
-  const authAxios = getAuthAxios(token);
-  const response = await authAxios.get(`/api/profile`);
-  return response.data.data.user as UserProfile;
-};
-
 export const putUserProfile = async (props: IMutationProps) => {
   const authAxios = getAuthAxios({ access: props.accessToken, refresh: props.refreshToken });
   const response = await authAxios.put(`/api/profile`, {
