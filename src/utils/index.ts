@@ -8,8 +8,7 @@ import {
 } from '@@types/request';
 import { GENERATION_CHECKER, TRACK_INDEX } from './constant';
 
-export const toDateString = (date?: Date, formatter = '-') => {
-  if (!date) return '';
+export const toDateString = (date = new Date(), formatter = '-') => {
   const year = date.getFullYear();
   const month = ('0' + (1 + date.getMonth())).slice(-2);
   const day = ('0' + date.getDate()).slice(-2);
