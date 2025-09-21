@@ -1,13 +1,9 @@
-import { useQuery } from 'react-query';
-import { TodayAttendanceListData, MemberStack, MemberStackKor } from '@@types/request';
-
-import { getAttendanceList } from 'src/apis/attendance';
+import { MemberStack } from '@@types/request';
 import Track from './TrackAttendance';
-import { Primary, Secondary } from '@utils/constant/color';
+import { Primary } from '@utils/constant/color';
 import { ITrackController } from './componentType';
 import Loading from '@common/loading/Loading';
-import { token } from '@utils/state';
-import { useRecoilValue } from 'recoil';
+import useAttendanceList from 'src/apis/queries/useAttendanceList';
 
 const trackController: Record<MemberStack, ITrackController> = {
   pm_design: {
@@ -31,16 +27,15 @@ const trackController: Record<MemberStack, ITrackController> = {
 };
 
 const EntireTrackAttendance = () => {
+  const { attendanceList, isLoading } = useAttendanceList();
   const trackStacks = Object.keys(trackController) as MemberStack[];
-  const tokens = useRecoilValue(token);
-  const { data, isLoading } = useQuery<TodayAttendanceListData>(['getAttendanceList'], () => getAttendanceList(tokens));
 
-  if (isLoading) return <Loading />;
+  if (isLoading || !attendanceList) return <Loading />;
 
   return (
     <>
       {trackStacks.map((track, index) => (
-        <Track track={trackController[track]} key={index} trackData={data![track]} />
+        <Track track={trackController[track]} key={index} trackData={attendanceList[track]} />
       ))}
     </>
   );
