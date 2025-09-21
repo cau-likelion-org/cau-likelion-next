@@ -2,7 +2,6 @@ import { TodayAttendanceData, TodayAttendanceListData } from '@@types/request';
 import { IToken } from '@utils/state';
 import { getAuthAxios } from './authAxios';
 import { toDateString } from '@utils/index';
-import { url } from '.';
 
 export function getAttendance(token: IToken) {
   const authAxios = getAuthAxios(token);
