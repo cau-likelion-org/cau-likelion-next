@@ -5,13 +5,10 @@ import { useRecoilValue } from 'recoil';
 import { AxiosResponse } from 'axios';
 import { getAuthAxios } from '../authAxios';
 
-interface Params {
-  enabled?: boolean;
-}
-
-const useUserAttendance = (params: Params) => {
+const useUserAttendance = () => {
   const tokenValue = useRecoilValue(token);
   const authAxios = getAuthAxios(tokenValue);
+
   const getUserAttendance = async () => {
     const response = await authAxios.get<AxiosResponse<UserAttendance>>(`/api/mypage/attendance`);
     return response.data.data;

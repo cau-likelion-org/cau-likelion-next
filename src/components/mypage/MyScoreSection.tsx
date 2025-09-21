@@ -14,11 +14,8 @@ import useUserAttendance from 'src/apis/queries/useUserAttendance';
 
 const MyScoreSection = ({ userProfile }: { userProfile: UserProfile }) => {
   const [totalScore, setTotalScore] = useState<number>(0);
-  const tokenValue = useRecoilValue(token);
 
-  const { userAttendance } = useUserAttendance({
-    enabled: !!tokenValue.access,
-  });
+  const { userAttendance } = useUserAttendance();
 
   const {
     data: userAssignment,
