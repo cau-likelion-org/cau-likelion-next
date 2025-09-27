@@ -6,7 +6,7 @@ import DetailMainSection from '@project/detail/DetailMainSection';
 import Carousel from '@archiving/Carousel';
 import LayoutArchiving from '@common/layout/LayoutArchiving';
 
-import { getProjects } from 'src/apis/project';
+import { getProjectDetail, getProjects } from 'src/apis/project';
 
 import { IProjectDetail } from '@@types/request';
 import { GreyScale } from '@utils/constant/color';

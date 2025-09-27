@@ -7,7 +7,7 @@ import Carousel from '@archiving/Carousel';
 import LayoutArchiving from '@common/layout/LayoutArchiving';
 import { GetStaticPaths } from 'next';
 import { GreyScale } from '@utils/constant/color';
-import { getSessions } from 'src/apis/session';
+import { getSessionDetail, getSessions } from 'src/apis/session';
 import { getPaths } from '@utils/index';
 import DetailPageHead from 'src/components/meta/DetailPageHead';
 import { ARCHIVING } from '@utils/constant';

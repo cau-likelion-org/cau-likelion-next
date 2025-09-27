@@ -21,7 +21,11 @@ const Card = ({ id, thumbnail, title, dev_stack, category, link, subtitle }: ICa
       <Wrapper>
         <ImageWrapper>
           <CustomImage
-            src={thumbnail}
+            src={
+              thumbnail && typeof thumbnail === 'string' && thumbnail.trim() !== ''
+                ? thumbnail
+                : '/image/likelion_thumbnail.png'
+            }
             alt="Thumbnail"
             layout="fill"
             objectFit="contain"
