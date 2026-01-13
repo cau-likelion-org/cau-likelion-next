@@ -2,22 +2,20 @@ import SessionDetailSection from '@session/SessionDetailSection';
 import { ReactElement } from 'react';
 import styled from 'styled-components';
 import { useRouter } from 'next/router';
-import { useQuery } from 'react-query';
 import { ISessionDetail } from '@@types/request';
 import Carousel from '@archiving/Carousel';
 import LayoutArchiving from '@common/layout/LayoutArchiving';
 import { GetStaticPaths } from 'next';
 import { GreyScale } from '@utils/constant/color';
 import { getSessionDetail, getSessions } from 'src/apis/session';
-import { getIdFromAsPath, getPaths } from '@utils/index';
+import { getPaths } from '@utils/index';
 import DetailPageHead from 'src/components/meta/DetailPageHead';
 import { ARCHIVING } from '@utils/constant';
+import useSessionDetail from 'src/apis/queries/useSessionDetail';
 
 const SessionDetail = ({ sessionDetailStaticData }: { sessionDetailStaticData: ISessionDetail }) => {
   const router = useRouter();
-  const { data, isLoading } = useQuery<ISessionDetail>(['sessionDetail', router.query.project_id], () =>
-    getSessionDetail(getIdFromAsPath(router.asPath, 'session')),
-  );
+  const { sessionDetail: data, isLoading } = useSessionDetail();
   if (router.isFallback) {
     return <div>로딩중</div>;
   }

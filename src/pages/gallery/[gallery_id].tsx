@@ -1,7 +1,6 @@
 import { useRouter } from 'next/router';
 import { ReactElement } from 'react';
 import styled from 'styled-components';
-import { useQuery } from 'react-query';
 
 import Carousel from '@archiving/Carousel';
 import LayoutArchiving from '@common/layout/LayoutArchiving';
@@ -10,15 +9,14 @@ import { GreyScale } from '@utils/constant/color';
 import { GetStaticPaths } from 'next';
 import { getGalleries, getGalleryDetail } from 'src/apis/gallery';
 import GalleryDetailSection from '@gallery/GalleryDetailSection';
-import { getIdFromAsPath, getPaths } from '@utils/index';
+import { getPaths } from '@utils/index';
 import DetailPageHead from 'src/components/meta/DetailPageHead';
 import { ARCHIVING } from '@utils/constant';
+import useGalleryDetail from 'src/apis/queries/useGalleryDetail';
 
 const GalleryDetail = ({ galleryDetailStaticData }: { galleryDetailStaticData: IGalleryDetail }) => {
   const router = useRouter();
-  const { data, isLoading } = useQuery<IGalleryDetail>(['galleryDeatil', router.asPath], () =>
-    getGalleryDetail(getIdFromAsPath(router.asPath, 'gallery')),
-  );
+  const { galleryDetail: data, isLoading } = useGalleryDetail();
 
   if (router.isFallback) {
     return <div>로딩중</div>;

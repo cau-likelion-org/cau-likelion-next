@@ -3,14 +3,14 @@ import LayoutArchiving from '@common/layout/LayoutArchiving';
 import SessionSection from '@session/SessionSection';
 import { ReactElement } from 'react';
 import { ARCHIVING, TRACK_NAME } from '@utils/constant';
-import { getSessions } from 'src/apis/session';
 import { ArchivingArrayType, ISessionData } from '@@types/request';
-import { useQuery } from 'react-query';
 import styled from 'styled-components';
 import ListPageHead from 'src/components/meta/ListPageHead';
+import useSessions from 'src/apis/queries/useSessions';
+import { getSessions } from 'src/apis/session';
 
 const SessionList = ({ sessionStaticData }: { sessionStaticData: ArchivingArrayType<ISessionData> }) => {
-  const { data, isLoading } = useQuery(['sessionData'], getSessions);
+  const { sessions: data, isLoading } = useSessions();
 
   return (
     <>

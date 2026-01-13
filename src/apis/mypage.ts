@@ -5,12 +5,6 @@ import { getAuthAxios } from './authAxios';
 import { ResponseData } from '@@types/request';
 import { url } from '.';
 
-export const getUserAttendance = async (token: IToken) => {
-  const authAxios = getAuthAxios(token);
-  const data = await authAxios.get<ResponseData<UserAttendance>>(`/api/mypage/attendance`).then((res) => res.data.data);
-  return data;
-};
-
 export const getTotalAttendance = async (token: IToken) => {
   const authAxios = getAuthAxios(token);
   const data = await authAxios

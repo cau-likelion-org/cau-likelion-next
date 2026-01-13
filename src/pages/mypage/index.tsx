@@ -1,10 +1,6 @@
-import { UserProfile } from '@@types/request';
-import { token, userProfileChanged } from '@utils/state';
-import { AxiosError } from 'axios';
+import { token } from '@utils/state';
 import React, { useEffect, useState } from 'react';
-import { useQuery } from 'react-query';
 import { useRecoilValue } from 'recoil';
-import { getUserProfile } from 'src/apis/account';
 import NameCard from '@mypage/component/NameCard';
 import styled from 'styled-components';
 import ProfileCard from '@mypage/component/ProfileCard';
@@ -13,29 +9,24 @@ import { checkGeneration } from '@utils/index';
 import MyScoreSection from '@mypage/MyScoreSection';
 import TotalScoreSection from '@mypage/TotalScoreSection';
 import { useRouter } from 'next/router';
+import useUserProfile from 'src/apis/queries/useUserProfile';
 
 const MyPage = () => {
   const tokenState = useRecoilValue(token);
   const [isActiveGeneration, setIsActiveGeneration] = useState(false);
-  const [isLogin, setIsLogin] = useState(false);
-  const profileChanged = useRecoilValue(userProfileChanged);
   const router = useRouter();
 
-  const {
-    data: userProfile,
-    isLoading: profileLoading,
-    error: profileError,
-  } = useQuery<UserProfile, AxiosError>(['userProfile', profileChanged], () => getUserProfile(tokenState), {
+  const { userProfile } = useUserProfile({
     retry: false,
     enabled: !!tokenState.access,
   });
 
   useEffect(() => {
-    if (tokenState.access) setIsLogin(true);
-    else {
-      setIsLogin(false);
+    if (!tokenState.access) {
       router.push('/login');
     }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tokenState]);
 
   useEffect(() => {

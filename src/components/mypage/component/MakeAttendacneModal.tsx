@@ -30,7 +30,7 @@ const MakeAttendacneModal = () => {
   };
 
   const make = useMutation({
-    mutationFn: ({ date, password }: { date: string; password: string; }) => makeAttendance(date, password, tokens),
+    mutationFn: ({ date, password }: { date: string; password: string }) => makeAttendance(date, password, tokens),
     retry: false,
     onSuccess: (res) => {
       alert('생성 성공!');
@@ -51,7 +51,7 @@ const MakeAttendacneModal = () => {
     <Wrapper>
       <Title>출석부 만들기</Title>
       <Text>날짜</Text>
-      <input type="date" onChange={handleDateChange} min={toDateString(today)} max={toDateString(maxDate)} />
+      <input type="date" onChange={handleDateChange} min={toDateString()} max={toDateString(maxDate)} />
       <Text>비밀번호</Text>
       <input type="text" onChange={handlePassWordChange} value={password} />
       <SubmitWrapper>

@@ -5,35 +5,17 @@ import { getTotalScore } from '@utils/index';
 import { token } from '@utils/state';
 import { AxiosError } from 'axios';
 import React, { useEffect, useState } from 'react';
-import { useQuery } from 'react-query';
 import { useRecoilValue } from 'recoil';
-import { getAssignments, getUserAttendance } from 'src/apis/mypage';
 import styled from 'styled-components';
 import ScoreHeader from './component/ScoreHeader';
+import useUserAttendance from 'src/apis/queries/useUserAttendance';
+import useUserAssignment from 'src/apis/queries/useUserAssignment';
 
 const MyScoreSection = ({ userProfile }: { userProfile: UserProfile }) => {
   const [totalScore, setTotalScore] = useState<number>(0);
-  const tokenValue = useRecoilValue(token);
 
-  const {
-    data: userAttendance,
-    isLoading: attendanceLoading,
-    error: attendanceError,
-  } = useQuery<UserAttendance, AxiosError>(['userAttendance'], () => getUserAttendance(tokenValue), {
-    enabled: !!tokenValue.access,
-  });
-
-  const {
-    data: userAssignment,
-    isLoading: assignmentLoading,
-    error: assignmentError,
-  } = useQuery(
-    ['userAssignment'],
-    () => getAssignments().then((data) => data.filter((user: any) => user['이름'] == userProfile!.name)),
-    {
-      enabled: !!userProfile,
-    },
-  );
+  const { userAttendance } = useUserAttendance();
+  const { userAssignment, isLoading: assignmentLoading, error: assignmentError } = useUserAssignment({ userProfile });
 
   useEffect(() => {
     if (userAttendance && userAssignment) {

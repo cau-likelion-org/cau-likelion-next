@@ -1,8 +1,4 @@
 import axios from 'axios';
-import { url } from '.';
-import { getAuthAxios } from './authAxios';
-import { IToken } from '@utils/state';
-import { IProjectDetail, UploadData } from '@@types/request';
 
 // export function postGalleryData(data: IProjectDetail, token: IToken) {
 //   const authAxios = getAuthAxios(token);

@@ -4,13 +4,13 @@ import { BackgroundColor, GreyScale } from '@utils/constant/color';
 import { getTotalNameObject, getTotalScore } from '@utils/index';
 import { token, userScoreChanged } from '@utils/state';
 import React, { useEffect, useState } from 'react';
-import { useQuery } from 'react-query';
 import { useRecoilValue } from 'recoil';
-import { getAssignments, getTotalAttendance } from 'src/apis/mypage';
 import styled from 'styled-components';
 import ScoreEditModal from './component/ScoreEditModal';
 import ScoreHeader from './component/ScoreHeader';
 import { TiPencil } from 'react-icons/ti';
+import useAssignments from 'src/apis/queries/useAssignments';
+import useTotalAttendance from 'src/apis/queries/useTotalAttendance';
 
 const TotalScoreSection = ({ myName }: { myName: string }) => {
   const tokenValue = useRecoilValue(token);
@@ -33,16 +33,11 @@ const TotalScoreSection = ({ myName }: { myName: string }) => {
   };
 
   const {
-    data: totalAssignment,
+    assignments: totalAssignment,
     isLoading: totalAssignmentLoading,
     error: totalAssignmentError,
-  } = useQuery(['userAssignment'], getAssignments);
-
-  const {
-    data: totalAttendance,
-    isLoading: totalAttendanceLoading,
-    error: totalAttendanceError,
-  } = useQuery(['userAttendance', scoreChanged], () => getTotalAttendance(tokenValue));
+  } = useAssignments();
+  const { totalAttendance, isLoading: totalAttendanceLoading, error: totalAttendanceError } = useTotalAttendance();
 
   useEffect(() => {
     if (totalAttendance && totalAssignment) {
