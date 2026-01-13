@@ -13,6 +13,7 @@ const nextConfig = {
       'dcpshnp4boilw.cloudfront.net',
       'd1e39uzon1ymuo.cloudfront.net',
       'likelion13bucket.s3.amazonaws.com',
+      'chunghaha-14th.s3.amazonaws.com',
     ],
   },
   webpack(config) {
