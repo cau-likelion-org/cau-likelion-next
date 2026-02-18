@@ -1,6 +1,5 @@
 import { IArchivingData } from '@@types/request';
 import { GreyScale } from '@utils/constant/color';
-import Image from 'next/image';
 import Link from 'next/link';
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
@@ -11,8 +10,6 @@ interface ICardProps extends IArchivingData {
   link: string;
 }
 
-const isExternalUrl = (url: string) => url.startsWith('http://') || url.startsWith('https://');
-
 const Card = ({ id, thumbnail, title, dev_stack, category, link, subtitle }: ICardProps) => {
   useEffect(() => {
     console.log(`[${title}] thumbnail: ${thumbnail}`);
@@ -22,16 +19,13 @@ const Card = ({ id, thumbnail, title, dev_stack, category, link, subtitle }: ICa
     <Link href={`${link}/${id}`}>
       <Wrapper>
         <ImageWrapper>
-          <CustomImage
+          <img
             src={thumbnail}
             alt="Thumbnail"
-            layout="fill"
-            objectFit="contain"
-            objectPosition="center"
-            unoptimized={isExternalUrl(thumbnail)}
+            style={{ width: '100%', height: '100%', objectFit: 'contain', objectPosition: 'center' }}
             onError={(e) => {
               const target = e.target as HTMLImageElement;
-              target.src = '/image/likelion_thumbnail.png'; // 대체 이미지 경로
+              target.src = '/image/likelion_thumbnail.png';
             }}
           />
         </ImageWrapper>
@@ -47,7 +41,6 @@ const Card = ({ id, thumbnail, title, dev_stack, category, link, subtitle }: ICa
 };
 
 export default Card;
-const CustomImage = styled(Image)``;
 
 const Wrapper = styled.div`
   border-radius: 20px;
