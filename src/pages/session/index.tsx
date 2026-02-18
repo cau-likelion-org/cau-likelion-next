@@ -10,15 +10,16 @@ import styled from 'styled-components';
 import ListPageHead from 'src/components/meta/ListPageHead';
 
 const SessionList = ({ sessionStaticData }: { sessionStaticData: ArchivingArrayType<ISessionData> }) => {
-  const { data, isLoading } = useQuery(['sessionData'], getSessions);
+  const { data } = useQuery(['sessionData'], getSessions);
+  const sessionData = data ?? sessionStaticData;
 
   return (
     <>
       <ListPageHead category={ARCHIVING.SESSION} canoUrl={'https://cau-likelion.org/session'} />
       <Header pageName="세션" introduce="멋사에서 진행한 세션" />
       <Wrapper>
-        {Object.values(isLoading ? sessionStaticData : data!).map((data, i) => {
-          return <SessionSection key={i} trackName={TRACK_NAME[i]} trackData={data} />;
+        {Object.values(sessionData).map((trackData, i) => {
+          return <SessionSection key={TRACK_NAME[i]} trackName={TRACK_NAME[i]} trackData={trackData} />;
         })}
       </Wrapper>
     </>
