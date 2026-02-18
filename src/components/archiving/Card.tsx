@@ -11,6 +11,8 @@ interface ICardProps extends IArchivingData {
   link: string;
 }
 
+const isExternalUrl = (url: string) => url.startsWith('http://') || url.startsWith('https://');
+
 const Card = ({ id, thumbnail, title, dev_stack, category, link, subtitle }: ICardProps) => {
   useEffect(() => {
     console.log(`[${title}] thumbnail: ${thumbnail}`);
@@ -26,6 +28,7 @@ const Card = ({ id, thumbnail, title, dev_stack, category, link, subtitle }: ICa
             layout="fill"
             objectFit="contain"
             objectPosition="center"
+            unoptimized={isExternalUrl(thumbnail)}
             onError={(e) => {
               const target = e.target as HTMLImageElement;
               target.src = '/image/likelion_thumbnail.png'; // 대체 이미지 경로

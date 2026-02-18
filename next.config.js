@@ -6,6 +6,7 @@ const nextConfig = {
   images: {
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    minimumCacheTTL: 7776000,
     domains: [
       'cau-like-lion.s3.ap-northeast-2.amazonaws.com',
       'chunghahaha.s3.ap-northeast-2.amazonaws.com',
