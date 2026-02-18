@@ -1,6 +1,5 @@
 import { AnimatePresence, motion, Variants } from 'framer-motion';
 import styled from 'styled-components';
-import Image from 'next/image';
 
 import { GreyScale, Primary } from '@utils/constant/color';
 
@@ -26,7 +25,7 @@ const Project = ({
         custom={direction}
       >
         <ImageWrapper>
-          <ImageComponent src={ProjectData.img} alt="img" layout="fill" objectFit="fill" objectPosition="center" />
+          <ImageComponent src={ProjectData.img.src} alt="img" />
         </ImageWrapper>
         <ProjectInfo>
           <TextWrapper>
@@ -75,10 +74,17 @@ const ImageWrapper = styled.div`
   object-fit: cover;
   flex-basis: 40%;
 `;
-const ImageComponent = styled(Image)`
+
+const ImageComponent = styled.img`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  object-position: center;
   border-top-left-radius: 30px;
   border-bottom-left-radius: 30px;
 `;
+
 const ProjectInfo = styled.div`
   background: #f0f1ff;
   flex-basis: 60%;
