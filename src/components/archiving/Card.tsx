@@ -1,7 +1,7 @@
 import { IArchivingData } from '@@types/request';
 import { GreyScale } from '@utils/constant/color';
 import Link from 'next/link';
-import React, { useEffect } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
 interface ICardProps extends IArchivingData {
@@ -11,16 +11,13 @@ interface ICardProps extends IArchivingData {
 }
 
 const Card = ({ id, thumbnail, title, dev_stack, category, link, subtitle }: ICardProps) => {
-  useEffect(() => {
-    console.log(`[${title}] thumbnail: ${thumbnail}`);
-  }, [title, thumbnail]);
-
   return (
-    <Link href={`${link}/${id}`}>
+    <Link href={`${link}/${id}`} prefetch={false}>
       <Wrapper>
         <ImageWrapper>
           <img
-            src={thumbnail}
+            key={thumbnail}
+            src={thumbnail || '/image/likelion_thumbnail.png'}
             alt="Thumbnail"
             style={{ width: '100%', height: '100%', objectFit: 'contain', objectPosition: 'center' }}
             onError={(e) => {

@@ -1,5 +1,4 @@
 import { useEffect } from 'react';
-import Image from 'next/image';
 import styled from 'styled-components';
 import { useDragIndexCarousel, useInterval } from '@rapiders/react-hooks';
 
@@ -39,10 +38,6 @@ const Wrapper = styled.div`
   width: 80vw;
 `;
 
-const CustomImage = styled(Image)`
-  cursor: pointer;
-  -webkit-user-drag: none;
-`;
 
 const DiamondWrapper = styled.div`
   display: flex;
