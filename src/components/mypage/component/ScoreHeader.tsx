@@ -12,7 +12,7 @@ const ScoreHeader = ({ isAdmin, name }: UserProps) => {
   const [isPre, setIsPre] = useState<boolean>(false);
 
   useEffect(() => {
-    if (name === '박연우' || name === '조하정') {
+    if (name === '임대철' || name === '천재홍') {
       setIsPre(true);
     }
   }, [name]);
