@@ -20,10 +20,7 @@ export const getTotalAttendance = async (token: IToken) => {
 };
 
 export const getAssignments = () => {
-  const data = axios
-    .get(`https://notion-api.splitbee.io/v1/table/${process.env.NEXT_PUBLIC_NOTION_DATABASE_ID}`)
-    .then((res) => res.data);
-  return data;
+  return axios.get('/api/notion/assignments').then((res) => res.data);
 };
 
 export function editUserScore(userScore: RequestEditUserScore, token: IToken) {
