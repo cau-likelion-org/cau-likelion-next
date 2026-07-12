@@ -6505,6 +6505,11 @@ react-cookies@^0.1.1:
     loose-envify "^1.1.0"
     scheduler "^0.23.0"
 
+react-ga4@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.npmjs.org/react-ga4/-/react-ga4-3.0.1.tgz"
+  integrity sha512-GyCc01bSheWXjzGDyHsXMOqk/SP5Cf/JrcJTg4hcpKx4eeSwaJKpJUc+ipF4ffLTZkmabmf3ZGBv4OKHTXNXyA==
+
 react-icons@^4.7.1:
   version "4.7.1"
   resolved "https://registry.npmjs.org/react-icons/-/react-icons-4.7.1.tgz"

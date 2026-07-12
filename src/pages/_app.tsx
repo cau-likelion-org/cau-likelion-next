@@ -7,36 +7,57 @@ import React, { ReactElement, ReactNode } from 'react';
 import { NextPage } from 'next';
 import LayoutDefault from '@common/layout/LayoutDefault';
 import { useState, useEffect } from 'react';
-import { Router } from 'next/router';
+import { Router, useRouter } from 'next/router';
 import Loading from '@common/loading/Loading';
-import GA from 'src/test/GA';
+import ReactGA from 'react-ga4';
+// import GA from 'src/test/GA';
+
 type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode;
 };
 type AppPropsWithLayout = AppProps & {
   Component: NextPageWithLayout;
 };
+
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID || 'G-WPZ880EJTD';
+
+if (typeof window !== 'undefined' && GA_ID) {
+  ReactGA.initialize(GA_ID);
+}
+
 function CauLikeLionNext({ Component, pageProps }: AppPropsWithLayout) {
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
   const queryClient = new QueryClient();
   const getLayout = Component.getLayout || ((page: ReactElement) => <LayoutDefault>{page}</LayoutDefault>);
 
   useEffect(() => {
+    ReactGA.send({ hitType: 'pageview', page: router.asPath });
+
     const start = () => {
       setLoading(true);
     };
-    const end = () => {
+
+    const end = (url: string) => {
+      setLoading(false);
+      ReactGA.send({ hitType: 'pageview', page: url });
+    };
+
+    const error = () => {
       setLoading(false);
     };
+
     Router.events.on('routeChangeStart', start);
     Router.events.on('routeChangeComplete', end);
-    Router.events.on('routeChangeError', end);
+    Router.events.on('routeChangeError', error);
+
     return () => {
-      Router.events.on('routeChangeStart', start);
-      Router.events.on('routeChangeComplete', end);
-      Router.events.on('routeChangeError', end);
+      Router.events.off('routeChangeStart', start);
+      Router.events.off('routeChangeComplete', end);
+      Router.events.off('routeChangeError', error);
     };
   }, []);
+
   return (
     <RecoilRoot>
       <QueryClientProvider client={queryClient}>
@@ -48,7 +69,7 @@ function CauLikeLionNext({ Component, pageProps }: AppPropsWithLayout) {
         ) : (
           getLayout(
             <>
-              <GA />
+              {/* <GA /> */}
               <Component {...pageProps} />
             </>,
           )
