@@ -1,11 +1,10 @@
 import LocalStorage from '@utils/localStorage';
 import { IToken } from '@utils/state';
 import axios from 'axios';
-import Axios from 'axios';
 import { getNewToken } from './account';
 
 export const getAuthAxios = (token: IToken) => {
-  const authAxios = Axios.create({
+  const authAxios = axios.create({
     baseURL: `${process.env.NEXT_PUBLIC_API_KEY}`,
     headers: {
       Authorization: `${token.access}`,

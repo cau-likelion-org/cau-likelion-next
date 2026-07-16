@@ -28,7 +28,7 @@ if (typeof window !== 'undefined' && GA_ID) {
 function CauLikeLionNext({ Component, pageProps }: AppPropsWithLayout) {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const queryClient = new QueryClient();
+  const [queryClient] = useState(() => new QueryClient());
   const getLayout = Component.getLayout || ((page: ReactElement) => <LayoutDefault>{page}</LayoutDefault>);
 
   useEffect(() => {
