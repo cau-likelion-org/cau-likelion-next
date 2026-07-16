@@ -11,14 +11,12 @@ interface FooterButtonProps {
 
 const FooterButton = ({ Img, link }: FooterButtonProps) => {
   return (
-    <Link href={link}>
-      <a target="_blank" rel="sponsored">
-        <Button>
-          <ImageWrapper>
-            <Image src={Img} alt="share" layout="fill" objectFit="contain" />
-          </ImageWrapper>
-        </Button>
-      </a>
+    <Link href={link} target="_blank" rel="sponsored">
+      <Button>
+        <ImageWrapper>
+          <Image src={Img} alt="share" fill style={{ objectFit: 'contain' }} />
+        </ImageWrapper>
+      </Button>
     </Link>
   );
 };

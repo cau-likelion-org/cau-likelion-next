@@ -55,7 +55,7 @@ const NavBar = () => {
       <LogoWrapper>
         <Link href={'/'}>
           <LogoImage>
-            <Image src={CAULogo} width={'50px'} height={'50px'} alt="로고 이미지" />
+            <Image src={CAULogo} width={50} height={50} alt="로고 이미지" />
           </LogoImage>
         </Link>
         <Link href={'/'}>

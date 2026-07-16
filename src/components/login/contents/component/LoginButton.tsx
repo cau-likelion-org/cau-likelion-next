@@ -15,7 +15,7 @@ const LoginButton = () => {
     return (
         <ButtonWrapper>
             <Button className='google' onClick={handleClick}>
-                <Image src={googleLogo} alt='구글' width='38px' height='38px' />
+                <Image src={googleLogo} alt='구글' width={38} height={38} />
                 <p className='googleText'>구글로 로그인하기</p>
             </Button>
             <GreyButton className='likelion'>

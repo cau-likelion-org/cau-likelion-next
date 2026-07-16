@@ -47,7 +47,7 @@ const ActivitySection = () => {
     <FadeInComponent>
       <Wrapper>
         <ImageWrapper>
-          <Image src={QuestionLion} layout="fill" objectFit="fill" objectPosition="center" alt="소개하는 사자" />
+          <Image src={QuestionLion} fill style={{ objectFit: 'fill', objectPosition: 'center' }} alt="소개하는 사자" />
         </ImageWrapper>
         <TitleText>멋사의 다양한 활동</TitleText>
         <ThreeCircleWrapper>
