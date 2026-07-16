@@ -33,7 +33,6 @@
       "@styles/*": ["src/styles/*"],
       "@@types/*": ["src/types/*"],
       "@utils/*": ["src/utils/*"],
-      "@utils": ["src/utils"],
       "@image/*": ["public/image/*"]
     }
   },
