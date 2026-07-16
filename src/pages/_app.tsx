@@ -10,7 +10,6 @@ import { useState, useEffect } from 'react';
 import { Router, useRouter } from 'next/router';
 import Loading from '@common/loading/Loading';
 import ReactGA from 'react-ga4';
-// import GA from 'src/test/GA';
 
 type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -68,10 +67,7 @@ function CauLikeLionNext({ Component, pageProps }: AppPropsWithLayout) {
           <Loading />
         ) : (
           getLayout(
-            <>
-              {/* <GA /> */}
-              <Component {...pageProps} />
-            </>,
+            <Component {...pageProps} />,
           )
         )}
       </QueryClientProvider>
