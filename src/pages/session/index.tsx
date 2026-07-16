@@ -5,12 +5,12 @@ import { ReactElement } from 'react';
 import { ARCHIVING, TRACK_NAME } from '@utils/constant';
 import { getSessions } from 'src/apis/session';
 import { ArchivingArrayType, ISessionData } from '@@types/request';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import styled from 'styled-components';
 import ListPageHead from 'src/components/meta/ListPageHead';
 
 const SessionList = ({ sessionStaticData }: { sessionStaticData: ArchivingArrayType<ISessionData> }) => {
-  const { data } = useQuery(['sessionData'], getSessions);
+  const { data } = useQuery({ queryKey: ['sessionData'], queryFn: () => getSessions() });
   const sessionData = data ?? sessionStaticData;
 
   return (

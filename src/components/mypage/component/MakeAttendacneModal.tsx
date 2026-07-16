@@ -2,7 +2,7 @@ import { BackgroundColor } from '@utils/constant/color';
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { toDateString } from '@utils/index';
-import { useMutation } from 'react-query';
+import { useMutation } from '@tanstack/react-query';
 import { makeAttendance } from 'src/apis/mypage';
 import { useRecoilValue } from 'recoil';
 import { token } from '@utils/state';

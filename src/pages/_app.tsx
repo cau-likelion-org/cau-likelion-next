@@ -1,6 +1,6 @@
 import '@styles/global.css';
 import Head from 'next/head';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { RecoilRoot } from 'recoil';
 import type { AppProps } from 'next/app';
 import React, { ReactElement, ReactNode } from 'react';
