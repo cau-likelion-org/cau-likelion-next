@@ -26,13 +26,13 @@ export const getAuthAxios = (token: IToken) => {
         LocalStorage.setItem('access', newAccessToken);
         LocalStorage.setItem('refresh', refresh);
         config.headers.Authorization = `${newAccessToken}`;
-        const response = await axios.get(config.url, config);
+        const response = await axios.request(config);
         return Promise.resolve(response);
       } catch (err: any) {
         LocalStorage.removeItem('access');
         LocalStorage.removeItem('refresh');
         window.location.href = '/login';
-        return;
+        return Promise.reject(err);
       }
     },
   );
