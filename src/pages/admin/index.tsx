@@ -1,8 +1,20 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PostAdmin from 'src/components/admin/PostAdmin';
 import styled from 'styled-components';
+import { useRecoilValue } from 'recoil';
+import { token } from '@utils/state';
+import { useRouter } from 'next/router';
 
 const Admin = () => {
+  const tokenState = useRecoilValue(token);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!tokenState.access) router.push('/login');
+  }, [tokenState]);
+
+  if (!tokenState.access) return null;
+
   return (
     <Wrapper>
       <Title>관리자 페이지</Title>
