@@ -17,21 +17,21 @@ const LinkButton = ({ shareURL }: { shareURL: IShareURL }) => {
       {weburl && (
         <a href={weburl} target="_blank" rel="noreferrer">
           <ImageWrapper>
-            <Image src={ImageObj.web} alt="icon" layout="fill" objectFit="contain" objectPosition="center" />
+            <Image src={ImageObj.web} alt="icon" fill style={{ objectFit: 'contain', objectPosition: 'center' }} />
           </ImageWrapper>
         </a>
       )}
       {githuburl && (
         <a href={githuburl} target="_blank" rel="noreferrer">
           <ImageWrapper>
-            <Image src={ImageObj.github} alt="icon" layout="fill" objectFit="contain" objectPosition="center" />
+            <Image src={ImageObj.github} alt="icon" fill style={{ objectFit: 'contain', objectPosition: 'center' }} />
           </ImageWrapper>
         </a>
       )}
       {youtubeurl && (
         <a href={youtubeurl} target="_blank" rel="noreferrer">
           <ImageWrapper>
-            <Image src={ImageObj.youtube} alt="icon" layout="fill" objectFit="contain" objectPosition="center" />
+            <Image src={ImageObj.youtube} alt="icon" fill style={{ objectFit: 'contain', objectPosition: 'center' }} />
           </ImageWrapper>
         </a>
       )}

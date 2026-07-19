@@ -4,7 +4,7 @@ import { BackgroundColor, GreyScale } from '@utils/constant/color';
 import { getTotalNameObject, getTotalScore } from '@utils/index';
 import { token, userScoreChanged } from '@utils/state';
 import React, { useEffect, useState } from 'react';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useRecoilValue } from 'recoil';
 import { getAssignments, getTotalAttendance } from 'src/apis/mypage';
 import styled from 'styled-components';
@@ -36,13 +36,16 @@ const TotalScoreSection = ({ myName }: { myName: string }) => {
     data: totalAssignment,
     isLoading: totalAssignmentLoading,
     error: totalAssignmentError,
-  } = useQuery(['userAssignment'], getAssignments);
+  } = useQuery({ queryKey: ['userAssignment'], queryFn: getAssignments });
 
   const {
     data: totalAttendance,
     isLoading: totalAttendanceLoading,
     error: totalAttendanceError,
-  } = useQuery(['userAttendance', scoreChanged], () => getTotalAttendance(tokenValue));
+  } = useQuery({
+    queryKey: ['userAttendance', scoreChanged],
+    queryFn: () => getTotalAttendance(tokenValue),
+  });
 
   useEffect(() => {
     if (totalAttendance && totalAssignment) {

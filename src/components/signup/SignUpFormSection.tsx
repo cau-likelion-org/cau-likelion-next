@@ -6,7 +6,7 @@ import { useRouter } from 'next/router';
 import React from 'react';
 import { useEffect } from 'react';
 import { useState } from 'react';
-import { useMutation } from 'react-query';
+import { useMutation } from '@tanstack/react-query';
 import { useRecoilState } from 'recoil';
 import { signUp, SignUpMutationProps } from 'src/apis/signUp';
 import useInput from 'src/hooks/useInput';

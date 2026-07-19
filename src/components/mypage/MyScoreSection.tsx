@@ -5,7 +5,7 @@ import { getTotalScore } from '@utils/index';
 import { token } from '@utils/state';
 import { AxiosError } from 'axios';
 import React, { useEffect, useState } from 'react';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useRecoilValue } from 'recoil';
 import { getAssignments, getUserAttendance } from 'src/apis/mypage';
 import styled from 'styled-components';
@@ -19,7 +19,9 @@ const MyScoreSection = ({ userProfile }: { userProfile: UserProfile }) => {
     data: userAttendance,
     isLoading: attendanceLoading,
     error: attendanceError,
-  } = useQuery<UserAttendance, AxiosError>(['userAttendance'], () => getUserAttendance(tokenValue), {
+  } = useQuery<UserAttendance, AxiosError>({
+    queryKey: ['userAttendance'],
+    queryFn: () => getUserAttendance(tokenValue),
     enabled: !!tokenValue.access,
   });
 
@@ -27,13 +29,11 @@ const MyScoreSection = ({ userProfile }: { userProfile: UserProfile }) => {
     data: userAssignment,
     isLoading: assignmentLoading,
     error: assignmentError,
-  } = useQuery(
-    ['userAssignment'],
-    () => getAssignments().then((data) => data.filter((user: any) => user['이름'] == userProfile!.name)),
-    {
-      enabled: !!userProfile,
-    },
-  );
+  } = useQuery({
+    queryKey: ['userAssignment'],
+    queryFn: () => getAssignments().then((data) => data.filter((user: any) => user['이름'] == userProfile!.name)),
+    enabled: !!userProfile,
+  });
 
   useEffect(() => {
     if (userAttendance && userAssignment) {

@@ -2,7 +2,7 @@ import SessionDetailSection from '@session/SessionDetailSection';
 import { ReactElement } from 'react';
 import styled from 'styled-components';
 import { useRouter } from 'next/router';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { ISessionDetail } from '@@types/request';
 import Carousel from '@archiving/Carousel';
 import LayoutArchiving from '@common/layout/LayoutArchiving';
@@ -15,9 +15,10 @@ import { ARCHIVING } from '@utils/constant';
 
 const SessionDetail = ({ sessionDetailStaticData }: { sessionDetailStaticData: ISessionDetail }) => {
   const router = useRouter();
-  const { data, isLoading } = useQuery<ISessionDetail>(['sessionDetail', router.query.project_id], () =>
-    getSessionDetail(getIdFromAsPath(router.asPath, 'session')),
-  );
+  const { data, isLoading } = useQuery<ISessionDetail>({
+    queryKey: ['sessionDetail', router.query.project_id],
+    queryFn: () => getSessionDetail(getIdFromAsPath(router.asPath, 'session')),
+  });
   if (router.isFallback) {
     return <div>로딩중</div>;
   }

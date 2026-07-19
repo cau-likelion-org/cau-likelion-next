@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { login } from 'src/apis/account';
 import { useRecoilState } from 'recoil';
-import { useMutation } from 'react-query';
+import { useMutation } from '@tanstack/react-query';
 import { token } from '@utils/state';
 import Loading from '@common/loading/Loading';
 import LocalStorage from '@utils/localStorage';

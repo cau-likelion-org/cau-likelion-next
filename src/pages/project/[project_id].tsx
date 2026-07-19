@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import { ReactElement } from 'react';
 import styled from 'styled-components';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 
 import DetailMainSection from '@project/detail/DetailMainSection';
 import Carousel from '@archiving/Carousel';
@@ -18,9 +18,10 @@ import { ARCHIVING } from '@utils/constant';
 
 const ProjectDetail = ({ projectDetailStaticData }: { projectDetailStaticData: IProjectDetail }) => {
   const router = useRouter();
-  const { data, isLoading } = useQuery<IProjectDetail>(['projectDeatil', router.query.project_id], () =>
-    getProjectDetail(getIdFromAsPath(router.asPath, 'project')),
-  );
+  const { data, isLoading } = useQuery<IProjectDetail>({
+    queryKey: ['projectDeatil', router.query.project_id],
+    queryFn: () => getProjectDetail(getIdFromAsPath(router.asPath, 'project')),
+  });
 
   if (router.isFallback) {
     return <div>로딩중</div>;

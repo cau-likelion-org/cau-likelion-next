@@ -1,6 +1,6 @@
 import React, { KeyboardEventHandler, useRef } from 'react';
 import { useRouter } from 'next/router';
-import { useMutation, useQuery } from 'react-query';
+import { useMutation } from '@tanstack/react-query';
 import styled from 'styled-components';
 import { useRecoilValue } from 'recoil';
 

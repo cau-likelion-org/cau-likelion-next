@@ -1,4 +1,4 @@
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { TodayAttendanceListData, MemberStack, MemberStackKor } from '@@types/request';
 
 import { getAttendanceList } from 'src/apis/attendance';
@@ -33,7 +33,10 @@ const trackController: Record<MemberStack, ITrackController> = {
 const EntireTrackAttendance = () => {
   const trackStacks = Object.keys(trackController) as MemberStack[];
   const tokens = useRecoilValue(token);
-  const { data, isLoading } = useQuery<TodayAttendanceListData>(['getAttendanceList'], () => getAttendanceList(tokens));
+  const { data, isLoading } = useQuery<TodayAttendanceListData>({
+    queryKey: ['getAttendanceList'],
+    queryFn: () => getAttendanceList(tokens),
+  });
 
   if (isLoading) return <Loading />;
 

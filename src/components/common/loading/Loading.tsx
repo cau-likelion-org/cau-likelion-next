@@ -15,17 +15,17 @@ const Loading = () => {
       <Wrapper>
         <ImagesWrapper>
           <ImageWrapper animate={{ rotate: 360, transition: { duration: 1, repeat: Infinity, repeatDelay: 3 } }}>
-            <Image src={loadingPic} layout="fill" objectFit="cover" objectPosition="center" alt="이미지" />
+            <Image src={loadingPic} fill style={{ objectFit: 'cover', objectPosition: 'center' }} alt="이미지" />
           </ImageWrapper>
           <ImageWrapper
             animate={{ rotate: 360, transition: { duration: 1, delay: 1, repeat: Infinity, repeatDelay: 3 } }}
           >
-            <Image src={loadingPic} layout="fill" objectFit="cover" objectPosition="center" alt="이미지" />
+            <Image src={loadingPic} fill style={{ objectFit: 'cover', objectPosition: 'center' }} alt="이미지" />
           </ImageWrapper>
           <ImageWrapper
             animate={{ rotate: 360, transition: { duration: 1, delay: 2, repeat: Infinity, repeatDelay: 3 } }}
           >
-            <Image src={loadingPic} layout="fill" objectFit="cover" objectPosition="center" alt="이미지" />
+            <Image src={loadingPic} fill style={{ objectFit: 'cover', objectPosition: 'center' }} alt="이미지" />
           </ImageWrapper>
         </ImagesWrapper>
       </Wrapper>
