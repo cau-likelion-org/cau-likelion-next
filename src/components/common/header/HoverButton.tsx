@@ -2,6 +2,9 @@ import { BackgroundColor, Basic, GreyScale, Primary } from '@utils/constant/colo
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import Link from 'next/link';
+import { useRecoilValue } from 'recoil';
+import { token } from '@utils/state';
+import { track, getDeviceType } from 'src/lib/amplitude';
 import { IHoverButton } from './NavBar';
 
 interface IHoverButtonProps {
@@ -12,6 +15,16 @@ interface IHoverButtonProps {
 const HoverButton = ({ hover, dropdown }: IHoverButtonProps) => {
   const [dropdownVisibility, setDropdownVisibility] = useState(false);
   const ref = useRef() as React.MutableRefObject<HTMLDivElement>;
+  const { access: tokenState } = useRecoilValue(token);
+
+  const handleDropdownClick = (title: string, target?: string) => {
+    track('GNB Tab Clicked', {
+      tab_name: title,
+      is_external: !!target,
+      is_logged_in: !!tokenState,
+      device_type: getDeviceType(),
+    });
+  };
 
   const handleMouseOver = useCallback(() => setDropdownVisibility(true), []);
   const handleMouseOut = useCallback(() => setDropdownVisibility(false), []);
@@ -37,7 +50,9 @@ const HoverButton = ({ hover, dropdown }: IHoverButtonProps) => {
             <>
               {d.routing && (
                 <Link key={d.routing + i} href={d.routing}>
-                  <Button className="hover">{d.title}</Button>
+                  <Button className="hover" onClick={() => handleDropdownClick(d.title, d.target)}>
+                    {d.title}
+                  </Button>
                 </Link>
               )}
             </>

@@ -11,6 +11,7 @@
     "deployDev": "cd .dev && serverless "
   },
   "dependencies": {
+    "@amplitude/analytics-browser": "^2.45.3",
     "@next/font": "13.1.1",
     "@notionhq/client": "^2.2.3",
     "@rapiders/react-hooks": "^1.2.1",
