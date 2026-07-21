@@ -28,7 +28,7 @@ if (typeof window !== 'undefined' && GA_ID) {
   ReactGA.initialize(GA_ID);
 }
 
-function CauLikeLionNext({ Component, pageProps }: AppPropsWithLayout) {
+function AppContent({ Component, pageProps }: AppPropsWithLayout) {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const queryClient = new QueryClient();
@@ -78,22 +78,28 @@ function CauLikeLionNext({ Component, pageProps }: AppPropsWithLayout) {
   }, [tokenState.access]);
 
   return (
+    <QueryClientProvider client={queryClient}>
+      <Head>
+        <title>LikeLionCAU</title>
+      </Head>
+      {loading ? (
+        <Loading />
+      ) : (
+        getLayout(
+          <>
+            {/* <GA /> */}
+            <Component {...pageProps} />
+          </>,
+        )
+      )}
+    </QueryClientProvider>
+  );
+}
+
+function CauLikeLionNext(props: AppPropsWithLayout) {
+  return (
     <RecoilRoot>
-      <QueryClientProvider client={queryClient}>
-        <Head>
-          <title>LikeLionCAU</title>
-        </Head>
-        {loading ? (
-          <Loading />
-        ) : (
-          getLayout(
-            <>
-              {/* <GA /> */}
-              <Component {...pageProps} />
-            </>,
-          )
-        )}
-      </QueryClientProvider>
+      <AppContent {...props} />
     </RecoilRoot>
   );
 }
