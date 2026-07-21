@@ -46,9 +46,9 @@ const MobileNavModal = ({ isModalOn }: { isModalOn: boolean }) => {
         <Wrapper className={isModalOn ? 'slide-fade-in-dropdown' : 'slide-fade-out-dropdown'}>
           <NavProfileCard />
           <ButtonWrapper>
-            {isLogin && <NavButton title={'출석체크'} routing={'/attendance'} />}
+            {isLogin && <NavButton title={'출석체크'} routing={'/attendance'} isLogin={isLogin} />}
             {menu.map((m, i) => (
-              <NavButton key={i} title={m.title} routing={m.routing} target={m.target} />
+              <NavButton key={i} title={m.title} routing={m.routing} target={m.target} isLogin={isLogin} />
             ))}
           </ButtonWrapper>
         </Wrapper>
