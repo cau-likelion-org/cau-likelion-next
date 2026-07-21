@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import styled from 'styled-components';
 import Image from 'next/image';
 import googleLogo from '@image/pngwing.com.png';
+import { trackBeforeUnload } from 'src/lib/amplitude';
 
 
 
@@ -9,6 +10,7 @@ const LoginButton = () => {
     const loginUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}&response_type=code&redirect_uri=${process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI}&scope=${process.env.NEXT_PUBLIC_GOOGLE_SCOPE}`;
 
     const handleClick = () => {
+        trackBeforeUnload('Login Started', { button_label: '구글로 로그인하기' });
         window.location.assign(loginUrl);
     };
 

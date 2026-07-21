@@ -11,6 +11,14 @@ export const track = (eventName: string, properties?: Record<string, unknown>) =
   amplitude.track(eventName, properties);
 };
 
+// 외부 사이트로 리다이렉트되기 직전처럼 페이지 언로드로 요청이 끊길 수 있는
+// 상황에서 사용. sendBeacon 방식으로 전송해 언로드 중에도 전달을 보장한다.
+export const trackBeforeUnload = (eventName: string, properties?: Record<string, unknown>) => {
+  if (typeof window === 'undefined' || !AMPLITUDE_API_KEY) return;
+  amplitude.setTransport('beacon');
+  amplitude.track(eventName, properties);
+};
+
 export const getDeviceType = (): 'mobile' | 'pc' => {
   if (typeof window === 'undefined') return 'pc';
   return window.innerWidth < 900 ? 'mobile' : 'pc';
