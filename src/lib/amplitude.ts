@@ -1,6 +1,6 @@
 import * as amplitude from '@amplitude/analytics-browser';
 
-const AMPLITUDE_API_KEY = process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY;
+const AMPLITUDE_API_KEY = process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY || 'c4252d34333133a2b9d68bba8e33265b';
 
 if (typeof window !== 'undefined' && AMPLITUDE_API_KEY) {
   amplitude.init(AMPLITUDE_API_KEY, { defaultTracking: false });
