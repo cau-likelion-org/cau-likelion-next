@@ -66,7 +66,8 @@ const SessionSection = ({ trackName, trackData }: SessionProps) => {
                       title={data.title}
                       category={`${data.degree}차 세션`}
                       archivingType="session"
-                      cardPosition={i} />
+                      cardPosition={i}
+                      totalImageCount={trackData.length} />
                   ))}
                 </CardWrapper>
               </HiddenLayer>

@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React from 'react';
 import styled from 'styled-components';
-import { track } from 'src/lib/amplitude';
+import { track, getDeviceType, getPageEntryTime } from 'src/lib/amplitude';
 
 interface ICardProps extends IArchivingData {
   dev_stack?: number[];
@@ -12,9 +12,21 @@ interface ICardProps extends IArchivingData {
   link: string;
   archivingType: ArchivingType;
   cardPosition: number;
+  totalImageCount: number;
 }
 
-const Card = ({ id, thumbnail, title, dev_stack, category, link, subtitle, archivingType, cardPosition }: ICardProps) => {
+const Card = ({
+  id,
+  thumbnail,
+  title,
+  dev_stack,
+  category,
+  link,
+  subtitle,
+  archivingType,
+  cardPosition,
+  totalImageCount,
+}: ICardProps) => {
   const router = useRouter();
 
   const handleClick = () => {
@@ -27,6 +39,15 @@ const Card = ({ id, thumbnail, title, dev_stack, category, link, subtitle, archi
     });
   };
 
+  const handleImageLoad = () => {
+    track('Image Load Completed', {
+      page_path: router.asPath,
+      load_duration_ms: Date.now() - getPageEntryTime(),
+      image_count: totalImageCount,
+      device_type: getDeviceType(),
+    });
+  };
+
   return (
     <Link href={`${link}/${id}`} prefetch={false}>
       <Wrapper onClick={handleClick}>
@@ -36,6 +57,7 @@ const Card = ({ id, thumbnail, title, dev_stack, category, link, subtitle, archi
             src={thumbnail || '/image/likelion_thumbnail.png'}
             alt="Thumbnail"
             style={{ width: '100%', height: '100%', objectFit: 'contain', objectPosition: 'center' }}
+            onLoad={handleImageLoad}
             onError={(e) => {
               const target = e.target as HTMLImageElement;
               target.src = '/image/likelion_thumbnail.png';

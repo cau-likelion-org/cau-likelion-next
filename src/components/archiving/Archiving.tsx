@@ -47,6 +47,7 @@ const Archiving = <Type extends ISessionData | IProjectData | IGalleryData>({
                 category={getType(data)}
                 archivingType={archivingType}
                 cardPosition={index}
+                totalImageCount={archivingData.length}
               />
             ))}
           </CardWrapper>

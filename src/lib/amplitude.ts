@@ -24,6 +24,14 @@ export const getDeviceType = (): 'mobile' | 'pc' => {
   return window.innerWidth < 900 ? 'mobile' : 'pc';
 };
 
+let pageEntryTime = typeof window !== 'undefined' ? Date.now() : 0;
+
+export const markPageEntry = () => {
+  pageEntryTime = Date.now();
+};
+
+export const getPageEntryTime = () => pageEntryTime;
+
 export const getUserIdFromToken = (accessToken?: string): string | undefined => {
   if (!accessToken) return undefined;
   try {
