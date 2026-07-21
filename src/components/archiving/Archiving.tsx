@@ -45,6 +45,8 @@ const Archiving = <Type extends ISessionData | IProjectData | IGalleryData>({
                 subtitle={data.subtitle}
                 dev_stack={'dev_stack' in data ? data.dev_stack : undefined}
                 category={getType(data)}
+                archivingType={archivingType}
+                cardPosition={index}
               />
             ))}
           </CardWrapper>

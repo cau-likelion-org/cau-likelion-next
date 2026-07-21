@@ -45,6 +45,8 @@ const SessionModal = ({ trackData, trackName, handleClose }: ModalProps) => {
                   thumbnail={data.thumbnail}
                   title={data.title}
                   category={`${data.degree}차 세션`}
+                  archivingType="session"
+                  cardPosition={i}
                 />
               );
             })}

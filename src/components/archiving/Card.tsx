@@ -1,19 +1,35 @@
-import { IArchivingData } from '@@types/request';
+import { ArchivingType, IArchivingData } from '@@types/request';
 import { GreyScale } from '@utils/constant/color';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import React from 'react';
 import styled from 'styled-components';
+import { track } from 'src/lib/amplitude';
 
 interface ICardProps extends IArchivingData {
   dev_stack?: number[];
   category?: string | number;
   link: string;
+  archivingType: ArchivingType;
+  cardPosition: number;
 }
 
-const Card = ({ id, thumbnail, title, dev_stack, category, link, subtitle }: ICardProps) => {
+const Card = ({ id, thumbnail, title, dev_stack, category, link, subtitle, archivingType, cardPosition }: ICardProps) => {
+  const router = useRouter();
+
+  const handleClick = () => {
+    track('Archiving Card Clicked', {
+      archiving_type: archivingType,
+      item_id: id,
+      item_title: title,
+      card_position: cardPosition,
+      referrer_path: router.asPath,
+    });
+  };
+
   return (
     <Link href={`${link}/${id}`} prefetch={false}>
-      <Wrapper>
+      <Wrapper onClick={handleClick}>
         <ImageWrapper>
           <img
             key={thumbnail}
