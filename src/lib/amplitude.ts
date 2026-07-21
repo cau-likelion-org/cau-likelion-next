@@ -17,6 +17,11 @@ export const trackBeforeUnload = (eventName: string, properties?: Record<string,
   amplitude.track(eventName, properties);
 };
 
+export const setUserId = (userId?: string) => {
+  if (typeof window === 'undefined') return;
+  amplitude.setUserId(userId);
+};
+
 export const getDeviceType = (): 'mobile' | 'pc' => {
   if (typeof window === 'undefined') return 'pc';
   return window.innerWidth < 900 ? 'mobile' : 'pc';
