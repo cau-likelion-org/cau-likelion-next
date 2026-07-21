@@ -2,6 +2,102 @@
 # yarn lockfile v1
 
 
+"@amplitude/analytics-browser@^2.45.3":
+  version "2.45.3"
+  resolved "https://registry.npmjs.org/@amplitude/analytics-browser/-/analytics-browser-2.45.3.tgz"
+  integrity sha512-C0aMU/4fitTEt6v1eYrQ0KA/O10fjZrHdn8RFvU4GcR8wnp3e44OZW1VO7ll8R2adWhHSsSOVxsSlczoWViY3Q==
+  dependencies:
+    "@amplitude/analytics-core" "2.53.2"
+    "@amplitude/plugin-autocapture-browser" "1.28.8"
+    "@amplitude/plugin-custom-enrichment-browser" "0.1.18"
+    "@amplitude/plugin-event-property-attribution-browser" "0.2.10"
+    "@amplitude/plugin-network-capture-browser" "1.10.10"
+    "@amplitude/plugin-page-url-enrichment-browser" "0.7.20"
+    "@amplitude/plugin-page-view-tracking-browser" "2.11.10"
+    "@amplitude/plugin-web-vitals-browser" "1.1.42"
+    tslib "^2.4.1"
+
+"@amplitude/analytics-connector@^1.6.4":
+  version "1.6.5"
+  resolved "https://registry.npmjs.org/@amplitude/analytics-connector/-/analytics-connector-1.6.5.tgz"
+  integrity sha512-EcDT+E4vliT7WAeOCbyE4rNkTUdLMR9dGCETX+36U7gAROr8jARG6ObhW7TTWdoYDlUe25IllZnRKdXHRKlWJQ==
+
+"@amplitude/analytics-core@2.53.2":
+  version "2.53.2"
+  resolved "https://registry.npmjs.org/@amplitude/analytics-core/-/analytics-core-2.53.2.tgz"
+  integrity sha512-TsmYeJ0ZcAURkQWqDNi5Ar25MH0KcQ64zdxYWn1N9BN2xaakOevz0/WwNVvthmf1gd/Bz9OZdaq4D5iqYd4Dow==
+  dependencies:
+    "@amplitude/analytics-connector" "^1.6.4"
+    "@types/zen-observable" "0.8.3"
+    safe-json-stringify "1.2.0"
+    tslib "^2.4.1"
+    zen-observable "0.10.0"
+
+"@amplitude/element-selector@0.2.1":
+  version "0.2.1"
+  resolved "https://registry.npmjs.org/@amplitude/element-selector/-/element-selector-0.2.1.tgz"
+  integrity sha512-QZYvhO2cyaw6B7gFWu95QrE/l2a5oSCHgYR2S6DqZ6/NVDWIzbBtEjwLcxZFPXbO+DM1Rng6GUNljMNFtdlFDw==
+  dependencies:
+    tslib "^2.4.1"
+
+"@amplitude/plugin-autocapture-browser@1.28.8":
+  version "1.28.8"
+  resolved "https://registry.npmjs.org/@amplitude/plugin-autocapture-browser/-/plugin-autocapture-browser-1.28.8.tgz"
+  integrity sha512-RlS6qD+0xvfWfTRH/5Z9cE7kMHr5i7mTn4ve6dIUuwR/ttRAJ7L+jdqGLw3fP2qNrlJF9WHfKUh0y69jWvn4XQ==
+  dependencies:
+    "@amplitude/analytics-core" "2.53.2"
+    "@amplitude/element-selector" "0.2.1"
+    tslib "^2.4.1"
+
+"@amplitude/plugin-custom-enrichment-browser@0.1.18":
+  version "0.1.18"
+  resolved "https://registry.npmjs.org/@amplitude/plugin-custom-enrichment-browser/-/plugin-custom-enrichment-browser-0.1.18.tgz"
+  integrity sha512-CsD4r7njzsHFOQ6fvrqGI/uzI9Pd1e0orlOPFnxFcbCgAroi1kVgTZ+030Q88l1YSLpKcqT/YTe8EJ9QPQvzeg==
+  dependencies:
+    "@amplitude/analytics-core" "2.53.2"
+    tslib "^2.4.1"
+
+"@amplitude/plugin-event-property-attribution-browser@0.2.10":
+  version "0.2.10"
+  resolved "https://registry.npmjs.org/@amplitude/plugin-event-property-attribution-browser/-/plugin-event-property-attribution-browser-0.2.10.tgz"
+  integrity sha512-8BmwkTwvYy4Xi+CSYlw85yhZ4gwxFQTOm/LVj8z/zWRiz/Gxc1yi9Unh9cxjj4LWEa2Xs/xUaVOB5H+0OjfMgA==
+  dependencies:
+    "@amplitude/analytics-core" "2.53.2"
+    tslib "^2.4.1"
+
+"@amplitude/plugin-network-capture-browser@1.10.10":
+  version "1.10.10"
+  resolved "https://registry.npmjs.org/@amplitude/plugin-network-capture-browser/-/plugin-network-capture-browser-1.10.10.tgz"
+  integrity sha512-dJR7J9KJHTfYwMOIDEtLnTGRRFpPNA8nl6C5HsIKOPZhITUur7qFLoYPj0yhMlugCEQ5b0TKMeAW+WbpYaq6Pg==
+  dependencies:
+    "@amplitude/analytics-core" "2.53.2"
+    tslib "^2.4.1"
+
+"@amplitude/plugin-page-url-enrichment-browser@0.7.20":
+  version "0.7.20"
+  resolved "https://registry.npmjs.org/@amplitude/plugin-page-url-enrichment-browser/-/plugin-page-url-enrichment-browser-0.7.20.tgz"
+  integrity sha512-AXcbksZYrCjFLiYSOgmg/QGB4ZCBcEE8URSYgyL2u9Bg3CHPihV09ffMtQpqR/MnMQ8eyqRcw0GPPUYaN2CQqQ==
+  dependencies:
+    "@amplitude/analytics-core" "2.53.2"
+    tslib "^2.4.1"
+
+"@amplitude/plugin-page-view-tracking-browser@2.11.10":
+  version "2.11.10"
+  resolved "https://registry.npmjs.org/@amplitude/plugin-page-view-tracking-browser/-/plugin-page-view-tracking-browser-2.11.10.tgz"
+  integrity sha512-UB21i+ultA3TkLOCuaT3Co34Zr76VylARHchKFNC7s4tAXNJJ7yPNQQg0Z0txbvUHlrhu1rOEnAe8l9BBU7SNQ==
+  dependencies:
+    "@amplitude/analytics-core" "2.53.2"
+    tslib "^2.4.1"
+
+"@amplitude/plugin-web-vitals-browser@1.1.42":
+  version "1.1.42"
+  resolved "https://registry.npmjs.org/@amplitude/plugin-web-vitals-browser/-/plugin-web-vitals-browser-1.1.42.tgz"
+  integrity sha512-O1DPD76BR8n0ne5BeVx/PdqFVGvpPQuWtkk7diHL/Cis4wRrQ+kIbmZodo2gKWpSrthUZh3NJyMe7YQIGCPuVg==
+  dependencies:
+    "@amplitude/analytics-core" "2.53.2"
+    tslib "^2.4.1"
+    web-vitals "5.1.0"
+
 "@ampproject/remapping@^2.1.0":
   version "2.2.0"
   resolved "https://registry.npmjs.org/@ampproject/remapping/-/remapping-2.2.0.tgz"
@@ -1921,6 +2017,11 @@
   version "9.0.0"
   resolved "https://registry.npmjs.org/@types/uuid/-/uuid-9.0.0.tgz"
   integrity sha512-kr90f+ERiQtKWMz5rP32ltJ/BtULDI5RVO0uavn1HQUOwjx0R1h0rnDYNL0CepF1zL5bSY6FISAfd9tOdDhU5Q==
+
+"@types/zen-observable@0.8.3":
+  version "0.8.3"
+  resolved "https://registry.npmjs.org/@types/zen-observable/-/zen-observable-0.8.3.tgz"
+  integrity sha512-fbF6oTd4sGGy0xjHPKAt+eS2CrxJ3+6gQ3FGcBoIJR2TLAyCkCyI8JqZNy+FeON0AhVgNJoUumVoZQjBFUqHkw==
 
 "@typescript-eslint/parser@^5.42.0":
   version "5.48.0"
@@ -6863,6 +6964,11 @@ safe-buffer@^5.1.1, safe-buffer@~5.1.0, safe-buffer@~5.1.1:
   resolved "https://registry.npmjs.org/safe-buffer/-/safe-buffer-5.1.2.tgz"
   integrity sha512-Gd2UZBJDkXlY7GbJxfsE8/nvKkUEU1G38c1siN6QP6a9PT9MmHB8GnpscSmMJSoF8LOIrt8ud/wPtojys4G6+g==
 
+safe-json-stringify@1.2.0:
+  version "1.2.0"
+  resolved "https://registry.npmjs.org/safe-json-stringify/-/safe-json-stringify-1.2.0.tgz"
+  integrity sha512-gH8eh2nZudPQO6TytOvbxnuhYBOvDBBLW52tz5q6X58lJcd/tkmqFR+5Z9adS8aJtURSXWThWy/xJtJwixErvg==
+
 safe-regex-test@^1.0.0:
   version "1.0.0"
   resolved "https://registry.npmjs.org/safe-regex-test/-/safe-regex-test-1.0.0.tgz"
@@ -7739,7 +7845,7 @@ tslib@^1.9.0:
   resolved "https://registry.npmjs.org/tslib/-/tslib-1.14.1.tgz"
   integrity sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==
 
-tslib@^2.1.0, tslib@^2.3.1, tslib@^2.4.0:
+tslib@^2.1.0, tslib@^2.3.1, tslib@^2.4.0, tslib@^2.4.1:
   version "2.4.1"
   resolved "https://registry.npmjs.org/tslib/-/tslib-2.4.1.tgz"
   integrity sha512-tGyy4dAjRIEwI7BzsB0lynWgOpfqjUdq91XXAlIWD2OwKBH7oCl/GZG/HT4BOHrTlPMOASlMQ7veyTqpmRcrNA==
@@ -7993,6 +8099,11 @@ wcwidth@^1.0.1:
   dependencies:
     defaults "^1.0.3"
 
+web-vitals@5.1.0:
+  version "5.1.0"
+  resolved "https://registry.npmjs.org/web-vitals/-/web-vitals-5.1.0.tgz"
+  integrity sha512-ArI3kx5jI0atlTtmV0fWU3fjpLmq/nD3Zr1iFFlJLaqa5wLBkUSzINwBPySCX/8jRyjlmy1Volw1kz1g9XE4Jg==
+
 webidl-conversions@^3.0.0:
   version "3.0.1"
   resolved "https://registry.npmjs.org/webidl-conversions/-/webidl-conversions-3.0.1.tgz"
@@ -8237,6 +8348,11 @@ yocto-queue@^0.1.0:
   version "0.1.0"
   resolved "https://registry.npmjs.org/yocto-queue/-/yocto-queue-0.1.0.tgz"
   integrity sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==
+
+zen-observable@0.10.0:
+  version "0.10.0"
+  resolved "https://registry.npmjs.org/zen-observable/-/zen-observable-0.10.0.tgz"
+  integrity sha512-iI3lT0iojZhKwT5DaFy2Ce42n3yFcLdFyOh01G7H0flMY60P8MJuVFEoJoNwXlmAyQ45GrjL6AcZmmlv8A5rbw==
 
 zip-stream@^4.1.0:
   version "4.1.0"
