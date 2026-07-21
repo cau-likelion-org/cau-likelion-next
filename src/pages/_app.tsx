@@ -12,7 +12,7 @@ import Loading from '@common/loading/Loading';
 import ReactGA from 'react-ga4';
 import { useRecoilValue } from 'recoil';
 import { token } from '@utils/state';
-import { track, markPageEntry } from 'src/lib/amplitude';
+import { track, markPageEntry, setUserId, getUserIdFromToken } from 'src/lib/amplitude';
 // import GA from 'src/test/GA';
 
 type NextPageWithLayout = NextPage & {
@@ -35,6 +35,10 @@ function AppContent({ Component, pageProps }: AppPropsWithLayout) {
   const tokenState = useRecoilValue(token);
   const previousPathRef = useRef<string | undefined>(undefined);
   const getLayout = Component.getLayout || ((page: ReactElement) => <LayoutDefault>{page}</LayoutDefault>);
+
+  useEffect(() => {
+    setUserId(getUserIdFromToken(tokenState.access ?? undefined));
+  }, [tokenState.access]);
 
   useEffect(() => {
     ReactGA.send({ hitType: 'pageview', page: router.asPath });
