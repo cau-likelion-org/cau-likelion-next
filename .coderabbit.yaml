@@ -1,0 +1,170 @@
+language: "ko-KR"
+early_access: false
+
+tone_instructions: >
+  존댓말로, 간결하고 명확하게 작성해줘. 불필요한 칭찬이나 감탄사는 생략해.
+
+reviews:
+  profile: "chill"
+  request_changes_workflow: false
+  high_level_summary: true
+  poem: false
+  review_status: true
+  collapse_walkthrough: true
+
+  auto_review:
+    enabled: true
+    drafts: false
+    base_branches:
+      - main
+      - dev
+
+  path_filters:
+    - "!**/node_modules/**"
+    - "!**/.next/**"
+    - "!**/public/**"
+    - "!*.lock"
+    - "!package-lock.json"
+    - "!yarn.lock"
+    - "!**/*.svg"
+    - "!**/*.md"
+
+  path_instructions:
+    - path: "**/*"
+      instructions: |
+        아래는 이 저장소의 AI 협업 규칙(CLAUDE.md)이다. PR 작성자가 AI든 사람이든 동일하게 적용해서 리뷰해줘.
+
+        [사고 원칙]
+        - 근거 없이 추측성으로 결정된 부분(가정을 명시하지 않고 임의로 정한 부분)이 보이면 짚어줘.
+
+        [단순성]
+        - 요청 범위를 넘어서는 기능, 아직 쓰이지 않는 설정/확장 옵션, 1회성 코드에 대한 불필요한
+          추상화가 추가됐다면 "이 범위에서 필요한가?"를 물어봐줘.
+        - 일어날 수 없는 상황에 대한 방어 코드(불필요한 null 체크, 과도한 try/catch)가 있으면 지적해줘.
+
+        [surgical한 변경]
+        - PR 목적과 무관한 인접 코드 개선/포매팅/리팩토링이 섞여 있으면 분리를 제안해줘.
+        - 변경과 무관한 기존 dead code를 이번 PR에서 임의로 삭제했다면(요청받지 않았다면) 짚어줘.
+
+        [커밋 / PR 컨벤션]
+        - 커밋 메시지가 Conventional Commits 소문자 규칙(`feat:`, `fix:`, `chore:`, `refactor:`,
+          `style:`, `docs:`, `ci:` + 콜론 뒤 설명)을 따르지 않으면 지적해줘.
+        - PR 설명이 `.github/PULL_REQUEST_TEMPLATE.md` 형식(한 줄 요약 / 바꾼거 / 같이 상의할 만한 것 /
+          작업리스트)을 비워둔 채 제출됐다면 채워달라고 요청해줘.
+
+        [파일 위치]
+        - 루트 설정 파일(`next.config.js`, `tsconfig.json`, `.eslintrc.json` 등)을 제외하고,
+          `src/` 디렉토리 밖에 새로운 소스 파일이 생성됐다면 지적해줘.
+
+        [리뷰 톤]
+        - 반드시 수정해야 하는 문제와 개선 제안을 구분해줘.
+        - 사소한 취향 차이는 nitpick으로 표시해줘.
+        - 단순 지적보다 왜 문제인지와 어떻게 고치면 좋은지를 함께 설명해줘.
+        - 새 의존성 추가가 있다면 `package.json` 변경과 함께 PR 설명에 필요성/대안이 적혀 있는지
+          확인해줘. 없다면 사유를 적어달라고 요청해줘.
+
+    - path: "src/**/*.{ts,tsx}"
+      instructions: |
+        이 프로젝트는 Next.js 12(Pages Router) + TypeScript + styled-components v5 기반입니다.
+        상태 관리는 Zustand(클라이언트) + TanStack Query/react-query(서버)로 전환 중이며,
+        기존 Recoil 코드는 점진적으로 마이그레이션합니다. 아래 팀 컨벤션을 기준으로 리뷰해주세요.
+
+        1. 코드 스타일 (Prettier 설정 기준)
+        - 세미콜론을 사용해야 합니다.
+        - single quote를 사용해야 합니다.
+        - trailing comma(all)를 사용해야 합니다.
+        - printWidth 120 기준으로 너무 긴 코드는 분리를 제안해주세요.
+        - 화살표 함수 매개변수는 항상 괄호를 사용해야 합니다 (arrowParens: always).
+        - styled-components 정의가 파일 절반 이상을 차지할 만큼 길어졌다면 별도 스타일 파일 분리를
+          제안해주세요.
+
+        2. 네이밍 컨벤션
+        - 컴포넌트 파일명은 PascalCase를 사용합니다.
+        - 일반 함수와 변수는 camelCase를 사용합니다.
+        - 상수는 UPPER_SNAKE_CASE를 사용합니다.
+        - 이미지/에셋 파일명은 kebab-case를 사용합니다.
+        - Boolean 변수는 is/has/should 접두사를 사용합니다.
+
+        3. React / TypeScript
+        - 신규로 추가되는 코드에서 any 사용은 지양하고 정확한 타입 또는 unknown 사용을 제안해주세요.
+          단, 기존 코드(diff 밖)에 이미 있던 any는 지적하지 마세요.
+        - 타입 전용 import는 import type 사용을 권장해주세요.
+        - Props 타입은 컴포넌트 근처에 선언하고 ComponentNameProps 형태를 권장해주세요.
+        - React.FC 사용은 지양하고 명시적인 props 타입 + function declaration/화살표 함수를 사용하도록
+          제안해주세요.
+        - default export 사용 자체는 지적하지 마세요. 이 프로젝트는 페이지뿐 아니라 일반 컴포넌트에도
+          default export를 광범위하게 사용하는 기존 컨벤션을 유지합니다.
+        - console.log가 커밋에 포함되어 있으면 지적해주세요. console.warn / console.error만 허용됩니다.
+
+        4. 상태 관리
+        - 서버 상태는 TanStack Query/react-query(useQuery/useMutation)를 사용하도록 권장해주세요.
+        - useEffect를 통한 직접 데이터 패칭은 지양하고 TanStack Query 사용을 제안해주세요.
+        - API 응답 데이터를 Zustand 스토어에 그대로 저장하지 않는지 확인해주세요. 스토어는 로그인 토큰,
+          UI 플래그 등 클라이언트 전역 상태 전용입니다.
+        - Recoil(`atom`, `useRecoilState` 등)을 사용하는 코드를 새로 추가했다면, Zustand로 작성하도록
+          제안해주세요. 이 프로젝트는 Recoil에서 Zustand로 점진적 마이그레이션 중이며, 신규 코드는
+          Zustand를 기준으로 합니다. 기존 `src/utils/state.ts`의 Recoil atom을 수정 없이 그대로 둔
+          코드는 지적하지 않아도 됩니다.
+
+        5. 폴더 구조 / import
+        - src/pages는 Pages Router 파일에 사용합니다.
+        - src/apis는 도메인별(account, attendance, gallery, mypage, project, session, signUp) API
+          함수와 axios 인스턴스에 사용합니다.
+        - src/components는 공용 UI / 기능별 컴포넌트에 사용합니다.
+        - src/hooks는 순수 클라이언트 훅에만 사용합니다. useQuery/useMutation 등 서버 상태 훅이 여기에
+          추가됐다면 src/apis 옆이나 컴포넌트 내부로 옮기는 게 맞는지 짚어주세요.
+        - src/store는 새로 추가되는 Zustand 스토어 전용 폴더입니다. 신규 클라이언트 전역 상태는 여기에
+          작성되었는지 확인해주세요.
+        - src/utils는 공용 유틸에 사용합니다 (기존 Recoil atom인 state.ts는 마이그레이션 전까지 유지).
+        - src/test는 실험/임시 코드 영역입니다. 신규 코드가 계속 추가되고 있다면 프로덕션에서 실제로
+          쓰이는지 확인이 필요하다고 짚어주고 신규 추가를 지양하도록 안내해주세요.
+        - import는 단일 `@/`가 아니라 기능별로 세분화된 alias(@common, @home, @gallery, @project,
+          @session, @signup, @login, @attendance, @mypage, @archiving, @pages, @styles, @utils,
+          @@types, @image)를 사용하도록 권장하고, 과도한 ../ 상대경로는 지양해주세요. 신규 alias
+          (예: @store)를 추가할 때는 tsconfig.json paths와 next.config.js webpack alias 양쪽에
+          동일하게 등록되었는지 확인해주세요.
+
+        6. 리뷰 톤
+        - 반드시 수정해야 하는 문제와 개선 제안을 구분해주세요.
+        - 사소한 취향 차이는 nitpick으로 표시해주세요.
+        - 단순 지적보다 왜 문제인지와 어떻게 고치면 좋은지를 함께 설명해주세요.
+
+    - path: "src/apis/authAxios.ts"
+      instructions: |
+        이 파일에는 401 응답 시 refresh token으로 재시도할 때 원본 HTTP 메서드를 무시하고 항상 GET으로
+        재요청하는 알려진 버그가 있습니다. 이 파일을 수정하는 PR이라면 해당 버그가 함께 고쳐졌는지,
+        혹은 최소한 회귀시키지 않았는지 확인해주세요.
+
+    - path: "tsconfig.json"
+      instructions: |
+        paths에 alias를 추가/변경했다면, 같은 PR에 next.config.js의 webpack resolve.alias도 동일하게
+        수정되었는지 확인해주세요. 한쪽만 바뀌었다면 반드시 지적해주세요.
+
+    - path: "next.config.js"
+      instructions: |
+        - webpack resolve.alias를 추가/변경했다면 tsconfig.json의 paths도 함께 수정되었는지
+          확인해주세요.
+        - 이미지 domains 목록에서 기존 도메인이 삭제됐다면 지적해주세요. S3/CloudFront 캐시 전략과
+          연결되어 있어 임의 삭제하면 안 됩니다.
+
+    - path: ".github/**"
+      instructions: |
+        이 저장소의 브랜치/PR 전략에 맞는지 확인해주세요.
+        - 브랜치 흐름: main(프로덕션, push 시 Amplify 자동 배포) ← dev(스테이징) ← feat/#이슈번호,
+          fix/설명, refactor/설명.
+        - 기능/버그 수정 PR은 기본적으로 dev를 대상으로 하고, main에는 릴리즈 시점에 병합합니다.
+        - PR 설명은 .github/PULL_REQUEST_TEMPLATE.md 형식(한 줄 요약 / 바꾼거 / 같이 상의할 만한 것 /
+          작업리스트)을 따르는지 확인해주세요.
+
+  tools:
+    eslint:
+      enabled: true
+
+chat:
+  auto_reply: true
+
+knowledge_base:
+  learnings:
+    scope: auto
+  pull_requests:
+    scope: auto
