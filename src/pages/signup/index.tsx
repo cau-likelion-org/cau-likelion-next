@@ -1,21 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import SignUpFormSection from '@signup/SignUpFormSection';
-import { useRouter } from 'next/router';
-import { useRecoilValue } from 'recoil';
-import { token } from '@utils/state';
+import useAuthRedirect from 'src/hooks/useAuthRedirect';
 
 const SignUp = () => {
-  const router = useRouter();
-  const tokenState = useRecoilValue(token);
-  const [isLogin, setIsLogin] = useState(false);
-
-  useEffect(() => {
-    if (tokenState.access) {
-      setIsLogin(true);
-      router.push('/');
-    }
-  }, [tokenState]);
+  useAuthRedirect();
 
   return (
     <Wrapper>

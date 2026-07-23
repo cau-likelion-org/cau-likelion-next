@@ -3,7 +3,7 @@
     "types": [
       "@types/gtag.js" // 추가
     ],
-    "target": "es5",
+    "target": "es2017",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
@@ -33,7 +33,6 @@
       "@styles/*": ["src/styles/*"],
       "@@types/*": ["src/types/*"],
       "@utils/*": ["src/utils/*"],
-      "@utils": ["src/utils"],
       "@image/*": ["public/image/*"]
     }
   },

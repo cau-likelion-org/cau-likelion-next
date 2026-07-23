@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import Image from 'next/image';
 import styled from 'styled-components';
 import { useDragIndexCarousel, useInterval } from '@rapiders/react-hooks';
 
@@ -15,8 +16,8 @@ const Carousel = ({ images }: { images: string[] }) => {
     <Wrapper>
       <CarouselWrapper ref={ref} className="carouselWrapper">
         {images.map((img) => (
-          <div style={{ width: '100%', backgroundColor: 'white' }} key={img}>
-            <img src={img} draggable={false} style={{ objectFit: 'contain', width: '100%', height: '100%' }} />
+          <div style={{ width: '100%', height: '100%', backgroundColor: 'white', position: 'relative' }} key={img}>
+            <Image src={img} alt="갤러리 이미지" layout="fill" objectFit="contain" draggable={false} />
           </div>
         ))}
       </CarouselWrapper>

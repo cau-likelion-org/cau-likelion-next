@@ -10,7 +10,6 @@ import { useState, useEffect } from 'react';
 import { Router, useRouter } from 'next/router';
 import Loading from '@common/loading/Loading';
 import ReactGA from 'react-ga4';
-// import GA from 'src/test/GA';
 
 type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -28,7 +27,7 @@ if (typeof window !== 'undefined' && GA_ID) {
 function CauLikeLionNext({ Component, pageProps }: AppPropsWithLayout) {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const queryClient = new QueryClient();
+  const [queryClient] = useState(() => new QueryClient());
   const getLayout = Component.getLayout || ((page: ReactElement) => <LayoutDefault>{page}</LayoutDefault>);
 
   useEffect(() => {
@@ -68,10 +67,7 @@ function CauLikeLionNext({ Component, pageProps }: AppPropsWithLayout) {
           <Loading />
         ) : (
           getLayout(
-            <>
-              {/* <GA /> */}
-              <Component {...pageProps} />
-            </>,
+            <Component {...pageProps} />,
           )
         )}
       </QueryClientProvider>

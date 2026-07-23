@@ -6,17 +6,14 @@ import { useMutation } from 'react-query';
 import { token } from '@utils/state';
 import Loading from '@common/loading/Loading';
 import LocalStorage from '@utils/localStorage';
+import useAuthRedirect from 'src/hooks/useAuthRedirect';
 
 const Google = () => {
   const router = useRouter();
   const { code: code } = router.query;
-  const [{ access, refresh }, setToken] = useRecoilState(token);
+  const [, setToken] = useRecoilState(token);
 
-  useEffect(() => {
-    if (access) {
-      router.push('/');
-    }
-  }, [access]);
+  useAuthRedirect();
 
   useEffect(() => {
     if (code) loginHandler.mutate({ code });

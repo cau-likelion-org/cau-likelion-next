@@ -22,7 +22,7 @@ const TotalScoreSection = ({ myName }: { myName: string }) => {
   const [sortScoreArray, setSortScoreArray] = useState<UserScore[]>([]);
 
   useEffect(() => {
-    if (myName === '임대철' || myName === '천재홍' || myName === '최재영') {
+    if (myName === '임대철' || myName === '천재홍') {
       setIsPre(true);
     }
   }, [myName]);
@@ -59,16 +59,17 @@ const TotalScoreSection = ({ myName }: { myName: string }) => {
             target.totalScore = getTotalScore(target);
           }
         });
-      setTotalScoreArray(Object.values(tmpObject));
-      const sort = totalScoreArray.sort((a: UserScore, b: UserScore) => {
+      const newScoreArray = Object.values(tmpObject);
+      const sort = [...newScoreArray].sort((a: UserScore, b: UserScore) => {
         if (a.track !== b.track) {
           return a.track - b.track;
         }
         return a.name.localeCompare(b.name, 'ko');
       });
+      setTotalScoreArray(newScoreArray);
       setSortScoreArray(sort);
     }
-  }, [totalAssignment, totalAttendance, totalScoreArray]);
+  }, [totalAssignment, totalAttendance]);
 
   return (
     <>

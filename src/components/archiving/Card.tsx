@@ -10,7 +10,7 @@ interface ICardProps extends IArchivingData {
   link: string;
 }
 
-const Card = ({ id, thumbnail, title, dev_stack, category, link, subtitle }: ICardProps) => {
+const Card = ({ id, thumbnail, title, category, link, subtitle }: ICardProps) => {
   return (
     <Link href={`${link}/${id}`} prefetch={false}>
       <Wrapper>
@@ -30,7 +30,6 @@ const Card = ({ id, thumbnail, title, dev_stack, category, link, subtitle }: ICa
           <Category link={link}>{category}</Category>
           <ProjectTitle>{title}</ProjectTitle>
           {subtitle && <ProjectDesc>{subtitle}</ProjectDesc>}
-          {dev_stack && <div></div>}
         </TextWrapper>
       </Wrapper>
     </Link>

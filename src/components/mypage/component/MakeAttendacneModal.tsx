@@ -19,7 +19,7 @@ const MakeAttendacneModal = () => {
 
   const handleDateChange = (e: any) => {
     const inputDate = new Date(e.target.value);
-    if (inputDate < today && inputDate > maxDate) return;
+    if (inputDate < today || inputDate > maxDate) return;
     setDate(e.target.value);
   };
 

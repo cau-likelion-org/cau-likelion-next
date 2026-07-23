@@ -35,9 +35,9 @@ const Archiving = <Type extends ISessionData | IProjectData | IGalleryData>({
         <Wrapper>
           <ArchivingIndex>{title}</ArchivingIndex>
           <CardWrapper>
-            {archivingData.map((data, index) => (
+            {archivingData.map((data) => (
               <Card
-                key={index}
+                key={data.id}
                 id={data.id}
                 link={link}
                 thumbnail={data.thumbnail}
