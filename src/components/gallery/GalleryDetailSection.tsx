@@ -2,6 +2,7 @@ import { IGalleryDetail } from '@@types/request';
 import { Basic, GreyScale } from '@utils/constant/color';
 import React from 'react';
 import styled from 'styled-components';
+import MultilineText from '@common/MultilineText';
 
 const GalleryDetailSection = ({ galleryDetail }: { galleryDetail: IGalleryDetail }) => {
   return (
@@ -12,18 +13,7 @@ const GalleryDetailSection = ({ galleryDetail }: { galleryDetail: IGalleryDetail
       </LeftWrapper>
       <RightWrapper>
         <DescriptionBox>
-          {galleryDetail.description &&
-            galleryDetail.description
-              .replace(/\\n/g, '\n')
-              .split('\n')
-              .map((line, key) => {
-                return (
-                  <span key={key}>
-                    {line}
-                    <br />
-                  </span>
-                );
-              })}
+          {galleryDetail.description && <MultilineText text={galleryDetail.description} />}
         </DescriptionBox>
       </RightWrapper>
     </Wrapper>

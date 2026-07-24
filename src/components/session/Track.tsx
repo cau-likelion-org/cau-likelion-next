@@ -35,7 +35,7 @@ const Track = ({ track, trackData }: TrackProps) => {
     <>
       <StWrapper>
         <TrackTitle>{track}</TrackTitle>
-        {trackData.length && <StShowAll onClick={handleOpen}>전체보기 &gt;</StShowAll>}
+        {!!trackData.length && <StShowAll onClick={handleOpen}>전체보기 &gt;</StShowAll>}
       </StWrapper>
       {visible && <SessionModal trackData={trackData} trackName={track} handleClose={handleClose} />}
     </>

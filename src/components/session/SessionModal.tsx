@@ -12,7 +12,6 @@ type ModalProps = {
 };
 
 const SessionModal = ({ trackData, trackName, handleClose }: ModalProps) => {
-
   return (
     <>
       <StModalLayer onClick={handleClose} />
@@ -45,6 +44,9 @@ const SessionModal = ({ trackData, trackName, handleClose }: ModalProps) => {
                   thumbnail={data.thumbnail}
                   title={data.title}
                   category={`${data.degree}차 세션`}
+                  archivingType="session"
+                  cardPosition={i}
+                  totalImageCount={trackData.length}
                 />
               );
             })}
@@ -55,7 +57,6 @@ const SessionModal = ({ trackData, trackName, handleClose }: ModalProps) => {
 };
 
 export default SessionModal;
-
 
 const StModalLayer = styled.div`
   display: flex;
@@ -196,7 +197,7 @@ const CardWrapper = styled.div`
   @media (min-width: 360px) and (max-width: 601px) {
     grid-template-columns: 1fr;
     gap: 30px;
-  } ;
+  }
 `;
 
 const UploadButton = styled.button`

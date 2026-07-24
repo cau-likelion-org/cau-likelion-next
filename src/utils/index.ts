@@ -69,8 +69,7 @@ export const getTotalNameObject = (data: any): Record<string, UserScore> => {
 export const sortArchivingListDesc = <T extends IGalleryData | IProjectData>(
   data: ArchivingArrayType<T>,
 ): Array<[string, T[]]> => {
-  const newData = Object.entries(data).sort((year, _) => Number(year));
-  return newData.reverse();
+  return Object.entries(data).sort(([a], [b]) => Number(b) - Number(a));
 };
 
 export const getIdFromAsPath = (asPath: string, type: 'project' | 'session' | 'gallery'): string => {

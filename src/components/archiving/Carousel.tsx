@@ -1,8 +1,12 @@
 import { useEffect } from 'react';
+import Image from 'next/image';
 import styled from 'styled-components';
+import { useRouter } from 'next/router';
 import { useDragIndexCarousel, useInterval } from '@rapiders/react-hooks';
+import { track, getDeviceType, getPageEntryTime } from 'src/lib/amplitude';
 
 const Carousel = ({ images }: { images: string[] }) => {
+  const router = useRouter();
   const { CarouselWrapper, ref, next, index, isDragging } = useDragIndexCarousel(images.length, { infinity: true });
   const { stop, continueTimer } = useInterval(next, 3000);
 
@@ -11,12 +15,28 @@ const Carousel = ({ images }: { images: string[] }) => {
     else continueTimer();
   }, [isDragging]);
 
+  const handleImageLoad = () => {
+    track('Image Load Completed', {
+      page_path: router.asPath,
+      load_duration_ms: Date.now() - getPageEntryTime(),
+      image_count: images.length,
+      device_type: getDeviceType(),
+    });
+  };
+
   return (
     <Wrapper>
       <CarouselWrapper ref={ref} className="carouselWrapper">
         {images.map((img) => (
-          <div style={{ width: '100%', backgroundColor: 'white' }} key={img}>
-            <img src={img} draggable={false} style={{ objectFit: 'contain', width: '100%', height: '100%' }} />
+          <div style={{ width: '100%', height: '100%', backgroundColor: 'white', position: 'relative' }} key={img}>
+            <Image
+              src={img}
+              alt="갤러리 이미지"
+              layout="fill"
+              objectFit="contain"
+              draggable={false}
+              onLoad={handleImageLoad}
+            />
           </div>
         ))}
       </CarouselWrapper>
@@ -37,7 +57,6 @@ const Wrapper = styled.div`
   align-items: center;
   width: 80vw;
 `;
-
 
 const DiamondWrapper = styled.div`
   display: flex;

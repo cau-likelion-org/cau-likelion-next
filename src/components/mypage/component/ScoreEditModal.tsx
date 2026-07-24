@@ -9,7 +9,6 @@ import { editUserScore } from 'src/apis/mypage';
 import useInput from 'src/hooks/useInput';
 import styled from 'styled-components';
 import { HiXMark } from 'react-icons/hi2';
-import { getTotalAttendance } from 'src/apis/mypage';
 import { ATTENDANCE_CATEGORY_NAME, TRACK_NAME } from '@utils/constant';
 
 interface ScoreEditModalProps {
@@ -30,7 +29,6 @@ const ScoreEditModal = ({ targetUserScore, isEditModalOn, handleScoreEditModal }
       editUserScore(userScore, accessToken),
     onSuccess: (res) => {
       if (res.status === 200) {
-        () => getTotalAttendance(tokenState);
         setScoreChanged(!scoreChanged);
       }
     },

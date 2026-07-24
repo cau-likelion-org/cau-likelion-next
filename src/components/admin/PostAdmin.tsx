@@ -1,4 +1,3 @@
-import { IProjectDetail, UploadData } from '@@types/request';
 import React, { useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import { postGalleryData } from 'src/apis/admin';

@@ -1,6 +1,7 @@
 import { IProjectDetail } from '@@types/request';
 import { GreyScale } from '@utils/constant/color';
 import styled from 'styled-components';
+import MultilineText from '@common/MultilineText';
 const ProjectIntroduction = ({ projectData }: { projectData: IProjectDetail }) => {
   return (
     <Wrapper>
@@ -8,20 +9,7 @@ const ProjectIntroduction = ({ projectData }: { projectData: IProjectDetail }) =
         <Title>{projectData.title}</Title>
         <SubTitle>{projectData.subtitle}</SubTitle>
       </TitleWrapper>
-      <Description>
-        {projectData.description &&
-          projectData.description
-            .replace(/\\n/g, '\n')
-            .split('\n')
-            .map((line, key) => {
-              return (
-                <span key={key}>
-                  {line}
-                  <br />
-                </span>
-              );
-            })}
-      </Description>
+      <Description>{projectData.description && <MultilineText text={projectData.description} />}</Description>
     </Wrapper>
   );
 };
