@@ -35,7 +35,7 @@ const Archiving = <Type extends ISessionData | IProjectData | IGalleryData>({
         <Wrapper>
           <ArchivingIndex>{title}</ArchivingIndex>
           <CardWrapper>
-            {archivingData.map((data) => (
+            {archivingData.map((data, index) => (
               <Card
                 key={data.id}
                 id={data.id}
@@ -45,6 +45,9 @@ const Archiving = <Type extends ISessionData | IProjectData | IGalleryData>({
                 subtitle={data.subtitle}
                 dev_stack={'dev_stack' in data ? data.dev_stack : undefined}
                 category={getType(data)}
+                archivingType={archivingType}
+                cardPosition={index}
+                totalImageCount={archivingData.length}
               />
             ))}
           </CardWrapper>
