@@ -1,28 +1,39 @@
 import Link from 'next/link';
 import React from 'react';
 import styled from 'styled-components';
+import { track, getDeviceType } from 'src/lib/amplitude';
 
 interface INavBarButton {
   title: string;
   routing: string;
   target?: string;
+  isLogin?: boolean;
 }
 
-const NavButton = ({ title, routing, target }: INavBarButton) => {
+const NavButton = ({ title, routing, target, isLogin }: INavBarButton) => {
+  const handleClick = () => {
+    track('GNB Tab Clicked', {
+      tab_name: title,
+      is_external: !!target,
+      is_logged_in: !!isLogin,
+      device_type: getDeviceType(),
+    });
+  };
+
   if (title === 'Log in' || title === 'MY')
     return (
       <Link href={routing}>
-        <LoginButton>{title}</LoginButton>
+        <LoginButton onClick={handleClick}>{title}</LoginButton>
       </Link>
     );
 
   return target ? (
-    <a href={routing} target={target}>
+    <a href={routing} target={target} onClick={handleClick}>
       <Button>{title}</Button>
     </a>
   ) : (
     <Link href={routing}>
-      <Button>{title}</Button>
+      <Button onClick={handleClick}>{title}</Button>
     </Link>
   );
 };

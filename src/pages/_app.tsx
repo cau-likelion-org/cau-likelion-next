@@ -6,10 +6,13 @@ import type { AppProps } from 'next/app';
 import React, { ReactElement, ReactNode } from 'react';
 import { NextPage } from 'next';
 import LayoutDefault from '@common/layout/LayoutDefault';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Router, useRouter } from 'next/router';
 import Loading from '@common/loading/Loading';
 import ReactGA from 'react-ga4';
+import { useRecoilValue } from 'recoil';
+import { token } from '@utils/state';
+import { track, markPageEntry, setUserId, getUserIdFromToken } from 'src/lib/amplitude';
 
 type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -24,14 +27,27 @@ if (typeof window !== 'undefined' && GA_ID) {
   ReactGA.initialize(GA_ID);
 }
 
-function CauLikeLionNext({ Component, pageProps }: AppPropsWithLayout) {
+function AppContent({ Component, pageProps }: AppPropsWithLayout) {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const [queryClient] = useState(() => new QueryClient());
+  const tokenState = useRecoilValue(token);
+  const previousPathRef = useRef<string | undefined>(undefined);
   const getLayout = Component.getLayout || ((page: ReactElement) => <LayoutDefault>{page}</LayoutDefault>);
 
   useEffect(() => {
+    setUserId(getUserIdFromToken(tokenState.access ?? undefined));
+  }, [tokenState.access]);
+
+  useEffect(() => {
     ReactGA.send({ hitType: 'pageview', page: router.asPath });
+    markPageEntry();
+    track('Page Viewed', {
+      page_path: router.asPath,
+      referrer_path: typeof document !== 'undefined' ? document.referrer : undefined,
+      is_logged_in: !!tokenState.access,
+    });
+    previousPathRef.current = router.asPath;
 
     const start = () => {
       setLoading(true);
@@ -40,6 +56,13 @@ function CauLikeLionNext({ Component, pageProps }: AppPropsWithLayout) {
     const end = (url: string) => {
       setLoading(false);
       ReactGA.send({ hitType: 'pageview', page: url });
+      markPageEntry();
+      track('Page Viewed', {
+        page_path: url,
+        referrer_path: previousPathRef.current,
+        is_logged_in: !!tokenState.access,
+      });
+      previousPathRef.current = url;
     };
 
     const error = () => {
@@ -55,22 +78,26 @@ function CauLikeLionNext({ Component, pageProps }: AppPropsWithLayout) {
       Router.events.off('routeChangeComplete', end);
       Router.events.off('routeChangeError', error);
     };
-  }, []);
+  }, [tokenState.access]);
 
   return (
+    <QueryClientProvider client={queryClient}>
+      <Head>
+        <title>LikeLionCAU</title>
+      </Head>
+      {loading ? (
+        <Loading />
+      ) : (
+        getLayout(<Component {...pageProps} />)
+      )}
+    </QueryClientProvider>
+  );
+}
+
+function CauLikeLionNext(props: AppPropsWithLayout) {
+  return (
     <RecoilRoot>
-      <QueryClientProvider client={queryClient}>
-        <Head>
-          <title>LikeLionCAU</title>
-        </Head>
-        {loading ? (
-          <Loading />
-        ) : (
-          getLayout(
-            <Component {...pageProps} />,
-          )
-        )}
-      </QueryClientProvider>
+      <AppContent {...props} />
     </RecoilRoot>
   );
 }

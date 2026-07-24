@@ -12,31 +12,44 @@ import InputBox from './InputBox';
 import { postAttendance } from 'src/apis/attendance';
 import { token } from '@utils/state';
 import { TRACK_NAME } from '@utils/constant';
+import { track, getDeviceType } from 'src/lib/amplitude';
 
 const AttendanceBox = ({ data }: { data: TodayAttendanceData; }) => {
   const router = useRouter();
   const InputRef = useRef<HTMLInputElement>(null);
   const tokens = useRecoilValue(token);
+  const clickCountRef = useRef(0);
+  const retryCountRef = useRef(0);
+  const lastTriggerRef = useRef<'button_click' | 'enter_key'>('button_click');
 
   const attendancePost = useMutation({
     mutationFn: (password: string) => postAttendance(password, tokens),
     onSuccess: (res) => {
       if (res.status === 200) {
+        track('Attendance Completed', {
+          device_type: getDeviceType(),
+          click_count_since_login: clickCountRef.current,
+          attendance_retry_count: retryCountRef.current,
+          trigger_type: lastTriggerRef.current,
+        });
         router.push('/attendance/completed');
       }
     },
     onError: (error) => {
+      retryCountRef.current += 1;
       alert('비밀번호가 틀렸습니다!');
     },
   });
 
-  const handleClick = () => {
+  const handleClick = (trigger: 'button_click' | 'enter_key' = 'button_click') => {
     if (InputRef.current) {
+      clickCountRef.current += 1;
+      lastTriggerRef.current = trigger;
       attendancePost.mutate(InputRef.current.value);
     }
   };
   const handleEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') handleClick();
+    if (event.key === 'Enter') handleClick('enter_key');
   };
 
   return (
@@ -53,7 +66,7 @@ const AttendanceBox = ({ data }: { data: TodayAttendanceData; }) => {
         <PasswordTitle>비밀번호</PasswordTitle>
         <PasswordInput type="password" ref={InputRef} required onKeyDown={handleEnter} />
       </PasswordWrapper>
-      <SubmitButton onClick={handleClick}>출석하기</SubmitButton>
+      <SubmitButton onClick={() => handleClick('button_click')}>출석하기</SubmitButton>
     </Wrapper>
   );
 };
