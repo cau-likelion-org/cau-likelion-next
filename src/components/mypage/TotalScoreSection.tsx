@@ -3,8 +3,8 @@ import { ATTENDANCE_CATEGORY_NAME, TRACK_NAME } from '@utils/constant';
 import { BackgroundColor, GreyScale } from '@utils/constant/color';
 import { getTotalNameObject, getTotalScore } from '@utils/index';
 import { token, userScoreChanged } from '@utils/state';
-import React, { useEffect, useState } from 'react';
-import { useQuery } from 'react-query';
+import React, { useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useRecoilValue } from 'recoil';
 import { getAssignments, getTotalAttendance } from 'src/apis/mypage';
 import styled from 'styled-components';
@@ -14,18 +14,10 @@ import { TiPencil } from 'react-icons/ti';
 
 const TotalScoreSection = ({ myName }: { myName: string }) => {
   const tokenValue = useRecoilValue(token);
-  const [totalScoreArray, setTotalScoreArray] = useState<UserScore[]>([]);
   const [isEditModalOn, setIsEditModalOn] = useState(false);
   const [clickedUser, setClickedUser] = useState<UserScore>({} as UserScore);
   const scoreChanged = useRecoilValue(userScoreChanged);
-  const [isPre, setIsPre] = useState<boolean>(false);
-  const [sortScoreArray, setSortScoreArray] = useState<UserScore[]>([]);
-
-  useEffect(() => {
-    if (myName === '임대철' || myName === '천재홍') {
-      setIsPre(true);
-    }
-  }, [myName]);
+  const isPre = myName === '임대철' || myName === '천재홍';
 
   const handleScoreEditModal = (userScore: UserScore) => {
     setIsEditModalOn(!isEditModalOn);
@@ -36,39 +28,39 @@ const TotalScoreSection = ({ myName }: { myName: string }) => {
     data: totalAssignment,
     isLoading: totalAssignmentLoading,
     error: totalAssignmentError,
-  } = useQuery(['userAssignment'], getAssignments);
+  } = useQuery({ queryKey: ['userAssignment'], queryFn: getAssignments });
 
   const {
     data: totalAttendance,
     isLoading: totalAttendanceLoading,
     error: totalAttendanceError,
-  } = useQuery(['userAttendance', scoreChanged], () => getTotalAttendance(tokenValue));
+  } = useQuery({
+    queryKey: ['userAttendance', scoreChanged],
+    queryFn: () => getTotalAttendance(tokenValue),
+  });
 
-  useEffect(() => {
-    if (totalAttendance && totalAssignment) {
-      const tmpObject = getTotalNameObject(totalAssignment);
-      totalAttendance.length &&
-        totalAttendance.forEach((userAttendance: UserAttendance, i: number) => {
-          const target = tmpObject[userAttendance.name];
+  const sortScoreArray = useMemo(() => {
+    if (!totalAttendance || !totalAssignment) return [];
 
-          if (target?.track === userAttendance?.track) {
-            target.user_id = userAttendance.user_id;
-            target.tardiness = userAttendance.tardiness;
-            target.truancy = userAttendance.truancy;
-            target.absence = userAttendance.absence;
-            target.totalScore = getTotalScore(target);
-          }
-        });
-      const newScoreArray = Object.values(tmpObject);
-      const sort = [...newScoreArray].sort((a: UserScore, b: UserScore) => {
-        if (a.track !== b.track) {
-          return a.track - b.track;
+    const tmpObject = getTotalNameObject(totalAssignment);
+    totalAttendance.length &&
+      totalAttendance.forEach((userAttendance: UserAttendance, i: number) => {
+        const target = tmpObject[userAttendance.name];
+
+        if (target?.track === userAttendance?.track) {
+          target.user_id = userAttendance.user_id;
+          target.tardiness = userAttendance.tardiness;
+          target.truancy = userAttendance.truancy;
+          target.absence = userAttendance.absence;
+          target.totalScore = getTotalScore(target);
         }
-        return a.name.localeCompare(b.name, 'ko');
       });
-      setTotalScoreArray(newScoreArray);
-      setSortScoreArray(sort);
-    }
+    return Object.values(tmpObject).sort((a: UserScore, b: UserScore) => {
+      if (a.track !== b.track) {
+        return a.track - b.track;
+      }
+      return a.name.localeCompare(b.name, 'ko');
+    });
   }, [totalAssignment, totalAttendance]);
 
   return (

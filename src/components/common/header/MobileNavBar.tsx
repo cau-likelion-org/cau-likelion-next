@@ -32,7 +32,7 @@ const MobileNavBar = () => {
                 <LogoWrapper>
                     <Link href={'/'}>
                         <LogoImage>
-                            <Image src={CAULogo} width={'30px'} height={'30px'} alt="로고 이미지" />
+                            <Image src={CAULogo} width={30} height={30} alt="로고 이미지" />
                         </LogoImage>
                     </Link>
                     <Link href={'/'}>

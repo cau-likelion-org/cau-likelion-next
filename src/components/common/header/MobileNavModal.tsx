@@ -1,6 +1,6 @@
 import { BackgroundColor } from '@utils/constant/color';
 import { token } from '@utils/state';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 import { IMenu } from './NavBar';
@@ -10,12 +10,8 @@ import NavProfileCard from './NavProfileCard';
 const MobileNavModal = ({ isModalOn }: { isModalOn: boolean }) => {
   const { access: tokenState } = useRecoilValue(token);
   const [visibilityAnimation, setVisibilityAnimation] = useState(false);
-  const [repeat, setRepeat] = useState<any>(null);
-  const [isLogin, setIsLogin] = useState(false);
-
-  useEffect(() => {
-    if (tokenState) setIsLogin(true);
-  }, [tokenState]);
+  const repeatRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isLogin = !!tokenState;
 
   const menu: IMenu[] = [
     { title: '프로젝트', routing: '/project' },
@@ -27,16 +23,19 @@ const MobileNavModal = ({ isModalOn }: { isModalOn: boolean }) => {
 
   useEffect(() => {
     if (isModalOn) {
-      clearTimeout(repeat);
-      setRepeat(null);
+      if (repeatRef.current) clearTimeout(repeatRef.current);
+      repeatRef.current = null;
+      // isModalOn prop 변경(외부 트리거)에 즉시 반응해야 해서 useMemo로 대체 불가
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setVisibilityAnimation(true);
     } else {
-      setRepeat(
-        setTimeout(() => {
-          setVisibilityAnimation(false);
-        }, 400),
-      );
+      repeatRef.current = setTimeout(() => {
+        setVisibilityAnimation(false);
+      }, 400);
     }
+    return () => {
+      if (repeatRef.current) clearTimeout(repeatRef.current);
+    };
   }, [isModalOn]);
 
   return (

@@ -18,16 +18,11 @@ const SessionSection = ({ trackName, trackData }: SessionProps) => {
   const cardNum = trackData.length;
 
   const getCardWidth = () => {
-    if (window.innerWidth >= 1920)
-      return 400;
-    if (window.innerWidth >= 900)
-      return 350;
-    if (window.innerWidth >= 660)
-      return 320;
-    if (window.innerWidth >= 445)
-      return 260;
-    if (window.innerWidth >= 330)
-      return 200;
+    if (window.innerWidth >= 1920) return 400;
+    if (window.innerWidth >= 900) return 350;
+    if (window.innerWidth >= 660) return 320;
+    if (window.innerWidth >= 445) return 260;
+    if (window.innerWidth >= 330) return 200;
     return 150;
   };
 
@@ -40,42 +35,46 @@ const SessionSection = ({ trackName, trackData }: SessionProps) => {
   };
 
   useEffect(() => {
+    const width = getCardWidth();
     const containerWidth = window.innerWidth * 0.76 - 50;
-    setCardWidth(getCardWidth);
-    setCycleWidth(Math.floor(containerWidth / cardWidth) * cardWidth);
-    setCycleNum(Math.ceil(cardWidth * cardNum / cycleWidth));
+    const newCycleWidth = Math.floor(containerWidth / width) * width;
+    const newCycleNum = Math.ceil((width * cardNum) / newCycleWidth);
 
-  }, [cardWidth, cycleWidth, cardNum]);
+    // window.innerWidth(외부 시스템) 측정값이라 렌더링 중 계산으로 대체 불가
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setCardWidth(width);
+    setCycleWidth(newCycleWidth);
+    setCycleNum(newCycleNum);
+  }, [cardNum]);
 
   return (
     <>
-      {
-        cardNum ? (
-          <StWrapper>
-            <Track track={trackName} trackData={trackData} />
-            <StSlideWrapper>
-              <Arrow direction="left" cycleNum={cycleNum} onClick={leftBtnClickHandler} />
-              <HiddenLayer>
-                <CardWrapper counter={counter} cycleWidth={cycleWidth} cycleNum={cycleNum}>
-                  {trackData.map((data, i) => (
-                    <Card
-                      key={data.id}
-                      id={data.id}
-                      link="/session"
-                      thumbnail={data.thumbnail}
-                      title={data.title}
-                      category={`${data.degree}차 세션`}
-                      archivingType="session"
-                      cardPosition={i}
-                      totalImageCount={trackData.length} />
-                  ))}
-                </CardWrapper>
-              </HiddenLayer>
-              <Arrow direction="right" onClick={rightBtnClickHandler} cycleNum={cycleNum} />
-            </StSlideWrapper>
-          </StWrapper>
-        ) : null
-      }
+      {cardNum ? (
+        <StWrapper>
+          <Track track={trackName} trackData={trackData} />
+          <StSlideWrapper>
+            <Arrow direction="left" cycleNum={cycleNum} onClick={leftBtnClickHandler} />
+            <HiddenLayer>
+              <CardWrapper counter={counter} cycleWidth={cycleWidth} cycleNum={cycleNum}>
+                {trackData.map((data, i) => (
+                  <Card
+                    key={data.id}
+                    id={data.id}
+                    link="/session"
+                    thumbnail={data.thumbnail}
+                    title={data.title}
+                    category={`${data.degree}차 세션`}
+                    archivingType="session"
+                    cardPosition={i}
+                    totalImageCount={trackData.length}
+                  />
+                ))}
+              </CardWrapper>
+            </HiddenLayer>
+            <Arrow direction="right" onClick={rightBtnClickHandler} cycleNum={cycleNum} />
+          </StSlideWrapper>
+        </StWrapper>
+      ) : null}
     </>
   );
 };
@@ -95,7 +94,7 @@ const StWrapper = styled.div`
   @media (max-width: 1550px) {
     font-size: 2.3rem;
   }
-    @media (min-width: 1920px) {
+  @media (min-width: 1920px) {
     min-height: 420px;
   }
 
@@ -125,8 +124,8 @@ const StSlideWrapper = styled.div`
   gap: 10px;
 `;
 
-const CardWrapper = styled.div<{ counter: number; cycleWidth: number; cycleNum: number; }>`
-  transform: ${props => `translateX(${-props.counter * props.cycleWidth}px)`};
+const CardWrapper = styled.div<{ counter: number; cycleWidth: number; cycleNum: number }>`
+  transform: ${(props) => `translateX(${-props.counter * props.cycleWidth}px)`};
   transition: ease-in 0.4s;
   display: flex;
 `;
@@ -136,4 +135,3 @@ const HiddenLayer = styled.div`
   overflow-x: hidden;
   width: 100%;
 `;
-

@@ -3,7 +3,7 @@ import FormSendButton from '@signup/component/FormSendButton';
 import { BackgroundColor, Basic, GreyScale } from '@utils/constant/color';
 import { IToken, token, userScoreChanged } from '@utils/state';
 import React from 'react';
-import { useMutation } from 'react-query';
+import { useMutation } from '@tanstack/react-query';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { editUserScore } from 'src/apis/mypage';
 import useInput from 'src/hooks/useInput';

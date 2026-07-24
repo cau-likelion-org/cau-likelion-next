@@ -8,7 +8,7 @@ const FailedMessage = () => {
   return (
     <MessageWrapper>
       <div>
-        <Image src={alert} alt="알림" width="20px" height="20px" />
+        <Image src={alert} alt="알림" width={20} height={20} />
         <StMessageText>알림</StMessageText>
       </div>
       <StMessageText>등록되지 않은 이메일입니다. 올바른 이메일을 입력해주세요.</StMessageText>

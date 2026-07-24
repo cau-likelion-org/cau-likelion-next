@@ -9,7 +9,7 @@ import { track } from 'src/lib/amplitude';
 
 const SCROLL_DEPTH_THRESHOLDS = [25, 50, 75, 100];
 
-const LayoutArchiving = ({ children }: { children: ReactElement; }) => {
+const LayoutArchiving = ({ children }: { children: ReactElement }) => {
   const router = useRouter();
 
   useEffect(() => {
@@ -73,5 +73,4 @@ const PageContainer = styled.div`
     padding: 70px 20px;
   }
   padding: 100px 160px 100px 160px;
-  
 `;

@@ -58,7 +58,6 @@ const Wrapper = styled.div`
   width: 80vw;
 `;
 
-
 const DiamondWrapper = styled.div`
   display: flex;
   width: 100%;

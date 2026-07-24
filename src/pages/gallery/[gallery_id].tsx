@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import { ReactElement } from 'react';
 import styled from 'styled-components';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 
 import Carousel from '@archiving/Carousel';
 import LayoutArchiving from '@common/layout/LayoutArchiving';
@@ -16,9 +16,10 @@ import { ARCHIVING } from '@utils/constant';
 
 const GalleryDetail = ({ galleryDetailStaticData }: { galleryDetailStaticData: IGalleryDetail }) => {
   const router = useRouter();
-  const { data, isLoading } = useQuery<IGalleryDetail>(['galleryDeatil', router.asPath], () =>
-    getGalleryDetail(getIdFromAsPath(router.asPath, 'gallery')),
-  );
+  const { data, isLoading } = useQuery<IGalleryDetail>({
+    queryKey: ['galleryDeatil', router.asPath],
+    queryFn: () => getGalleryDetail(getIdFromAsPath(router.asPath, 'gallery')),
+  });
 
   if (router.isFallback) {
     return <div>로딩중</div>;

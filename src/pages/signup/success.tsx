@@ -6,7 +6,7 @@ const Completed = () => {
   return (
     <Wrapper>
       <ImageWrapper>
-        <Image src={sign} layout="fill" alt="대체" />
+        <Image src={sign} fill alt="대체" />
       </ImageWrapper>
       <p className="big"> 가입 완료! </p>
       <p className="small"> 중앙대 멋쟁이 사자처럼 회원이 된 것을 환영합니다! </p>

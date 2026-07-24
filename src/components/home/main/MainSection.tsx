@@ -20,7 +20,7 @@ const MainSection = ({ clickMore }: { clickMore: () => void }) => {
           <LionWrapper>
             {Array.from({ length: 3 }).map((_, i) => (
               <ImageWrapper key={i} animate={animationSetting(i)}>
-                <Lion key={i} src={loadingPic} layout="fill" objectFit="cover" objectPosition="center" />
+                <Lion key={i} src={loadingPic} fill style={{ objectFit: 'cover', objectPosition: 'center' }} alt="사자 이미지" />
               </ImageWrapper>
             ))}
           </LionWrapper>
@@ -28,7 +28,7 @@ const MainSection = ({ clickMore }: { clickMore: () => void }) => {
             <UnionTextWrapper>
               <BlueBlockText>멋쟁이</BlueBlockText>
               <UnionText className="union">
-                <Union src={union} />
+                <Union src={union} alt="" />
               </UnionText>
             </UnionTextWrapper>
             <BlueBlockText>사자처럼</BlueBlockText>
@@ -41,14 +41,14 @@ const MainSection = ({ clickMore }: { clickMore: () => void }) => {
           <ImagesWrapper>
             <GenerationDiaWrapper>
               <GenerationText>{generation}기</GenerationText>
-              <GenerationDia src={generationDia} />
+              <GenerationDia src={generationDia} alt="" />
             </GenerationDiaWrapper>
             <CircleWrapper className="circle">
-              <Circle src={circle} />
+              <Circle src={circle} alt="" />
             </CircleWrapper>
             <UnionRow>
               <UnionWrapper className="union">
-                <Union src={union} />
+                <Union src={union} alt="" />
               </UnionWrapper>
             </UnionRow>
           </ImagesWrapper>
