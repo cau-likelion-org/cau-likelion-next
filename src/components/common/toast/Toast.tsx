@@ -90,6 +90,7 @@ const IconWrapper = styled.span<{ color?: string }>`
 
 const Text = styled.p`
   position: relative;
+  margin: 0;
   flex: 1 0 0;
   min-width: 0;
   word-break: break-word;
