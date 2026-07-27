@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-import { SkeletonFill } from '@utils/constant/color';
+import { Fill } from '@utils/constant/color';
 
 import { skeletonPulse } from './skeletonPulse';
 
@@ -22,6 +22,6 @@ const Box = styled.span<{ width: number; height: number; color: SkeletonRectangl
   width: ${(props) => props.width}px;
   height: ${(props) => props.height}px;
   border-radius: 3px;
-  background-color: ${(props) => (props.color === 'white' ? SkeletonFill.white : SkeletonFill.alternative)};
+  background-color: ${(props) => (props.color === 'white' ? Fill.white : Fill.subtle)};
   animation: ${skeletonPulse} 1.5s ease-in-out infinite;
 `;

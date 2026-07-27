@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-import { SkeletonFill } from '@utils/constant/color';
+import { Fill } from '@utils/constant/color';
 
 import { skeletonPulse } from './skeletonPulse';
 
@@ -41,6 +41,6 @@ const Bar = styled.span<{ color: SkeletonTextProps['color']; length: SkeletonTex
   width: ${(props) => props.length};
   height: 100%;
   border-radius: 3px;
-  background-color: ${(props) => (props.color === 'white' ? SkeletonFill.white : SkeletonFill.normal)};
+  background-color: ${(props) => (props.color === 'white' ? Fill.white : Fill.normal)};
   animation: ${skeletonPulse} 1.5s ease-in-out infinite;
 `;

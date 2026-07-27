@@ -8,7 +8,7 @@ export interface CircularLoadingProps {
   color?: string;
 }
 
-const CircularLoading = ({ className, size = 28, color = Fill.alternative }: CircularLoadingProps) => {
+const CircularLoading = ({ className, size = 28, color = Fill.solid }: CircularLoadingProps) => {
   return <Spinner className={className} size={size} color={color} role="status" aria-label="로딩 중" />;
 };
 

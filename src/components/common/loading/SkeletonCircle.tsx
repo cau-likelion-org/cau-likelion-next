@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-import { SkeletonFill } from '@utils/constant/color';
+import { Fill } from '@utils/constant/color';
 
 import { skeletonPulse } from './skeletonPulse';
 
@@ -21,6 +21,6 @@ const Circle = styled.span<{ size: number; color: SkeletonCircleProps['color'] }
   width: ${(props) => props.size}px;
   height: ${(props) => props.size}px;
   border-radius: 50%;
-  background-color: ${(props) => (props.color === 'white' ? SkeletonFill.white : SkeletonFill.alternative)};
+  background-color: ${(props) => (props.color === 'white' ? Fill.white : Fill.subtle)};
   animation: ${skeletonPulse} 1.5s ease-in-out infinite;
 `;

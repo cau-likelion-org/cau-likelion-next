@@ -147,7 +147,7 @@ const Chip = styled.button<{
       `;
     }
     return `
-      border: 1px solid ${Line.normalNeutral};
+      border: 1px solid ${Line.normal};
       background-color: transparent;
       color: ${Label.alternative};
     `;

@@ -89,7 +89,7 @@ export enum System {
   blue = '#0066FF',
 }
 
-// cool neutral 
+// cool neutral
 export enum CoolNeutral {
   neutral30 = '#46474C',
   neutral70 = '#989BA2',
@@ -104,16 +104,16 @@ export enum Label {
   neutral = 'rgba(46, 47, 51, 0.88)',
 }
 
-// line
+// line (neutral gray rgb(112, 115, 124) border-weight scale, plus solid grays)
 export enum Line {
   neutral = '#EAEBEC',
   alternative = '#F4F4F5',
-  normal = 'rgba(112, 115, 124, 0.22)',
+  strong = 'rgba(112, 115, 124, 0.22)',
+  normal = 'rgba(112, 115, 124, 0.16)',
   subtle = 'rgba(112, 115, 124, 0.08)',
-  normalNeutral = 'rgba(112, 115, 124, 0.16)',
 }
 
-// category chip 
+// category chip
 export enum CategoryTint {
   background = 'rgba(0, 102, 255, 0.05)',
   border = 'rgba(0, 102, 255, 0.43)',
@@ -136,15 +136,11 @@ export enum Material {
   dimmer = 'rgba(23, 23, 25, 0.52)',
 }
 
-// fill
+// fill (neutral gray rgb(112, 115, 124) surface-tint scale, plus solid semantic fill)
 export enum Fill {
-  alternative = '#70737C',
-}
-
-// skeleton fill
-export enum SkeletonFill {
+  solid = '#70737C',
   normal = 'rgba(112, 115, 124, 0.08)',
-  alternative = 'rgba(112, 115, 124, 0.05)',
+  subtle = 'rgba(112, 115, 124, 0.05)',
   white = 'rgba(255, 255, 255, 0.28)',
 }
 
