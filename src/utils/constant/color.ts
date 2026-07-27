@@ -89,7 +89,7 @@ export enum System {
   blue = '#0066FF',
 }
 
-// cool neutral (atomic, used by page indicator)
+// cool neutral 
 export enum CoolNeutral {
   neutral30 = '#46474C',
   neutral70 = '#989BA2',
@@ -113,7 +113,7 @@ export enum Line {
   normalNeutral = 'rgba(112, 115, 124, 0.16)',
 }
 
-// category chip (alternative variant tint, derived from System.blue)
+// category chip 
 export enum CategoryTint {
   background = 'rgba(0, 102, 255, 0.05)',
   border = 'rgba(0, 102, 255, 0.43)',
