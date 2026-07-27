@@ -114,7 +114,19 @@ export enum Status {
   negative = '#FF4242',
 }
 
-// material 
+// material
 export enum Material {
   dimmer = 'rgba(23, 23, 25, 0.52)',
+}
+
+// fill
+export enum Fill {
+  alternative = '#70737C',
+}
+
+// accent background
+export enum AccentBackground {
+  violet = '#6541F2',
+  pink = '#F553DA',
+  redOrange = '#FF5E00',
 }
