@@ -2,11 +2,12 @@ import React, { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { login } from 'src/apis/account';
 import { useRecoilState } from 'recoil';
-import { useMutation } from 'react-query';
+import { useMutation } from '@tanstack/react-query';
 import { token } from '@utils/state';
 import Loading from '@common/loading/Loading';
 import LocalStorage from '@utils/localStorage';
 import useAuthRedirect from 'src/hooks/useAuthRedirect';
+import { track } from 'src/lib/amplitude';
 
 const Google = () => {
   const router = useRouter();
@@ -15,14 +16,11 @@ const Google = () => {
 
   useAuthRedirect();
 
-  useEffect(() => {
-    if (code) loginHandler.mutate({ code });
-  }, [code]);
-
   const loginHandler = useMutation({
-    mutationFn: ({ code }: { code: string | string[]; }) => login(code),
+    mutationFn: ({ code }: { code: string | string[] }) => login(code),
     retry: false,
     onSuccess: (res) => {
+      track('Login Completed', { login_method: 'google', is_new_signup: !res.is_active });
       if (!res.is_active) {
         router.push(
           {
@@ -43,9 +41,15 @@ const Google = () => {
       LocalStorage.setItem('refresh', res.token.refresh);
     },
     onError: (res) => {
+      track('Login Failed', { login_method: 'google' });
       router.push('/login/failed', undefined, { shallow: true });
     },
   });
+
+  useEffect(() => {
+    if (code) loginHandler.mutate({ code });
+  }, [code]);
+
   return <Loading />;
 };
 

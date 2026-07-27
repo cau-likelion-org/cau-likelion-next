@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import CAULogo from '@image/cau사자.png';
 import NavButton from './NavButton';
@@ -24,11 +24,7 @@ export interface IMenu {
 
 const NavBar = () => {
   const { access: tokenState } = useRecoilValue(token);
-  const [isLogin, setIsLogin] = useState(false);
-
-  useEffect(() => {
-    if (tokenState) setIsLogin(true);
-  }, [tokenState]);
+  const isLogin = !!tokenState;
 
   const hover: IHoverButton['hover'] = { title: '아카이빙' };
   const dropdown: IHoverButton['dropdown'] = [
@@ -55,7 +51,7 @@ const NavBar = () => {
       <LogoWrapper>
         <Link href={'/'}>
           <LogoImage>
-            <Image src={CAULogo} width={'50px'} height={'50px'} alt="로고 이미지" />
+            <Image src={CAULogo} width={50} height={50} alt="로고 이미지" />
           </LogoImage>
         </Link>
         <Link href={'/'}>
@@ -65,7 +61,7 @@ const NavBar = () => {
       <ButtonWrapper>
         <HoverButton hover={hover} dropdown={dropdown} />
         {menuDataSelector().map(({ title, routing, target }, index) => (
-          <NavButton key={index + routing} title={title} routing={routing} target={target} />
+          <NavButton key={index + routing} title={title} routing={routing} target={target} isLogin={isLogin} />
         ))}
       </ButtonWrapper>
     </Wrapper>

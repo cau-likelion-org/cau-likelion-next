@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/nextjs';
 import { MdKeyboardArrowDown } from 'react-icons/md';
 import PaginationNavigation, { PaginationNavigationProps } from './PaginationNavigation';
 

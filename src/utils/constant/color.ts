@@ -89,7 +89,7 @@ export enum System {
   blue = '#0066FF',
 }
 
-// cool neutral 
+// cool neutral
 export enum CoolNeutral {
   neutral30 = '#46474C',
   neutral70 = '#989BA2',
@@ -112,7 +112,7 @@ export enum Line {
   subtle = 'rgba(112, 115, 124, 0.08)',
 }
 
-// category chip 
+// category chip
 export enum CategoryTint {
   background = 'rgba(0, 102, 255, 0.05)',
   border = 'rgba(0, 102, 255, 0.43)',
@@ -135,7 +135,7 @@ export enum Material {
   dimmer = 'rgba(23, 23, 25, 0.52)',
 }
 
-// fill 
+// fill
 export enum Fill {
   solid = '#70737C',
   normal = 'rgba(112, 115, 124, 0.08)',

@@ -6,7 +6,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import UserEditModal from './UserEditModal';
 
-const ProfileCard = ({ user }: { user: UserProfile; }) => {
+const ProfileCard = ({ user }: { user: UserProfile }) => {
   const [isEditModalOn, setIsEditModalOn] = useState(false);
 
   const handleUserEditModal = () => {
@@ -43,19 +43,19 @@ const ProfileCard = ({ user }: { user: UserProfile; }) => {
 export default ProfileCard;
 
 const Wrapper = styled.div`
-    width: 50%;
-    height: 140px;
-    padding: 2rem;
-    background-color: ${Primary.light};
-    border-radius: 10px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
+  width: 50%;
+  height: 140px;
+  padding: 2rem;
+  background-color: ${Primary.light};
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
 
-    @media(min-width: 900px){
-        width: 200px;
-        height: 200px;
-    }
+  @media (min-width: 900px) {
+    width: 200px;
+    height: 200px;
+  }
 `;
 
 const NameRow = styled.div`

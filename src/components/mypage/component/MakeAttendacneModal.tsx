@@ -2,7 +2,7 @@ import { BackgroundColor } from '@utils/constant/color';
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { toDateString } from '@utils/index';
-import { useMutation } from 'react-query';
+import { useMutation } from '@tanstack/react-query';
 import { makeAttendance } from 'src/apis/mypage';
 import { useRecoilValue } from 'recoil';
 import { token } from '@utils/state';
@@ -30,7 +30,7 @@ const MakeAttendacneModal = () => {
   };
 
   const make = useMutation({
-    mutationFn: ({ date, password }: { date: string; password: string; }) => makeAttendance(date, password, tokens),
+    mutationFn: ({ date, password }: { date: string; password: string }) => makeAttendance(date, password, tokens),
     retry: false,
     onSuccess: (res) => {
       alert('생성 성공!');

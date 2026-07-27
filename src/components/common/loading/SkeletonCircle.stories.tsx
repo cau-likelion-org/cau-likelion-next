@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/nextjs';
 import SkeletonCircle from './SkeletonCircle';
 
 const meta: Meta<typeof SkeletonCircle> = {

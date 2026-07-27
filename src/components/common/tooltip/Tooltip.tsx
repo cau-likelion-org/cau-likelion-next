@@ -17,7 +17,14 @@ export interface TooltipProps {
   shortcut?: string;
 }
 
-const Tooltip = ({ className, size = 'medium', position = 'bottom', align = 'start', text, shortcut }: TooltipProps) => {
+const Tooltip = ({
+  className,
+  size = 'medium',
+  position = 'bottom',
+  align = 'start',
+  text,
+  shortcut,
+}: TooltipProps) => {
   const isVertical = position === 'top' || position === 'bottom';
   const arrowFirst = position === 'bottom' || position === 'right';
 
@@ -77,7 +84,15 @@ const ArrowGraphic = ({ position, width, height }: { position: TooltipPosition; 
       xmlns="http://www.w3.org/2000/svg"
       style={{ flexShrink: 0 }}
     >
-      <mask id={maskId} style={{ maskType: 'alpha' }} maskUnits="userSpaceOnUse" x="0" y="0" width={boxWidth} height={boxHeight}>
+      <mask
+        id={maskId}
+        style={{ maskType: 'alpha' }}
+        maskUnits="userSpaceOnUse"
+        x="0"
+        y="0"
+        width={boxWidth}
+        height={boxHeight}
+      >
         <path d={path} fill="#FF0000" />
       </mask>
       <g mask={`url(#${maskId})`}>
@@ -206,7 +221,12 @@ const flexAlign: Record<TooltipAlign, string> = {
   end: 'flex-end',
 };
 
-const ArrowSlot = styled.div<{ size: TooltipSize; position: TooltipPosition; align: TooltipAlign; arrowFirst: boolean }>`
+const ArrowSlot = styled.div<{
+  size: TooltipSize;
+  position: TooltipPosition;
+  align: TooltipAlign;
+  arrowFirst: boolean;
+}>`
   position: relative;
   display: flex;
   flex-shrink: 0;

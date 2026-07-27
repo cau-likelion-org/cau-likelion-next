@@ -8,7 +8,7 @@ const CircleComponent = ({ data }: { data: IActivityData }) => {
   return (
     <Wrapper>
       <ImageWrapper>
-        <CustomImage src={data.image} alt="이미지" layout="fill" objectFit="cover"></CustomImage>
+        <CustomImage src={data.image} alt="이미지" fill style={{ objectFit: 'cover' }} />
       </ImageWrapper>
       <TextWrapper>
         <Title>{data.title}</Title>

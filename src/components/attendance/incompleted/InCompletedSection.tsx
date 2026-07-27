@@ -1,7 +1,8 @@
+import { useEffect } from 'react';
 import styled from 'styled-components';
 import { Primary } from '@utils/constant/color';
 import AttendanceBox from './component/AttendanceBox';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { TodayAttendanceData } from '@@types/request';
 import { getAttendance } from 'src/apis/attendance';
 import Loading from '@common/loading/Loading';
@@ -13,27 +14,33 @@ import { AxiosError } from 'axios';
 const IncompletedSection = () => {
   const tokens = useRecoilValue(token);
   const router = useRouter();
-  const { data, isLoading } = useQuery<TodayAttendanceData, AxiosError>(['attendance'], () => getAttendance(tokens), {
+  const { data, isLoading, error } = useQuery<TodayAttendanceData, AxiosError>({
+    queryKey: ['attendance'],
+    queryFn: () => getAttendance(tokens),
     retry: false,
-    onError: (error) => {
-      if (error.response?.status == 400) {
-        alert('출석 가능일이 아닙니다!');
-        router.push('/');
-      }
-      if (error.response?.status == 405) {
-        router.push('/attendance/completed');
-      }
-      if (error.response?.status == 406) {
-        alert('현재 활동 중인 아기사자가 아닙니다!');
-        router.push('/');
-      }
-    },
-    onSuccess: (data) => {
-      if (data && (data.attendance_result === 2 || data.attendance_result === 1)) {
-        router.push('/attendance/completed');
-      }
-    },
   });
+
+  useEffect(() => {
+    if (!error) return;
+    if (error.response?.status == 400) {
+      alert('출석 가능일이 아닙니다!');
+      router.push('/');
+    }
+    if (error.response?.status == 405) {
+      router.push('/attendance/completed');
+    }
+    if (error.response?.status == 406) {
+      alert('현재 활동 중인 아기사자가 아닙니다!');
+      router.push('/');
+    }
+  }, [error]);
+
+  useEffect(() => {
+    if (data && (data.attendance_result === 2 || data.attendance_result === 1)) {
+      router.push('/attendance/completed');
+    }
+  }, [data]);
+
   if (isLoading) return <Loading />;
   return (
     <CircleWrapper>

@@ -7,14 +7,14 @@ const nextConfig = {
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     minimumCacheTTL: 7776000,
-    domains: [
-      'cau-like-lion.s3.ap-northeast-2.amazonaws.com',
-      'chunghahaha.s3.ap-northeast-2.amazonaws.com',
-      'd1sgygn8l0lfd5.cloudfront.net',
-      'dcpshnp4boilw.cloudfront.net',
-      'd1e39uzon1ymuo.cloudfront.net',
-      'likelion13bucket.s3.amazonaws.com',
-      'chunghaha-14th.s3.amazonaws.com',
+    remotePatterns: [
+      { protocol: 'https', hostname: 'cau-like-lion.s3.ap-northeast-2.amazonaws.com', pathname: '/**' },
+      { protocol: 'https', hostname: 'chunghahaha.s3.ap-northeast-2.amazonaws.com', pathname: '/**' },
+      { protocol: 'https', hostname: 'd1sgygn8l0lfd5.cloudfront.net', pathname: '/**' },
+      { protocol: 'https', hostname: 'dcpshnp4boilw.cloudfront.net', pathname: '/**' },
+      { protocol: 'https', hostname: 'd1e39uzon1ymuo.cloudfront.net', pathname: '/**' },
+      { protocol: 'https', hostname: 'likelion13bucket.s3.amazonaws.com', pathname: '/**' },
+      { protocol: 'https', hostname: 'chunghaha-14th.s3.amazonaws.com', pathname: '/**' },
     ],
   },
   async headers() {

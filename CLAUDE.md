@@ -95,8 +95,8 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 
 - **스택**: Next.js 12.2.2 (Pages Router) + TypeScript 4.9.4
 - **스타일링**: styled-components v5 + styled-reset
-- **전역 상태**: Recoil v0.7
-- **서버 상태**: react-query v3 + axios (커스텀 `authAxios` 인터셉터)
+- **전역 상태**: Zustand (Recoil v0.7에서 마이그레이션 중 — 신규 코드는 Zustand, 기존 `src/utils/state.ts`의 Recoil atom은 점진적으로 이전)
+- **서버 상태**: TanStack Query(react-query) v3 + axios (커스텀 `authAxios` 인터셉터)
 - **CMS**: Notion (`@notionhq/client`, `notion-client`, `react-notion`)
 - **테스트**: 미도입 (테스트 프레임워크 없음 — 신규 도입 시 별도 논의 필요)
 - **배포**: AWS Amplify (Managed Hosting, Git 기반 CI/CD)
@@ -112,7 +112,8 @@ src/
 ├── components/          # 공용 UI / 기능별 컴포넌트 (기능 단위 하위 폴더)
 ├── hooks/               # 공용 훅
 ├── lib/                 # gtag 등 외부 연동 설정
-├── utils/               # 공용 유틸 + Recoil atom (state.ts), localStorage 래퍼
+├── store/                # Zustand 스토어 (신규 클라이언트 전역 상태)
+├── utils/               # 공용 유틸 + 기존 Recoil atom (state.ts, 마이그레이션 전까지 유지), localStorage 래퍼
 ├── styles/              # 전역 스타일
 ├── types/               # 전역 타입 정의
 └── test/                # 실험/임시 코드 (GA.tsx 등 — 프로덕션 사용 여부 확인 필요, 신규 코드 추가 지양)
@@ -141,11 +142,11 @@ import { getAttendanceList } from '../../apis/attendance';
 
 ## 상태 관리 원칙
 
-### Recoil — 클라이언트/전역 상태
+### Zustand — 클라이언트/전역 상태
 
-- atom은 `src/utils/state.ts`에 모아서 정의
-- atom key는 `uuid`로 유일성 보장 (`` `${name}/${v1()}` `` 패턴)
-- 서버에서 받아온 데이터를 그대로 atom에 저장하지 않음 — 로그인 토큰, UI 플래그 등 클라이언트 상태만
+- Recoil에서 마이그레이션 중. 신규 클라이언트 전역 상태는 `src/store/`에 Zustand 스토어로 작성
+- 기존 `src/utils/state.ts`의 Recoil atom은 마이그레이션 전까지 유지 — 해당 코드를 건드리지 않는 PR에서는 그대로 두고, 손대는 경우에 한해 Zustand로 옮기는 것을 고려
+- 서버에서 받아온 데이터를 그대로 스토어에 저장하지 않음 — 로그인 토큰, UI 플래그 등 클라이언트 상태만
 
 ### react-query — 서버 상태
 

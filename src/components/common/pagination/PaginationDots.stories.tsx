@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/nextjs';
 import PaginationDots from './PaginationDots';
 
 const meta: Meta<typeof PaginationDots> = {

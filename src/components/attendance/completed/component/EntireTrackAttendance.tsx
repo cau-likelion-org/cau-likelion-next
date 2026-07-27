@@ -1,4 +1,4 @@
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { TodayAttendanceListData, MemberStack, MemberStackKor } from '@@types/request';
 
 import { getAttendanceList } from 'src/apis/attendance';
@@ -34,9 +34,10 @@ const trackController: Record<MemberStack, ITrackController> = {
 const EntireTrackAttendance = () => {
   const trackStacks = Object.keys(trackController) as MemberStack[];
   const tokens = useRecoilValue(token);
-  const { data, isLoading, error } = useQuery<TodayAttendanceListData, AxiosError>(['getAttendanceList'], () =>
-    getAttendanceList(tokens),
-  );
+  const { data, isLoading, error } = useQuery<TodayAttendanceListData, AxiosError>({
+    queryKey: ['getAttendanceList'],
+    queryFn: () => getAttendanceList(tokens),
+  });
 
   if (isLoading) return <Loading />;
   if (error || !data) return <div>출석 현황을 불러오지 못했습니다.</div>;

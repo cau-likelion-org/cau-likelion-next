@@ -8,7 +8,7 @@ import { BackgroundColor, Basic } from '@utils/constant/color';
 import { isEmptyString } from '@utils/index';
 import { IToken, token, userProfileChanged } from '@utils/state';
 import React, { useEffect, useState } from 'react';
-import { useMutation } from 'react-query';
+import { useMutation } from '@tanstack/react-query';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import useInput from 'src/hooks/useInput';
 import styled from 'styled-components';

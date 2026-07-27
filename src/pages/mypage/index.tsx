@@ -2,7 +2,7 @@ import { UserProfile } from '@@types/request';
 import { token, userProfileChanged } from '@utils/state';
 import { AxiosError } from 'axios';
 import React, { useEffect, useState } from 'react';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useRecoilValue } from 'recoil';
 import { getUserProfile } from 'src/apis/account';
 import NameCard from '@mypage/component/NameCard';
@@ -25,7 +25,9 @@ const MyPage = () => {
     data: userProfile,
     isLoading: profileLoading,
     error: profileError,
-  } = useQuery<UserProfile, AxiosError>(['userProfile', profileChanged], () => getUserProfile(tokenState), {
+  } = useQuery<UserProfile, AxiosError>({
+    queryKey: ['userProfile', profileChanged],
+    queryFn: () => getUserProfile(tokenState),
     retry: false,
     enabled: !!tokenState.access,
   });

@@ -1,5 +1,5 @@
 import type { ComponentType } from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/nextjs';
 import Snackbar from './Snackbar';
 
 const meta: Meta<typeof Snackbar> = {
