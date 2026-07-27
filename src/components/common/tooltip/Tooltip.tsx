@@ -32,8 +32,6 @@ const Tooltip = ({ className, size = 'medium', position = 'bottom', align = 'sta
   );
 };
 
-// each shape below is authored pre-rotated per direction (rather than rotated via CSS transform) because
-// rotating a shared svg with transform: rotate() leaves a sub-pixel antialiasing seam where it meets the bubble
 const arrowShapes: Record<TooltipPosition, { viewBox: string; path: string }> = {
   top: {
     viewBox: '0 0 20 7',
