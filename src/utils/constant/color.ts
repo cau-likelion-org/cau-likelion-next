@@ -71,31 +71,31 @@ export enum BackgroundWhite {
   tertiary = '#F5F7F9',
 }
 
-// background scale 
+// background scale
 export enum BackgroundLight {
   primary = '#FCFDFD',
   secondary = '#F5F7F9',
   tertiary = '#F0F3F6',
 }
 
-// inverse 
+// inverse
 export enum Inverse {
   background = '#1B1C1E',
   label = '#F7F7F8',
 }
 
-// system blue 
+// system blue
 export enum System {
   blue = '#0066FF',
 }
 
-// label 
+// label
 export enum Label {
   normal = '#171719',
   alternative = 'rgba(55, 56, 60, 0.61)',
 }
 
-// line 
+// line
 export enum Line {
   neutral = '#EAEBEC',
   alternative = '#F4F4F5',
@@ -109,7 +109,7 @@ export enum FeedbackStatus {
   negative = '#FF6363',
 }
 
-// status 
+// status
 export enum Status {
   negative = '#FF4242',
 }
@@ -122,6 +122,13 @@ export enum Material {
 // fill
 export enum Fill {
   alternative = '#70737C',
+}
+
+// skeleton fill
+export enum SkeletonFill {
+  normal = 'rgba(112, 115, 124, 0.08)',
+  alternative = 'rgba(112, 115, 124, 0.05)',
+  white = 'rgba(255, 255, 255, 0.28)',
 }
 
 // accent background
