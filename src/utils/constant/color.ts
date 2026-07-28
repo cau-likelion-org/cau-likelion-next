@@ -142,10 +142,3 @@ export enum Fill {
   subtle = 'rgba(112, 115, 124, 0.05)',
   white = 'rgba(255, 255, 255, 0.28)',
 }
-
-// accent background
-export enum AccentBackground {
-  violet = '#6541F2',
-  pink = '#F553DA',
-  redOrange = '#FF5E00',
-}
