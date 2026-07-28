@@ -118,6 +118,12 @@ export enum CategoryTint {
   border = 'rgba(0, 102, 255, 0.43)',
 }
 
+// content badge
+export enum AccentTint {
+  background = 'rgba(255, 96, 0, 0.08)',
+  border = 'rgba(255, 96, 0, 0.43)',
+}
+
 // feedback status
 export enum FeedbackStatus {
   positive = '#1ED45A',
