@@ -16,6 +16,7 @@ import { useRouter } from 'next/router';
 
 const MyPage = () => {
   const tokenState = useTokenStore((state) => state.token);
+  const hasHydrated = useTokenStore((state) => state.hasHydrated);
   const profileChanged = useProfileChangedStore((state) => state.profileChanged);
   const router = useRouter();
 
@@ -31,8 +32,8 @@ const MyPage = () => {
   });
 
   useEffect(() => {
-    if (!tokenState.access) router.push('/login');
-  }, [tokenState, router]);
+    if (hasHydrated && !tokenState.access) router.push('/login');
+  }, [hasHydrated, tokenState, router]);
 
   const isActiveGeneration = !!userProfile && checkGeneration(userProfile.generation);
   return (

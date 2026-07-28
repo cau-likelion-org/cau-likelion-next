@@ -23,7 +23,8 @@ export interface IMenu {
 
 const NavBar = () => {
   const { access: tokenState } = useTokenStore((state) => state.token);
-  const isLogin = !!tokenState;
+  const hasHydrated = useTokenStore((state) => state.hasHydrated);
+  const isLogin = hasHydrated && !!tokenState;
 
   const hover: IHoverButton['hover'] = { title: '아카이빙' };
   const dropdown: IHoverButton['dropdown'] = [

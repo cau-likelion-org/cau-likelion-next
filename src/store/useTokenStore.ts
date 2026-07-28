@@ -8,14 +8,17 @@ export interface IToken {
 
 interface TokenStore {
   token: IToken;
+  hasHydrated: boolean;
   setToken: (next: IToken | ((prev: IToken) => IToken)) => void;
+  hydrate: () => void;
 }
 
 const useTokenStore = create<TokenStore>((set, get) => ({
   token: {
-    access: LocalStorage.getItem('access'),
-    refresh: LocalStorage.getItem('refresh'),
+    access: null,
+    refresh: null,
   },
+  hasHydrated: false,
   setToken: (next) => {
     const token = typeof next === 'function' ? next(get().token) : next;
 
@@ -26,6 +29,15 @@ const useTokenStore = create<TokenStore>((set, get) => ({
     else LocalStorage.removeItem('refresh');
 
     set({ token });
+  },
+  hydrate: () => {
+    set({
+      token: {
+        access: LocalStorage.getItem('access'),
+        refresh: LocalStorage.getItem('refresh'),
+      },
+      hasHydrated: true,
+    });
   },
 }));
 

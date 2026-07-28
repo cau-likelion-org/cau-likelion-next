@@ -6,11 +6,12 @@ import { useRouter } from 'next/router';
 
 const Admin = () => {
   const tokenState = useTokenStore((state) => state.token);
+  const hasHydrated = useTokenStore((state) => state.hasHydrated);
   const router = useRouter();
 
   useEffect(() => {
-    if (!tokenState.access) router.push('/login');
-  }, [tokenState]);
+    if (hasHydrated && !tokenState.access) router.push('/login');
+  }, [hasHydrated, tokenState]);
 
   if (!tokenState.access) return null;
 

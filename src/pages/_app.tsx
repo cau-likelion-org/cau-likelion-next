@@ -30,8 +30,13 @@ function AppContent({ Component, pageProps }: AppPropsWithLayout) {
   const router = useRouter();
   const [queryClient] = useState(() => new QueryClient());
   const tokenState = useTokenStore((state) => state.token);
+  const hydrate = useTokenStore((state) => state.hydrate);
   const previousPathRef = useRef<string | undefined>(undefined);
   const getLayout = Component.getLayout || ((page: ReactElement) => <LayoutDefault>{page}</LayoutDefault>);
+
+  useEffect(() => {
+    hydrate();
+  }, [hydrate]);
 
   useEffect(() => {
     setUserId(getUserIdFromToken(tokenState.access ?? undefined));

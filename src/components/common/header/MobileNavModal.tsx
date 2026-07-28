@@ -8,9 +8,10 @@ import NavProfileCard from './NavProfileCard';
 
 const MobileNavModal = ({ isModalOn }: { isModalOn: boolean }) => {
   const { access: tokenState } = useTokenStore((state) => state.token);
+  const hasHydrated = useTokenStore((state) => state.hasHydrated);
   const [visibilityAnimation, setVisibilityAnimation] = useState(false);
   const repeatRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const isLogin = !!tokenState;
+  const isLogin = hasHydrated && !!tokenState;
 
   const menu: IMenu[] = [
     { title: '프로젝트', routing: '/project' },
