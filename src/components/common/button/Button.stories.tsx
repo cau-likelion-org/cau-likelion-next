@@ -70,6 +70,16 @@ export const Disabled: Story = {
   },
 };
 
+export const OutlinedDisabled: Story = {
+  args: {
+    variant: 'outlined',
+    color: 'primary',
+    size: 'large',
+    disabled: true,
+    children: '대체 액션',
+  },
+};
+
 export const Loading: Story = {
   args: {
     variant: 'solid',

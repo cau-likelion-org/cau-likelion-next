@@ -54,7 +54,7 @@ const getBackgroundColor = (variant: ButtonVariant, color: ButtonColor, disabled
 };
 
 const getTextColor = (variant: ButtonVariant, color: ButtonColor, disabled: boolean) => {
-  if (disabled) return Label.assistive;
+  if (disabled) return variant === 'solid' ? Label.assistive : Label.disable;
   if (variant === 'solid') return color === 'primary' ? BackgroundColor : Label.neutral;
   return color === 'primary' ? Orange.o500 : Label.normal;
 };
