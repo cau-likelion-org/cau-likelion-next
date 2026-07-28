@@ -102,6 +102,7 @@ export enum Label {
   strong = '#000000',
   assistive = 'rgba(55, 56, 60, 0.28)',
   neutral = 'rgba(46, 47, 51, 0.88)',
+  disable = 'rgba(55, 56, 60, 0.16)',
 }
 
 export enum Line {
