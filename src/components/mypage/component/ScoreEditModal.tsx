@@ -1,10 +1,10 @@
 import { RequestEditUserScore, UserAttendance, UserProfile, UserScore } from '@@types/request';
 import FormSendButton from '@signup/component/FormSendButton';
 import { BackgroundColor, Basic, GreyScale } from '@utils/constant/color';
-import { IToken, token, userScoreChanged } from '@utils/state';
 import React from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import useTokenStore, { IToken } from 'src/store/useTokenStore';
+import useScoreChangedStore from 'src/store/useScoreChangedStore';
 import { editUserScore } from 'src/apis/mypage';
 import useInput from 'src/hooks/useInput';
 import styled from 'styled-components';
@@ -18,8 +18,8 @@ interface ScoreEditModalProps {
 }
 
 const ScoreEditModal = ({ targetUserScore, isEditModalOn, handleScoreEditModal }: ScoreEditModalProps) => {
-  const tokenState = useRecoilValue(token);
-  const [scoreChanged, setScoreChanged] = useRecoilState(userScoreChanged);
+  const tokenState = useTokenStore((state) => state.token);
+  const toggleScoreChanged = useScoreChangedStore((state) => state.toggleScoreChanged);
   const [truancyValue, onChangeTruancyValue] = useInput(Number(targetUserScore.truancy), /^[0-9]*$/);
   const [tardinessValue, onChangeTardinessValue] = useInput(Number(targetUserScore.tardiness), /^[0-9]*$/);
   const [absenceValue, onChangeAbsenceValue] = useInput(Number(targetUserScore.absence), /^[0-9]*$/);
@@ -29,7 +29,7 @@ const ScoreEditModal = ({ targetUserScore, isEditModalOn, handleScoreEditModal }
       editUserScore(userScore, accessToken),
     onSuccess: (res) => {
       if (res.status === 200) {
-        setScoreChanged(!scoreChanged);
+        toggleScoreChanged();
       }
     },
   });

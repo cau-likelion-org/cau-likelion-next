@@ -2,18 +2,16 @@ import { UserAttendance, UserProfile } from '@@types/request';
 import { ATTENDANCE_CATEGORY_NAME } from '@utils/constant';
 import { GreyScale } from '@utils/constant/color';
 import { getTotalScore } from '@utils/index';
-import { token } from '@utils/state';
 import { AxiosError } from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useRecoilValue } from 'recoil';
+import useTokenStore from 'src/store/useTokenStore';
 import { getAssignments, getUserAttendance } from 'src/apis/mypage';
 import styled from 'styled-components';
 import ScoreHeader from './component/ScoreHeader';
 
 const MyScoreSection = ({ userProfile }: { userProfile: UserProfile }) => {
-  const [totalScore, setTotalScore] = useState<number>(0);
-  const tokenValue = useRecoilValue(token);
+  const tokenValue = useTokenStore((state) => state.token);
 
   const {
     data: userAttendance,
@@ -35,17 +33,15 @@ const MyScoreSection = ({ userProfile }: { userProfile: UserProfile }) => {
     enabled: !!userProfile,
   });
 
-  useEffect(() => {
-    if (userAttendance && userAssignment) {
-      const score = getTotalScore({
-        absence: userAttendance.absence,
-        truancy: userAttendance.truancy,
-        tardiness: userAttendance.tardiness,
-        notSubmitted: userAssignment[0]['과제 미제출'],
-        lateSubmitted: userAssignment[0]['과제 지각제출'],
-      });
-      setTotalScore(score);
-    }
+  const totalScore = useMemo(() => {
+    if (!userAttendance || !userAssignment) return 0;
+    return getTotalScore({
+      absence: userAttendance.absence,
+      truancy: userAttendance.truancy,
+      tardiness: userAttendance.tardiness,
+      notSubmitted: userAssignment[0]['과제 미제출'],
+      lateSubmitted: userAssignment[0]['과제 지각제출'],
+    });
   }, [userAssignment, userAttendance]);
 
   return (

@@ -4,8 +4,7 @@ import styled from 'styled-components';
 import { toDateString } from '@utils/index';
 import { useMutation } from '@tanstack/react-query';
 import { makeAttendance } from 'src/apis/mypage';
-import { useRecoilValue } from 'recoil';
-import { token } from '@utils/state';
+import useTokenStore from 'src/store/useTokenStore';
 import { useRouter } from 'next/router';
 
 const MakeAttendacneModal = () => {
@@ -13,7 +12,7 @@ const MakeAttendacneModal = () => {
   const [password, setPassword] = useState('');
   const today = new Date();
   const maxDate = new Date();
-  const tokens = useRecoilValue(token);
+  const tokens = useTokenStore((state) => state.token);
   const router = useRouter();
   maxDate.setDate(today.getDate() + 7);
 

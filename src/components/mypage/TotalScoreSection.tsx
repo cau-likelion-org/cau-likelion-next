@@ -2,10 +2,10 @@ import { UserAttendance, UserScore } from '@@types/request';
 import { ATTENDANCE_CATEGORY_NAME, TRACK_NAME } from '@utils/constant';
 import { BackgroundColor, GreyScale } from '@utils/constant/color';
 import { getTotalNameObject, getTotalScore } from '@utils/index';
-import { token, userScoreChanged } from '@utils/state';
 import React, { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useRecoilValue } from 'recoil';
+import useTokenStore from 'src/store/useTokenStore';
+import useScoreChangedStore from 'src/store/useScoreChangedStore';
 import { getAssignments, getTotalAttendance } from 'src/apis/mypage';
 import styled from 'styled-components';
 import ScoreEditModal from './component/ScoreEditModal';
@@ -13,10 +13,10 @@ import ScoreHeader from './component/ScoreHeader';
 import { TiPencil } from 'react-icons/ti';
 
 const TotalScoreSection = ({ myName }: { myName: string }) => {
-  const tokenValue = useRecoilValue(token);
+  const tokenValue = useTokenStore((state) => state.token);
   const [isEditModalOn, setIsEditModalOn] = useState(false);
   const [clickedUser, setClickedUser] = useState<UserScore>({} as UserScore);
-  const scoreChanged = useRecoilValue(userScoreChanged);
+  const scoreChanged = useScoreChangedStore((state) => state.scoreChanged);
   const isPre = myName === '임대철' || myName === '천재홍';
 
   const handleScoreEditModal = (userScore: UserScore) => {
