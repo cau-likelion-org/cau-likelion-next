@@ -1,11 +1,10 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { useRecoilValue } from 'recoil';
-import { token } from '@utils/state';
+import useTokenStore from 'src/store/useTokenStore';
 
 const useAuthRedirect = () => {
   const router = useRouter();
-  const tokenState = useRecoilValue(token);
+  const tokenState = useTokenStore((state) => state.token);
 
   useEffect(() => {
     if (tokenState.access) {

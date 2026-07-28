@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import { useRecoilValue } from 'recoil';
 import { postGalleryData } from 'src/apis/admin';
-import { token } from '@utils/state';
 import useInput from 'src/hooks/useInput';
 import styled from 'styled-components';
 

@@ -1,12 +1,11 @@
 import React, { useEffect } from 'react';
 import PostAdmin from 'src/components/admin/PostAdmin';
 import styled from 'styled-components';
-import { useRecoilValue } from 'recoil';
-import { token } from '@utils/state';
+import useTokenStore from 'src/store/useTokenStore';
 import { useRouter } from 'next/router';
 
 const Admin = () => {
-  const tokenState = useRecoilValue(token);
+  const tokenState = useTokenStore((state) => state.token);
   const router = useRouter();
 
   useEffect(() => {

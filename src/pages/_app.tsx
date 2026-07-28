@@ -1,7 +1,6 @@
 import '@styles/global.css';
 import Head from 'next/head';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { RecoilRoot } from 'recoil';
 import type { AppProps } from 'next/app';
 import React, { ReactElement, ReactNode } from 'react';
 import { NextPage } from 'next';
@@ -10,8 +9,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Router, useRouter } from 'next/router';
 import Loading from '@common/loading/Loading';
 import ReactGA from 'react-ga4';
-import { useRecoilValue } from 'recoil';
-import { token } from '@utils/state';
+import useTokenStore from 'src/store/useTokenStore';
 import { track, markPageEntry, setUserId, getUserIdFromToken } from 'src/lib/amplitude';
 
 type NextPageWithLayout = NextPage & {
@@ -31,7 +29,7 @@ function AppContent({ Component, pageProps }: AppPropsWithLayout) {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const [queryClient] = useState(() => new QueryClient());
-  const tokenState = useRecoilValue(token);
+  const tokenState = useTokenStore((state) => state.token);
   const previousPathRef = useRef<string | undefined>(undefined);
   const getLayout = Component.getLayout || ((page: ReactElement) => <LayoutDefault>{page}</LayoutDefault>);
 
@@ -91,11 +89,7 @@ function AppContent({ Component, pageProps }: AppPropsWithLayout) {
 }
 
 function CauLikeLionNext(props: AppPropsWithLayout) {
-  return (
-    <RecoilRoot>
-      <AppContent {...props} />
-    </RecoilRoot>
-  );
+  return <AppContent {...props} />;
 }
 
 export default CauLikeLionNext;

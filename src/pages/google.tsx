@@ -1,18 +1,16 @@
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { login } from 'src/apis/account';
-import { useRecoilState } from 'recoil';
 import { useMutation } from '@tanstack/react-query';
-import { token } from '@utils/state';
+import useTokenStore from 'src/store/useTokenStore';
 import Loading from '@common/loading/Loading';
-import LocalStorage from '@utils/localStorage';
 import useAuthRedirect from 'src/hooks/useAuthRedirect';
 import { track } from 'src/lib/amplitude';
 
 const Google = () => {
   const router = useRouter();
   const { code: code } = router.query;
-  const [, setToken] = useRecoilState(token);
+  const setToken = useTokenStore((state) => state.setToken);
 
   useAuthRedirect();
 
@@ -31,14 +29,7 @@ const Google = () => {
         );
         return;
       }
-      setToken((prev) => {
-        const obj = { ...prev };
-        obj.access = res.token.access;
-        obj.refresh = res.token.refresh;
-        return obj;
-      });
-      LocalStorage.setItem('access', res.token.access);
-      LocalStorage.setItem('refresh', res.token.refresh);
+      setToken({ access: res.token.access, refresh: res.token.refresh });
     },
     onError: (res) => {
       track('Login Failed', { login_method: 'google' });
