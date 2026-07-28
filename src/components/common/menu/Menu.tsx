@@ -63,6 +63,7 @@ const Menu = ({ className, variant = 'normal', cellPadding = 8, items, actionAre
           <LeadingInput
             type="text"
             placeholder={actionArea.leadingPlaceholder}
+            aria-label={actionArea.leadingPlaceholder ?? '입력'}
             value={actionArea.leadingValue}
             onChange={(event) => actionArea.onLeadingChange(event.target.value)}
           />
