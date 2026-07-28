@@ -86,74 +86,76 @@ const Card = ({
   onClick,
 }: CardProps) => {
   const style = PLATFORM_STYLE[platform];
+  const showToggle = !skeleton && !!onToggleSave;
+  const showOverlay = !skeleton && thumbnailOverlay && (!!overlayCaption || showToggle);
 
   return (
-    <Wrapper
-      as={onClick ? 'button' : 'div'}
-      type={onClick ? 'button' : undefined}
-      className={className}
-      gap={style.gap}
-      onClick={onClick}
-    >
-      <ThumbnailArea>
-        {skeleton ? (
-          <SkeletonThumbnail ratio={thumbnailRatio} />
-        ) : thumbnailSrc ? (
-          <Thumbnail src={thumbnailSrc} alt={thumbnailAlt} ratio={thumbnailRatio} />
-        ) : (
-          <ThumbnailPlaceholder ratio={thumbnailRatio} />
-        )}
-        {!skeleton && thumbnailOverlay && (overlayCaption || onToggleSave) && (
-          <Overlay padding={style.overlayPadding}>
-            <Gradient />
-            {overlayCaption && (
-              <OverlayCaption
-                fontSize={style.overlayFontSize}
-                lineHeight={style.overlayLineHeight}
-                letterSpacing={style.overlayLetterSpacing}
-              >
-                {overlayCaption}
-              </OverlayCaption>
-            )}
-            {onToggleSave && (
-              <ToggleButton
-                type="button"
-                aria-label={saved ? '저장 취소' : '저장'}
-                aria-pressed={saved}
-                onClick={(event) => {
-                  event.stopPropagation();
-                  onToggleSave();
-                }}
-              >
-                {saved ? <MdBookmark size={20} color="#FFFFFF" /> : <MdBookmarkBorder size={20} color="#FFFFFF" />}
-              </ToggleButton>
-            )}
-          </Overlay>
-        )}
-      </ThumbnailArea>
-      <Container gap={style.containerGap} paddingX={style.containerPaddingX}>
-        {topContent && <SlotContent>{topContent}</SlotContent>}
-        <Content gap={style.contentGap}>
-          {skeleton ? <SkeletonText length="100%" /> : title && <Title $style={style}>{title}</Title>}
-          {skeleton
-            ? caption !== undefined && <SkeletonText length="75%" />
-            : caption && <Caption $style={style}>{caption}</Caption>}
-          {skeleton
-            ? subCaption !== undefined && <SkeletonText length="50%" />
-            : subCaption && <Caption $style={style}>{subCaption}</Caption>}
-          {skeleton
-            ? extraCaption !== undefined && <SkeletonText length="25%" />
-            : extraCaption && <Caption $style={style}>{extraCaption}</Caption>}
-        </Content>
-        {bottomContent && <SlotContent>{bottomContent}</SlotContent>}
-      </Container>
+    <Wrapper className={className}>
+      <CardBody as={onClick ? 'button' : 'div'} type={onClick ? 'button' : undefined} gap={style.gap} onClick={onClick}>
+        <ThumbnailArea>
+          {skeleton ? (
+            <SkeletonThumbnail ratio={thumbnailRatio} />
+          ) : thumbnailSrc ? (
+            <Thumbnail src={thumbnailSrc} alt={thumbnailAlt} ratio={thumbnailRatio} />
+          ) : (
+            <ThumbnailPlaceholder ratio={thumbnailRatio} />
+          )}
+          {showOverlay && (
+            <Overlay padding={style.overlayPadding} reserveToggle={showToggle}>
+              <Gradient />
+              {overlayCaption && (
+                <OverlayCaption
+                  fontSize={style.overlayFontSize}
+                  lineHeight={style.overlayLineHeight}
+                  letterSpacing={style.overlayLetterSpacing}
+                >
+                  {overlayCaption}
+                </OverlayCaption>
+              )}
+            </Overlay>
+          )}
+        </ThumbnailArea>
+        <Container gap={style.containerGap} paddingX={style.containerPaddingX}>
+          {topContent && <SlotContent>{topContent}</SlotContent>}
+          <Content gap={style.contentGap}>
+            {skeleton ? <SkeletonText length="100%" /> : title && <Title $style={style}>{title}</Title>}
+            {skeleton
+              ? caption !== undefined && <SkeletonText length="75%" />
+              : caption && <Caption $style={style}>{caption}</Caption>}
+            {skeleton
+              ? subCaption !== undefined && <SkeletonText length="50%" />
+              : subCaption && <Caption $style={style}>{subCaption}</Caption>}
+            {skeleton
+              ? extraCaption !== undefined && <SkeletonText length="25%" />
+              : extraCaption && <Caption $style={style}>{extraCaption}</Caption>}
+          </Content>
+          {bottomContent && <SlotContent>{bottomContent}</SlotContent>}
+        </Container>
+      </CardBody>
+      {showToggle && (
+        <ToggleButtonSlot offset={style.overlayPadding}>
+          <ToggleButton
+            type="button"
+            aria-label={saved ? '저장 취소' : '저장'}
+            aria-pressed={saved}
+            onClick={onToggleSave}
+          >
+            {saved ? <MdBookmark size={20} color="#FFFFFF" /> : <MdBookmarkBorder size={20} color="#FFFFFF" />}
+          </ToggleButton>
+        </ToggleButtonSlot>
+      )}
     </Wrapper>
   );
 };
 
 export default Card;
 
-const Wrapper = styled.div<{ gap: number }>`
+const Wrapper = styled.div`
+  position: relative;
+  width: 100%;
+`;
+
+const CardBody = styled.div<{ gap: number }>`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -187,7 +189,9 @@ const ThumbnailPlaceholder = styled.div<{ ratio: number }>`
   background-color: rgba(112, 115, 124, 0.05);
 `;
 
-const Overlay = styled.div<{ padding: number }>`
+const TOGGLE_RESERVED_WIDTH = 28;
+
+const Overlay = styled.div<{ padding: number; reserveToggle: boolean }>`
   position: absolute;
   top: 0;
   left: 0;
@@ -196,6 +200,7 @@ const Overlay = styled.div<{ padding: number }>`
   align-items: flex-start;
   gap: 4px;
   padding: ${(props) => props.padding}px;
+  padding-right: ${(props) => props.padding + (props.reserveToggle ? TOGGLE_RESERVED_WIDTH : 0)}px;
 `;
 
 const Gradient = styled.div`
@@ -218,12 +223,17 @@ const OverlayCaption = styled.p<{ fontSize: number; lineHeight: number; letterSp
   letter-spacing: ${(props) => props.letterSpacing};
 `;
 
+const ToggleButtonSlot = styled.div<{ offset: number }>`
+  position: absolute;
+  top: ${(props) => props.offset}px;
+  right: ${(props) => props.offset}px;
+`;
+
 const ToggleButton = styled.button`
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
   border: none;
   background: none;
   padding: 0;

@@ -119,6 +119,25 @@ export const WithBottomContent: Story = {
   },
 };
 
+const ClickableWithSaveToggleTemplate = () => {
+  const [saved, setSaved] = useState(false);
+  return (
+    <Card
+      thumbnailSrc={THUMBNAIL_SRC}
+      overlayCaption="오버레이 캡션"
+      title="제목"
+      caption="캡션"
+      saved={saved}
+      onToggleSave={() => setSaved((prev) => !prev)}
+      onClick={() => alert('카드 클릭')}
+    />
+  );
+};
+
+export const ClickableWithSaveToggle: Story = {
+  render: () => <ClickableWithSaveToggleTemplate />,
+};
+
 export const WithTopContent: Story = {
   args: {
     thumbnailSrc: THUMBNAIL_SRC,
