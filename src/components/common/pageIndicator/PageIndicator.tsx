@@ -26,7 +26,7 @@ const PageIndicator = ({
 
   return (
     <Wrapper className={className} alternative={alternative} role="status">
-      <Content style={style} alternative={alternative}>
+      <Content $style={style} alternative={alternative}>
         <Current alternative={alternative}>{currentPage}</Current>
         <Separator alternative={alternative}>/</Separator>
         <Total alternative={alternative}>{totalPage}</Total>
@@ -52,14 +52,14 @@ const Wrapper = styled.div<{ alternative: boolean }>`
     `}
 `;
 
-const Content = styled.div<{ style: (typeof SIZE_STYLE)[keyof typeof SIZE_STYLE]; alternative: boolean }>`
+const Content = styled.div<{ $style: (typeof SIZE_STYLE)[keyof typeof SIZE_STYLE]; alternative: boolean }>`
   display: flex;
   align-items: baseline;
-  gap: ${(props) => props.style.gap}px;
-  padding: ${(props) => props.style.paddingY}px ${(props) => props.style.paddingX}px;
-  font-size: ${(props) => props.style.fontSize}px;
-  line-height: ${(props) => props.style.lineHeight};
-  letter-spacing: ${(props) => props.style.letterSpacing};
+  gap: ${(props) => props.$style.gap}px;
+  padding: ${(props) => props.$style.paddingY}px ${(props) => props.$style.paddingX}px;
+  font-size: ${(props) => props.$style.fontSize}px;
+  line-height: ${(props) => props.$style.lineHeight};
+  letter-spacing: ${(props) => props.$style.letterSpacing};
   color: ${(props) => (props.alternative ? '#FFFFFF' : CoolNeutral.neutral70)};
 `;
 

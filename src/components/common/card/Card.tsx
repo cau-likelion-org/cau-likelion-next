@@ -132,16 +132,16 @@ const Card = ({
       <Container gap={style.containerGap} paddingX={style.containerPaddingX}>
         {topContent && <SlotContent>{topContent}</SlotContent>}
         <Content gap={style.contentGap}>
-          {skeleton ? <SkeletonText length="100%" /> : title && <Title style={style}>{title}</Title>}
+          {skeleton ? <SkeletonText length="100%" /> : title && <Title $style={style}>{title}</Title>}
           {skeleton
             ? caption !== undefined && <SkeletonText length="75%" />
-            : caption && <Caption style={style}>{caption}</Caption>}
+            : caption && <Caption $style={style}>{caption}</Caption>}
           {skeleton
             ? subCaption !== undefined && <SkeletonText length="50%" />
-            : subCaption && <Caption style={style}>{subCaption}</Caption>}
+            : subCaption && <Caption $style={style}>{subCaption}</Caption>}
           {skeleton
             ? extraCaption !== undefined && <SkeletonText length="25%" />
-            : extraCaption && <Caption style={style}>{extraCaption}</Caption>}
+            : extraCaption && <Caption $style={style}>{extraCaption}</Caption>}
         </Content>
         {bottomContent && <SlotContent>{bottomContent}</SlotContent>}
       </Container>
@@ -243,22 +243,22 @@ const Content = styled.div<{ gap: number }>`
   width: 100%;
 `;
 
-const Title = styled.p<{ style: (typeof PLATFORM_STYLE)[keyof typeof PLATFORM_STYLE] }>`
+const Title = styled.p<{ $style: (typeof PLATFORM_STYLE)[keyof typeof PLATFORM_STYLE] }>`
   margin: 0;
   width: 100%;
   color: ${Label.normal};
-  font-size: ${(props) => props.style.titleFontSize}px;
-  line-height: ${(props) => props.style.titleLineHeight};
-  letter-spacing: ${(props) => props.style.titleLetterSpacing};
-  font-weight: ${(props) => props.style.titleFontWeight};
+  font-size: ${(props) => props.$style.titleFontSize}px;
+  line-height: ${(props) => props.$style.titleLineHeight};
+  letter-spacing: ${(props) => props.$style.titleLetterSpacing};
+  font-weight: ${(props) => props.$style.titleFontWeight};
 `;
 
-const Caption = styled.p<{ style: (typeof PLATFORM_STYLE)[keyof typeof PLATFORM_STYLE] }>`
+const Caption = styled.p<{ $style: (typeof PLATFORM_STYLE)[keyof typeof PLATFORM_STYLE] }>`
   margin: 0;
   width: 100%;
   color: ${Label.alternative};
-  font-size: ${(props) => props.style.captionFontSize}px;
-  line-height: ${(props) => props.style.captionLineHeight};
-  letter-spacing: ${(props) => props.style.captionLetterSpacing};
-  font-weight: ${(props) => props.style.captionFontWeight};
+  font-size: ${(props) => props.$style.captionFontSize}px;
+  line-height: ${(props) => props.$style.captionLineHeight};
+  letter-spacing: ${(props) => props.$style.captionLetterSpacing};
+  font-weight: ${(props) => props.$style.captionFontWeight};
 `;

@@ -58,13 +58,13 @@ const ContentBadge = ({
   const style = SIZE_STYLE[size];
 
   return (
-    <Badge className={className} color={color} variant={variant} style={style}>
+    <Badge className={className} color={color} variant={variant} $style={style}>
       {leadingIcon && (
         <IconWrapper color={color} size={style.iconSize}>
           {leadingIcon}
         </IconWrapper>
       )}
-      <Text color={color} style={style}>
+      <Text color={color} $style={style}>
         {text}
       </Text>
       {trailingIcon && (
@@ -81,14 +81,14 @@ export default ContentBadge;
 const Badge = styled.span<{
   color: ContentBadgeProps['color'];
   variant: ContentBadgeProps['variant'];
-  style: (typeof SIZE_STYLE)[keyof typeof SIZE_STYLE];
+  $style: (typeof SIZE_STYLE)[keyof typeof SIZE_STYLE];
 }>`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: ${(props) => props.style.gap}px;
-  padding: ${(props) => props.style.paddingY}px ${(props) => props.style.paddingX}px;
-  border-radius: ${(props) => props.style.radius}px;
+  gap: ${(props) => props.$style.gap}px;
+  padding: ${(props) => props.$style.paddingY}px ${(props) => props.$style.paddingX}px;
+  border-radius: ${(props) => props.$style.radius}px;
 
   ${(props) => {
     if (props.color === 'accent' && props.variant === 'outlined') {
@@ -104,12 +104,12 @@ const Badge = styled.span<{
   }}
 `;
 
-const Text = styled.span<{ color: ContentBadgeProps['color']; style: (typeof SIZE_STYLE)[keyof typeof SIZE_STYLE] }>`
+const Text = styled.span<{ color: ContentBadgeProps['color']; $style: (typeof SIZE_STYLE)[keyof typeof SIZE_STYLE] }>`
   font-weight: 500;
   white-space: nowrap;
-  font-size: ${(props) => props.style.fontSize}px;
-  line-height: ${(props) => props.style.lineHeight};
-  letter-spacing: ${(props) => props.style.letterSpacing};
+  font-size: ${(props) => props.$style.fontSize}px;
+  line-height: ${(props) => props.$style.lineHeight};
+  letter-spacing: ${(props) => props.$style.letterSpacing};
   color: ${(props) => (props.color === 'accent' ? Orange.o500 : Label.alternative)};
 `;
 

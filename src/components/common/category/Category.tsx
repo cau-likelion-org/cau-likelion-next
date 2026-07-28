@@ -91,7 +91,7 @@ const Category = ({
             aria-selected={selected}
             variant={variant}
             selected={selected}
-            style={style}
+            $style={style}
             onClick={() => onChange(item.key)}
           >
             {item.label}
@@ -115,7 +115,7 @@ const List = styled.div<{ gap: number; horizontalPadding: boolean; verticalPaddi
 const Chip = styled.button<{
   variant: CategoryProps['variant'];
   selected: boolean;
-  style: (typeof SIZE_STYLE)[keyof typeof SIZE_STYLE];
+  $style: (typeof SIZE_STYLE)[keyof typeof SIZE_STYLE];
 }>`
   position: relative;
   display: inline-flex;
@@ -125,11 +125,11 @@ const Chip = styled.button<{
   cursor: pointer;
   font-family: inherit;
   font-weight: 500;
-  padding: ${(props) => props.style.paddingY}px ${(props) => props.style.paddingX}px;
-  border-radius: ${(props) => props.style.radius}px;
-  font-size: ${(props) => props.style.fontSize}px;
-  line-height: ${(props) => props.style.lineHeight};
-  letter-spacing: ${(props) => props.style.letterSpacing};
+  padding: ${(props) => props.$style.paddingY}px ${(props) => props.$style.paddingX}px;
+  border-radius: ${(props) => props.$style.radius}px;
+  font-size: ${(props) => props.$style.fontSize}px;
+  line-height: ${(props) => props.$style.lineHeight};
+  letter-spacing: ${(props) => props.$style.letterSpacing};
 
   ${(props) => {
     if (props.selected && props.variant === 'alternative') {
