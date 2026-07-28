@@ -48,6 +48,7 @@ const Wrapper = styled.div<{ alternative: boolean }>`
     !props.alternative &&
     css`
       backdrop-filter: blur(32px);
+      -webkit-backdrop-filter: blur(32px);
     `}
 `;
 
