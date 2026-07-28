@@ -98,8 +98,10 @@ const Card = ({
       <ThumbnailArea>
         {skeleton ? (
           <SkeletonThumbnail ratio={thumbnailRatio} />
+        ) : thumbnailSrc ? (
+          <Thumbnail src={thumbnailSrc} alt={thumbnailAlt} ratio={thumbnailRatio} />
         ) : (
-          <Thumbnail src={thumbnailSrc ?? ''} alt={thumbnailAlt} ratio={thumbnailRatio} />
+          <ThumbnailPlaceholder ratio={thumbnailRatio} />
         )}
         {!skeleton && thumbnailOverlay && (overlayCaption || onToggleSave) && (
           <Overlay padding={style.overlayPadding}>
@@ -177,6 +179,12 @@ const SkeletonThumbnail = styled.div<{ ratio: number }>`
   aspect-ratio: ${(props) => props.ratio};
   background-color: rgba(112, 115, 124, 0.05);
   animation: ${skeletonPulse} 1.5s ease-in-out infinite;
+`;
+
+const ThumbnailPlaceholder = styled.div<{ ratio: number }>`
+  width: 100%;
+  aspect-ratio: ${(props) => props.ratio};
+  background-color: rgba(112, 115, 124, 0.05);
 `;
 
 const Overlay = styled.div<{ padding: number }>`
