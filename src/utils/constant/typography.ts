@@ -1,3 +1,5 @@
+import { css } from 'styled-components';
+
 export const FontFamily = 'Pretendard';
 
 export interface TypographyToken {
@@ -7,6 +9,14 @@ export interface TypographyToken {
   lineHeight: number;
   letterSpacing: string;
 }
+
+export const typographyCss = (token: TypographyToken) => css`
+  font-family: ${token.fontFamily};
+  font-weight: ${token.fontWeight};
+  font-size: ${token.fontSize};
+  line-height: ${token.lineHeight};
+  letter-spacing: ${token.letterSpacing};
+`;
 
 const font = (weight: number, size: number, lineHeight: number, letterSpacingPercent: number): TypographyToken => ({
   fontFamily: FontFamily,

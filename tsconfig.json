@@ -34,7 +34,8 @@
       "@@types/*": ["src/types/*"],
       "@utils/*": ["src/utils/*"],
       "@utils": ["src/utils"],
-      "@image/*": ["public/image/*"]
+      "@image/*": ["public/image/*"],
+      "@assets/*": ["src/assets/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "mp4.d.ts"],

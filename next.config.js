@@ -57,6 +57,7 @@ const nextConfig = {
         '@utils': path.resolve(__dirname, 'src/utils'),
         '@@types': path.resolve(__dirname, 'src/types'),
         '@image': path.resolve(__dirname, 'public/image'),
+        '@assets': path.resolve(__dirname, 'src/assets'),
       },
       ...config.resolve,
     };

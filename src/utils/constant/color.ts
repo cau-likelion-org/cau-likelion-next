@@ -24,7 +24,7 @@ export enum GreyScale {
 // white
 export const BackgroundColor = '#FFFFFF';
 
-// orange scale 
+// orange scale
 export enum Orange {
   o50 = '#FFF8EB',
   o75 = '#FFEED0',
@@ -58,22 +58,93 @@ export enum Black {
   b900 = '#121212',
 }
 
-// state colors 
+// state colors
 export enum State {
   error = '#FF0000',
   info = '#47ACFF',
 }
 
-// background scale - white surface 
+// background scale
 export enum BackgroundWhite {
   primary = '#FFFFFF',
   secondary = '#FCFDFD',
   tertiary = '#F5F7F9',
 }
 
-// background scale - light surface 
+// background scale
 export enum BackgroundLight {
   primary = '#FCFDFD',
   secondary = '#F5F7F9',
   tertiary = '#F0F3F6',
+}
+
+// inverse
+export enum Inverse {
+  background = '#1B1C1E',
+  label = '#F7F7F8',
+}
+
+// system blue
+export enum System {
+  blue = '#0066FF',
+}
+
+// cool neutral
+export enum CoolNeutral {
+  neutral30 = '#46474C',
+  neutral70 = '#989BA2',
+}
+
+// label
+export enum Label {
+  normal = '#171719',
+  alternative = 'rgba(55, 56, 60, 0.61)',
+  strong = '#000000',
+  assistive = 'rgba(55, 56, 60, 0.28)',
+  neutral = 'rgba(46, 47, 51, 0.88)',
+}
+
+export enum Line {
+  neutral = '#EAEBEC',
+  alternative = '#F4F4F5',
+  strong = 'rgba(112, 115, 124, 0.22)',
+  normal = 'rgba(112, 115, 124, 0.16)',
+  subtle = 'rgba(112, 115, 124, 0.08)',
+}
+
+// category chip
+export enum CategoryTint {
+  background = 'rgba(0, 102, 255, 0.05)',
+  border = 'rgba(0, 102, 255, 0.43)',
+}
+
+// content badge
+export enum AccentTint {
+  background = 'rgba(255, 96, 0, 0.08)',
+  border = 'rgba(255, 96, 0, 0.43)',
+}
+
+// feedback status
+export enum FeedbackStatus {
+  positive = '#1ED45A',
+  cautionary = '#FFA938',
+  negative = '#FF6363',
+}
+
+// status
+export enum Status {
+  negative = '#FF4242',
+}
+
+// material
+export enum Material {
+  dimmer = 'rgba(23, 23, 25, 0.52)',
+}
+
+// fill
+export enum Fill {
+  solid = '#70737C',
+  normal = 'rgba(112, 115, 124, 0.08)',
+  subtle = 'rgba(112, 115, 124, 0.05)',
+  white = 'rgba(255, 255, 255, 0.28)',
 }
