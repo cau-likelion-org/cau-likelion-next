@@ -43,4 +43,8 @@ const Bar = styled.span<{ $color: SkeletonTextProps['color']; $length: SkeletonT
   border-radius: 3px;
   background-color: ${(props) => (props.$color === 'white' ? Fill.white : Fill.normal)};
   animation: ${skeletonPulse} 1.5s ease-in-out infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
 `;

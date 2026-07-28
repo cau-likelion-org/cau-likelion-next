@@ -26,4 +26,8 @@ const Box = styled.span<{ $width: number; $height: number; $color: SkeletonRecta
   border-radius: 3px;
   background-color: ${(props) => (props.$color === 'white' ? Fill.white : Fill.subtle)};
   animation: ${skeletonPulse} 1.5s ease-in-out infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
 `;

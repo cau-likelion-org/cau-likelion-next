@@ -37,4 +37,8 @@ const Spinner = styled.span<{ $size: number; $color: string }>`
       transform: rotate(360deg);
     }
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
 `;
