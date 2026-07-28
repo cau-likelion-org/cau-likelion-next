@@ -2,7 +2,6 @@ import React, { KeyboardEventHandler, useRef } from 'react';
 import { useRouter } from 'next/router';
 import { useMutation } from '@tanstack/react-query';
 import styled from 'styled-components';
-import { useRecoilValue } from 'recoil';
 
 import { TodayAttendanceData } from '@@types/request';
 import { Primary } from '@utils/constant/color';
@@ -10,14 +9,14 @@ import { Primary } from '@utils/constant/color';
 import InputBox from './InputBox';
 
 import { postAttendance } from 'src/apis/attendance';
-import { token } from '@utils/state';
+import useTokenStore from 'src/store/useTokenStore';
 import { TRACK_NAME } from '@utils/constant';
 import { track, getDeviceType } from 'src/lib/amplitude';
 
 const AttendanceBox = ({ data }: { data: TodayAttendanceData }) => {
   const router = useRouter();
   const InputRef = useRef<HTMLInputElement>(null);
-  const tokens = useRecoilValue(token);
+  const tokens = useTokenStore((state) => state.token);
   const clickCountRef = useRef(0);
   const retryCountRef = useRef(0);
   const lastTriggerRef = useRef<'button_click' | 'enter_key'>('button_click');

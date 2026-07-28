@@ -6,8 +6,7 @@ import Track from './TrackAttendance';
 import { Primary, Secondary } from '@utils/constant/color';
 import { ITrackController } from './componentType';
 import Loading from '@common/loading/Loading';
-import { token } from '@utils/state';
-import { useRecoilValue } from 'recoil';
+import useTokenStore from 'src/store/useTokenStore';
 import { AxiosError } from 'axios';
 
 const trackController: Record<MemberStack, ITrackController> = {
@@ -33,7 +32,7 @@ const trackController: Record<MemberStack, ITrackController> = {
 
 const EntireTrackAttendance = () => {
   const trackStacks = Object.keys(trackController) as MemberStack[];
-  const tokens = useRecoilValue(token);
+  const tokens = useTokenStore((state) => state.token);
   const { data, isLoading, error } = useQuery<TodayAttendanceListData, AxiosError>({
     queryKey: ['getAttendanceList'],
     queryFn: () => getAttendanceList(tokens),
