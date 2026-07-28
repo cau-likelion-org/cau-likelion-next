@@ -1,8 +1,8 @@
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 import { HiXMark } from 'react-icons/hi2';
 
 import { BackgroundColor, Inverse, System } from '@utils/constant/color';
-import { Typography } from '@utils/constant/typography';
+import { Typography, typographyCss } from '@utils/constant/typography';
 
 export interface SnackbarProps {
   className?: string;
@@ -108,16 +108,7 @@ const Message = styled.div`
 const Heading = styled.p`
   margin: 0;
   opacity: 0.88;
-  ${() => {
-    const token = Typography.body2Normal.bold;
-    return css`
-      font-family: ${token.fontFamily};
-      font-weight: ${token.fontWeight};
-      font-size: ${token.fontSize};
-      line-height: ${token.lineHeight};
-      letter-spacing: ${token.letterSpacing};
-    `;
-  }}
+  ${typographyCss(Typography.body2Normal.bold)}
 `;
 
 const Description = styled.p`
@@ -125,16 +116,7 @@ const Description = styled.p`
   overflow: hidden;
   text-overflow: ellipsis;
   opacity: 0.88;
-  ${() => {
-    const token = Typography.label2.regular;
-    return css`
-      font-family: ${token.fontFamily};
-      font-weight: ${token.fontWeight};
-      font-size: ${token.fontSize};
-      line-height: ${token.lineHeight};
-      letter-spacing: ${token.letterSpacing};
-    `;
-  }}
+  ${typographyCss(Typography.label2.regular)}
 `;
 
 const ActionButton = styled.button`
@@ -145,16 +127,7 @@ const ActionButton = styled.button`
   cursor: pointer;
   color: ${BackgroundColor};
   white-space: nowrap;
-  ${() => {
-    const token = Typography.body2Normal.bold;
-    return css`
-      font-family: ${token.fontFamily};
-      font-weight: ${token.fontWeight};
-      font-size: ${token.fontSize};
-      line-height: ${token.lineHeight};
-      letter-spacing: ${token.letterSpacing};
-    `;
-  }}
+  ${typographyCss(Typography.body2Normal.bold)}
 `;
 
 const CloseButton = styled.button`

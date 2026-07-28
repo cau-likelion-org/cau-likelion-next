@@ -2,7 +2,7 @@ import { useId } from 'react';
 import styled, { css } from 'styled-components';
 
 import { Inverse, System } from '@utils/constant/color';
-import { Typography } from '@utils/constant/typography';
+import { Typography, typographyCss } from '@utils/constant/typography';
 
 type TooltipSize = 'medium' | 'small';
 type TooltipPosition = 'top' | 'bottom' | 'left' | 'right';
@@ -184,16 +184,7 @@ const Text = styled.p<{ size: TooltipSize }>`
   word-break: break-word;
   color: ${Inverse.label};
 
-  ${(props) => {
-    const token = props.size === 'medium' ? Typography.label1Normal.medium : Typography.caption2.medium;
-    return css`
-      font-family: ${token.fontFamily};
-      font-weight: ${token.fontWeight};
-      font-size: ${token.fontSize};
-      line-height: ${token.lineHeight};
-      letter-spacing: ${token.letterSpacing};
-    `;
-  }}
+  ${(props) => typographyCss(props.size === 'medium' ? Typography.label1Normal.medium : Typography.caption2.medium)}
 `;
 
 const Shortcut = styled.span<{ size: TooltipSize }>`
@@ -203,16 +194,7 @@ const Shortcut = styled.span<{ size: TooltipSize }>`
   color: ${Inverse.label};
   opacity: 0.61;
 
-  ${(props) => {
-    const token = props.size === 'medium' ? Typography.label1Normal.medium : Typography.caption2.medium;
-    return css`
-      font-family: ${token.fontFamily};
-      font-weight: ${token.fontWeight};
-      font-size: ${token.fontSize};
-      line-height: ${token.lineHeight};
-      letter-spacing: ${token.letterSpacing};
-    `;
-  }}
+  ${(props) => typographyCss(props.size === 'medium' ? Typography.label1Normal.medium : Typography.caption2.medium)}
 `;
 
 const flexAlign: Record<TooltipAlign, string> = {

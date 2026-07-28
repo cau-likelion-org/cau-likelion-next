@@ -1,7 +1,7 @@
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 
 import { BackgroundColor, Label, Material, Orange, Status } from '@utils/constant/color';
-import { Typography } from '@utils/constant/typography';
+import { Typography, typographyCss } from '@utils/constant/typography';
 
 export type AlertActionVariant = 'primary' | 'assistive' | 'negative';
 
@@ -91,31 +91,13 @@ const Information = styled.div`
 const Heading = styled.p`
   margin: 0;
   color: ${Label.normal};
-  ${() => {
-    const token = Typography.headline1.bold;
-    return css`
-      font-family: ${token.fontFamily};
-      font-weight: ${token.fontWeight};
-      font-size: ${token.fontSize};
-      line-height: ${token.lineHeight};
-      letter-spacing: ${token.letterSpacing};
-    `;
-  }}
+  ${typographyCss(Typography.headline1.bold)}
 `;
 
 const Body = styled.p`
   margin: 0;
   color: ${Label.alternative};
-  ${() => {
-    const token = Typography.body2Normal.regular;
-    return css`
-      font-family: ${token.fontFamily};
-      font-weight: ${token.fontWeight};
-      font-size: ${token.fontSize};
-      line-height: ${token.lineHeight};
-      letter-spacing: ${token.letterSpacing};
-    `;
-  }}
+  ${typographyCss(Typography.body2Normal.regular)}
 `;
 
 const Actions = styled.div`
@@ -133,16 +115,7 @@ const ActionButton = styled.button<{ color: string }>`
   border: none;
   cursor: pointer;
   color: ${(props) => props.color};
-  ${() => {
-    const token = Typography.body1Normal.bold;
-    return css`
-      font-family: ${token.fontFamily};
-      font-weight: ${token.fontWeight};
-      font-size: ${token.fontSize};
-      line-height: ${token.lineHeight};
-      letter-spacing: ${token.letterSpacing};
-    `;
-  }}
+  ${typographyCss(Typography.body1Normal.bold)}
 
   &::before {
     content: '';

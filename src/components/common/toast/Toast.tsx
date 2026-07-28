@@ -1,9 +1,9 @@
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 import { FunctionComponent, SVGProps } from 'react';
 
 import { IcCircleCheck, IcCircleExclamation, IcTriangleExclamation } from '@assets/svg';
 import { BackgroundColor, Black, FeedbackStatus, System } from '@utils/constant/color';
-import { Typography } from '@utils/constant/typography';
+import { Typography, typographyCss } from '@utils/constant/typography';
 
 export type ToastVariant = 'normal' | 'positive' | 'cautionary' | 'negative';
 
@@ -97,14 +97,5 @@ const Text = styled.p`
   color: ${BackgroundColor};
   opacity: 0.88;
 
-  ${() => {
-    const token = Typography.body2Normal.bold;
-    return css`
-      font-family: ${token.fontFamily};
-      font-weight: ${token.fontWeight};
-      font-size: ${token.fontSize};
-      line-height: ${token.lineHeight};
-      letter-spacing: ${token.letterSpacing};
-    `;
-  }}
+  ${typographyCss(Typography.body2Normal.bold)}
 `;

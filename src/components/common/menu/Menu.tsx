@@ -2,7 +2,7 @@ import styled, { css } from 'styled-components';
 import { HiCheck } from 'react-icons/hi2';
 
 import { BackgroundColor, Label, Line, Orange } from '@utils/constant/color';
-import { Typography } from '@utils/constant/typography';
+import { Typography, typographyCss } from '@utils/constant/typography';
 
 type MenuVariant = 'normal' | 'radio' | 'checkbox';
 type MenuCellPadding = 8 | 12;
@@ -151,31 +151,13 @@ const ItemLabel = styled.p<{ active?: boolean; disabled?: boolean }>`
   margin: 0;
   min-height: 24px;
   color: ${(props) => (props.disabled ? Label.alternative : props.active ? Orange.o500 : Label.normal)};
-  ${(props) => {
-    const token = props.active ? Typography.body1Normal.medium : Typography.body1Normal.regular;
-    return css`
-      font-family: ${token.fontFamily};
-      font-weight: ${token.fontWeight};
-      font-size: ${token.fontSize};
-      line-height: ${token.lineHeight};
-      letter-spacing: ${token.letterSpacing};
-    `;
-  }}
+  ${(props) => typographyCss(props.active ? Typography.body1Normal.medium : Typography.body1Normal.regular)}
 `;
 
 const ItemCaption = styled.p`
   margin: 0;
   color: ${Label.alternative};
-  ${(props) => {
-    const token = Typography.label2.regular;
-    return css`
-      font-family: ${token.fontFamily};
-      font-weight: ${token.fontWeight};
-      font-size: ${token.fontSize};
-      line-height: ${token.lineHeight};
-      letter-spacing: ${token.letterSpacing};
-    `;
-  }}
+  ${typographyCss(Typography.label2.regular)}
 `;
 
 const Radio = styled.span<{ selected: boolean }>`
@@ -251,16 +233,7 @@ const LeadingInput = styled.input`
   border: none;
   outline: none;
   color: ${Label.normal};
-  ${(props) => {
-    const token = Typography.label1Normal.bold;
-    return css`
-      font-family: ${token.fontFamily};
-      font-weight: ${token.fontWeight};
-      font-size: ${token.fontSize};
-      line-height: ${token.lineHeight};
-      letter-spacing: ${token.letterSpacing};
-    `;
-  }}
+  ${typographyCss(Typography.label1Normal.bold)}
 
   &::placeholder {
     color: ${Label.alternative};
@@ -274,14 +247,5 @@ const TrailingButton = styled.button`
   border-radius: 8px;
   cursor: pointer;
   color: ${BackgroundColor};
-  ${(props) => {
-    const token = Typography.label2.bold;
-    return css`
-      font-family: ${token.fontFamily};
-      font-weight: ${token.fontWeight};
-      font-size: ${token.fontSize};
-      line-height: ${token.lineHeight};
-      letter-spacing: ${token.letterSpacing};
-    `;
-  }}
+  ${typographyCss(Typography.label2.bold)}
 `;
