@@ -1,5 +1,5 @@
 import { TodayAttendanceData, TodayAttendanceListData } from '@@types/request';
-import { IToken } from '@utils/state';
+import { IToken } from 'src/store/useTokenStore';
 import { getAuthAxios } from './authAxios';
 import { toDateString } from '@utils/index';
 import { url } from '.';

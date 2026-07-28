@@ -1,5 +1,5 @@
 import { RequestSignUpForm } from '@@types/request';
-import { IToken } from '@utils/state';
+import { IToken } from 'src/store/useTokenStore';
 import { url } from '.';
 import { getAuthAxios } from './authAxios';
 

@@ -1,5 +1,5 @@
 import { RequestEditUserScore, UserAttendance } from '@@types/request';
-import { IToken } from '@utils/state';
+import { IToken } from 'src/store/useTokenStore';
 import axios from 'axios';
 import { getAuthAxios } from './authAxios';
 import { ResponseData } from '@@types/request';
