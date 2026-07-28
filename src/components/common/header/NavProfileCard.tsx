@@ -1,14 +1,13 @@
 import { GreyScale } from '@utils/constant/color';
-import { token } from '@utils/state';
 import Link from 'next/link';
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useRecoilValue } from 'recoil';
+import useTokenStore from 'src/store/useTokenStore';
 import { getUserProfile } from 'src/apis/account';
 import styled from 'styled-components';
 
 const NavProfileCard = () => {
-  const tokenState = useRecoilValue(token);
+  const tokenState = useTokenStore((state) => state.token);
   const { data, isLoading, error } = useQuery({
     queryKey: ['profile'],
     queryFn: () => getUserProfile(tokenState),

@@ -2,8 +2,7 @@ import { BackgroundColor, Basic, GreyScale, Primary } from '@utils/constant/colo
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import Link from 'next/link';
-import { useRecoilValue } from 'recoil';
-import { token } from '@utils/state';
+import useTokenStore from 'src/store/useTokenStore';
 import { track, getDeviceType } from 'src/lib/amplitude';
 import { IHoverButton } from './NavBar';
 
@@ -15,7 +14,7 @@ interface IHoverButtonProps {
 const HoverButton = ({ hover, dropdown }: IHoverButtonProps) => {
   const [dropdownVisibility, setDropdownVisibility] = useState(false);
   const ref = useRef() as React.MutableRefObject<HTMLDivElement>;
-  const { access: tokenState } = useRecoilValue(token);
+  const { access: tokenState } = useTokenStore((state) => state.token);
 
   const handleDropdownClick = (title: string, target?: string) => {
     track('GNB Tab Clicked', {

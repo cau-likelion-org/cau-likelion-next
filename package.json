@@ -36,7 +36,8 @@
     "styled-components": "5.3.6",
     "styled-reset": "^4.4.4",
     "typescript": "^5.7.0",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "zustand": "^5.0.14"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.1",
