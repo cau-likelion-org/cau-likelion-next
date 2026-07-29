@@ -46,6 +46,7 @@ const TextField = ({
 }: TextFieldProps) => {
   const generatedId = useId();
   const inputId = id ?? generatedId;
+  const descriptionId = description ? `${inputId}-description` : undefined;
 
   const trailing =
     status === 'negative' ? (
@@ -73,10 +74,20 @@ const TextField = ({
         </Heading>
       )}
       <InputWrapper $status={status} $disabled={disabled}>
-        <Input id={inputId} disabled={disabled} {...inputProps} />
+        <Input
+          id={inputId}
+          disabled={disabled}
+          aria-invalid={status === 'negative'}
+          aria-describedby={descriptionId}
+          {...inputProps}
+        />
         {trailing}
       </InputWrapper>
-      {description && <Description $status={status}>{description}</Description>}
+      {description && (
+        <Description id={descriptionId} $status={status}>
+          {description}
+        </Description>
+      )}
     </Root>
   );
 };

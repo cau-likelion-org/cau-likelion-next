@@ -76,5 +76,6 @@ export const WithTrailingButton: Story = {
 export const NoHeadingNoDescription: Story = {
   args: {
     placeholder: '텍스트를 입력해 주세요.',
+    'aria-label': '텍스트를 입력해 주세요.',
   },
 };

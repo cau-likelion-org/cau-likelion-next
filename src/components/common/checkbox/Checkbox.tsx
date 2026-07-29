@@ -1,4 +1,4 @@
-import { ReactNode, useId } from 'react';
+import { ReactNode, useEffect, useId, useRef } from 'react';
 import styled, { css } from 'styled-components';
 
 import IcCheck from '@assets/svg/ic-check.svg';
@@ -17,6 +17,7 @@ export interface CheckboxProps {
   tight?: boolean;
   disabled?: boolean;
   label?: ReactNode;
+  ariaLabel?: string;
   onChange?: (checked: boolean) => void;
   id?: string;
 }
@@ -42,6 +43,7 @@ const Checkbox = ({
   tight = false,
   disabled = false,
   label,
+  ariaLabel,
   onChange,
   id,
 }: CheckboxProps) => {
@@ -50,16 +52,23 @@ const Checkbox = ({
   const isFilled = checked || indeterminate;
   const { box, icon } = sizeConfig[size];
   const halloInset = (HIT_TARGET - box) / 2;
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (inputRef.current) inputRef.current.indeterminate = indeterminate;
+  }, [indeterminate]);
 
   return (
     <Root className={className}>
       <ControlWrapper $tight={tight}>
         <Box
           as="input"
+          ref={inputRef}
           type="checkbox"
           id={checkboxId}
           checked={checked}
           disabled={disabled}
+          aria-label={!label ? ariaLabel : undefined}
           onChange={(event) => onChange?.(event.target.checked)}
           $box={box}
           $filled={isFilled}
@@ -140,6 +149,10 @@ const Halo = styled.span<{ $inset: number }>`
   }
 
   ${Box}:not(:disabled):active ~ & {
+    opacity: 0.16;
+  }
+
+  ${Box}:not(:disabled):focus-visible ~ & {
     opacity: 0.16;
   }
 `;

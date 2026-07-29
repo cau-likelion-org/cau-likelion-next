@@ -86,7 +86,7 @@ const Root = styled.div<{ $divider: boolean; $sticky: boolean }>`
   width: 100%;
 
   ${(props) =>
-    props.$divider &&
+    (props.$divider || props.$sticky) &&
     css`
       background-color: ${BackgroundColor};
     `}
@@ -96,6 +96,7 @@ const Root = styled.div<{ $divider: boolean; $sticky: boolean }>`
     css`
       position: sticky;
       bottom: 0;
+      z-index: 1;
     `}
 `;
 

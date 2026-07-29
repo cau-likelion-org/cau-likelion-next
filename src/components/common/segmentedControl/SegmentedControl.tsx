@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, useRef } from 'react';
 import styled, { css } from 'styled-components';
 
 import { AccentTint, BackgroundColor, Fill, Label, Line, Orange } from '@utils/constant/color';
@@ -48,6 +48,13 @@ const SegmentedControl = ({
   ...rest
 }: SegmentedControlProps) => {
   const config = sizeConfig[size];
+  const segmentRefs = useRef<(HTMLButtonElement | null)[]>([]);
+
+  const moveFocus = (fromIndex: number, delta: number) => {
+    const nextIndex = (fromIndex + delta + options.length) % options.length;
+    onChange(options[nextIndex].value);
+    segmentRefs.current[nextIndex]?.focus();
+  };
 
   return (
     <Container
@@ -64,10 +71,23 @@ const SegmentedControl = ({
         return (
           <Segment
             key={option.value}
+            ref={(node) => {
+              segmentRefs.current[index] = node;
+            }}
             type="button"
             role="tab"
             aria-selected={active}
+            tabIndex={active ? 0 : -1}
             onClick={() => onChange(option.value)}
+            onKeyDown={(event) => {
+              if (event.key === 'ArrowRight') {
+                event.preventDefault();
+                moveFocus(index, 1);
+              } else if (event.key === 'ArrowLeft') {
+                event.preventDefault();
+                moveFocus(index, -1);
+              }
+            }}
             $variant={variant}
             $active={active}
             $radius={config.innerRadius}

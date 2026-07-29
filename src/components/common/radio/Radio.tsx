@@ -14,6 +14,7 @@ export interface RadioProps {
   tight?: boolean;
   disabled?: boolean;
   label?: ReactNode;
+  ariaLabel?: string;
   name?: string;
   value?: string;
   onChange?: (checked: boolean) => void;
@@ -40,6 +41,7 @@ const Radio = ({
   tight = false,
   disabled = false,
   label,
+  ariaLabel,
   name,
   value,
   onChange,
@@ -60,6 +62,7 @@ const Radio = ({
           value={value}
           checked={checked}
           disabled={disabled}
+          aria-label={!label ? ariaLabel : undefined}
           onChange={(event) => onChange?.(event.target.checked)}
         />
         <Indicator $box={box} $checked={checked} $disabled={disabled} aria-hidden>
@@ -139,6 +142,10 @@ const Halo = styled.span`
   }
 
   ${Box}:not(:disabled):active ~ & {
+    opacity: 0.16;
+  }
+
+  ${Box}:not(:disabled):focus-visible ~ & {
     opacity: 0.16;
   }
 `;

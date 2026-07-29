@@ -63,6 +63,7 @@ export const Disabled: Story = {
 export const NoLabel: Story = {
   args: {
     checked: true,
+    ariaLabel: '텍스트',
   },
 };
 

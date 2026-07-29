@@ -48,6 +48,8 @@ const Textarea = ({
 }: TextareaProps) => {
   const generatedId = useId();
   const textareaId = id ?? generatedId;
+  const descriptionId = description ? `${textareaId}-description` : undefined;
+  const hasStatusIcon = status !== 'normal';
 
   const statusIcon =
     status === 'negative' ? (
@@ -73,7 +75,10 @@ const Textarea = ({
           id={textareaId}
           disabled={disabled}
           $resize={resize}
+          $hasStatusIcon={hasStatusIcon}
           style={maxHeight ? { maxHeight } : undefined}
+          aria-invalid={status === 'negative'}
+          aria-describedby={descriptionId}
           {...textareaProps}
         />
         {statusIcon}
@@ -84,7 +89,11 @@ const Textarea = ({
           </Bottom>
         )}
       </InputWrapper>
-      {description && <Description $status={status}>{description}</Description>}
+      {description && (
+        <Description id={descriptionId} $status={status}>
+          {description}
+        </Description>
+      )}
     </Root>
   );
 };
@@ -131,10 +140,10 @@ const InputWrapper = styled.div<{ $status: TextareaStatus; $disabled: boolean }>
   }
 `;
 
-const StyledTextarea = styled.textarea<{ $resize: TextareaResize }>`
+const StyledTextarea = styled.textarea<{ $resize: TextareaResize; $hasStatusIcon: boolean }>`
   width: 100%;
   min-height: 78px;
-  padding: 0 4px;
+  padding: ${(props) => (props.$hasStatusIcon ? '0 36px 0 4px' : '0 4px')};
   border: none;
   outline: none;
   background: none;

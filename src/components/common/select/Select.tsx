@@ -54,6 +54,7 @@ const Select = ({
 }: SelectProps & { id?: string }) => {
   const generatedId = useId();
   const selectId = id ?? generatedId;
+  const descriptionId = description ? `${selectId}-description` : undefined;
 
   const statusIcon =
     status === 'negative' ? (
@@ -80,13 +81,15 @@ const Select = ({
         onClick={onClick}
         disabled={disabled}
         aria-haspopup="listbox"
+        aria-invalid={status === 'negative'}
+        aria-describedby={descriptionId}
         $status={status}
         $disabled={disabled}
         {...rest}
       >
         {leadingIcon && <IconSlot $color={Label.alternative}>{leadingIcon}</IconSlot>}
         {chips && chips.length > 0 ? (
-          <ChipRow>
+          <ChipRow onClick={(event) => event.stopPropagation()}>
             {chips.map((chip, index) => (
               <Chip
                 key={`${chip.label}-${index}`}
@@ -106,7 +109,11 @@ const Select = ({
           <IcChevronDown width={16} height={16} />
         </IconSlot>
       </Trigger>
-      {description && <Description $status={status}>{description}</Description>}
+      {description && (
+        <Description id={descriptionId} $status={status}>
+          {description}
+        </Description>
+      )}
     </Root>
   );
 };
