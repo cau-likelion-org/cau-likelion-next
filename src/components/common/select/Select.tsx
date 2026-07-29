@@ -77,11 +77,18 @@ const Select = ({
       )}
       <Trigger
         id={selectId}
-        type="button"
-        onClick={onClick}
-        disabled={disabled}
+        role="button"
+        tabIndex={disabled ? -1 : 0}
+        onClick={disabled ? undefined : onClick}
+        onKeyDown={(event) => {
+          if (disabled) return;
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            onClick?.();
+          }
+        }}
+        aria-disabled={disabled}
         aria-haspopup="listbox"
-        aria-invalid={status === 'negative'}
         aria-describedby={descriptionId}
         $status={status}
         $disabled={disabled}
@@ -89,7 +96,7 @@ const Select = ({
       >
         {leadingIcon && <IconSlot $color={Label.alternative}>{leadingIcon}</IconSlot>}
         {chips && chips.length > 0 ? (
-          <ChipRow onClick={(event) => event.stopPropagation()}>
+          <ChipRow onClick={(event) => event.stopPropagation()} onKeyDown={(event) => event.stopPropagation()}>
             {chips.map((chip, index) => (
               <Chip
                 key={`${chip.label}-${index}`}
@@ -144,7 +151,7 @@ const Required = styled.span`
   ${typographyCss(Typography.label1Normal.medium)}
 `;
 
-const Trigger = styled.button<{ $status: SelectStatus; $disabled: boolean }>`
+const Trigger = styled.div<{ $status: SelectStatus; $disabled: boolean }>`
   position: relative;
   display: flex;
   align-items: center;
@@ -152,19 +159,14 @@ const Trigger = styled.button<{ $status: SelectStatus; $disabled: boolean }>`
   width: 100%;
   min-height: 24px;
   padding: 12px;
-  border: none;
   border-radius: 12px;
   background-color: ${(props) => (props.$disabled ? '#F4F4F5' : 'rgba(255, 255, 255, 0.08)')};
   box-shadow: ${(props) => getBoxShadow(props.$status, props.$disabled)};
-  cursor: pointer;
+  cursor: ${(props) => (props.$disabled ? 'not-allowed' : 'pointer')};
   text-align: left;
 
   &:focus-within {
     box-shadow: inset 0 0 0 2px rgba(71, 172, 255, 0.43);
-  }
-
-  &:disabled {
-    cursor: not-allowed;
   }
 `;
 

@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs';
-import Divider, { DividerProps } from './Divider';
+import Divider from './Divider';
+import type { DividerProps } from './Divider';
 
 const meta: Meta<typeof Divider> = {
   title: 'common/Divider',

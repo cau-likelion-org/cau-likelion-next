@@ -1,10 +1,12 @@
-import { ReactNode, useEffect, useId, useRef } from 'react';
+import { useEffect, useId, useRef } from 'react';
+import type { ReactNode } from 'react';
 import styled, { css } from 'styled-components';
 
 import IcCheck from '@assets/svg/ic-check.svg';
 import IcLineHorizontal from '@assets/svg/ic-line-horizontal.svg';
 import { BackgroundColor, Label, Line, Orange } from '@utils/constant/color';
-import { Typography, TypographyToken, typographyCss } from '@utils/constant/typography';
+import { Typography, typographyCss } from '@utils/constant/typography';
+import type { TypographyToken } from '@utils/constant/typography';
 
 type CheckboxSize = 'small' | 'medium';
 
@@ -70,8 +72,6 @@ const Checkbox = ({
           disabled={disabled}
           aria-label={!label ? ariaLabel : undefined}
           onChange={(event) => onChange?.(event.target.checked)}
-          $box={box}
-          $filled={isFilled}
           $disabled={disabled}
         />
         <Indicator $box={box} $filled={isFilled} $disabled={disabled} aria-hidden>
@@ -108,7 +108,7 @@ const ControlWrapper = styled.div<{ $tight: boolean }>`
   padding: 3px ${(props) => (props.$tight ? 1 : 3)}px;
 `;
 
-const Box = styled.input<{ $box: number; $filled: boolean; $disabled: boolean }>`
+const Box = styled.input<{ $disabled: boolean }>`
   position: absolute;
   inset: 0;
   margin: 0;

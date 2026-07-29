@@ -1,8 +1,10 @@
-import { ReactNode, useId } from 'react';
+import { useId } from 'react';
+import type { ReactNode } from 'react';
 import styled, { css } from 'styled-components';
 
 import { BackgroundColor, Label, Line, Orange } from '@utils/constant/color';
-import { Typography, TypographyToken, typographyCss } from '@utils/constant/typography';
+import { Typography, typographyCss } from '@utils/constant/typography';
+import type { TypographyToken } from '@utils/constant/typography';
 
 type RadioSize = 'small' | 'medium';
 

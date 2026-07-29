@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import styled, { css } from 'styled-components';
 
 import { BackgroundColor, Label, Line } from '@utils/constant/color';

@@ -68,6 +68,31 @@ const Chip = ({
   onClick,
   type = 'button',
 }: ChipProps) => {
+  const content = (
+    <>
+      <Interaction $active={active} $size={size} />
+      {leadingIcon}
+      {children}
+      {trailingIcon}
+    </>
+  );
+
+  if (!onClick) {
+    return (
+      <StyledChip
+        as="span"
+        className={className}
+        $variant={variant}
+        $size={size}
+        $active={active}
+        $disabled={disabled}
+        $interactive={false}
+      >
+        {content}
+      </StyledChip>
+    );
+  }
+
   return (
     <StyledChip
       className={className}
@@ -79,11 +104,9 @@ const Chip = ({
       $size={size}
       $active={active}
       $disabled={disabled}
+      $interactive
     >
-      <Interaction $active={active} $size={size} />
-      {leadingIcon}
-      {children}
-      {trailingIcon}
+      {content}
     </StyledChip>
   );
 };
@@ -105,6 +128,7 @@ const StyledChip = styled.button<{
   $size: ChipSize;
   $active: boolean;
   $disabled: boolean;
+  $interactive: boolean;
 }>`
   position: relative;
   display: inline-flex;
@@ -112,7 +136,7 @@ const StyledChip = styled.button<{
   justify-content: center;
   overflow: hidden;
   border: none;
-  cursor: pointer;
+  cursor: ${(props) => (props.$interactive ? 'pointer' : 'default')};
   gap: ${(props) => sizeConfig[props.$size].gap}px;
   padding: ${(props) => sizeConfig[props.$size].paddingY}px ${(props) => sizeConfig[props.$size].paddingX}px;
   border-radius: ${(props) => sizeConfig[props.$size].radius}px;
@@ -130,15 +154,19 @@ const StyledChip = styled.button<{
     );
   }}
 
-  &:not(:disabled):hover ${Interaction} {
-    opacity: 0.04;
-  }
+  ${(props) =>
+    props.$interactive &&
+    css`
+      &:not(:disabled):hover ${Interaction} {
+        opacity: 0.04;
+      }
 
-  &:not(:disabled):active ${Interaction} {
-    opacity: 0.08;
-  }
+      &:not(:disabled):active ${Interaction} {
+        opacity: 0.08;
+      }
 
-  &:disabled {
-    cursor: not-allowed;
-  }
+      &:disabled {
+        cursor: not-allowed;
+      }
+    `}
 `;

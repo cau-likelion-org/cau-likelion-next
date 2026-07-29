@@ -1,8 +1,10 @@
-import { ReactNode, useRef } from 'react';
+import { useRef } from 'react';
+import type { ReactNode } from 'react';
 import styled, { css } from 'styled-components';
 
 import { AccentTint, BackgroundColor, Fill, Label, Line, Orange } from '@utils/constant/color';
-import { Typography, TypographyToken, typographyCss } from '@utils/constant/typography';
+import { Typography, typographyCss } from '@utils/constant/typography';
+import type { TypographyToken } from '@utils/constant/typography';
 
 type SegmentedControlVariant = 'filled' | 'outlined';
 type SegmentedControlSize = 'small' | 'medium' | 'large';
@@ -108,7 +110,14 @@ const SegmentedControl = ({
 
 export default SegmentedControl;
 
-const Container = styled.div<{ $variant: SegmentedControlVariant; $height: number; $padding: number; $radius: number }>`
+interface ContainerProps {
+  $variant: SegmentedControlVariant;
+  $height: number;
+  $padding: number;
+  $radius: number;
+}
+
+const Container = styled.div<ContainerProps>`
   position: relative;
   display: flex;
   align-items: center;
