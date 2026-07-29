@@ -3,16 +3,19 @@ import { AiOutlinePoweroff } from 'react-icons/ai';
 import styled from 'styled-components';
 import { BackgroundColor } from '@utils/constant/color';
 import useTokenStore from 'src/store/useTokenStore';
+import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 
 const LogoutButton = () => {
   const router = useRouter();
   const setToken = useTokenStore((state) => state.setToken);
+  const queryClient = useQueryClient();
   const handleLogout = () => {
     setToken({
       access: null,
       refresh: null,
     });
+    queryClient.clear();
   };
 
   return (

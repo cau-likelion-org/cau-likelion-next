@@ -33,12 +33,14 @@ const trackController: Record<MemberStack, ITrackController> = {
 const EntireTrackAttendance = () => {
   const trackStacks = Object.keys(trackController) as MemberStack[];
   const tokens = useTokenStore((state) => state.token);
+  const hasHydrated = useTokenStore((state) => state.hasHydrated);
   const { data, isLoading, error } = useQuery<TodayAttendanceListData, AxiosError>({
     queryKey: ['getAttendanceList'],
     queryFn: () => getAttendanceList(tokens),
+    enabled: hasHydrated && !!tokens.access,
   });
 
-  if (isLoading) return <Loading />;
+  if (!hasHydrated || isLoading) return <Loading />;
   if (error || !data) return <div>출석 현황을 불러오지 못했습니다.</div>;
 
   return (

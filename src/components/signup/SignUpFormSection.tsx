@@ -44,13 +44,15 @@ const SignUpFormSection = () => {
     isAuthenticated;
 
   useEffect(() => {
+    if (!router.isReady) return;
     if (access) {
       router.push('/');
+      return;
     }
-    if (!accessToken) {
+    if (typeof accessToken !== 'string' || typeof refreshToken !== 'string') {
       router.push('/login');
     }
-  }, [access, accessToken, router]);
+  }, [router, router.isReady, access, accessToken, refreshToken]);
 
   const signUpFormPost = useMutation({
     mutationFn: (props: SignUpMutationProps) => signUp(props),

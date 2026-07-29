@@ -34,7 +34,7 @@ const MyScoreSection = ({ userProfile }: { userProfile: UserProfile }) => {
   });
 
   const totalScore = useMemo(() => {
-    if (!userAttendance || !userAssignment) return 0;
+    if (!userAttendance || !userAssignment || userAssignment.length === 0) return 0;
     return getTotalScore({
       absence: userAttendance.absence,
       truancy: userAttendance.truancy,
@@ -48,7 +48,7 @@ const MyScoreSection = ({ userProfile }: { userProfile: UserProfile }) => {
     <Wrapper>
       <ScoreHeader isAdmin={false} />
       <ScoreWrapper>
-        {userAttendance && userAssignment && (
+        {userAttendance && userAssignment && userAssignment.length > 0 && (
           <>
             <ScoreRow>
               {Array.from({ length: 6 }, (_, i) => (
