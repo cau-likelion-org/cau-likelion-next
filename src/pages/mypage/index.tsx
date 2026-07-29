@@ -1,9 +1,9 @@
 import { UserProfile } from '@@types/request';
-import { token, userProfileChanged } from '@utils/state';
 import { AxiosError } from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useRecoilValue } from 'recoil';
+import useTokenStore from 'src/store/useTokenStore';
+import useProfileChangedStore from 'src/store/useProfileChangedStore';
 import { getUserProfile } from 'src/apis/account';
 import NameCard from '@mypage/component/NameCard';
 import styled from 'styled-components';
@@ -15,10 +15,9 @@ import TotalScoreSection from '@mypage/TotalScoreSection';
 import { useRouter } from 'next/router';
 
 const MyPage = () => {
-  const tokenState = useRecoilValue(token);
-  const [isActiveGeneration, setIsActiveGeneration] = useState(false);
-  const [isLogin, setIsLogin] = useState(false);
-  const profileChanged = useRecoilValue(userProfileChanged);
+  const tokenState = useTokenStore((state) => state.token);
+  const hasHydrated = useTokenStore((state) => state.hasHydrated);
+  const profileChanged = useProfileChangedStore((state) => state.profileChanged);
   const router = useRouter();
 
   const {
@@ -33,20 +32,10 @@ const MyPage = () => {
   });
 
   useEffect(() => {
-    if (tokenState.access) setIsLogin(true);
-    else {
-      setIsLogin(false);
-      router.push('/login');
-    }
-  }, [tokenState]);
+    if (hasHydrated && !tokenState.access) router.push('/login');
+  }, [hasHydrated, tokenState, router]);
 
-  useEffect(() => {
-    if (userProfile && checkGeneration(userProfile.generation)) {
-      setIsActiveGeneration(true);
-    } else {
-      setIsActiveGeneration(false);
-    }
-  }, [userProfile]);
+  const isActiveGeneration = !!userProfile && checkGeneration(userProfile.generation);
   return (
     <>
       {userProfile && (

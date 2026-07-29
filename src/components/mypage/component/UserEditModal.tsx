@@ -6,10 +6,10 @@ import ToggleBox from '@signup/component/ToggleBox';
 import { TRACK, TRACK_INDEX, TRACK_NAME } from '@utils/constant';
 import { BackgroundColor, Basic } from '@utils/constant/color';
 import { isEmptyString } from '@utils/index';
-import { IToken, token, userProfileChanged } from '@utils/state';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import useTokenStore, { IToken } from 'src/store/useTokenStore';
+import useProfileChangedStore from 'src/store/useProfileChangedStore';
 import useInput from 'src/hooks/useInput';
 import styled from 'styled-components';
 import { HiXMark } from 'react-icons/hi2';
@@ -30,24 +30,19 @@ const UserEditModal = ({ userProfile, isEditModalOn, handleUserEditModal }: User
     TRACK_NAME[TRACK.ETC],
   ];
   const [nameValue, onChangeName] = useInput(userProfile.name);
-  const [profileChanged, setProfileChanged] = useRecoilState(userProfileChanged);
+  const toggleProfileChanged = useProfileChangedStore((state) => state.toggleProfileChanged);
   const [generationValue, onChangeGeneration] = useInput(String(userProfile.generation), /^[0-9]*$/);
   const [toggleIsClicked, setToggleIsClicked] = useState(userProfile.is_admin ? [false, true] : [true, false]);
   const [dropdownValue, setDropdownValue] = useState(track[userProfile.track]);
-  const [isFormActivated, setIsFormActivated] = useState(false);
-  const tokenState = useRecoilValue(token);
-
-  useEffect(() => {
-    if (!isEmptyString(nameValue) && !isEmptyString(generationValue)) setIsFormActivated(true);
-    else setIsFormActivated(false);
-  }, [nameValue, generationValue, isEditModalOn]);
+  const tokenState = useTokenStore((state) => state.token);
+  const isFormActivated = !isEmptyString(nameValue) && !isEmptyString(generationValue);
 
   const editUserProfile = useMutation({
     mutationFn: ({ userProfile, tokenState }: { userProfile: UserProfile; tokenState: IToken }) =>
       putUserProfile({ form: userProfile, accessToken: tokenState.access, refreshToken: tokenState.refresh }),
     onSuccess: (res) => {
       if (res.message === 'success') {
-        setProfileChanged(!profileChanged);
+        toggleProfileChanged();
       }
     },
   });

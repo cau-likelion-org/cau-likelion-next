@@ -6,18 +6,19 @@ import { useQuery } from '@tanstack/react-query';
 import { TodayAttendanceData } from '@@types/request';
 import { getAttendance } from 'src/apis/attendance';
 import Loading from '@common/loading/Loading';
-import { useRecoilValue } from 'recoil';
-import { token } from '@utils/state';
+import useTokenStore from 'src/store/useTokenStore';
 import { useRouter } from 'next/router';
 import { AxiosError } from 'axios';
 
 const IncompletedSection = () => {
-  const tokens = useRecoilValue(token);
+  const tokens = useTokenStore((state) => state.token);
+  const hasHydrated = useTokenStore((state) => state.hasHydrated);
   const router = useRouter();
   const { data, isLoading, error } = useQuery<TodayAttendanceData, AxiosError>({
     queryKey: ['attendance'],
     queryFn: () => getAttendance(tokens),
     retry: false,
+    enabled: hasHydrated && !!tokens.access,
   });
 
   useEffect(() => {
@@ -41,13 +42,13 @@ const IncompletedSection = () => {
     }
   }, [data]);
 
-  if (isLoading) return <Loading />;
+  if (!hasHydrated || isLoading || !data) return <Loading />;
   return (
     <CircleWrapper>
       <Circle />
       <Circle2 />
       <Circle />
-      <AttendanceBox data={data!} />
+      <AttendanceBox data={data} />
     </CircleWrapper>
   );
 };

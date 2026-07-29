@@ -1,5 +1,5 @@
 import { LoginResponse, RequestSignUpForm, UserProfile } from '@@types/request';
-import { IToken } from '@utils/state';
+import { IToken } from 'src/store/useTokenStore';
 import axios from 'axios';
 import { url } from '.';
 import { getAuthAxios } from './authAxios';

@@ -2,21 +2,20 @@ import React from 'react';
 import { AiOutlinePoweroff } from 'react-icons/ai';
 import styled from 'styled-components';
 import { BackgroundColor } from '@utils/constant/color';
-import LocalStorage from '@utils/localStorage';
-import { useRecoilState } from 'recoil';
-import { token } from '@utils/state';
+import useTokenStore from 'src/store/useTokenStore';
+import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 
 const LogoutButton = () => {
   const router = useRouter();
-  const [_, setToken] = useRecoilState(token);
+  const setToken = useTokenStore((state) => state.setToken);
+  const queryClient = useQueryClient();
   const handleLogout = () => {
-    LocalStorage.removeItem('access');
-    LocalStorage.removeItem('refresh');
     setToken({
       access: null,
       refresh: null,
     });
+    queryClient.clear();
   };
 
   return (

@@ -1,5 +1,5 @@
 import LocalStorage from '@utils/localStorage';
-import { IToken } from '@utils/state';
+import { IToken } from 'src/store/useTokenStore';
 import axios from 'axios';
 import { getNewToken } from './account';
 

@@ -1,13 +1,12 @@
 import { TRACK, TRACK_INDEX, TRACK_NAME } from '@utils/constant';
 import { Basic } from '@utils/constant/color';
 import { isEmptyString } from '@utils/index';
-import { token } from '@utils/state';
 import { useRouter } from 'next/router';
 import React from 'react';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { useRecoilState } from 'recoil';
+import useTokenStore from 'src/store/useTokenStore';
 import { signUp, SignUpMutationProps } from 'src/apis/signUp';
 import useInput from 'src/hooks/useInput';
 import styled from 'styled-components';
@@ -16,7 +15,6 @@ import DropdownMenuBox from './component/DropdownMenuBox';
 import FormSendButton from './component/FormSendButton';
 import TextInputBox from './component/TextInputBox';
 import ToggleBox from './component/ToggleBox';
-import LocalStorage from '@utils/localStorage';
 
 const SignUpFormSection = () => {
   // const track = [TRACK_NAME[TRACK.PM], TRACK_NAME[TRACK.DESIGN], TRACK_NAME[TRACK.FRONTEND], TRACK_NAME[TRACK.BACKEND], TRACK_NAME[TRACK.ETC]];
@@ -33,41 +31,34 @@ const SignUpFormSection = () => {
   const [toggleIsClicked, setToggleIsClicked] = useState([true, false]);
   const [dropdownValue, setDropdownValue] = useState(track[0]);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isFormActivated, setIsFormActivated] = useState(false);
-  const [{ access, refresh }, setToken] = useRecoilState(token);
+  const { access } = useTokenStore((state) => state.token);
+  const setToken = useTokenStore((state) => state.setToken);
   const router = useRouter();
   const { accessToken, refreshToken } = router.query;
 
+  const isFormActivated =
+    !isEmptyString(nameValue) &&
+    !isEmptyString(generationValue) &&
+    !isEmptyString(emailValue) &&
+    !isEmptyString(emailSecretValue) &&
+    isAuthenticated;
+
   useEffect(() => {
+    if (!router.isReady) return;
     if (access) {
       router.push('/');
+      return;
     }
-    if (!accessToken) {
+    if (typeof accessToken !== 'string' || typeof refreshToken !== 'string') {
       router.push('/login');
     }
-    if (
-      !isEmptyString(nameValue) &&
-      !isEmptyString(generationValue) &&
-      !isEmptyString(emailValue) &&
-      !isEmptyString(emailSecretValue) &&
-      isAuthenticated
-    )
-      setIsFormActivated(true);
-    else setIsFormActivated(false);
-  }, [nameValue, generationValue, emailValue, emailSecretValue, isAuthenticated, accessToken]);
+  }, [router, router.isReady, access, accessToken, refreshToken]);
 
   const signUpFormPost = useMutation({
     mutationFn: (props: SignUpMutationProps) => signUp(props),
     onSuccess: (res: any) => {
       if (res) {
-        setToken((prev) => {
-          const obj = { ...prev };
-          obj.access = accessToken as string;
-          obj.refresh = refreshToken as string;
-          return obj;
-        });
-        LocalStorage.setItem('access', accessToken as string);
-        LocalStorage.setItem('refresh', refreshToken as string);
+        setToken({ access: accessToken as string, refresh: refreshToken as string });
         router.push('/signup/success');
       }
     },

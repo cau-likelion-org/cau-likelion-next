@@ -5,8 +5,7 @@ import CAULogo from '@image/cau사자.png';
 import NavButton from './NavButton';
 import { BackgroundColor } from '@utils/constant/color';
 import Link from 'next/link';
-import { useRecoilValue } from 'recoil';
-import { token } from '@utils/state';
+import useTokenStore from 'src/store/useTokenStore';
 import HoverButton from './HoverButton';
 
 export interface IHoverButton {
@@ -23,8 +22,9 @@ export interface IMenu {
 }
 
 const NavBar = () => {
-  const { access: tokenState } = useRecoilValue(token);
-  const isLogin = !!tokenState;
+  const { access: tokenState } = useTokenStore((state) => state.token);
+  const hasHydrated = useTokenStore((state) => state.hasHydrated);
+  const isLogin = hasHydrated && !!tokenState;
 
   const hover: IHoverButton['hover'] = { title: '아카이빙' };
   const dropdown: IHoverButton['dropdown'] = [

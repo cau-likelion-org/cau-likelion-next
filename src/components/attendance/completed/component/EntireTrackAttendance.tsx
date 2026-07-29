@@ -6,8 +6,7 @@ import Track from './TrackAttendance';
 import { Primary, Secondary } from '@utils/constant/color';
 import { ITrackController } from './componentType';
 import Loading from '@common/loading/Loading';
-import { token } from '@utils/state';
-import { useRecoilValue } from 'recoil';
+import useTokenStore from 'src/store/useTokenStore';
 import { AxiosError } from 'axios';
 
 const trackController: Record<MemberStack, ITrackController> = {
@@ -33,13 +32,15 @@ const trackController: Record<MemberStack, ITrackController> = {
 
 const EntireTrackAttendance = () => {
   const trackStacks = Object.keys(trackController) as MemberStack[];
-  const tokens = useRecoilValue(token);
+  const tokens = useTokenStore((state) => state.token);
+  const hasHydrated = useTokenStore((state) => state.hasHydrated);
   const { data, isLoading, error } = useQuery<TodayAttendanceListData, AxiosError>({
     queryKey: ['getAttendanceList'],
     queryFn: () => getAttendanceList(tokens),
+    enabled: hasHydrated && !!tokens.access,
   });
 
-  if (isLoading) return <Loading />;
+  if (!hasHydrated || isLoading) return <Loading />;
   if (error || !data) return <div>출석 현황을 불러오지 못했습니다.</div>;
 
   return (

@@ -1,17 +1,17 @@
 import { BackgroundColor } from '@utils/constant/color';
-import { token } from '@utils/state';
 import React, { useEffect, useRef, useState } from 'react';
-import { useRecoilValue } from 'recoil';
+import useTokenStore from 'src/store/useTokenStore';
 import styled from 'styled-components';
 import { IMenu } from './NavBar';
 import NavButton from './NavButton';
 import NavProfileCard from './NavProfileCard';
 
 const MobileNavModal = ({ isModalOn }: { isModalOn: boolean }) => {
-  const { access: tokenState } = useRecoilValue(token);
+  const { access: tokenState } = useTokenStore((state) => state.token);
+  const hasHydrated = useTokenStore((state) => state.hasHydrated);
   const [visibilityAnimation, setVisibilityAnimation] = useState(false);
   const repeatRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const isLogin = !!tokenState;
+  const isLogin = hasHydrated && !!tokenState;
 
   const menu: IMenu[] = [
     { title: '프로젝트', routing: '/project' },
