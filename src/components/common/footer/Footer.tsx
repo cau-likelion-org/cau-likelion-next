@@ -1,36 +1,40 @@
-import React from 'react';
 import styled from 'styled-components';
-import FooterButton from './FooterButton';
-import { GreyScale } from '@utils/constant/color';
+
+import { IcKakaotalk, IcInstagram, IcEmail } from '@assets/svg';
+import { BackgroundLight, Label, Line } from '@utils/constant/color';
+import { Typography, typographyCss } from '@utils/constant/typography';
+import LikelionCAULogo from 'src/assets/svg/logo/logo-likelion-chungang.svg';
+
+const SOCIAL_LINKS = [
+  { icon: IcKakaotalk, href: '#' },
+  { icon: IcInstagram, href: '#' },
+  { icon: IcEmail, href: '#' },
+];
 
 const Footer = ({ isLandingLayout }: { isLandingLayout: boolean }) => {
-  const FooterButtonData = [
-    {
-      type: 'instagram',
-      img: '/image/Instagram.png',
-      link: 'https://www.instagram.com/likelion_cau',
-    },
-    {
-      type: 'Notion',
-      img: '/image/likelionCompany.png',
-      link: 'https://www.likelion.net/',
-    },
-    {
-      type: 'mail',
-      img: '/image/Mail.png',
-      link: 'puang@likelion.org',
-    },
-  ];
-
   return (
     <Wrapper isLandingLayout={isLandingLayout}>
-      <TitleText>CAU LIKELION</TitleText>
-      <ButtonWrapper>
-        {FooterButtonData.map((icon, i: number) => (
-          <FooterButton key={i} Img={icon.img} link={icon.link} />
-        ))}
-      </ButtonWrapper>
-      <CopyrightWrapper>@ 2023 CAU LIKELION. All rights reserved.</CopyrightWrapper>
+      <Container>
+        <Main>
+          <LikelionCAULogo width={220} height={20} aria-label="로고 이미지" />
+          <List>
+            <span>중앙대학교</span>
+            <VerticalDivider />
+            <span>멋쟁이사자처럼</span>
+          </List>
+          <HorizontalDivider />
+          <Content>
+            <Copyright>© 2026 CAU LIKELION. All rights reserved</Copyright>
+            <Action>
+              {SOCIAL_LINKS.map(({ icon: Icon, href }, index) => (
+                <IconButton key={index} href={href} target="_blank" rel="noopener noreferrer">
+                  <Icon width={20} height={20} />
+                </IconButton>
+              ))}
+            </Action>
+          </Content>
+        </Main>
+      </Container>
     </Wrapper>
   );
 };
@@ -38,46 +42,84 @@ const Footer = ({ isLandingLayout }: { isLandingLayout: boolean }) => {
 export default Footer;
 
 const Wrapper = styled.div<{ isLandingLayout: boolean }>`
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
   display: flex;
   flex-direction: column;
-  width: 100%;
-  justify-content: center;
-  gap: 2.5rem;
-  position: relative;
+  align-items: center;
+  background-color: ${BackgroundLight.secondary};
+  box-shadow: inset 0 1px 0 0 ${Line.subtle};
   @media (min-width: 900px) {
     scroll-snap-align: ${(props) => props.isLandingLayout && 'end'};
   }
 `;
 
-const TitleText = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-family: 'Gmarket Sans';
-  font-style: normal;
-  font-weight: 900;
-  font-size: 1.8rem;
-  text-align: center;
-`;
-
-const CopyrightWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: ${GreyScale.light};
-  height: 65px;
-  font-family: 'Pretendard';
-  font-style: normal;
-  font-weight: 500;
-  font-size: 1.2rem;
-  text-align: center;
-  color: ${GreyScale.default};
-`;
-
-const ButtonWrapper = styled.div`
-  display: flex;
+const Container = styled.div`
   width: 100%;
+  max-width: 1440px;
+  padding: 40px 20px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const Main = styled.div`
+  width: 100%;
+  max-width: 1100px;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+`;
+
+const List = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 8px;
+  ${typographyCss({ ...Typography.label2.bold, fontWeight: 500 })}
+  color: ${Label.alternative};
+`;
+
+const VerticalDivider = styled.div`
+  width: 1px;
+  height: 18px;
+  background-color: ${Line.normal};
+`;
+
+const HorizontalDivider = styled.div`
+  width: 100%;
+  height: 1px;
+  background-color: ${Line.subtle};
+`;
+
+const Content = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+const Copyright = styled.p`
+  ${typographyCss({ ...Typography.label2.bold, fontWeight: 500 })}
+  color: ${Label.alternative};
+  margin: 0;
+`;
+
+const Action = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 16px;
+`;
+
+const IconButton = styled.a`
+  display: flex;
+  align-items: center;
   justify-content: center;
-  gap: 27px;
-  margin-bottom: 8px;
+  cursor: pointer;
 `;
