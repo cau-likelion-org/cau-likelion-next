@@ -6,7 +6,7 @@ import { Typography, typographyCss } from '@utils/constant/typography';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import useTokenStore from 'src/store/useTokenStore';
-import LikelionCAULogo from 'src/assets/svg/logo-likelion-chungang.svg';
+import LikelionCAULogo from 'src/assets/svg/logo/logo-likelion-chungang.svg';
 
 export interface IMenu {
   title: string;
@@ -30,32 +30,34 @@ const NavBar = () => {
 
   return (
     <Wrapper>
-      <LogoWrapper>
-        <Link href={'/'}>
-          <LogoImage>
-            <LikelionCAULogo width={220} height={20} aria-label="로고 이미지" />
-          </LogoImage>
-        </Link>
-      </LogoWrapper>
+      <Content>
+        <LogoWrapper>
+          <Link href={'/'}>
+            <LogoImage>
+              <LikelionCAULogo width={220} height={20} aria-label="로고 이미지" />
+            </LogoImage>
+          </Link>
+        </LogoWrapper>
 
-      <RightSection>
-        <MenuList>
-          {MENU_ITEMS.map(({ title, routing, target }) =>
-            target ? (
-              <MenuLink key={title} href={routing} target={target} rel="noopener noreferrer">
-                {title}
-              </MenuLink>
-            ) : (
-              <Link key={title} href={routing}>
-                <MenuLink as="span">{title}</MenuLink>
-              </Link>
-            ),
-          )}
-        </MenuList>
-        <Button size="medium" onClick={() => router.push(isLogin ? '/mypage' : '/login')}>
-          {isLogin ? '마이페이지' : '로그인'}
-        </Button>
-      </RightSection>
+        <RightSection>
+          <MenuList>
+            {MENU_ITEMS.map(({ title, routing, target }) =>
+              target ? (
+                <MenuLink key={title} href={routing} target={target} rel="noopener noreferrer">
+                  {title}
+                </MenuLink>
+              ) : (
+                <Link key={title} href={routing}>
+                  <MenuLink as="span">{title}</MenuLink>
+                </Link>
+              ),
+            )}
+          </MenuList>
+          <Button size="medium" onClick={() => router.push(isLogin ? '/mypage' : '/login')}>
+            {isLogin ? '마이페이지' : '로그인'}
+          </Button>
+        </RightSection>
+      </Content>
     </Wrapper>
   );
 };
@@ -65,17 +67,22 @@ export default NavBar;
 const Wrapper = styled.div`
   width: 100%;
   display: flex;
+  justify-content: center;
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  margin: 0 auto;
-  max-width: 1100px;
-  padding: 14px 20px;
-  align-items: center;
-  justify-content: space-between;
   background-color: ${BackgroundColor};
   z-index: 9999;
+`;
+
+const Content = styled.div`
+  width: 100%;
+  max-width: 1100px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
 `;
 
 const LogoImage = styled.div`
