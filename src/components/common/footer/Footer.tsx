@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import styled from 'styled-components';
 
 import { IcKakaotalk, IcInstagram, IcEmail } from '@assets/svg';
@@ -5,13 +6,23 @@ import { BackgroundLight, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import LikelionCAULogo from 'src/assets/svg/logo/logo-likelion-chungang.svg';
 
+import EmailCopyModal from './EmailCopyModal';
+
+const EMAIL = 'puang@likelion.org';
+
 const SOCIAL_LINKS = [
-  { icon: IcKakaotalk, href: '#' },
-  { icon: IcInstagram, href: '#' },
-  { icon: IcEmail, href: '#' },
+  { icon: IcKakaotalk, href: 'https://pf.kakao.com/_HMPxfG' },
+  { icon: IcInstagram, href: 'https://www.instagram.com/likelion_cau' },
 ];
 
 const Footer = ({ isLandingLayout }: { isLandingLayout: boolean }) => {
+  const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
+
+  const handleClickEmail = () => {
+    navigator.clipboard.writeText(EMAIL);
+    setIsEmailModalOpen(true);
+  };
+
   return (
     <Wrapper isLandingLayout={isLandingLayout}>
       <Container>
@@ -31,10 +42,14 @@ const Footer = ({ isLandingLayout }: { isLandingLayout: boolean }) => {
                   <Icon width={20} height={20} />
                 </IconButton>
               ))}
+              <IconButton as="button" type="button" onClick={handleClickEmail}>
+                <IcEmail width={20} height={20} />
+              </IconButton>
             </Action>
           </Content>
         </Main>
       </Container>
+      {isEmailModalOpen && <EmailCopyModal email={EMAIL} onClose={() => setIsEmailModalOpen(false)} />}
     </Wrapper>
   );
 };
@@ -121,5 +136,8 @@ const IconButton = styled.a`
   display: flex;
   align-items: center;
   justify-content: center;
+  border: none;
+  background: none;
+  padding: 0;
   cursor: pointer;
 `;
