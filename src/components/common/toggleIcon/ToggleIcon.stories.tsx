@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs';
-import IcBlank from '@assets/svg/ic-blank.svg';
+import { IcBlank } from '@assets/svg';
 import ToggleIcon from './ToggleIcon';
 
 const meta: Meta<typeof ToggleIcon> = {

@@ -1,8 +1,7 @@
 import { InputHTMLAttributes, ReactNode, useId } from 'react';
 import styled from 'styled-components';
 
-import IcCircleCheck from '@assets/svg/ic-circle-check.svg';
-import IcCircleExclamation from '@assets/svg/ic-circle-exclamation.svg';
+import { IcCircleCheck, IcCircleExclamation } from '@assets/svg';
 import { Label, Line, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
