@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import styled from 'styled-components';
 import { HiOutlineBell } from 'react-icons/hi';
 import Button from '@common/button/Button';
@@ -9,10 +10,14 @@ import LogoX from 'src/assets/svg/logo/logo-x.svg';
 import LogoCAU from 'src/assets/svg/logo/logo-cau.svg';
 import LogoCatchphrase from 'src/assets/svg/logo/logo-catchphrase.svg';
 
+import RecruitNotifyModal from './RecruitNotifyModal';
+
 const DESCRIPTION =
   '중앙대학교 멋쟁이사자처럼은 중앙대 학생들로 이루어진 IT 창업 동아리입니다\n아이디어를 현실로 만들고, 세계를 향한 첫 발자국을 멋쟁이사자처럼에서 내딛어보세요';
 
 const MainSection = () => {
+  const [isRecruitModalOpen, setIsRecruitModalOpen] = useState(false);
+
   return (
     <Wrapper>
       <BgLanding width={1440} height={666} aria-label="배경 이미지" />
@@ -29,11 +34,19 @@ const MainSection = () => {
 
         <BottomGroup>
           <Description>{DESCRIPTION}</Description>
-          <Button variant="solid" color="assistive" size="large" trailingIcon={<HiOutlineBell />}>
+          <Button
+            variant="solid"
+            color="assistive"
+            size="large"
+            trailingIcon={<HiOutlineBell />}
+            onClick={() => setIsRecruitModalOpen(true)}
+          >
             다음 기수 모집 알림받기
           </Button>
         </BottomGroup>
       </Content>
+
+      {isRecruitModalOpen && <RecruitNotifyModal onClose={() => setIsRecruitModalOpen(false)} />}
     </Wrapper>
   );
 };
