@@ -89,19 +89,6 @@ const TabButton = styled.button<{
   letter-spacing: ${(props) => SIZE_STYLE[props.size ?? 'small'].letterSpacing};
   color: ${(props) => (props.selected ? Label.strong : Label.assistive)};
 
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0 -12px;
-    background-color: ${Label.normal};
-    opacity: 0;
-    pointer-events: none;
-  }
-
-  &:hover::before {
-    opacity: 0.08;
-  }
-
   &::after {
     content: '';
     position: absolute;
