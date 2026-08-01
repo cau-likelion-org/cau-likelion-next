@@ -65,20 +65,28 @@ const PostUploadModal = ({
       <Modal onClick={(event) => event.stopPropagation()}>
         <Information>
           <ImageUploadGroup>
-            <MainThumbnail>
+            <MainThumbnail $empty={mode === 'create'}>
               <FeaturedChip>대표</FeaturedChip>
+              {mode === 'create' && (
+                <UploadGuide>
+                  사진을 10장까지 업로드하고
+                  <br />
+                  표지가 되는 대표사진을 선택해주세요
+                </UploadGuide>
+              )}
             </MainThumbnail>
             <ThumbnailRow>
               <AddThumbnailButton type="button" aria-label="이미지 추가">
                 <IcAdd width={24} height={24} />
               </AddThumbnailButton>
-              {Array.from({ length: THUMBNAIL_COUNT }, (_, index) => (
-                <ThumbnailSlot key={index} $featured={index === 0}>
-                  <RemoveThumbnailButton type="button" aria-label="이미지 삭제">
-                    <IcXButton width={24} height={24} />
-                  </RemoveThumbnailButton>
-                </ThumbnailSlot>
-              ))}
+              {mode === 'edit' &&
+                Array.from({ length: THUMBNAIL_COUNT }, (_, index) => (
+                  <ThumbnailSlot key={index} $featured={index === 0}>
+                    <RemoveThumbnailButton type="button" aria-label="이미지 삭제">
+                      <IcXButton width={24} height={24} />
+                    </RemoveThumbnailButton>
+                  </ThumbnailSlot>
+                ))}
             </ThumbnailRow>
           </ImageUploadGroup>
 
@@ -351,12 +359,22 @@ const ImageUploadGroup = styled.div`
   gap: 46px;
 `;
 
-const MainThumbnail = styled.div`
+const MainThumbnail = styled.div<{ $empty: boolean }>`
   position: relative;
   width: 100%;
   aspect-ratio: 16 / 9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 22px;
-  background-color: ${Fill.subtle};
+  background-color: ${(props) => (props.$empty ? '#F4F4F5' : Fill.subtle)};
+`;
+
+const UploadGuide = styled.p`
+  ${typographyCss(Typography.body2Normal.regular)}
+  color: ${Orange.o500};
+  text-align: center;
+  margin: 0;
 `;
 
 const FeaturedChip = styled.span`
