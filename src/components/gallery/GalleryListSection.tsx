@@ -10,8 +10,11 @@ import IcChevronDown from '@assets/svg/ic-chevron-down.svg';
 import { BackgroundColor, Fill, Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
-import GalleryUploadModal from './component/GalleryUploadModal';
+import HistoryDetailModal from './component/HistoryDetailModal';
+import HistoryUploadModal from './component/HistoryUploadModal';
+import ProjectDetailModal from './component/ProjectDetailModal';
 import ProjectUploadModal from './component/ProjectUploadModal';
+import SessionDetailModal from './component/SessionDetailModal';
 import SessionUploadModal from './component/SessionUploadModal';
 
 type GalleryTabKey = 'session' | 'project' | 'gallery';
@@ -66,6 +69,7 @@ const GalleryListSection = () => {
   const [track, setTrack] = useState(TRACK_OPTIONS[0]);
   const [openFilter, setOpenFilter] = useState<FilterKey | null>(null);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [selectedCard, setSelectedCard] = useState<GalleryCardItem | null>(null);
 
   const cards = CARDS_BY_TAB[activeTab];
 
@@ -121,7 +125,28 @@ const GalleryListSection = () => {
         <ProjectUploadModal onClose={() => setIsUploadModalOpen(false)} />
       )}
       {isUploadModalOpen && activeTab === 'gallery' && (
-        <GalleryUploadModal onClose={() => setIsUploadModalOpen(false)} />
+        <HistoryUploadModal onClose={() => setIsUploadModalOpen(false)} />
+      )}
+      {selectedCard && activeTab === 'session' && (
+        <SessionDetailModal
+          title={selectedCard.title}
+          badges={selectedCard.badges}
+          onClose={() => setSelectedCard(null)}
+        />
+      )}
+      {selectedCard && activeTab === 'project' && (
+        <ProjectDetailModal
+          title={selectedCard.title}
+          badges={selectedCard.badges}
+          onClose={() => setSelectedCard(null)}
+        />
+      )}
+      {selectedCard && activeTab === 'gallery' && (
+        <HistoryDetailModal
+          title={selectedCard.title}
+          badges={selectedCard.badges}
+          onClose={() => setSelectedCard(null)}
+        />
       )}
       <WikiBanner href={WIKI_URL} target="_blank" rel="noopener noreferrer" />
       <CardGrid>
@@ -130,6 +155,7 @@ const GalleryListSection = () => {
             key={card.id}
             thumbnailRatio={16 / 9}
             title={card.title}
+            onClick={() => setSelectedCard(card)}
             bottomContent={
               <BottomContent>
                 <BadgeRow>
