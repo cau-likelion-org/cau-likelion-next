@@ -12,9 +12,9 @@ export interface IProject {
   award?: string;
 }
 
-const ProjectCard = ({ name, generation, category, award }: IProject) => {
+const ProjectCard = ({ name, generation, category, award, onClick }: IProject & { onClick?: () => void }) => {
   return (
-    <Wrapper>
+    <Wrapper onClick={onClick}>
       <ThumbnailArea>
         {award && (
           <AwardBanner>
@@ -42,6 +42,7 @@ const Wrapper = styled.div`
   flex-direction: column;
   align-items: flex-start;
   gap: 10px;
+  cursor: pointer;
 `;
 
 const ThumbnailArea = styled.div`
