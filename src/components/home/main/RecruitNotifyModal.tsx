@@ -18,111 +18,103 @@ const RecruitNotifyModal = ({ onClose }: { onClose: () => void }) => {
   const [department, setDepartment] = useState('');
   const [isDepartmentOpen, setIsDepartmentOpen] = useState(false);
   const [email, setEmail] = useState('');
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [showEmailError, setShowEmailError] = useState(false);
 
-  const isEmailInvalid = email !== '' && !EMAIL_REGEX.test(email);
-  const isValid = name.trim() !== '' && department !== '' && EMAIL_REGEX.test(email);
+  const isEmailInvalid = showEmailError && !EMAIL_REGEX.test(email);
+  const isValid = name.trim() !== '' && department !== '' && email.trim() !== '';
 
   const handleSubmit = () => {
     if (!isValid) return;
-    setIsSubmitted(true);
+    if (!EMAIL_REGEX.test(email)) {
+      setShowEmailError(true);
+      return;
+    }
+    onClose();
   };
 
   return (
     <Backdrop onClick={onClose}>
       <Modal onClick={(event) => event.stopPropagation()}>
-        {isSubmitted ? (
-          <SuccessInformation>
-            <Title>알림 신청이 완료되었습니다</Title>
-            <Subtitle>리크루팅 페이지가 열리면 입력하신 이메일로 가장 먼저 알려드릴게요.</Subtitle>
-            <Button variant="solid" color="primary" size="large" onClick={onClose}>
-              확인
-            </Button>
-          </SuccessInformation>
-        ) : (
-          <>
-            <Information>
-              <Title>다음 기수 모집 알림받기</Title>
-              <Subtitle>리크루팅 페이지가 열리면 가장 먼저 알려드릴게요.</Subtitle>
-              <Row>
-                <FieldWrapper>
-                  <TextField
-                    heading="이름"
-                    required
-                    placeholder="이름 입력"
-                    value={name}
-                    onChange={(event) => setName(event.target.value)}
-                  />
-                </FieldWrapper>
-                <SelectWrapper>
-                  <Select
-                    heading="관심파트"
-                    required
-                    placeholder="선택"
-                    value={department}
-                    onClick={() => setIsDepartmentOpen((prev) => !prev)}
-                    aria-expanded={isDepartmentOpen}
-                  />
-                  {isDepartmentOpen && (
-                    <OptionList role="listbox">
-                      {DEPARTMENT_OPTIONS.map((option) => (
-                        <Option
-                          key={option}
-                          type="button"
-                          role="option"
-                          aria-selected={department === option}
-                          onClick={() => {
-                            setDepartment(option);
-                            setIsDepartmentOpen(false);
-                          }}
-                        >
-                          {option}
-                        </Option>
-                      ))}
-                    </OptionList>
-                  )}
-                </SelectWrapper>
-              </Row>
+        <Information>
+          <Title>다음 기수 모집 알림받기</Title>
+          <Subtitle>리크루팅 페이지가 열리면 가장 먼저 알려드릴게요.</Subtitle>
+          <Row>
+            <FieldWrapper>
               <TextField
-                type="email"
-                heading="알림 받을 이메일"
+                heading="이름"
                 required
-                placeholder="name@example.com"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                status={isEmailInvalid ? 'negative' : 'normal'}
-                description={isEmailInvalid ? '이메일 형식이 맞지 않습니다' : undefined}
+                placeholder="이름 입력"
+                value={name}
+                onChange={(event) => setName(event.target.value)}
               />
-            </Information>
-            <Actions>
-              <Consent>이메일을 통한 모집 알림 수신에 동의합니다. (필수)</Consent>
-              <ActionRow>
-                <Button variant="outlined" color="assistive" size="large" onClick={onClose}>
-                  취소
-                </Button>
-                <Button variant="solid" color="primary" size="large" disabled={!isValid} onClick={handleSubmit}>
-                  알림 신청하기
-                </Button>
-              </ActionRow>
-              <Promo>
-                <PromoText>
-                  멋쟁이사자처럼 중앙대 공식 카카오톡 채널을 추가하면
-                  <br />
-                  소식을 더 빠르게 받아볼 수 있어요.
-                </PromoText>
-                <Button
-                  variant="solid"
-                  color="assistive"
-                  size="medium"
-                  trailingIcon={<IcKakaotalk width={16} height={16} />}
-                  onClick={() => window.open(KAKAO_CHANNEL_URL, '_blank', 'noopener noreferrer')}
-                >
-                  카카오톡 채널 바로가기
-                </Button>
-              </Promo>
-            </Actions>
-          </>
-        )}
+            </FieldWrapper>
+            <SelectWrapper>
+              <Select
+                heading="관심파트"
+                required
+                placeholder="선택"
+                value={department}
+                onClick={() => setIsDepartmentOpen((prev) => !prev)}
+                aria-expanded={isDepartmentOpen}
+              />
+              {isDepartmentOpen && (
+                <OptionList role="listbox">
+                  {DEPARTMENT_OPTIONS.map((option) => (
+                    <Option
+                      key={option}
+                      type="button"
+                      role="option"
+                      aria-selected={department === option}
+                      onClick={() => {
+                        setDepartment(option);
+                        setIsDepartmentOpen(false);
+                      }}
+                    >
+                      {option}
+                    </Option>
+                  ))}
+                </OptionList>
+              )}
+            </SelectWrapper>
+          </Row>
+          <TextField
+            type="email"
+            heading="알림 받을 이메일"
+            required
+            placeholder="name@example.com"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            status={isEmailInvalid ? 'negative' : 'normal'}
+            description={isEmailInvalid ? '이메일 형식이 맞지 않습니다' : undefined}
+          />
+        </Information>
+        <Actions>
+          <Consent>이메일을 통한 모집 알림 수신에 동의합니다. (필수)</Consent>
+          <ActionRow>
+            <Button variant="outlined" color="assistive" size="large" onClick={onClose}>
+              취소
+            </Button>
+            <Button variant="solid" color="primary" size="large" disabled={!isValid} onClick={handleSubmit}>
+              알림 신청하기
+            </Button>
+          </ActionRow>
+          <Promo>
+            <PromoText>
+              멋쟁이사자처럼 중앙대 공식 카카오톡 채널을 추가하면
+              <br />
+              소식을 더 빠르게 받아볼 수 있어요.
+            </PromoText>
+            <Button
+              variant="solid"
+              color="assistive"
+              size="medium"
+              trailingIcon={<IcKakaotalk width={16} height={16} />}
+              onClick={() => window.open(KAKAO_CHANNEL_URL, '_blank', 'noopener noreferrer')}
+            >
+              카카오톡 채널 바로가기
+            </Button>
+          </Promo>
+        </Actions>
       </Modal>
     </Backdrop>
   );
@@ -265,13 +257,4 @@ const PromoText = styled.p`
   color: ${Label.alternative};
   text-align: center;
   margin: 0;
-`;
-
-const SuccessInformation = styled.div`
-  width: 100%;
-  padding: 40px 28px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 22px;
 `;
