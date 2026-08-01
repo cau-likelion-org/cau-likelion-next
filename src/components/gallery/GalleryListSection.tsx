@@ -10,10 +10,13 @@ import { BackgroundColor, Fill, Label, Line, Orange } from '@utils/constant/colo
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 import HistoryDetailModal from './component/HistoryDetailModal';
+import HistoryEditModal from './component/HistoryEditModal';
 import HistoryUploadModal from './component/HistoryUploadModal';
 import ProjectDetailModal from './component/ProjectDetailModal';
+import ProjectEditModal from './component/ProjectEditModal';
 import ProjectUploadModal from './component/ProjectUploadModal';
 import SessionDetailModal from './component/SessionDetailModal';
+import SessionEditModal from './component/SessionEditModal';
 import SessionUploadModal from './component/SessionUploadModal';
 
 type GalleryTabKey = 'session' | 'project' | 'gallery';
@@ -42,6 +45,12 @@ const GENERATION_OPTIONS = ['전체', '13기', '12기', '11기'];
 const TRACK_OPTIONS = ['전체', '기획디자인', '프론트엔드', '백엔드'];
 const WIKI_URL = 'https://wiki.cau-likelion.org';
 
+const parseDateRange = (period: string | undefined): [string, string] => {
+  const [start, end] = (period ?? '').split('-');
+  const toIsoDate = (date: string) => date.replaceAll('/', '-');
+  return [start ? toIsoDate(start) : '', end ? toIsoDate(end) : ''];
+};
+
 const CARDS_BY_TAB: Record<GalleryTabKey, GalleryCardItem[]> = {
   session: Array.from({ length: 8 }, (_, index) => ({
     id: index + 1,
@@ -69,6 +78,7 @@ const GalleryListSection = () => {
   const [openFilter, setOpenFilter] = useState<FilterKey | null>(null);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [selectedCard, setSelectedCard] = useState<GalleryCardItem | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const cards = CARDS_BY_TAB[activeTab];
 
@@ -126,25 +136,81 @@ const GalleryListSection = () => {
       {isUploadModalOpen && activeTab === 'gallery' && (
         <HistoryUploadModal onClose={() => setIsUploadModalOpen(false)} />
       )}
-      {selectedCard && activeTab === 'session' && (
+      {selectedCard && activeTab === 'session' && !isEditModalOpen && (
         <SessionDetailModal
           title={selectedCard.title}
           badges={selectedCard.badges}
           onClose={() => setSelectedCard(null)}
+          onEdit={() => setIsEditModalOpen(true)}
         />
       )}
-      {selectedCard && activeTab === 'project' && (
+      {selectedCard && activeTab === 'session' && isEditModalOpen && (
+        <SessionEditModal
+          initialValues={{
+            title: selectedCard.title,
+            generation: selectedCard.badges[0]?.replace('기', '') ?? '',
+            category: selectedCard.badges[1] ?? '',
+            week: selectedCard.badges[2]?.replace('주차', '') ?? '',
+          }}
+          onClose={() => {
+            setIsEditModalOpen(false);
+            setSelectedCard(null);
+          }}
+          onDelete={() => {
+            setIsEditModalOpen(false);
+            setSelectedCard(null);
+          }}
+        />
+      )}
+      {selectedCard && activeTab === 'project' && !isEditModalOpen && (
         <ProjectDetailModal
           title={selectedCard.title}
           badges={selectedCard.badges}
           onClose={() => setSelectedCard(null)}
+          onEdit={() => setIsEditModalOpen(true)}
         />
       )}
-      {selectedCard && activeTab === 'gallery' && (
+      {selectedCard && activeTab === 'project' && isEditModalOpen && (
+        <ProjectEditModal
+          initialValues={{
+            title: selectedCard.title,
+            generation: selectedCard.badges[0]?.replace('기', '') ?? '',
+            category: selectedCard.badges[1] ?? '',
+            dateRange: parseDateRange(selectedCard.period),
+          }}
+          onClose={() => {
+            setIsEditModalOpen(false);
+            setSelectedCard(null);
+          }}
+          onDelete={() => {
+            setIsEditModalOpen(false);
+            setSelectedCard(null);
+          }}
+        />
+      )}
+      {selectedCard && activeTab === 'gallery' && !isEditModalOpen && (
         <HistoryDetailModal
           title={selectedCard.title}
           badges={selectedCard.badges}
           onClose={() => setSelectedCard(null)}
+          onEdit={() => setIsEditModalOpen(true)}
+        />
+      )}
+      {selectedCard && activeTab === 'gallery' && isEditModalOpen && (
+        <HistoryEditModal
+          initialValues={{
+            title: selectedCard.title,
+            generation: selectedCard.badges[0]?.replace('기', '') ?? '',
+            dateRange: parseDateRange(selectedCard.period),
+          }}
+          onClose={() => {
+            setIsEditModalOpen(false);
+            setSelectedCard(null);
+          }}
+          onDelete={() => {
+            setIsEditModalOpen(false);
+            setSelectedCard(null);
+          }}
         />
       )}
       <WikiBanner href={WIKI_URL} target="_blank" rel="noopener noreferrer" />

@@ -7,15 +7,16 @@ interface HistoryDetailModalProps {
   title: string;
   badges: string[];
   onClose: () => void;
+  onEdit: () => void;
 }
 
-const HistoryDetailModal = ({ title, badges, onClose }: HistoryDetailModalProps) => (
+const HistoryDetailModal = ({ title, badges, onClose, onEdit }: HistoryDetailModalProps) => (
   <PostDetailModal
     title={title}
     badges={badges}
     description={DESCRIPTION}
     date={['2026/12/12', '2026/12/12']}
-    onEdit={() => {}}
+    onEdit={onEdit}
     onClose={onClose}
   />
 );

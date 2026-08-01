@@ -7,15 +7,16 @@ interface ProjectDetailModalProps {
   title: string;
   badges: string[];
   onClose: () => void;
+  onEdit: () => void;
 }
 
-const ProjectDetailModal = ({ title, badges, onClose }: ProjectDetailModalProps) => (
+const ProjectDetailModal = ({ title, badges, onClose, onEdit }: ProjectDetailModalProps) => (
   <PostDetailModal
     title={title}
     badges={badges}
     description={DESCRIPTION}
     date={['2026/12/12', '2026/12/12']}
-    onEdit={() => {}}
+    onEdit={onEdit}
     onClose={onClose}
   />
 );

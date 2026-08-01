@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import Button from '@common/button/Button';
 import Radio from '@common/radio/Radio';
 import Select from '@common/select/Select';
+import TextButton from '@common/textButton/TextButton';
 import TextField from '@common/textField/TextField';
 import Textarea from '@common/textarea/Textarea';
 import IcAdd from '@assets/svg/ic-add.svg';
@@ -17,6 +18,16 @@ const CONTENT_PLACEHOLDER = '예시)이 서비스는 ~~한 서비스입니다\n�
 
 export type PostType = 'session' | 'project' | 'gallery';
 
+export interface PostUploadModalInitialValues {
+  title?: string;
+  content?: string;
+  generation?: string;
+  category?: string;
+  week?: string;
+  date?: string;
+  dateRange?: [string, string];
+}
+
 export interface PostUploadModalProps {
   onClose: () => void;
   postType: PostType;
@@ -25,6 +36,9 @@ export interface PostUploadModalProps {
   showWeekField?: boolean;
   dateFieldLabel: string;
   dateMode: 'single' | 'range';
+  mode?: 'create' | 'edit';
+  initialValues?: PostUploadModalInitialValues;
+  onDelete?: () => void;
 }
 
 const PostUploadModal = ({
@@ -35,12 +49,16 @@ const PostUploadModal = ({
   showWeekField = false,
   dateFieldLabel,
   dateMode,
+  mode = 'create',
+  initialValues,
+  onDelete,
 }: PostUploadModalProps) => {
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
-  const [generation, setGeneration] = useState('');
-  const [category, setCategory] = useState('');
-  const [week, setWeek] = useState('');
+  const [title, setTitle] = useState(initialValues?.title ?? '');
+  const [content, setContent] = useState(initialValues?.content ?? '');
+  const [generation, setGeneration] = useState(initialValues?.generation ?? '');
+  const [category, setCategory] = useState(initialValues?.category ?? '');
+  const [week, setWeek] = useState(initialValues?.week ?? '');
+  const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
 
   return (
     <Backdrop onClick={onClose}>
@@ -156,17 +174,37 @@ const PostUploadModal = ({
                 {dateFieldLabel}
                 <RequiredSmall>*</RequiredSmall>
               </FieldHeadingSmall>
-              <DateField mode={dateMode} />
+              <DateField mode={dateMode} initialValue={initialValues?.date} initialRange={initialValues?.dateRange} />
             </RowField>
           </Row>
         </Information>
-        <Actions>
-          <Button variant="outlined" color="assistive" size="large" onClick={onClose}>
-            취소
-          </Button>
-          <Button variant="solid" color="primary" size="large" onClick={onClose}>
-            등록하기
-          </Button>
+        <Actions $mode={mode}>
+          {mode === 'edit' &&
+            (isConfirmingDelete ? (
+              <DeleteConfirm>
+                <DeleteConfirmText>정말 삭제하시겠습니까?</DeleteConfirmText>
+                <DeleteConfirmActions>
+                  <TextButton size="small" color="assistive" onClick={() => setIsConfirmingDelete(false)}>
+                    아니요
+                  </TextButton>
+                  <TextButton size="small" color="primary" onClick={onDelete}>
+                    삭제
+                  </TextButton>
+                </DeleteConfirmActions>
+              </DeleteConfirm>
+            ) : (
+              <Button variant="solid" color="assistive" size="large" onClick={() => setIsConfirmingDelete(true)}>
+                삭제
+              </Button>
+            ))}
+          <ActionGroup>
+            <Button variant="outlined" color="assistive" size="large" onClick={onClose}>
+              취소
+            </Button>
+            <Button variant="solid" color="primary" size="large" onClick={onClose}>
+              {mode === 'edit' ? '저장하기' : '등록하기'}
+            </Button>
+          </ActionGroup>
         </Actions>
       </Modal>
     </Backdrop>
@@ -220,8 +258,16 @@ const CategorySelect = ({
   );
 };
 
-const SingleDateInput = ({ placeholder, ariaLabel }: { placeholder: string; ariaLabel: string }) => {
-  const [date, setDate] = useState('');
+const SingleDateInput = ({
+  placeholder,
+  ariaLabel,
+  initialValue = '',
+}: {
+  placeholder: string;
+  ariaLabel: string;
+  initialValue?: string;
+}) => {
+  const [date, setDate] = useState(initialValue);
   const inputRef = useRef<HTMLInputElement>(null);
 
   return (
@@ -239,19 +285,27 @@ const SingleDateInput = ({ placeholder, ariaLabel }: { placeholder: string; aria
   );
 };
 
-const DateField = ({ mode }: { mode: 'single' | 'range' }) => {
+const DateField = ({
+  mode,
+  initialValue,
+  initialRange,
+}: {
+  mode: 'single' | 'range';
+  initialValue?: string;
+  initialRange?: [string, string];
+}) => {
   if (mode === 'single') {
-    return <SingleDateInput placeholder="캘린더 선택" ariaLabel="일자" />;
+    return <SingleDateInput placeholder="캘린더 선택" ariaLabel="일자" initialValue={initialValue} />;
   }
 
   return (
     <DateRangeRow>
       <DateRangeItem>
-        <SingleDateInput placeholder="시작일 선택" ariaLabel="시작일" />
+        <SingleDateInput placeholder="시작일 선택" ariaLabel="시작일" initialValue={initialRange?.[0]} />
       </DateRangeItem>
       <DateRangeDivider width={16} height={16} />
       <DateRangeItem>
-        <SingleDateInput placeholder="종료일 선택" ariaLabel="종료일" />
+        <SingleDateInput placeholder="종료일 선택" ariaLabel="종료일" initialValue={initialRange?.[1]} />
       </DateRangeItem>
     </DateRangeRow>
   );
@@ -558,10 +612,37 @@ const Option = styled.button`
   }
 `;
 
-const Actions = styled.div`
+const Actions = styled.div<{ $mode: 'create' | 'edit' }>`
   width: 100%;
   padding: 0 28px 20px;
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: ${(props) => (props.$mode === 'edit' ? 'space-between' : 'flex-end')};
+`;
+
+const ActionGroup = styled.div`
+  display: flex;
+  align-items: center;
   gap: 24px;
+`;
+
+const DeleteConfirm = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  box-shadow: inset 0 0 0 1px ${Line.normal};
+`;
+
+const DeleteConfirmText = styled.p`
+  ${typographyCss(Typography.body1Normal.medium)}
+  color: ${Label.normal};
+  margin: 0;
+`;
+
+const DeleteConfirmActions = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 18px;
 `;
