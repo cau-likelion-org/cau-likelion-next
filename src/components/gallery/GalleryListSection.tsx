@@ -4,6 +4,7 @@ import Button from '@common/button/Button';
 import Card from '@common/card/Card';
 import ContentBadge from '@common/badge/ContentBadge';
 import Tab from '@common/tab/Tab';
+import Toast from '@common/toast/Toast';
 import IcAdd from '@assets/svg/ic-add.svg';
 import IcChevronDown from '@assets/svg/ic-chevron-down.svg';
 import { BackgroundColor, Fill, Label, Line, Orange } from '@utils/constant/color';
@@ -79,6 +80,13 @@ const GalleryListSection = () => {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [selectedCard, setSelectedCard] = useState<GalleryCardItem | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [toastText, setToastText] = useState('');
+  const [isToastOpen, setIsToastOpen] = useState(false);
+
+  const showToast = (text: string) => {
+    setToastText(text);
+    setIsToastOpen(true);
+  };
 
   const cards = CARDS_BY_TAB[activeTab];
 
@@ -128,13 +136,22 @@ const GalleryListSection = () => {
       </Header>
 
       {isUploadModalOpen && activeTab === 'session' && (
-        <SessionUploadModal onClose={() => setIsUploadModalOpen(false)} />
+        <SessionUploadModal
+          onClose={() => setIsUploadModalOpen(false)}
+          onSubmit={() => showToast('등록이 완료되었습니다.')}
+        />
       )}
       {isUploadModalOpen && activeTab === 'project' && (
-        <ProjectUploadModal onClose={() => setIsUploadModalOpen(false)} />
+        <ProjectUploadModal
+          onClose={() => setIsUploadModalOpen(false)}
+          onSubmit={() => showToast('등록이 완료되었습니다.')}
+        />
       )}
       {isUploadModalOpen && activeTab === 'gallery' && (
-        <HistoryUploadModal onClose={() => setIsUploadModalOpen(false)} />
+        <HistoryUploadModal
+          onClose={() => setIsUploadModalOpen(false)}
+          onSubmit={() => showToast('등록이 완료되었습니다.')}
+        />
       )}
       {selectedCard && activeTab === 'session' && !isEditModalOpen && (
         <SessionDetailModal
@@ -160,6 +177,7 @@ const GalleryListSection = () => {
             setIsEditModalOpen(false);
             setSelectedCard(null);
           }}
+          onSubmit={() => showToast('수정이 완료되었습니다.')}
         />
       )}
       {selectedCard && activeTab === 'project' && !isEditModalOpen && (
@@ -186,6 +204,7 @@ const GalleryListSection = () => {
             setIsEditModalOpen(false);
             setSelectedCard(null);
           }}
+          onSubmit={() => showToast('수정이 완료되었습니다.')}
         />
       )}
       {selectedCard && activeTab === 'gallery' && !isEditModalOpen && (
@@ -211,8 +230,12 @@ const GalleryListSection = () => {
             setIsEditModalOpen(false);
             setSelectedCard(null);
           }}
+          onSubmit={() => showToast('수정이 완료되었습니다.')}
         />
       )}
+      <ToastWrapper>
+        <Toast variant="positive" text={toastText} show={isToastOpen} onHidden={() => setIsToastOpen(false)} />
+      </ToastWrapper>
       <WikiBanner href={WIKI_URL} target="_blank" rel="noopener noreferrer" />
       <CardGrid>
         {cards.map((card) => (
@@ -404,6 +427,15 @@ const Option = styled.button`
   &:hover {
     background-color: ${Fill.subtle};
   }
+`;
+
+const ToastWrapper = styled.div`
+  position: fixed;
+  top: 110px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10001;
+  pointer-events: none;
 `;
 
 const WikiBanner = styled.a`

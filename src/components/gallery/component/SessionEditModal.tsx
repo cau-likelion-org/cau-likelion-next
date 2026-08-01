@@ -12,13 +12,15 @@ interface SessionEditModalProps {
   };
   onClose: () => void;
   onDelete: () => void;
+  onSubmit?: () => void;
 }
 
-const SessionEditModal = ({ initialValues, onClose, onDelete }: SessionEditModalProps) => (
+const SessionEditModal = ({ initialValues, onClose, onDelete, onSubmit }: SessionEditModalProps) => (
   <PostUploadModal
     mode="edit"
     onClose={onClose}
     onDelete={onDelete}
+    onSubmit={onSubmit}
     postType="session"
     categoryLabel="파트 구분"
     categoryOptions={TRACK_OPTIONS}

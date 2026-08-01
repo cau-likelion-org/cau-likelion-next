@@ -10,13 +10,15 @@ interface HistoryEditModalProps {
   };
   onClose: () => void;
   onDelete: () => void;
+  onSubmit?: () => void;
 }
 
-const HistoryEditModal = ({ initialValues, onClose, onDelete }: HistoryEditModalProps) => (
+const HistoryEditModal = ({ initialValues, onClose, onDelete, onSubmit }: HistoryEditModalProps) => (
   <PostUploadModal
     mode="edit"
     onClose={onClose}
     onDelete={onDelete}
+    onSubmit={onSubmit}
     postType="gallery"
     dateFieldLabel="활동 기간"
     dateMode="range"

@@ -12,13 +12,15 @@ interface ProjectEditModalProps {
   };
   onClose: () => void;
   onDelete: () => void;
+  onSubmit?: () => void;
 }
 
-const ProjectEditModal = ({ initialValues, onClose, onDelete }: ProjectEditModalProps) => (
+const ProjectEditModal = ({ initialValues, onClose, onDelete, onSubmit }: ProjectEditModalProps) => (
   <PostUploadModal
     mode="edit"
     onClose={onClose}
     onDelete={onDelete}
+    onSubmit={onSubmit}
     postType="project"
     categoryLabel="프로젝트 구분"
     categoryOptions={CATEGORY_OPTIONS}

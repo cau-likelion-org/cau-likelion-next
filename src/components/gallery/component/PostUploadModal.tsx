@@ -39,6 +39,7 @@ export interface PostUploadModalProps {
   mode?: 'create' | 'edit';
   initialValues?: PostUploadModalInitialValues;
   onDelete?: () => void;
+  onSubmit?: () => void;
 }
 
 const PostUploadModal = ({
@@ -52,6 +53,7 @@ const PostUploadModal = ({
   mode = 'create',
   initialValues,
   onDelete,
+  onSubmit,
 }: PostUploadModalProps) => {
   const [title, setTitle] = useState(initialValues?.title ?? '');
   const [content, setContent] = useState(initialValues?.content ?? '');
@@ -209,7 +211,15 @@ const PostUploadModal = ({
             <Button variant="outlined" color="assistive" size="large" onClick={onClose}>
               취소
             </Button>
-            <Button variant="solid" color="primary" size="large" onClick={onClose}>
+            <Button
+              variant="solid"
+              color="primary"
+              size="large"
+              onClick={() => {
+                onSubmit?.();
+                onClose();
+              }}
+            >
               {mode === 'edit' ? '저장하기' : '등록하기'}
             </Button>
           </ActionGroup>
