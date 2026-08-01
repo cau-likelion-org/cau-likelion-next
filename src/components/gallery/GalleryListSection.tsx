@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import styled from 'styled-components';
-import { HiPlus } from 'react-icons/hi2';
-
 import Button from '@common/button/Button';
 import Card from '@common/card/Card';
 import ContentBadge from '@common/badge/ContentBadge';
 import Tab from '@common/tab/Tab';
+import IcAdd from '@assets/svg/ic-add.svg';
 import IcChevronDown from '@assets/svg/ic-chevron-down.svg';
 import { BackgroundColor, Fill, Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -110,7 +109,7 @@ const GalleryListSection = () => {
             variant="solid"
             color="primary"
             size="large"
-            trailingIcon={<HiPlus />}
+            trailingIcon={<IcAdd width={20} height={20} />}
             onClick={() => setIsUploadModalOpen(true)}
           >
             {ADD_BUTTON_LABEL[activeTab]}

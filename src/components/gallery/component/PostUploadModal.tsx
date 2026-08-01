@@ -370,6 +370,7 @@ const RemoveThumbnailButton = styled.button`
   border: none;
   border-radius: 50%;
   background-color: ${BackgroundColor};
+  color: ${Orange.o500};
   padding: 0;
   cursor: pointer;
 `;
@@ -478,6 +479,7 @@ const DateInputWrapper = styled.div`
   padding: 12px;
   border-radius: 12px;
   background-color: rgba(255, 255, 255, 0.08);
+  color: ${Label.normal};
   box-shadow:
     inset 0 0 0 1px ${Line.normal},
     0 1px 2px -1px rgba(23, 23, 23, 0.1);
