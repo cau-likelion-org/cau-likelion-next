@@ -10,6 +10,13 @@ import ProjectFilterSelect from './ProjectFilterSelect';
 
 const ALL_OPTION = '전체';
 
+const CATEGORY_PRIORITY: Record<string, number> = {
+  중커톤: 0,
+  해커톤: 1,
+  아이디어톤: 2,
+};
+const getCategoryRank = (category: string) => CATEGORY_PRIORITY[category] ?? 3;
+
 interface FlatProject extends IProjectData {
   generation: string;
 }
@@ -46,6 +53,19 @@ const ProjectsSection = ({ staticData }: { staticData: ArchivingArrayType<IProje
     return matchGeneration && matchCategory;
   });
 
+  const isGenerationAll = selectedGeneration === ALL_OPTION;
+  const isCategoryAll = selectedCategory === ALL_OPTION;
+
+  const sortedProjects = [...filteredProjects].sort((a, b) => {
+    const byGeneration = Number(b.generation) - Number(a.generation);
+    const byCategory = getCategoryRank(a.category) - getCategoryRank(b.category);
+
+    if (isGenerationAll && isCategoryAll) return byGeneration || byCategory;
+    if (!isGenerationAll && isCategoryAll) return byCategory;
+    if (isGenerationAll && !isCategoryAll) return byGeneration;
+    return 0;
+  });
+
   return (
     <Wrapper>
       <FilterRow>
@@ -62,12 +82,12 @@ const ProjectsSection = ({ staticData }: { staticData: ArchivingArrayType<IProje
           onChange={setSelectedCategory}
         />
       </FilterRow>
-      {filteredProjects.length === 0 ? (
+      {sortedProjects.length === 0 ? (
         <ProjectEmptyState />
       ) : (
         <CardGrid>
-          {filteredProjects.map((project, index) => (
-            <ProjectCard key={project.id} {...project} cardPosition={index} totalImageCount={filteredProjects.length} />
+          {sortedProjects.map((project, index) => (
+            <ProjectCard key={project.id} {...project} cardPosition={index} totalImageCount={sortedProjects.length} />
           ))}
         </CardGrid>
       )}
