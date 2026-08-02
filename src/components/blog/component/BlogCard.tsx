@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import ContentBadge from '@common/badge/ContentBadge';
+import Thumbnail from '@common/thumbnail/Thumbnail';
 import { BackgroundWhite, Fill, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
@@ -9,9 +10,11 @@ export interface BlogCardProps {
   badges: string[];
   date: string;
   url: string;
+  thumbnailUrl?: string;
+  thumbnailAlt?: string;
 }
 
-const BlogCard = ({ title, description, badges, date, url }: BlogCardProps) => (
+const BlogCard = ({ title, description, badges, date, url, thumbnailUrl, thumbnailAlt }: BlogCardProps) => (
   <Wrapper href={url} target="_blank" rel="noopener noreferrer">
     <Container>
       <TextGroup>
@@ -27,7 +30,13 @@ const BlogCard = ({ title, description, badges, date, url }: BlogCardProps) => (
         <Date>{date}</Date>
       </BottomRow>
     </Container>
-    <ThumbnailPlaceholder />
+    <ThumbnailSlot>
+      {thumbnailUrl ? (
+        <Thumbnail src={thumbnailUrl} alt={thumbnailAlt ?? title} ratio={1} radius border />
+      ) : (
+        <ThumbnailPlaceholder />
+      )}
+    </ThumbnailSlot>
   </Wrapper>
 );
 
@@ -103,10 +112,15 @@ const Date = styled.p`
   margin: 0;
 `;
 
-const ThumbnailPlaceholder = styled.div`
+const ThumbnailSlot = styled.div`
   flex-shrink: 0;
   width: 213px;
   height: 213px;
+`;
+
+const ThumbnailPlaceholder = styled.div`
+  width: 100%;
+  height: 100%;
   border-radius: 12px;
   border: 1px solid ${Line.subtle};
   background-color: ${Fill.subtle};
