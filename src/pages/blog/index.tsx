@@ -1,4 +1,4 @@
-import { ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import LayoutArchiving from '@common/layout/LayoutArchiving';
 import BlogListSection from '@blog/BlogListSection';
 
