@@ -45,13 +45,19 @@ const Toast = ({
     show?: ReturnType<typeof setTimeout>;
     hide?: ReturnType<typeof setTimeout>;
     unmount?: ReturnType<typeof setTimeout>;
+    frame?: ReturnType<typeof requestAnimationFrame>;
   }>({});
+  const onHiddenRef = useRef(onHidden);
+  useEffect(() => {
+    onHiddenRef.current = onHidden;
+  }, [onHidden]);
 
   useEffect(() => {
     const clearAll = () => {
       clearTimeout(timersRef.current.show);
       clearTimeout(timersRef.current.hide);
       clearTimeout(timersRef.current.unmount);
+      if (timersRef.current.frame !== undefined) cancelAnimationFrame(timersRef.current.frame);
     };
     clearAll();
 
@@ -63,18 +69,17 @@ const Toast = ({
 
     timersRef.current.show = setTimeout(() => {
       setIsMounted(true);
-      requestAnimationFrame(() => setIsVisible(true));
+      timersRef.current.frame = requestAnimationFrame(() => setIsVisible(true));
       timersRef.current.hide = setTimeout(() => {
         setIsVisible(false);
         timersRef.current.unmount = setTimeout(() => {
           setIsMounted(false);
-          onHidden?.();
+          onHiddenRef.current?.();
         }, TRANSITION_MS);
       }, duration);
     }, delay);
 
     return clearAll;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [show, text, delay, duration]);
 
   if (!isMounted) return null;
