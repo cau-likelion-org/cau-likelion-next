@@ -81,8 +81,8 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 46px;
-  width: 100%;
-  max-width: 1060px;
+  width: 1060px;
+  max-width: 100%;
 `;
 
 const FilterRow = styled.div`

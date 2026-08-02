@@ -17,7 +17,8 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 24px;
-  width: 100%;
+  width: 1060px;
+  max-width: 100%;
   padding: 80px 0 52px;
   color: ${Orange.o500};
 
