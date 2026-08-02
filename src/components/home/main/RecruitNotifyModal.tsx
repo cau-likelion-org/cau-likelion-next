@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import { useId, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import Button from '@common/button/Button';
 import Select from '@common/select/Select';
 import TextField from '@common/textField/TextField';
 import { IcKakaotalk } from '@assets/svg';
+import useFocusTrap from 'src/hooks/useFocusTrap';
+import useOutsideClick from 'src/hooks/useOutsideClick';
 import { TRACK, TRACK_NAME } from '@utils/constant';
 import { BackgroundColor, Fill, Label, Material } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -20,6 +22,13 @@ const RecruitNotifyModal = ({ onClose }: { onClose: () => void }) => {
   const [email, setEmail] = useState('');
   const [showEmailError, setShowEmailError] = useState(false);
 
+  const titleId = useId();
+  const modalRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(modalRef, onClose);
+
+  const departmentSelectRef = useRef<HTMLDivElement>(null);
+  useOutsideClick(departmentSelectRef, () => setIsDepartmentOpen(false), isDepartmentOpen);
+
   const isEmailInvalid = showEmailError && !EMAIL_REGEX.test(email);
   const isValid = name.trim() !== '' && department !== '' && email.trim() !== '';
 
@@ -34,9 +43,16 @@ const RecruitNotifyModal = ({ onClose }: { onClose: () => void }) => {
 
   return (
     <Backdrop onClick={onClose}>
-      <Modal onClick={(event) => event.stopPropagation()}>
+      <Modal
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        tabIndex={-1}
+        onClick={(event) => event.stopPropagation()}
+      >
         <Information>
-          <Title>다음 기수 모집 알림받기</Title>
+          <Title id={titleId}>다음 기수 모집 알림받기</Title>
           <Subtitle>리크루팅 페이지가 열리면 가장 먼저 알려드릴게요.</Subtitle>
           <Row>
             <FieldWrapper>
@@ -48,7 +64,7 @@ const RecruitNotifyModal = ({ onClose }: { onClose: () => void }) => {
                 onChange={(event) => setName(event.target.value)}
               />
             </FieldWrapper>
-            <SelectWrapper>
+            <SelectWrapper ref={departmentSelectRef}>
               <Select
                 heading="관심파트"
                 required
@@ -141,6 +157,7 @@ const Modal = styled.div`
   border-radius: 16px;
   background-color: ${BackgroundColor};
   overflow: hidden;
+  outline: none;
   z-index: 10000;
 `;
 
