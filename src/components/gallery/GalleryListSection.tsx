@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import styled from 'styled-components';
 import Button from '@common/button/Button';
 import Card from '@common/card/Card';
@@ -7,6 +7,7 @@ import Tab from '@common/tab/Tab';
 import Toast from '@common/toast/Toast';
 import IcAdd from '@assets/svg/ic-add.svg';
 import IcChevronDown from '@assets/svg/ic-chevron-down.svg';
+import useOutsideClick from 'src/hooks/useOutsideClick';
 import { BackgroundColor, Fill, Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
@@ -26,9 +27,28 @@ type FilterKey = 'generation' | 'track';
 interface GalleryCardItem {
   id: number;
   title: string;
-  badges: string[];
+  content: string;
+  generation: string;
+  category?: string;
+  week?: string;
+  date?: string;
   period?: string;
 }
+
+const toBadges = (card: GalleryCardItem): string[] =>
+  [`${card.generation}기`, card.category, card.week && `${card.week}주차`].filter(Boolean) as string[];
+
+const UPLOAD_MODAL_BY_TAB: Record<GalleryTabKey, typeof SessionUploadModal> = {
+  session: SessionUploadModal,
+  project: ProjectUploadModal,
+  gallery: HistoryUploadModal,
+};
+
+const DETAIL_MODAL_BY_TAB: Record<GalleryTabKey, typeof SessionDetailModal> = {
+  session: SessionDetailModal,
+  project: ProjectDetailModal,
+  gallery: HistoryDetailModal,
+};
 
 const TABS: { key: GalleryTabKey; label: string }[] = [
   { key: 'session', label: '세션' },
@@ -45,6 +65,7 @@ const ADD_BUTTON_LABEL: Record<GalleryTabKey, string> = {
 const GENERATION_OPTIONS = ['전체', '13기', '12기', '11기'];
 const TRACK_OPTIONS = ['전체', '기획디자인', '프론트엔드', '백엔드'];
 const WIKI_URL = 'https://wiki.cau-likelion.org';
+const MOCK_CONTENT = '예시)이 서비스는 ~~한 서비스입니다\n서비스의 핵심기능\n\n· 이런거\n· 이\n· 이';
 
 const parseDateRange = (period: string | undefined): [string, string] => {
   const [start, end] = (period ?? '').split('-');
@@ -56,18 +77,25 @@ const CARDS_BY_TAB: Record<GalleryTabKey, GalleryCardItem[]> = {
   session: Array.from({ length: 8 }, (_, index) => ({
     id: index + 1,
     title: '제목',
-    badges: ['13기', '기획디자인', 'N주차'],
+    content: MOCK_CONTENT,
+    generation: '13',
+    category: '기획디자인',
+    week: '3',
+    date: '2026-12-12',
   })),
   project: Array.from({ length: 8 }, (_, index) => ({
     id: index + 1,
     title: '제목',
-    badges: ['13기', '아이디어톤'],
+    content: MOCK_CONTENT,
+    generation: '13',
+    category: '아이디어톤',
     period: '2026/12/12-2012/12/12',
   })),
   gallery: Array.from({ length: 8 }, (_, index) => ({
     id: index + 1,
     title: '제목',
-    badges: ['13기'],
+    content: MOCK_CONTENT,
+    generation: '13',
     period: '2026/12/12-2012/12/12',
   })),
 };
@@ -88,7 +116,85 @@ const GalleryListSection = () => {
     setIsToastOpen(true);
   };
 
-  const cards = CARDS_BY_TAB[activeTab];
+  const handleTabChange = (key: string) => {
+    setActiveTab(key as GalleryTabKey);
+    setSelectedCard(null);
+    setIsEditModalOpen(false);
+    setOpenFilter(null);
+  };
+
+  const closeUploadModal = () => setIsUploadModalOpen(false);
+  const closeDetailModal = () => setSelectedCard(null);
+  const openEditModal = () => setIsEditModalOpen(true);
+  const closeEditModal = () => {
+    setIsEditModalOpen(false);
+    setSelectedCard(null);
+  };
+  const handleDelete = () => {
+    setIsEditModalOpen(false);
+    setSelectedCard(null);
+    showToast('삭제가 완료되었습니다.');
+  };
+  const handleUploadSubmit = () => showToast('등록이 완료되었습니다.');
+  const handleEditSubmit = () => showToast('변경사항이 저장되었습니다.');
+
+  const cards = CARDS_BY_TAB[activeTab].filter((card) => {
+    const matchesGeneration = generation === GENERATION_OPTIONS[0] || `${card.generation}기` === generation;
+    const matchesTrack = activeTab !== 'session' || track === TRACK_OPTIONS[0] || card.category === track;
+    return matchesGeneration && matchesTrack;
+  });
+
+  const UploadModal = UPLOAD_MODAL_BY_TAB[activeTab];
+  const DetailModal = DETAIL_MODAL_BY_TAB[activeTab];
+
+  const renderEditModal = (card: GalleryCardItem) => {
+    if (activeTab === 'session') {
+      return (
+        <SessionEditModal
+          initialValues={{
+            title: card.title,
+            content: card.content,
+            generation: card.generation,
+            category: card.category ?? '',
+            week: card.week ?? '',
+            date: card.date ?? '',
+          }}
+          onClose={closeEditModal}
+          onDelete={handleDelete}
+          onSubmit={handleEditSubmit}
+        />
+      );
+    }
+    if (activeTab === 'project') {
+      return (
+        <ProjectEditModal
+          initialValues={{
+            title: card.title,
+            content: card.content,
+            generation: card.generation,
+            category: card.category ?? '',
+            dateRange: parseDateRange(card.period),
+          }}
+          onClose={closeEditModal}
+          onDelete={handleDelete}
+          onSubmit={handleEditSubmit}
+        />
+      );
+    }
+    return (
+      <HistoryEditModal
+        initialValues={{
+          title: card.title,
+          content: card.content,
+          generation: card.generation,
+          dateRange: parseDateRange(card.period),
+        }}
+        onClose={closeEditModal}
+        onDelete={handleDelete}
+        onSubmit={handleEditSubmit}
+      />
+    );
+  };
 
   return (
     <Wrapper>
@@ -97,7 +203,7 @@ const GalleryListSection = () => {
           <Title>갤러리</Title>
           <Subtitle>페이지 소개 글 페이지 소개 글 페이지 소개 글 페이지 소개 글</Subtitle>
         </Intro>
-        <Tab items={TABS} activeKey={activeTab} onChange={(key) => setActiveTab(key as GalleryTabKey)} size="medium" />
+        <Tab items={TABS} activeKey={activeTab} onChange={handleTabChange} size="medium" />
         <FilterRow>
           <FilterGroup>
             <FilterSelect
@@ -106,6 +212,7 @@ const GalleryListSection = () => {
               options={GENERATION_OPTIONS}
               isOpen={openFilter === 'generation'}
               onToggle={() => setOpenFilter((prev) => (prev === 'generation' ? null : 'generation'))}
+              onClose={() => setOpenFilter(null)}
               onSelect={(option) => {
                 setGeneration(option);
                 setOpenFilter(null);
@@ -117,6 +224,7 @@ const GalleryListSection = () => {
               options={TRACK_OPTIONS}
               isOpen={openFilter === 'track'}
               onToggle={() => setOpenFilter((prev) => (prev === 'track' ? null : 'track'))}
+              onClose={() => setOpenFilter(null)}
               onSelect={(option) => {
                 setTrack(option);
                 setOpenFilter(null);
@@ -135,111 +243,25 @@ const GalleryListSection = () => {
         </FilterRow>
       </Header>
 
-      {isUploadModalOpen && activeTab === 'session' && (
-        <SessionUploadModal
-          onClose={() => setIsUploadModalOpen(false)}
-          onSubmit={() => showToast('등록이 완료되었습니다.')}
-        />
-      )}
-      {isUploadModalOpen && activeTab === 'project' && (
-        <ProjectUploadModal
-          onClose={() => setIsUploadModalOpen(false)}
-          onSubmit={() => showToast('등록이 완료되었습니다.')}
-        />
-      )}
-      {isUploadModalOpen && activeTab === 'gallery' && (
-        <HistoryUploadModal
-          onClose={() => setIsUploadModalOpen(false)}
-          onSubmit={() => showToast('등록이 완료되었습니다.')}
-        />
-      )}
-      {selectedCard && activeTab === 'session' && !isEditModalOpen && (
-        <SessionDetailModal
+      {isUploadModalOpen && <UploadModal onClose={closeUploadModal} onSubmit={handleUploadSubmit} />}
+      {selectedCard && !isEditModalOpen && (
+        <DetailModal
           title={selectedCard.title}
-          badges={selectedCard.badges}
-          onClose={() => setSelectedCard(null)}
-          onEdit={() => setIsEditModalOpen(true)}
+          badges={toBadges(selectedCard)}
+          onClose={closeDetailModal}
+          onEdit={openEditModal}
         />
       )}
-      {selectedCard && activeTab === 'session' && isEditModalOpen && (
-        <SessionEditModal
-          initialValues={{
-            title: selectedCard.title,
-            generation: selectedCard.badges[0]?.replace('기', '') ?? '',
-            category: selectedCard.badges[1] ?? '',
-            week: selectedCard.badges[2]?.replace('주차', '') ?? '',
-          }}
-          onClose={() => {
-            setIsEditModalOpen(false);
-            setSelectedCard(null);
-          }}
-          onDelete={() => {
-            setIsEditModalOpen(false);
-            setSelectedCard(null);
-            showToast('삭제가 완료되었습니다.');
-          }}
-          onSubmit={() => showToast('변경사항이 저장되었습니다.')}
-        />
-      )}
-      {selectedCard && activeTab === 'project' && !isEditModalOpen && (
-        <ProjectDetailModal
-          title={selectedCard.title}
-          badges={selectedCard.badges}
-          onClose={() => setSelectedCard(null)}
-          onEdit={() => setIsEditModalOpen(true)}
-        />
-      )}
-      {selectedCard && activeTab === 'project' && isEditModalOpen && (
-        <ProjectEditModal
-          initialValues={{
-            title: selectedCard.title,
-            generation: selectedCard.badges[0]?.replace('기', '') ?? '',
-            category: selectedCard.badges[1] ?? '',
-            dateRange: parseDateRange(selectedCard.period),
-          }}
-          onClose={() => {
-            setIsEditModalOpen(false);
-            setSelectedCard(null);
-          }}
-          onDelete={() => {
-            setIsEditModalOpen(false);
-            setSelectedCard(null);
-            showToast('삭제가 완료되었습니다.');
-          }}
-          onSubmit={() => showToast('변경사항이 저장되었습니다.')}
-        />
-      )}
-      {selectedCard && activeTab === 'gallery' && !isEditModalOpen && (
-        <HistoryDetailModal
-          title={selectedCard.title}
-          badges={selectedCard.badges}
-          onClose={() => setSelectedCard(null)}
-          onEdit={() => setIsEditModalOpen(true)}
-        />
-      )}
-      {selectedCard && activeTab === 'gallery' && isEditModalOpen && (
-        <HistoryEditModal
-          initialValues={{
-            title: selectedCard.title,
-            generation: selectedCard.badges[0]?.replace('기', '') ?? '',
-            dateRange: parseDateRange(selectedCard.period),
-          }}
-          onClose={() => {
-            setIsEditModalOpen(false);
-            setSelectedCard(null);
-          }}
-          onDelete={() => {
-            setIsEditModalOpen(false);
-            setSelectedCard(null);
-            showToast('삭제가 완료되었습니다.');
-          }}
-          onSubmit={() => showToast('변경사항이 저장되었습니다.')}
-        />
-      )}
+      {selectedCard && isEditModalOpen && renderEditModal(selectedCard)}
       <ToastWrapper>
         <Toast variant="positive" text={toastText} show={isToastOpen} onHidden={() => setIsToastOpen(false)} />
       </ToastWrapper>
-      <WikiBanner href={WIKI_URL} target="_blank" rel="noopener noreferrer" />
+      <WikiBanner
+        href={WIKI_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="중앙대학교 멋쟁이사자처럼 위키 바로가기"
+      />
       <CardGrid>
         {cards.map((card) => (
           <Card
@@ -250,7 +272,7 @@ const GalleryListSection = () => {
             bottomContent={
               <BottomContent>
                 <BadgeRow>
-                  {card.badges.map((badge) => (
+                  {toBadges(card).map((badge) => (
                     <ContentBadge key={badge} text={badge} color="accent" size="medium" />
                   ))}
                 </BadgeRow>
@@ -272,6 +294,7 @@ const FilterSelect = ({
   options,
   isOpen,
   onToggle,
+  onClose,
   onSelect,
 }: {
   label: string;
@@ -279,12 +302,16 @@ const FilterSelect = ({
   options: string[];
   isOpen: boolean;
   onToggle: () => void;
+  onClose: () => void;
   onSelect: (option: string) => void;
 }) => {
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  useOutsideClick(wrapperRef, onClose, isOpen);
+
   return (
-    <SelectWrapper>
+    <SelectWrapper ref={wrapperRef}>
       <SelectHeading>{label}</SelectHeading>
-      <SelectTrigger type="button" role="button" aria-haspopup="listbox" aria-expanded={isOpen} onClick={onToggle}>
+      <SelectTrigger type="button" aria-haspopup="listbox" aria-expanded={isOpen} onClick={onToggle}>
         <SelectValue>{value}</SelectValue>
         <ChevronIcon $open={isOpen} width={16} height={16} />
       </SelectTrigger>
