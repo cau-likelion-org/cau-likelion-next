@@ -23,8 +23,10 @@ const ProjectDetailModal = ({ projectId, staticData, onClose }: ProjectDetailMod
   });
 
   useEffect(() => {
+    document.documentElement.style.overflow = 'hidden';
     document.body.style.overflow = 'hidden';
     return () => {
+      document.documentElement.style.overflow = '';
       document.body.style.overflow = '';
     };
   }, []);
@@ -79,7 +81,7 @@ export default ProjectDetailModal;
 const Backdrop = styled.div`
   position: fixed;
   inset: 0;
-  z-index: 1000;
+  z-index: 10000;
   display: flex;
   align-items: center;
   justify-content: center;
