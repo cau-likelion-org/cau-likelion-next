@@ -16,6 +16,8 @@ interface BlogPostItem {
   badges: string[];
   date: string;
   url: string;
+  generation: string;
+  category: string;
 }
 
 const GENERATION_OPTIONS = ['전체', '13기', '12기', '11기'];
@@ -24,19 +26,34 @@ const CATEGORY_OPTIONS = ['전체', '활동 후기', '프로젝트 회고', '인
 const MOCK_DESCRIPTION =
   '서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설';
 
-const POSTS: BlogPostItem[] = Array.from({ length: 4 }, (_, index) => ({
+const MOCK_POST_VARIANTS: { generation: string; category: string }[] = [
+  { generation: '13', category: '활동 후기' },
+  { generation: '13', category: '프로젝트 회고' },
+  { generation: '12', category: '활동 후기' },
+  { generation: '11', category: '인턴·취업 후기' },
+];
+
+const POSTS: BlogPostItem[] = MOCK_POST_VARIANTS.map((variant, index) => ({
   id: index + 1,
   title: '제목 텍스트',
   description: MOCK_DESCRIPTION,
-  badges: ['13기', '코코몽', '활동후기'],
+  badges: [`${variant.generation}기`, '코코몽', variant.category],
   date: '2026/12/12',
   url: `https://blog.cau-likelion.org/posts/${index + 1}`,
+  generation: variant.generation,
+  category: variant.category,
 }));
 
 const BlogListSection = () => {
   const [generation, setGeneration] = useState(GENERATION_OPTIONS[0]);
   const [category, setCategory] = useState(CATEGORY_OPTIONS[0]);
   const [openFilter, setOpenFilter] = useState<FilterKey | null>(null);
+
+  const posts = POSTS.filter((post) => {
+    const matchesGeneration = generation === GENERATION_OPTIONS[0] || `${post.generation}기` === generation;
+    const matchesCategory = category === CATEGORY_OPTIONS[0] || post.category === category;
+    return matchesGeneration && matchesCategory;
+  });
 
   return (
     <Wrapper>
@@ -74,7 +91,7 @@ const BlogListSection = () => {
       </Header>
 
       <PostList>
-        {POSTS.map((post) => (
+        {posts.map((post) => (
           <BlogCard
             key={post.id}
             title={post.title}
