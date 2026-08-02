@@ -15,6 +15,7 @@ interface BlogPostItem {
   description: string;
   badges: string[];
   date: string;
+  url: string;
 }
 
 const GENERATION_OPTIONS = ['전체', '13기', '12기', '11기'];
@@ -29,6 +30,7 @@ const POSTS: BlogPostItem[] = Array.from({ length: 4 }, (_, index) => ({
   description: MOCK_DESCRIPTION,
   badges: ['13기', '코코몽', '활동후기'],
   date: '2026/12/12',
+  url: `https://blog.cau-likelion.org/posts/${index + 1}`,
 }));
 
 const BlogListSection = () => {
@@ -79,6 +81,7 @@ const BlogListSection = () => {
             description={post.description}
             badges={post.badges}
             date={post.date}
+            url={post.url}
           />
         ))}
       </PostList>

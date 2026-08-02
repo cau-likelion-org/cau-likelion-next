@@ -8,11 +8,11 @@ export interface BlogCardProps {
   description: string;
   badges: string[];
   date: string;
-  onClick?: () => void;
+  url: string;
 }
 
-const BlogCard = ({ title, description, badges, date, onClick }: BlogCardProps) => (
-  <Wrapper type="button" onClick={onClick}>
+const BlogCard = ({ title, description, badges, date, url }: BlogCardProps) => (
+  <Wrapper href={url} target="_blank" rel="noopener noreferrer">
     <Container>
       <TextGroup>
         <Title>{title}</Title>
@@ -33,7 +33,7 @@ const BlogCard = ({ title, description, badges, date, onClick }: BlogCardProps) 
 
 export default BlogCard;
 
-const Wrapper = styled.button`
+const Wrapper = styled.a`
   width: 100%;
   display: flex;
   align-items: flex-start;
@@ -44,6 +44,7 @@ const Wrapper = styled.button`
   background-color: ${BackgroundWhite.secondary};
   cursor: pointer;
   text-align: left;
+  text-decoration: none;
 `;
 
 const Container = styled.div`
