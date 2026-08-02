@@ -46,7 +46,7 @@ const ProjectCard = ({
   };
 
   return (
-    <Link href={`/project/${id}`} prefetch={false}>
+    <Link href={`/project/${id}`} prefetch={false} shallow>
       <Wrapper onClick={handleClick}>
         <Thumbnail>
           <img
@@ -61,7 +61,7 @@ const ProjectCard = ({
           />
           {introText && (
             <HoverOverlay>
-              <HoverText>{introText}</HoverText>
+              <HoverText>{introText.replace(/\\n/g, ' ')}</HoverText>
             </HoverOverlay>
           )}
         </Thumbnail>
