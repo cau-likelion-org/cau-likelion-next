@@ -176,8 +176,9 @@ const GalleryListSection = () => {
           onDelete={() => {
             setIsEditModalOpen(false);
             setSelectedCard(null);
+            showToast('삭제가 완료되었습니다.');
           }}
-          onSubmit={() => showToast('수정이 완료되었습니다.')}
+          onSubmit={() => showToast('변경사항이 저장되었습니다.')}
         />
       )}
       {selectedCard && activeTab === 'project' && !isEditModalOpen && (
@@ -203,8 +204,9 @@ const GalleryListSection = () => {
           onDelete={() => {
             setIsEditModalOpen(false);
             setSelectedCard(null);
+            showToast('삭제가 완료되었습니다.');
           }}
-          onSubmit={() => showToast('수정이 완료되었습니다.')}
+          onSubmit={() => showToast('변경사항이 저장되었습니다.')}
         />
       )}
       {selectedCard && activeTab === 'gallery' && !isEditModalOpen && (
@@ -229,8 +231,9 @@ const GalleryListSection = () => {
           onDelete={() => {
             setIsEditModalOpen(false);
             setSelectedCard(null);
+            showToast('삭제가 완료되었습니다.');
           }}
-          onSubmit={() => showToast('수정이 완료되었습니다.')}
+          onSubmit={() => showToast('변경사항이 저장되었습니다.')}
         />
       )}
       <ToastWrapper>

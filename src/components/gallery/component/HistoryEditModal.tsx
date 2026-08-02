@@ -20,7 +20,7 @@ const HistoryEditModal = ({ initialValues, onClose, onDelete, onSubmit }: Histor
     onDelete={onDelete}
     onSubmit={onSubmit}
     postType="gallery"
-    dateFieldLabel="활동 기간"
+    dateFieldLabel="기간"
     dateMode="range"
     initialValues={{
       title: initialValues.title,
