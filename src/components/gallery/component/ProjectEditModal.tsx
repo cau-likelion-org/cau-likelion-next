@@ -1,5 +1,5 @@
 import PostUploadModal from './PostUploadModal';
-import { CATEGORY_OPTIONS } from './constants';
+import { PROJECT_CATEGORY_OPTIONS } from '@utils/constant';
 
 interface ProjectEditModalProps {
   initialValues: {
@@ -21,7 +21,7 @@ const ProjectEditModal = ({ initialValues, onClose, onDelete, onSubmit }: Projec
     onDelete={onDelete}
     onSubmit={onSubmit}
     postType="project"
-    category={{ label: '프로젝트 구분', options: CATEGORY_OPTIONS }}
+    category={{ label: '프로젝트 구분', options: PROJECT_CATEGORY_OPTIONS }}
     dateFieldLabel="프로젝트 기간"
     dateMode="range"
     initialValues={{

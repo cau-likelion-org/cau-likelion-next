@@ -1,5 +1,5 @@
 import PostUploadModal from './PostUploadModal';
-import { TRACK_OPTIONS } from './constants';
+import { TRACK_OPTIONS } from '@utils/constant';
 
 interface SessionEditModalProps {
   initialValues: {

@@ -8,10 +8,10 @@ import Toast from '@common/toast/Toast';
 import IcAdd from '@assets/svg/ic-add.svg';
 import IcChevronDown from '@assets/svg/ic-chevron-down.svg';
 import useOutsideClick from 'src/hooks/useOutsideClick';
+import { PROJECT_CATEGORY_OPTIONS } from '@utils/constant';
 import { BackgroundColor, Fill, Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
-import { CATEGORY_OPTIONS } from './component/constants';
 import HistoryDetailModal from './component/HistoryDetailModal';
 import HistoryEditModal from './component/HistoryEditModal';
 import HistoryUploadModal from './component/HistoryUploadModal';
@@ -60,7 +60,7 @@ const ADD_BUTTON_LABEL: Record<GalleryTabKey, string> = {
 
 const GENERATION_OPTIONS = ['전체', '13기', '12기', '11기'];
 const TRACK_FILTER_OPTIONS = ['전체', '기획디자인', '프론트엔드', '백엔드'];
-const PROJECT_CATEGORY_FILTER_OPTIONS = ['전체', ...CATEGORY_OPTIONS];
+const PROJECT_CATEGORY_FILTER_OPTIONS = ['전체', ...PROJECT_CATEGORY_OPTIONS];
 const WIKI_URL = 'https://wiki.cau-likelion.org';
 const MOCK_CONTENT = '예시)이 서비스는 ~~한 서비스입니다\n서비스의 핵심기능\n\n· 이런거\n· 이\n· 이';
 const MOCK_DESCRIPTION =
