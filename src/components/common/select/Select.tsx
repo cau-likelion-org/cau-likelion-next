@@ -27,6 +27,7 @@ export interface SelectProps {
   onClick?: () => void;
   'aria-expanded'?: boolean;
   'aria-label'?: string;
+  'aria-activedescendant'?: string;
 }
 
 const getBoxShadow = (status: SelectStatus, disabled: boolean) => {

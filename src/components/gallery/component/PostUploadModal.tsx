@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { KeyboardEvent, useEffect, useId, useRef, useState } from 'react';
 import styled from 'styled-components';
 import Button from '@common/button/Button';
 import Radio from '@common/radio/Radio';
@@ -302,9 +302,70 @@ const CategorySelect = ({
   description?: string;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const listId = useId();
+  const [activeIndex, setActiveIndex] = useState(() => Math.max(options.indexOf(value), 0));
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const timer = setTimeout(() => setActiveIndex(Math.max(options.indexOf(value), 0)), 0);
+    return () => clearTimeout(timer);
+  }, [isOpen, value, options]);
+
+  const moveActive = (nextIndex: number) => {
+    setActiveIndex(Math.min(Math.max(nextIndex, 0), options.length - 1));
+  };
+
+  const selectOption = (option: string) => {
+    onChange(option);
+    setIsOpen(false);
+  };
+
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (['ArrowDown', 'ArrowUp', 'Enter', ' ', 'Escape', 'Home', 'End'].includes(event.key)) {
+      event.stopPropagation();
+    }
+
+    if (!isOpen) {
+      if (event.key === 'ArrowDown' || event.key === 'ArrowUp' || event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        setIsOpen(true);
+      }
+      return;
+    }
+
+    switch (event.key) {
+      case 'ArrowDown':
+        event.preventDefault();
+        moveActive(activeIndex + 1);
+        break;
+      case 'ArrowUp':
+        event.preventDefault();
+        moveActive(activeIndex - 1);
+        break;
+      case 'Home':
+        event.preventDefault();
+        moveActive(0);
+        break;
+      case 'End':
+        event.preventDefault();
+        moveActive(options.length - 1);
+        break;
+      case 'Enter':
+      case ' ':
+        event.preventDefault();
+        selectOption(options[activeIndex]);
+        break;
+      case 'Escape':
+        event.preventDefault();
+        setIsOpen(false);
+        break;
+      default:
+        break;
+    }
+  };
 
   return (
-    <NarrowSelectWrapper>
+    <NarrowSelectWrapper onKeyDownCapture={handleKeyDown}>
       <Select
         heading={label}
         required
@@ -312,21 +373,21 @@ const CategorySelect = ({
         value={value}
         onClick={() => setIsOpen((prev) => !prev)}
         aria-expanded={isOpen}
+        aria-activedescendant={isOpen ? `${listId}-${activeIndex}` : undefined}
         status={status}
         description={description}
       />
       {isOpen && (
-        <OptionList role="listbox">
-          {options.map((option) => (
+        <OptionList role="listbox" id={listId}>
+          {options.map((option, index) => (
             <Option
               key={option}
+              id={`${listId}-${index}`}
               type="button"
               role="option"
               aria-selected={value === option}
-              onClick={() => {
-                onChange(option);
-                setIsOpen(false);
-              }}
+              $active={index === activeIndex}
+              onClick={() => selectOption(option)}
             >
               {option}
             </Option>
@@ -734,12 +795,12 @@ const OptionList = styled.div`
   z-index: 1;
 `;
 
-const Option = styled.button`
+const Option = styled.button<{ $active: boolean }>`
   width: 100%;
   padding: 8px;
   border: none;
   border-radius: 8px;
-  background: none;
+  background-color: ${(props) => (props.$active ? Fill.subtle : 'transparent')};
   text-align: left;
   color: ${Label.normal};
   cursor: pointer;

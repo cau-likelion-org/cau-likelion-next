@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import styled from 'styled-components';
 import Button from '@common/button/Button';
 import Card from '@common/card/Card';
@@ -345,23 +345,83 @@ const FilterSelect = ({
   onSelect: (option: string) => void;
 }) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const listId = useId();
+  const [activeIndex, setActiveIndex] = useState(() => Math.max(options.indexOf(value), 0));
   useOutsideClick(wrapperRef, onClose, isOpen);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const timer = setTimeout(() => setActiveIndex(Math.max(options.indexOf(value), 0)), 0);
+    return () => clearTimeout(timer);
+  }, [isOpen, value, options]);
+
+  const moveActive = (nextIndex: number) => {
+    setActiveIndex(Math.min(Math.max(nextIndex, 0), options.length - 1));
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (!isOpen && (event.key === 'ArrowDown' || event.key === 'ArrowUp' || event.key === 'Enter')) {
+      event.preventDefault();
+      onToggle();
+      return;
+    }
+    if (!isOpen) return;
+
+    switch (event.key) {
+      case 'ArrowDown':
+        event.preventDefault();
+        moveActive(activeIndex + 1);
+        break;
+      case 'ArrowUp':
+        event.preventDefault();
+        moveActive(activeIndex - 1);
+        break;
+      case 'Home':
+        event.preventDefault();
+        moveActive(0);
+        break;
+      case 'End':
+        event.preventDefault();
+        moveActive(options.length - 1);
+        break;
+      case 'Enter':
+      case ' ':
+        event.preventDefault();
+        onSelect(options[activeIndex]);
+        break;
+      case 'Escape':
+        event.preventDefault();
+        onClose();
+        break;
+      default:
+        break;
+    }
+  };
 
   return (
     <SelectWrapper ref={wrapperRef}>
       <SelectHeading>{label}</SelectHeading>
-      <SelectTrigger type="button" aria-haspopup="listbox" aria-expanded={isOpen} onClick={onToggle}>
+      <SelectTrigger
+        type="button"
+        aria-haspopup="listbox"
+        aria-expanded={isOpen}
+        aria-activedescendant={isOpen ? `${listId}-${activeIndex}` : undefined}
+        onClick={onToggle}
+        onKeyDown={handleKeyDown}
+      >
         <SelectValue>{value}</SelectValue>
         <ChevronIcon $open={isOpen} width={16} height={16} />
       </SelectTrigger>
       {isOpen && (
-        <OptionList role="listbox">
-          {options.map((option) => (
+        <OptionList role="listbox" id={listId}>
+          {options.map((option, index) => (
             <Option
               key={option}
+              id={`${listId}-${index}`}
               type="button"
               role="option"
               aria-selected={value === option}
+              $active={index === activeIndex}
               onClick={() => onSelect(option)}
             >
               {option}
@@ -482,12 +542,12 @@ const OptionList = styled.div`
   z-index: 1;
 `;
 
-const Option = styled.button`
+const Option = styled.button<{ $active: boolean }>`
   width: 100%;
   padding: 8px;
   border: none;
   border-radius: 8px;
-  background: none;
+  background-color: ${(props) => (props.$active ? Fill.subtle : 'transparent')};
   text-align: left;
   color: ${Label.normal};
   cursor: pointer;

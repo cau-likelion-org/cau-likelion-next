@@ -1,4 +1,4 @@
-import { useId, useRef, useState } from 'react';
+import { KeyboardEvent, useEffect, useId, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import Button from '@common/button/Button';
@@ -19,15 +19,76 @@ const RecruitNotifyModal = ({ onClose }: { onClose: () => void }) => {
   const [name, setName] = useState('');
   const [department, setDepartment] = useState('');
   const [isDepartmentOpen, setIsDepartmentOpen] = useState(false);
+  const [activeDepartmentIndex, setActiveDepartmentIndex] = useState(0);
   const [email, setEmail] = useState('');
   const [showEmailError, setShowEmailError] = useState(false);
 
   const titleId = useId();
+  const departmentListId = useId();
   const modalRef = useRef<HTMLDivElement>(null);
   useFocusTrap(modalRef, onClose);
 
   const departmentSelectRef = useRef<HTMLDivElement>(null);
   useOutsideClick(departmentSelectRef, () => setIsDepartmentOpen(false), isDepartmentOpen);
+
+  useEffect(() => {
+    if (!isDepartmentOpen) return;
+    const timer = setTimeout(() => setActiveDepartmentIndex(Math.max(DEPARTMENT_OPTIONS.indexOf(department), 0)), 0);
+    return () => clearTimeout(timer);
+  }, [isDepartmentOpen, department]);
+
+  const moveActiveDepartment = (nextIndex: number) => {
+    setActiveDepartmentIndex(Math.min(Math.max(nextIndex, 0), DEPARTMENT_OPTIONS.length - 1));
+  };
+
+  const selectDepartment = (option: string) => {
+    setDepartment(option);
+    setIsDepartmentOpen(false);
+  };
+
+  const handleDepartmentKeyDown = (event: KeyboardEvent) => {
+    if (['ArrowDown', 'ArrowUp', 'Enter', ' ', 'Escape', 'Home', 'End'].includes(event.key)) {
+      event.stopPropagation();
+    }
+
+    if (!isDepartmentOpen) {
+      if (event.key === 'ArrowDown' || event.key === 'ArrowUp' || event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        setIsDepartmentOpen(true);
+      }
+      return;
+    }
+
+    switch (event.key) {
+      case 'ArrowDown':
+        event.preventDefault();
+        moveActiveDepartment(activeDepartmentIndex + 1);
+        break;
+      case 'ArrowUp':
+        event.preventDefault();
+        moveActiveDepartment(activeDepartmentIndex - 1);
+        break;
+      case 'Home':
+        event.preventDefault();
+        moveActiveDepartment(0);
+        break;
+      case 'End':
+        event.preventDefault();
+        moveActiveDepartment(DEPARTMENT_OPTIONS.length - 1);
+        break;
+      case 'Enter':
+      case ' ':
+        event.preventDefault();
+        selectDepartment(DEPARTMENT_OPTIONS[activeDepartmentIndex]);
+        break;
+      case 'Escape':
+        event.preventDefault();
+        setIsDepartmentOpen(false);
+        break;
+      default:
+        break;
+    }
+  };
 
   const isEmailInvalid = showEmailError && !EMAIL_REGEX.test(email);
   const isValid = name.trim() !== '' && department !== '' && email.trim() !== '';
@@ -64,7 +125,7 @@ const RecruitNotifyModal = ({ onClose }: { onClose: () => void }) => {
                 onChange={(event) => setName(event.target.value)}
               />
             </FieldWrapper>
-            <SelectWrapper ref={departmentSelectRef}>
+            <SelectWrapper ref={departmentSelectRef} onKeyDownCapture={handleDepartmentKeyDown}>
               <Select
                 heading="관심파트"
                 required
@@ -72,19 +133,19 @@ const RecruitNotifyModal = ({ onClose }: { onClose: () => void }) => {
                 value={department}
                 onClick={() => setIsDepartmentOpen((prev) => !prev)}
                 aria-expanded={isDepartmentOpen}
+                aria-activedescendant={isDepartmentOpen ? `${departmentListId}-${activeDepartmentIndex}` : undefined}
               />
               {isDepartmentOpen && (
-                <OptionList role="listbox">
-                  {DEPARTMENT_OPTIONS.map((option) => (
+                <OptionList role="listbox" id={departmentListId}>
+                  {DEPARTMENT_OPTIONS.map((option, index) => (
                     <Option
                       key={option}
+                      id={`${departmentListId}-${index}`}
                       type="button"
                       role="option"
                       aria-selected={department === option}
-                      onClick={() => {
-                        setDepartment(option);
-                        setIsDepartmentOpen(false);
-                      }}
+                      $active={index === activeDepartmentIndex}
+                      onClick={() => selectDepartment(option)}
                     >
                       {option}
                     </Option>
@@ -218,12 +279,12 @@ const OptionList = styled.div`
   z-index: 1;
 `;
 
-const Option = styled.button`
+const Option = styled.button<{ $active: boolean }>`
   width: 100%;
   padding: 8px;
   border: none;
   border-radius: 8px;
-  background: none;
+  background-color: ${(props) => (props.$active ? Fill.subtle : 'transparent')};
   text-align: left;
   color: ${Label.normal};
   cursor: pointer;
