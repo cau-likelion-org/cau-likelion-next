@@ -1,5 +1,5 @@
-import Header from '@archiving/Header';
 import LayoutArchiving from '@common/layout/LayoutArchiving';
+import ProjectPageHeader from '@project/projects/ProjectPageHeader';
 import ProjectsSection from '@project/projects/ProjectsSection';
 import { ARCHIVING } from '@utils/constant';
 import { InferGetStaticPropsType } from 'next';
@@ -12,7 +12,7 @@ const ProjectList = ({ projectStaticData }: InferGetStaticPropsType<typeof getSt
     <>
       {/* <div>점검중입니다.</div> */}
       <ListPageHead category={ARCHIVING.PROJECT} canoUrl={'https://cau-likelion.org/project'} />
-      <Header pageName="프로젝트" introduce="멋사와 함께한 프로젝트" />
+      <ProjectPageHeader title="프로젝트" subtitle="멋사와 함께한 프로젝트" />
       <ProjectsSection staticData={projectStaticData} />
     </>
   );
