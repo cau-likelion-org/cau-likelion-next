@@ -9,6 +9,9 @@ const useFocusTrap = (containerRef: RefObject<HTMLElement>, onClose: () => void)
     if (!container) return;
 
     const previouslyFocused = document.activeElement as HTMLElement | null;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
     const getFocusableElements = () => Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR));
 
     const firstFocusable = getFocusableElements()[0];
@@ -22,7 +25,11 @@ const useFocusTrap = (containerRef: RefObject<HTMLElement>, onClose: () => void)
       if (event.key !== 'Tab') return;
 
       const elements = getFocusableElements();
-      if (elements.length === 0) return;
+      if (elements.length === 0) {
+        event.preventDefault();
+        container.focus();
+        return;
+      }
 
       const first = elements[0];
       const last = elements[elements.length - 1];
@@ -40,6 +47,7 @@ const useFocusTrap = (containerRef: RefObject<HTMLElement>, onClose: () => void)
 
     return () => {
       container.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = previousOverflow;
       previouslyFocused?.focus();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps

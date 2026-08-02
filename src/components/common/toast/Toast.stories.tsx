@@ -23,10 +23,13 @@ const meta: Meta<typeof Toast> = {
 export default meta;
 type Story = StoryObj<typeof Toast>;
 
+const PREVIEW_ARGS = { show: true, delay: 0, duration: 999999 };
+
 export const Default: Story = {
   args: {
     variant: 'normal',
     text: '메시지에 마침표를 찍어요.',
+    ...PREVIEW_ARGS,
   },
 };
 
@@ -34,6 +37,7 @@ export const Positive: Story = {
   args: {
     variant: 'positive',
     text: '메시지에 마침표를 찍어요.',
+    ...PREVIEW_ARGS,
   },
 };
 
@@ -41,6 +45,7 @@ export const Cautionary: Story = {
   args: {
     variant: 'cautionary',
     text: '메시지에 마침표를 찍어요.',
+    ...PREVIEW_ARGS,
   },
 };
 
@@ -48,16 +53,17 @@ export const Negative: Story = {
   args: {
     variant: 'negative',
     text: '메시지에 마침표를 찍어요.',
+    ...PREVIEW_ARGS,
   },
 };
 
 export const AllVariants: Story = {
   render: () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-      <Toast variant="normal" text="메시지에 마침표를 찍어요." />
-      <Toast variant="positive" text="메시지에 마침표를 찍어요." />
-      <Toast variant="cautionary" text="메시지에 마침표를 찍어요." />
-      <Toast variant="negative" text="메시지에 마침표를 찍어요." />
+      <Toast variant="normal" text="메시지에 마침표를 찍어요." {...PREVIEW_ARGS} />
+      <Toast variant="positive" text="메시지에 마침표를 찍어요." {...PREVIEW_ARGS} />
+      <Toast variant="cautionary" text="메시지에 마침표를 찍어요." {...PREVIEW_ARGS} />
+      <Toast variant="negative" text="메시지에 마침표를 찍어요." {...PREVIEW_ARGS} />
     </div>
   ),
 };

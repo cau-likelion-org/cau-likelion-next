@@ -1,6 +1,6 @@
+import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { FunctionComponent, SVGProps } from 'react';
-
 import { IcCircleCheck, IcCircleExclamation, IcTriangleExclamation } from '@assets/svg';
 import { BackgroundColor, Black, FeedbackStatus, System } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -12,7 +12,13 @@ export interface ToastProps {
   variant?: ToastVariant;
   text: string;
   icon?: React.ReactNode;
+  show: boolean;
+  delay?: number;
+  duration?: number;
+  onHidden?: () => void;
 }
+
+const TRANSITION_MS = 300;
 
 const statusIcon: Record<
   'positive' | 'cautionary' | 'negative',
@@ -23,11 +29,65 @@ const statusIcon: Record<
   negative: { Icon: IcCircleExclamation, color: FeedbackStatus.negative },
 };
 
-const Toast = ({ className, variant = 'normal', text, icon }: ToastProps) => {
+const Toast = ({
+  className,
+  variant = 'normal',
+  text,
+  icon,
+  show,
+  delay = 300,
+  duration = 1000,
+  onHidden,
+}: ToastProps) => {
+  const [isMounted, setIsMounted] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+  const timersRef = useRef<{
+    show?: ReturnType<typeof setTimeout>;
+    hide?: ReturnType<typeof setTimeout>;
+    unmount?: ReturnType<typeof setTimeout>;
+    frame?: ReturnType<typeof requestAnimationFrame>;
+  }>({});
+  const onHiddenRef = useRef(onHidden);
+  useEffect(() => {
+    onHiddenRef.current = onHidden;
+  }, [onHidden]);
+
+  useEffect(() => {
+    const clearAll = () => {
+      clearTimeout(timersRef.current.show);
+      clearTimeout(timersRef.current.hide);
+      clearTimeout(timersRef.current.unmount);
+      if (timersRef.current.frame !== undefined) cancelAnimationFrame(timersRef.current.frame);
+    };
+    clearAll();
+
+    if (!show) {
+      timersRef.current.hide = setTimeout(() => setIsVisible(false), 0);
+      timersRef.current.unmount = setTimeout(() => setIsMounted(false), TRANSITION_MS);
+      return clearAll;
+    }
+
+    timersRef.current.show = setTimeout(() => {
+      setIsMounted(true);
+      timersRef.current.frame = requestAnimationFrame(() => setIsVisible(true));
+      timersRef.current.hide = setTimeout(() => {
+        setIsVisible(false);
+        timersRef.current.unmount = setTimeout(() => {
+          setIsMounted(false);
+          onHiddenRef.current?.();
+        }, TRANSITION_MS);
+      }, duration);
+    }, delay);
+
+    return clearAll;
+  }, [show, text, delay, duration]);
+
+  if (!isMounted) return null;
+
   const status = variant === 'normal' ? null : statusIcon[variant];
 
   return (
-    <Container className={className}>
+    <Container className={className} $visible={isVisible}>
       {status && (
         <IconWrapper color={status.color}>
           <status.Icon />
@@ -41,18 +101,22 @@ const Toast = ({ className, variant = 'normal', text, icon }: ToastProps) => {
 
 export default Toast;
 
-const Container = styled.div`
+const Container = styled.div<{ $visible: boolean }>`
   position: relative;
   display: flex;
   align-items: center;
-  gap: 12px;
-  width: fit-content;
-  max-width: 420px;
+  gap: 8px;
+  width: 335px;
   padding: 11px 16px;
   border-radius: 12px;
   overflow: hidden;
   backdrop-filter: blur(32px);
   -webkit-backdrop-filter: blur(32px);
+  opacity: ${(props) => (props.$visible ? 1 : 0)};
+  transform: translateY(${(props) => (props.$visible ? '0' : '-8px')});
+  transition:
+    opacity ${TRANSITION_MS}ms ease,
+    transform ${TRANSITION_MS}ms ease;
 
   &::before,
   &::after {
