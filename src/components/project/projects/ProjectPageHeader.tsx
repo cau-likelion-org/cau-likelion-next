@@ -19,11 +19,11 @@ const Wrapper = styled.div`
   gap: 24px;
   width: 1060px;
   max-width: 100%;
-  padding: 80px 0 52px;
+  padding: 0 0 52px;
   color: ${Orange.o500};
 
   @media (max-width: 900px) {
-    padding: 48px 0 32px;
+    padding: 0 0 32px;
   }
 `;
 
