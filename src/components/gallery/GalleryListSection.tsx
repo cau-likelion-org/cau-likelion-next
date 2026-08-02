@@ -3,13 +3,13 @@ import styled from 'styled-components';
 import Button from '@common/button/Button';
 import Card from '@common/card/Card';
 import ContentBadge from '@common/badge/ContentBadge';
+import Select from '@common/select/Select';
 import Tab from '@common/tab/Tab';
 import Toast from '@common/toast/Toast';
 import IcAdd from '@assets/svg/ic-add.svg';
-import IcChevronDown from '@assets/svg/icon/ic-chevron-down.svg';
 import useOutsideClick from 'src/hooks/useOutsideClick';
 import { PROJECT_CATEGORY_OPTIONS } from '@utils/constant';
-import { BackgroundColor, Fill, Label, Line, Orange } from '@utils/constant/color';
+import { BackgroundColor, Fill, Label, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 import HistoryDetailModal from './component/HistoryDetailModal';
@@ -360,12 +360,17 @@ const FilterSelect = ({
   };
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
-    if (!isOpen && (event.key === 'ArrowDown' || event.key === 'ArrowUp' || event.key === 'Enter')) {
-      event.preventDefault();
-      onToggle();
+    if (['ArrowDown', 'ArrowUp', 'Enter', ' ', 'Escape', 'Home', 'End'].includes(event.key)) {
+      event.stopPropagation();
+    }
+
+    if (!isOpen) {
+      if (event.key === 'ArrowDown' || event.key === 'ArrowUp' || event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        onToggle();
+      }
       return;
     }
-    if (!isOpen) return;
 
     switch (event.key) {
       case 'ArrowDown':
@@ -399,19 +404,14 @@ const FilterSelect = ({
   };
 
   return (
-    <SelectWrapper ref={wrapperRef}>
-      <SelectHeading>{label}</SelectHeading>
-      <SelectTrigger
-        type="button"
-        aria-haspopup="listbox"
+    <SelectWrapper ref={wrapperRef} onKeyDownCapture={handleKeyDown}>
+      <Select
+        heading={label}
+        value={value}
+        onClick={onToggle}
         aria-expanded={isOpen}
         aria-activedescendant={isOpen ? `${listId}-${activeIndex}` : undefined}
-        onClick={onToggle}
-        onKeyDown={handleKeyDown}
-      >
-        <SelectValue>{value}</SelectValue>
-        <ChevronIcon $open={isOpen} width={16} height={16} />
-      </SelectTrigger>
+      />
       {isOpen && (
         <OptionList role="listbox" id={listId}>
           {options.map((option, index) => (
@@ -489,41 +489,6 @@ const SelectWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
-`;
-
-const SelectHeading = styled.p`
-  ${typographyCss(Typography.label1Normal.bold)}
-  color: ${Label.neutral};
-  margin: 0;
-`;
-
-const SelectTrigger = styled.button`
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px;
-  border: none;
-  border-radius: 12px;
-  background-color: rgba(255, 255, 255, 0.08);
-  box-shadow:
-    inset 0 0 0 1px ${Line.normal},
-    0 1px 2px -1px rgba(23, 23, 23, 0.1);
-  cursor: pointer;
-  text-align: left;
-`;
-
-const SelectValue = styled.span`
-  flex: 1 0 0;
-  min-width: 0;
-  ${typographyCss(Typography.body1Normal.regular)}
-  color: ${Label.normal};
-`;
-
-const ChevronIcon = styled(IcChevronDown)<{ $open: boolean }>`
-  flex-shrink: 0;
-  color: ${Label.normal};
-  transform: ${(props) => (props.$open ? 'rotate(180deg)' : 'rotate(0deg)')};
 `;
 
 const OptionList = styled.div`
