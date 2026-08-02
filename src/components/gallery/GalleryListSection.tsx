@@ -29,6 +29,7 @@ interface GalleryCardItem {
   id: number;
   title: string;
   content: string;
+  description: string;
   generation: string;
   category?: string;
   week?: string;
@@ -43,12 +44,6 @@ const UPLOAD_MODAL_BY_TAB: Record<GalleryTabKey, typeof SessionUploadModal> = {
   session: SessionUploadModal,
   project: ProjectUploadModal,
   gallery: HistoryUploadModal,
-};
-
-const DETAIL_MODAL_BY_TAB: Record<GalleryTabKey, typeof SessionDetailModal> = {
-  session: SessionDetailModal,
-  project: ProjectDetailModal,
-  gallery: HistoryDetailModal,
 };
 
 const TABS: { key: GalleryTabKey; label: string }[] = [
@@ -68,6 +63,8 @@ const TRACK_FILTER_OPTIONS = ['전체', '기획디자인', '프론트엔드', '�
 const PROJECT_CATEGORY_FILTER_OPTIONS = ['전체', ...CATEGORY_OPTIONS];
 const WIKI_URL = 'https://wiki.cau-likelion.org';
 const MOCK_CONTENT = '예시)이 서비스는 ~~한 서비스입니다\n서비스의 핵심기능\n\n· 이런거\n· 이\n· 이';
+const MOCK_DESCRIPTION =
+  '서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명';
 
 const parseDateRange = (period: string | undefined): [string, string] => {
   const [start, end] = (period ?? '').split('-');
@@ -75,11 +72,19 @@ const parseDateRange = (period: string | undefined): [string, string] => {
   return [start ? toIsoDate(start) : '', end ? toIsoDate(end) : ''];
 };
 
+const splitPeriodForDisplay = (period: string | undefined): [string, string] => {
+  const [start, end] = (period ?? '').split('-');
+  return [start ?? '', end ?? ''];
+};
+
+const toDisplayDate = (isoDate: string | undefined) => (isoDate ?? '').replaceAll('-', '/');
+
 const CARDS_BY_TAB: Record<GalleryTabKey, GalleryCardItem[]> = {
   session: Array.from({ length: 8 }, (_, index) => ({
     id: index + 1,
     title: '제목',
     content: MOCK_CONTENT,
+    description: MOCK_DESCRIPTION,
     generation: '13',
     category: '기획디자인',
     week: '3',
@@ -89,6 +94,7 @@ const CARDS_BY_TAB: Record<GalleryTabKey, GalleryCardItem[]> = {
     id: index + 1,
     title: '제목',
     content: MOCK_CONTENT,
+    description: MOCK_DESCRIPTION,
     generation: '13',
     category: '아이디어톤',
     period: '2026/12/12-2012/12/12',
@@ -97,6 +103,7 @@ const CARDS_BY_TAB: Record<GalleryTabKey, GalleryCardItem[]> = {
     id: index + 1,
     title: '제목',
     content: MOCK_CONTENT,
+    description: MOCK_DESCRIPTION,
     generation: '13',
     period: '2026/12/12-2012/12/12',
   })),
@@ -152,7 +159,23 @@ const GalleryListSection = () => {
   });
 
   const UploadModal = UPLOAD_MODAL_BY_TAB[activeTab];
-  const DetailModal = DETAIL_MODAL_BY_TAB[activeTab];
+
+  const renderDetailModal = (card: GalleryCardItem) => {
+    const commonProps = {
+      title: card.title,
+      badges: toBadges(card),
+      description: card.description,
+      onClose: closeDetailModal,
+      onEdit: openEditModal,
+    };
+    if (activeTab === 'session') {
+      return <SessionDetailModal {...commonProps} date={toDisplayDate(card.date)} />;
+    }
+    if (activeTab === 'project') {
+      return <ProjectDetailModal {...commonProps} date={splitPeriodForDisplay(card.period)} />;
+    }
+    return <HistoryDetailModal {...commonProps} date={splitPeriodForDisplay(card.period)} />;
+  };
 
   const renderEditModal = (card: GalleryCardItem) => {
     if (activeTab === 'session') {
@@ -267,14 +290,7 @@ const GalleryListSection = () => {
       </Header>
 
       {isUploadModalOpen && <UploadModal onClose={closeUploadModal} onSubmit={handleUploadSubmit} />}
-      {selectedCard && !isEditModalOpen && (
-        <DetailModal
-          title={selectedCard.title}
-          badges={toBadges(selectedCard)}
-          onClose={closeDetailModal}
-          onEdit={openEditModal}
-        />
-      )}
+      {selectedCard && !isEditModalOpen && renderDetailModal(selectedCard)}
       {selectedCard && isEditModalOpen && renderEditModal(selectedCard)}
       <ToastWrapper>
         <Toast variant="positive" text={toastText} show={isToastOpen} onHidden={() => setIsToastOpen(false)} />
