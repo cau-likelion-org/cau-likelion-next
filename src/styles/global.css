@@ -13,8 +13,7 @@ html::-webkit-scrollbar {
   display: none;
 }
 body {
-  margin: 0 auto;
-  max-width: 1060px;
+  margin: 0;
   padding: 0;
   /* 드래그 방지 */
   -webkit-user-select: none;

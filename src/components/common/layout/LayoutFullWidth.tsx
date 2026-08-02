@@ -24,7 +24,7 @@ const PageContainer = styled.div`
   background-color: ${BackgroundColor};
   min-height: calc(100vh - 184px);
   width: 100%;
-  padding-top: 74px;
+  padding-top: 68px;
   display: flex;
   flex-direction: column;
   align-items: center;
