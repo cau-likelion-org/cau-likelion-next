@@ -72,18 +72,23 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export async function getStaticProps({ params }: { params: { project_id: string[] } }) {
   const id = params.project_id?.[0];
 
-  const [projectStaticData, projectDetailStaticData] = await Promise.all([
-    id ? Promise.resolve(null) : getProjects(),
-    id ? getProjectDetail(id) : Promise.resolve(null),
-  ]);
+  if (!id) {
+    const projectStaticData = await getProjects();
+    return {
+      props: { projectStaticData, projectDetailStaticData: null },
+      revalidate: 86400,
+    };
+  }
 
-  return {
-    props: {
-      projectStaticData,
-      projectDetailStaticData,
-    },
-    revalidate: 86400,
-  };
+  try {
+    const projectDetailStaticData = await getProjectDetail(id);
+    return {
+      props: { projectStaticData: null, projectDetailStaticData },
+      revalidate: 86400,
+    };
+  } catch {
+    return { notFound: true };
+  }
 }
 
 export default ProjectList;
