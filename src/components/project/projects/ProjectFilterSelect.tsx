@@ -1,7 +1,7 @@
 import Select from '@common/select/Select';
 import { Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
-import { useEffect, useRef, useState } from 'react';
+import { KeyboardEvent, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 interface ProjectFilterSelectProps {
@@ -14,6 +14,7 @@ interface ProjectFilterSelectProps {
 const ProjectFilterSelect = ({ heading, options, value, onChange }: ProjectFilterSelectProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const optionRefs = useRef<(HTMLLIElement | null)[]>([]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -25,9 +26,37 @@ const ProjectFilterSelect = ({ heading, options, value, onChange }: ProjectFilte
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const activeIndex = Math.max(options.indexOf(value), 0);
+    optionRefs.current[activeIndex]?.focus();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
+
   const handleSelect = (option: string) => {
     onChange(option);
     setIsOpen(false);
+  };
+
+  const handleOptionKeyDown = (event: KeyboardEvent<HTMLLIElement>, index: number) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      handleSelect(options[index]);
+      return;
+    }
+    if (event.key === 'Escape') {
+      setIsOpen(false);
+      return;
+    }
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      optionRefs.current[(index + 1) % options.length]?.focus();
+      return;
+    }
+    if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      optionRefs.current[(index - 1 + options.length) % options.length]?.focus();
+    }
   };
 
   return (
@@ -35,13 +64,18 @@ const ProjectFilterSelect = ({ heading, options, value, onChange }: ProjectFilte
       <Select heading={heading} value={value} onClick={() => setIsOpen((prev) => !prev)} aria-expanded={isOpen} />
       {isOpen && (
         <OptionList role="listbox">
-          {options.map((option) => (
+          {options.map((option, index) => (
             <Option
               key={option}
+              ref={(el) => {
+                optionRefs.current[index] = el;
+              }}
               role="option"
+              tabIndex={-1}
               aria-selected={option === value}
               $active={option === value}
               onClick={() => handleSelect(option)}
+              onKeyDown={(event) => handleOptionKeyDown(event, index)}
             >
               {option}
             </Option>
