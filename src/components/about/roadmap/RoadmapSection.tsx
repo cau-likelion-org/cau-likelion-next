@@ -1,16 +1,18 @@
+import Image from 'next/image';
 import styled from 'styled-components';
 
 import { BackgroundWhite, Black, Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
-
-import RoadmapChart from './component/RoadmapChart';
+import { roadmap as roadmapImg } from '@assets/webp';
 
 const RoadmapSection = () => {
   return (
     <Wrapper>
       <Content>
         <SectionTitle>활동 로드맵</SectionTitle>
-        <RoadmapChart />
+        <ChartImageWrapper>
+          <Image src={roadmapImg} alt="활동 로드맵" style={{ width: '100%', height: 'auto' }} />
+        </ChartImageWrapper>
         <Caption>*일정 상 변경될 수 있습니다</Caption>
       </Content>
     </Wrapper>
@@ -24,6 +26,7 @@ const Wrapper = styled.div`
   justify-content: center;
   width: 100%;
   padding: 80px 20px;
+  margin-bottom: 40px;
   background-color: ${BackgroundWhite.tertiary};
 `;
 
@@ -42,6 +45,10 @@ const SectionTitle = styled.p`
   text-align: center;
   color: ${Black.b900};
   ${typographyCss(Typography.display2.bold)}
+`;
+
+const ChartImageWrapper = styled.div`
+  width: 100%;
 `;
 
 const Caption = styled.p`
