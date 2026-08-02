@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { ReactElement } from 'react';
 import MobileNavBar from '@common/header/MobileNavBar';
 
-const LayoutLanding = ({ children }: { children: ReactElement }) => {
+const LayoutFullWidth = ({ children }: { children: ReactElement }) => {
   return (
     <>
       <NavBar />
@@ -13,18 +13,18 @@ const LayoutLanding = ({ children }: { children: ReactElement }) => {
       <main>
         <PageContainer>{children}</PageContainer>
       </main>
-      <Footer isLandingLayout={true} />
+      <Footer isLandingLayout={false} />
     </>
   );
 };
 
-export default LayoutLanding;
+export default LayoutFullWidth;
 
 const PageContainer = styled.div`
   background-color: ${BackgroundColor};
   min-height: calc(100vh - 184px);
   width: 100%;
-  padding-bottom: 165.75px;
+  padding-top: 68px;
   display: flex;
   flex-direction: column;
   align-items: center;

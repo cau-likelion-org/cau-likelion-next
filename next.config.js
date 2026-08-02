@@ -44,6 +44,7 @@ const nextConfig = {
       alias: {
         '@common': path.resolve(__dirname, 'src/components/common'),
         '@home': path.resolve(__dirname, 'src/components/home'),
+        '@about': path.resolve(__dirname, 'src/components/about'),
         '@gallery': path.resolve(__dirname, 'src/components/gallery'),
         '@project': path.resolve(__dirname, 'src/components/project'),
         '@session': path.resolve(__dirname, 'src/components/session'),
@@ -81,7 +82,18 @@ const nextConfig = {
         {
           loader: '@svgr/webpack',
           options: {
-            svgoConfig: { plugins: [{ name: 'preset-default', params: { overrides: { removeViewBox: false } } }] },
+            svgoConfig: {
+              plugins: [
+                {
+                  name: 'preset-default',
+                  params: {
+                    overrides: {
+                      removeViewBox: false,
+                    },
+                  },
+                },
+              ],
+            },
           },
         },
       ],

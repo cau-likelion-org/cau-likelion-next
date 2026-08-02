@@ -6,7 +6,7 @@ import ContentBadge from '@common/badge/ContentBadge';
 import Tab from '@common/tab/Tab';
 import Toast from '@common/toast/Toast';
 import IcAdd from '@assets/svg/ic-add.svg';
-import IcChevronDown from '@assets/svg/ic-chevron-down.svg';
+import IcChevronDown from '@assets/svg/icon/ic-chevron-down.svg';
 import useOutsideClick from 'src/hooks/useOutsideClick';
 import { PROJECT_CATEGORY_OPTIONS } from '@utils/constant';
 import { BackgroundColor, Fill, Label, Line, Orange } from '@utils/constant/color';

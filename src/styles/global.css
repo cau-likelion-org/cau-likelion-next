@@ -13,8 +13,7 @@ html::-webkit-scrollbar {
   display: none;
 }
 body {
-  margin: 0 auto;
-  max-width: 1060px;
+  margin: 0;
   padding: 0;
   /* 드래그 방지 */
   -webkit-user-select: none;
@@ -35,7 +34,6 @@ body {
 @media (max-width: 1920px) {
   html {
     font-size: 10px;
-    /* margin: 0 360px; */
   }
 }
 
@@ -43,7 +41,6 @@ body {
 @media (max-width: 1280px) {
   html {
     font-size: 10px;
-    /* margin: 0 200px; */
   }
 }
 
@@ -51,7 +48,6 @@ body {
 @media (max-width: 1024px) {
   html {
     font-size: 10px;
-    /* margin: 0 200px; */
   }
 }
 
@@ -59,7 +55,6 @@ body {
 @media (max-width: 768px) {
   html {
     font-size: 9px;
-    /* margin: 0 150px; */
   }
 }
 
@@ -67,7 +62,6 @@ body {
 @media (max-width: 768px) {
   html {
     font-size: 8px;
-    /* margin: 0 150px; */
   }
 }
 
@@ -75,7 +69,6 @@ body {
 @media (max-width: 576px) {
   html {
     font-size: 8px;
-    /* margin: 0 130px; */
   }
 }
 

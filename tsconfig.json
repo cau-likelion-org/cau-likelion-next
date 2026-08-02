@@ -21,6 +21,7 @@
     "paths": {
       "@common/*": ["src/components/common/*"],
       "@home/*": ["src/components/home/*"],
+      "@about/*": ["src/components/about/*"],
       "@gallery/*": ["src/components/gallery/*"],
       "@project/*": ["src/components/project/*"],
       "@session/*": ["src/components/session/*"],

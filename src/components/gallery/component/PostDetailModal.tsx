@@ -5,7 +5,7 @@ import ContentBadge from '@common/badge/ContentBadge';
 import Chip from '@common/chip/Chip';
 import PaginationDots from '@common/pagination/PaginationDots';
 import TextButton from '@common/textButton/TextButton';
-import IcLineHorizontal from '@assets/svg/ic-line-horizontal.svg';
+import IcLineHorizontal from '@assets/svg/icon/ic-line-horizontal.svg';
 import useFocusTrap from 'src/hooks/useFocusTrap';
 import { BackgroundColor, Fill, Label, Material } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';

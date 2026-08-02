@@ -62,6 +62,7 @@ const List = styled.div<{ size: TabProps['size']; horizontalPadding: boolean }>`
   display: flex;
   align-items: center;
   gap: 24px;
+  width: 100%;
   height: ${(props) => SIZE_STYLE[props.size ?? 'small'].height}px;
   padding: 0 ${(props) => (props.horizontalPadding ? '20px' : '0')};
   border-bottom: 1px solid ${Line.subtle};
@@ -88,6 +89,20 @@ const TabButton = styled.button<{
   line-height: ${(props) => SIZE_STYLE[props.size ?? 'small'].lineHeight};
   letter-spacing: ${(props) => SIZE_STYLE[props.size ?? 'small'].letterSpacing};
   color: ${(props) => (props.selected ? Label.strong : Label.assistive)};
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0 -12px;
+    border-radius: 8px;
+    background-color: ${Label.normal};
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  &:hover::before {
+    opacity: 0.08;
+  }
 
   &::after {
     content: '';

@@ -1,9 +1,7 @@
 import { ReactNode, useId } from 'react';
 import styled from 'styled-components';
 
-import IcChevronDown from '@assets/svg/ic-chevron-down.svg';
-import IcCircleCheck from '@assets/svg/ic-circle-check.svg';
-import IcCircleExclamation from '@assets/svg/ic-circle-exclamation.svg';
+import { IcChevronDown, IcCircleCheck, IcCircleExclamation } from '@assets/svg';
 import { Label, Line, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import Chip from '../chip/Chip';
