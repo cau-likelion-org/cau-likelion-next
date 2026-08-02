@@ -43,7 +43,12 @@ const ProjectList = ({
       <ProjectPageHeader title="프로젝트" subtitle="멋사와 함께한 프로젝트" />
       <ProjectsSection staticData={projectStaticData} />
       {projectId && (
-        <ProjectDetailModal projectId={projectId} staticData={projectDetailStaticData} onClose={handleCloseDetail} />
+        <ProjectDetailModal
+          key={projectId}
+          projectId={projectId}
+          staticData={projectDetailStaticData}
+          onClose={handleCloseDetail}
+        />
       )}
     </>
   );
