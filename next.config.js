@@ -46,6 +46,7 @@ const nextConfig = {
         '@home': path.resolve(__dirname, 'src/components/home'),
         '@about': path.resolve(__dirname, 'src/components/about'),
         '@gallery': path.resolve(__dirname, 'src/components/gallery'),
+        '@blog': path.resolve(__dirname, 'src/components/blog'),
         '@project': path.resolve(__dirname, 'src/components/project'),
         '@session': path.resolve(__dirname, 'src/components/session'),
         '@signup': path.resolve(__dirname, 'src/components/signup'),
