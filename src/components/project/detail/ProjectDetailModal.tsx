@@ -144,11 +144,12 @@ const Badge = styled.span`
   background-color: ${AccentTint.background};
   color: ${Orange.o500};
   ${typographyCss(Typography.label2.regular)}
+  font-weight: 500;
 `;
 
 const PanelRow = styled.div`
   display: flex;
-  align-items: stretch;
+  align-items: flex-start;
   gap: 22px;
 
   @media (max-width: 700px) {

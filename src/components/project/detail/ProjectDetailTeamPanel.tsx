@@ -1,11 +1,12 @@
-import { IProjectDetail, MemberStack } from '@@types/request';
+import { IProjectDetail, ProjectMemberRole } from '@@types/request';
 import Chip from '@common/chip/Chip';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import styled from 'styled-components';
 
-const MEMBER_STACK_LABEL: Record<MemberStack, string> = {
-  pm_design: '기획디자인',
-  frontend: '프론트엔드',
+const MEMBER_ROLE_LABEL: Record<ProjectMemberRole, string> = {
+  pm: '기획',
+  design: '디자인',
+  frontend: '프론트',
   backend: '백엔드',
 };
 
@@ -21,12 +22,12 @@ const ProjectDetailTeamPanel = ({ teamName, teamMember }: ProjectDetailTeamPanel
         <RowLabel>팀명</RowLabel>
         <TeamName>{teamName}</TeamName>
       </Row>
-      {(Object.keys(MEMBER_STACK_LABEL) as MemberStack[]).map((stack) => {
-        const members = teamMember[stack];
+      {(Object.keys(MEMBER_ROLE_LABEL) as ProjectMemberRole[]).map((role) => {
+        const members = teamMember[role];
         if (!members || members.length === 0) return null;
         return (
-          <Row key={stack}>
-            <RowLabel>{MEMBER_STACK_LABEL[stack]}</RowLabel>
+          <Row key={role}>
+            <RowLabel>{MEMBER_ROLE_LABEL[role]}</RowLabel>
             <ChipRow>
               {members.map((member) => (
                 <Chip key={member} size="small">
@@ -46,6 +47,7 @@ export default ProjectDetailTeamPanel;
 const Panel = styled.div`
   display: flex;
   flex: 1 0 0;
+  align-self: stretch;
   min-width: 0;
   flex-direction: column;
   gap: 22px;
