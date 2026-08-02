@@ -1,4 +1,5 @@
 import { ArchivingArrayType, IProjectData } from '@@types/request';
+import CircularLoading from '@common/loading/CircularLoading';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { getProjects } from 'src/apis/project';
@@ -21,16 +22,17 @@ interface FlatProject extends IProjectData {
   generation: string;
 }
 
-const ProjectsSection = ({ staticData }: { staticData: ArchivingArrayType<IProjectData> }) => {
+const ProjectsSection = ({ staticData }: { staticData: ArchivingArrayType<IProjectData> | null }) => {
   const { data, isLoading } = useQuery<ArchivingArrayType<IProjectData>>({
     queryKey: ['projects'],
     queryFn: getProjects,
+    initialData: staticData ?? undefined,
   });
 
   const [selectedGeneration, setSelectedGeneration] = useState(ALL_OPTION);
   const [selectedCategory, setSelectedCategory] = useState(ALL_OPTION);
 
-  const sortedGroups = sortArchivingListDesc(isLoading ? staticData : (data as ArchivingArrayType<IProjectData>))!;
+  const sortedGroups = useMemo(() => (data ? sortArchivingListDesc(data) : []), [data]);
 
   const flatProjects: FlatProject[] = useMemo(
     () => sortedGroups.flatMap(([generation, projects]) => projects.map((project) => ({ ...project, generation }))),
@@ -82,7 +84,11 @@ const ProjectsSection = ({ staticData }: { staticData: ArchivingArrayType<IProje
           onChange={setSelectedCategory}
         />
       </FilterRow>
-      {sortedProjects.length === 0 ? (
+      {isLoading ? (
+        <LoadingWrapper>
+          <CircularLoading size={32} />
+        </LoadingWrapper>
+      ) : sortedProjects.length === 0 ? (
         <ProjectEmptyState />
       ) : (
         <CardGrid>
@@ -112,6 +118,14 @@ const FilterRow = styled.div`
   @media (max-width: 500px) {
     flex-wrap: wrap;
   }
+`;
+
+const LoadingWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 468px;
 `;
 
 const CardGrid = styled.div`

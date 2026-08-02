@@ -70,9 +70,12 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 export async function getStaticProps({ params }: { params: { project_id: string[] } }) {
-  const projectStaticData = await getProjects();
   const id = params.project_id?.[0];
-  const projectDetailStaticData = id ? await getProjectDetail(id) : null;
+
+  const [projectStaticData, projectDetailStaticData] = await Promise.all([
+    id ? Promise.resolve(null) : getProjects(),
+    id ? getProjectDetail(id) : Promise.resolve(null),
+  ]);
 
   return {
     props: {
