@@ -11,11 +11,18 @@ import IcCalender from '@assets/svg/ic-calender.svg';
 import IcCircleExclamation from '@assets/svg/ic-circle-exclamation.svg';
 import IcLineHorizontal from '@assets/svg/ic-line-horizontal.svg';
 import IcXButton from '@assets/svg/ic-XButton.svg';
+import useFocusTrap from 'src/hooks/useFocusTrap';
 import { BackgroundColor, Fill, Label, Line, Material, Orange, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
-const THUMBNAIL_COUNT = 9;
+const MAX_IMAGE_COUNT = 10;
 const CONTENT_PLACEHOLDER = '예시)이 서비스는 ~~한 서비스입니다\n서비스의 핵심기능\n\n· 이런거\n· 이\n· 이';
+
+const POST_TYPE_LABEL: Record<PostType, string> = {
+  session: '세션',
+  project: '프로젝트',
+  gallery: '추억',
+};
 
 export type PostType = 'session' | 'project' | 'gallery';
 
@@ -29,11 +36,15 @@ export interface PostUploadModalInitialValues {
   dateRange?: [string, string];
 }
 
+export interface PostUploadModalCategoryConfig {
+  label: string;
+  options: string[];
+}
+
 export interface PostUploadModalProps {
   onClose: () => void;
   postType: PostType;
-  categoryLabel?: string;
-  categoryOptions?: string[];
+  category?: PostUploadModalCategoryConfig;
   showWeekField?: boolean;
   dateFieldLabel: string;
   dateMode: 'single' | 'range';
@@ -46,8 +57,7 @@ export interface PostUploadModalProps {
 const PostUploadModal = ({
   onClose,
   postType,
-  categoryLabel,
-  categoryOptions,
+  category: categoryConfig,
   showWeekField = false,
   dateFieldLabel,
   dateMode,
@@ -66,13 +76,17 @@ const PostUploadModal = ({
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
   const [showErrors, setShowErrors] = useState(false);
 
+  const modalRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(modalRef, onClose);
+  const modalAriaLabel = `${POST_TYPE_LABEL[postType]} ${mode === 'edit' ? '수정' : '추가'}`;
+
   const isEmpty = (value: string) => value.trim().length === 0;
   const isDateInvalid = dateMode === 'single' ? isEmpty(date) : isEmpty(dateRange[0]) || isEmpty(dateRange[1]);
   const hasError =
     isEmpty(title) ||
     isEmpty(content) ||
     isEmpty(generation) ||
-    (!!categoryLabel && isEmpty(category)) ||
+    (!!categoryConfig && isEmpty(category)) ||
     (showWeekField && isEmpty(week)) ||
     isDateInvalid;
 
@@ -86,15 +100,15 @@ const PostUploadModal = ({
   };
 
   return (
-    <Backdrop onClick={onClose}>
-      <Modal onClick={(event) => event.stopPropagation()}>
+    <Backdrop>
+      <Modal ref={modalRef} role="dialog" aria-modal="true" aria-label={modalAriaLabel} tabIndex={-1}>
         <Information>
           <ImageUploadGroup>
             <MainThumbnail $empty={mode === 'create'}>
               <FeaturedChip>대표</FeaturedChip>
               {mode === 'create' && (
                 <UploadGuide>
-                  사진을 10장까지 업로드하고
+                  사진을 {MAX_IMAGE_COUNT}장까지 업로드하고
                   <br />
                   표지가 되는 대표사진을 선택해주세요
                 </UploadGuide>
@@ -104,8 +118,9 @@ const PostUploadModal = ({
               <AddThumbnailButton type="button" aria-label="이미지 추가">
                 <IcAdd width={24} height={24} />
               </AddThumbnailButton>
+              {/* TODO: 실제 업로드된 이미지 목록으로 교체 예정 (현재는 edit 모드에서 보여주는 고정 mock 슬롯) */}
               {mode === 'edit' &&
-                Array.from({ length: THUMBNAIL_COUNT }, (_, index) => (
+                Array.from({ length: MAX_IMAGE_COUNT - 1 }, (_, index) => (
                   <ThumbnailSlot key={index} $featured={index === 0}>
                     <RemoveThumbnailButton type="button" aria-label="이미지 삭제">
                       <IcXButton width={24} height={24} />
@@ -159,14 +174,14 @@ const PostUploadModal = ({
                 description={showErrors && isEmpty(generation) ? '기수를 입력해 주세요.' : undefined}
               />
             </NarrowField>
-            {categoryLabel && categoryOptions && (
+            {categoryConfig && (
               <CategorySelect
-                label={categoryLabel}
-                options={categoryOptions}
+                label={categoryConfig.label}
+                options={categoryConfig.options}
                 value={category}
                 onChange={setCategory}
                 status={showErrors && isEmpty(category) ? 'negative' : 'normal'}
-                description={showErrors && isEmpty(category) ? `${categoryLabel}을 선택해 주세요.` : undefined}
+                description={showErrors && isEmpty(category) ? `${categoryConfig.label}을 선택해 주세요.` : undefined}
               />
             )}
             {showWeekField && (
@@ -429,6 +444,7 @@ const Modal = styled.div`
   align-items: center;
   border-radius: 16px;
   background-color: ${BackgroundColor};
+  outline: none;
   z-index: 10000;
 `;
 

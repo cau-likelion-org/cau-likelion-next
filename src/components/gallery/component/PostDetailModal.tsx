@@ -1,3 +1,4 @@
+import { useId, useRef } from 'react';
 import styled from 'styled-components';
 
 import ContentBadge from '@common/badge/ContentBadge';
@@ -5,6 +6,7 @@ import Chip from '@common/chip/Chip';
 import PaginationDots from '@common/pagination/PaginationDots';
 import TextButton from '@common/textButton/TextButton';
 import IcLineHorizontal from '@assets/svg/ic-line-horizontal.svg';
+import useFocusTrap from 'src/hooks/useFocusTrap';
 import { BackgroundColor, Fill, Label, Material } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
@@ -27,9 +29,20 @@ const PostDetailModal = ({
   onEdit,
   onClose,
 }: PostDetailModalProps) => {
+  const titleId = useId();
+  const modalRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(modalRef, onClose);
+
   return (
     <Backdrop onClick={onClose}>
-      <Modal onClick={(event) => event.stopPropagation()}>
+      <Modal
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        tabIndex={-1}
+        onClick={(event) => event.stopPropagation()}
+      >
         <Information>
           <ImageGroup>
             <MainThumbnail />
@@ -37,7 +50,7 @@ const PostDetailModal = ({
           </ImageGroup>
 
           <TextGroup>
-            <Title>{title}</Title>
+            <Title id={titleId}>{title}</Title>
             <BadgeRow>
               {badges.map((badge) => (
                 <ContentBadge key={badge} text={badge} color="accent" size="medium" />
@@ -97,6 +110,7 @@ const Modal = styled.div`
   align-items: center;
   border-radius: 16px;
   background-color: ${BackgroundColor};
+  outline: none;
   z-index: 10000;
 `;
 
