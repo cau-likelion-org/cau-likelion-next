@@ -133,6 +133,7 @@ const Badge = styled.span`
   color: ${Orange.o500};
   white-space: nowrap;
   ${typographyCss(Typography.label2.regular)}
+  font-weight: 500;
 `;
 
 const BadgeRow = styled.div`

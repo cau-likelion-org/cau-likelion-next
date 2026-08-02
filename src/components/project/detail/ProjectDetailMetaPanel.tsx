@@ -3,13 +3,10 @@ import { IcLineHorizontal } from '@assets/svg';
 import Chip from '@common/chip/Chip';
 import { DEV_STACK } from '@utils/constant';
 import { Typography, typographyCss } from '@utils/constant/typography';
-import githubIcon from '@image/github.png';
-import webLinkIcon from '@image/weblink.png';
-import youtubeIcon from '@image/youtube.png';
-import Image from 'next/image';
+import { FiLink } from 'react-icons/fi';
 import styled from 'styled-components';
 
-const LINK_ICON = { web: webLinkIcon, github: githubIcon, youtube: youtubeIcon } as const;
+const LINK_TYPES = ['web', 'github', 'youtube'] as const;
 
 interface ProjectDetailMetaPanelProps {
   date: string;
@@ -45,11 +42,11 @@ const ProjectDetailMetaPanel = ({ date, devStack, link }: ProjectDetailMetaPanel
         </ChipRow>
       </Column>
       <LinkRow>
-        {(Object.keys(LINK_ICON) as Array<keyof typeof LINK_ICON>).map(
+        {LINK_TYPES.map(
           (type) =>
             link[type] && (
               <LinkButton key={type} href={link[type]} target="_blank" rel="noreferrer" aria-label={type}>
-                <Image src={LINK_ICON[type]} alt={type} width={20} height={20} />
+                <FiLink size={20} color="#fff" />
               </LinkButton>
             ),
         )}
