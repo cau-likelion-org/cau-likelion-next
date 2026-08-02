@@ -1,6 +1,6 @@
-import { useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { IcChevronDown } from '@assets/svg';
+import { IcChevronDown, IcCircleExclamation } from '@assets/svg';
 import useOutsideClick from 'src/hooks/useOutsideClick';
 import { BackgroundColor, Fill, Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -18,6 +18,7 @@ interface BlogPostItem {
   url: string;
   generation: string;
   category: string;
+  thumbnailUrl?: string;
 }
 
 const GENERATION_OPTIONS = ['전체', '13기', '12기', '11기'];
@@ -90,18 +91,27 @@ const BlogListSection = () => {
         </FilterRow>
       </Header>
 
-      <PostList>
-        {posts.map((post) => (
-          <BlogCard
-            key={post.id}
-            title={post.title}
-            description={post.description}
-            badges={post.badges}
-            date={post.date}
-            url={post.url}
-          />
-        ))}
-      </PostList>
+      {posts.length === 0 ? (
+        <EmptyState>
+          <IcCircleExclamation width={64} height={64} />
+          <EmptyStateText>조건에 맞는 블로그 글이 없습니다.</EmptyStateText>
+        </EmptyState>
+      ) : (
+        <PostList>
+          {posts.map((post) => (
+            <BlogCard
+              key={post.id}
+              title={post.title}
+              description={post.description}
+              badges={post.badges}
+              date={post.date}
+              url={post.url}
+              thumbnailUrl={post.thumbnailUrl}
+              thumbnailAlt={post.title}
+            />
+          ))}
+        </PostList>
+      )}
     </Wrapper>
   );
 };
@@ -126,23 +136,83 @@ const FilterSelect = ({
   onSelect: (option: string) => void;
 }) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const listId = useId();
+  const [activeIndex, setActiveIndex] = useState(() => Math.max(options.indexOf(value), 0));
   useOutsideClick(wrapperRef, onClose, isOpen);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const timer = setTimeout(() => setActiveIndex(Math.max(options.indexOf(value), 0)), 0);
+    return () => clearTimeout(timer);
+  }, [isOpen, value, options]);
+
+  const moveActive = (nextIndex: number) => {
+    setActiveIndex(Math.min(Math.max(nextIndex, 0), options.length - 1));
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (!isOpen && (event.key === 'ArrowDown' || event.key === 'ArrowUp' || event.key === 'Enter')) {
+      event.preventDefault();
+      onToggle();
+      return;
+    }
+    if (!isOpen) return;
+
+    switch (event.key) {
+      case 'ArrowDown':
+        event.preventDefault();
+        moveActive(activeIndex + 1);
+        break;
+      case 'ArrowUp':
+        event.preventDefault();
+        moveActive(activeIndex - 1);
+        break;
+      case 'Home':
+        event.preventDefault();
+        moveActive(0);
+        break;
+      case 'End':
+        event.preventDefault();
+        moveActive(options.length - 1);
+        break;
+      case 'Enter':
+      case ' ':
+        event.preventDefault();
+        onSelect(options[activeIndex]);
+        break;
+      case 'Escape':
+        event.preventDefault();
+        onClose();
+        break;
+      default:
+        break;
+    }
+  };
 
   return (
     <SelectWrapper ref={wrapperRef}>
       <SelectHeading>{label}</SelectHeading>
-      <SelectTrigger type="button" aria-haspopup="listbox" aria-expanded={isOpen} onClick={onToggle}>
+      <SelectTrigger
+        type="button"
+        aria-haspopup="listbox"
+        aria-expanded={isOpen}
+        aria-activedescendant={isOpen ? `${listId}-${activeIndex}` : undefined}
+        onClick={onToggle}
+        onKeyDown={handleKeyDown}
+      >
         <SelectValue>{value}</SelectValue>
         <ChevronIcon $open={isOpen} width={16} height={16} />
       </SelectTrigger>
       {isOpen && (
-        <OptionList role="listbox">
-          {options.map((option) => (
+        <OptionList role="listbox" id={listId}>
+          {options.map((option, index) => (
             <Option
               key={option}
+              id={`${listId}-${index}`}
               type="button"
               role="option"
               aria-selected={value === option}
+              $active={index === activeIndex}
               onClick={() => onSelect(option)}
             >
               {option}
@@ -256,12 +326,12 @@ const OptionList = styled.div`
   z-index: 1;
 `;
 
-const Option = styled.button`
+const Option = styled.button<{ $active: boolean }>`
   width: 100%;
   padding: 8px;
   border: none;
   border-radius: 8px;
-  background: none;
+  background-color: ${(props) => (props.$active ? Fill.subtle : 'transparent')};
   text-align: left;
   color: ${Label.normal};
   cursor: pointer;
@@ -278,4 +348,23 @@ const PostList = styled.div`
   flex-direction: column;
   align-items: flex-start;
   gap: 22px;
+`;
+
+const EmptyState = styled.div`
+  width: 100%;
+  min-height: 468px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  color: ${Label.assistive};
+`;
+
+const EmptyStateText = styled.p`
+  ${typographyCss(Typography.body1Normal.medium)}
+  color: ${Label.alternative};
+  text-align: center;
+  margin: 0;
 `;
