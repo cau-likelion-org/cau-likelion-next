@@ -35,7 +35,7 @@ const ProjectDetailMetaPanel = ({ date, devStack, link }: ProjectDetailMetaPanel
       <Column>
         <RowLabel>기술스택</RowLabel>
         <ChipRow>
-          {devStack?.map((stack) => (
+          {devStack.map((stack) => (
             <Chip key={stack} size="small">
               {DEV_STACK[stack]}
             </Chip>
