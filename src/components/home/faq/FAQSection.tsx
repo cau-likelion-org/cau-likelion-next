@@ -20,10 +20,8 @@ const FAQS: IFaq[] = [
   { question: QUESTION, answer: ANSWER },
 ];
 
-const DEFAULT_OPEN_INDEXES = [0, 2];
-
 const FAQSection = () => {
-  const [openIndexes, setOpenIndexes] = useState<number[]>(DEFAULT_OPEN_INDEXES);
+  const [openIndexes, setOpenIndexes] = useState<number[]>([]);
 
   const toggle = (index: number) => {
     setOpenIndexes((prev) => (prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]));
