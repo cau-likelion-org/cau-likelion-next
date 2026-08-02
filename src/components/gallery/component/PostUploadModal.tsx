@@ -8,9 +8,10 @@ import TextField from '@common/textField/TextField';
 import Textarea from '@common/textarea/Textarea';
 import IcAdd from '@assets/svg/ic-add.svg';
 import IcCalender from '@assets/svg/ic-calender.svg';
+import IcCircleExclamation from '@assets/svg/ic-circle-exclamation.svg';
 import IcLineHorizontal from '@assets/svg/ic-line-horizontal.svg';
 import IcXButton from '@assets/svg/ic-XButton.svg';
-import { BackgroundColor, Fill, Label, Line, Material, Orange } from '@utils/constant/color';
+import { BackgroundColor, Fill, Label, Line, Material, Orange, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 const THUMBNAIL_COUNT = 9;
@@ -60,7 +61,29 @@ const PostUploadModal = ({
   const [generation, setGeneration] = useState(initialValues?.generation ?? '');
   const [category, setCategory] = useState(initialValues?.category ?? '');
   const [week, setWeek] = useState(initialValues?.week ?? '');
+  const [date, setDate] = useState(initialValues?.date ?? '');
+  const [dateRange, setDateRange] = useState<[string, string]>(initialValues?.dateRange ?? ['', '']);
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
+  const [showErrors, setShowErrors] = useState(false);
+
+  const isEmpty = (value: string) => value.trim().length === 0;
+  const isDateInvalid = dateMode === 'single' ? isEmpty(date) : isEmpty(dateRange[0]) || isEmpty(dateRange[1]);
+  const hasError =
+    isEmpty(title) ||
+    isEmpty(content) ||
+    isEmpty(generation) ||
+    (!!categoryLabel && isEmpty(category)) ||
+    (showWeekField && isEmpty(week)) ||
+    isDateInvalid;
+
+  const handleSubmit = () => {
+    if (hasError) {
+      setShowErrors(true);
+      return;
+    }
+    onSubmit?.();
+    onClose();
+  };
 
   return (
     <Backdrop onClick={onClose}>
@@ -103,6 +126,8 @@ const PostUploadModal = ({
               onChange={(event) => setTitle(event.target.value)}
               resize="fixed"
               bottomTrailingContent={<Counter>{title.length}/70</Counter>}
+              status={showErrors && isEmpty(title) ? 'negative' : 'normal'}
+              description={showErrors && isEmpty(title) ? '제목을 입력해 주세요.' : undefined}
             />
           </FieldGroup>
 
@@ -117,6 +142,8 @@ const PostUploadModal = ({
               onChange={(event) => setContent(event.target.value)}
               resize="fixed"
               bottomTrailingContent={<Counter>{content.length}/300</Counter>}
+              status={showErrors && isEmpty(content) ? 'negative' : 'normal'}
+              description={showErrors && isEmpty(content) ? '내용을 입력해 주세요.' : undefined}
             />
           </FieldGroup>
 
@@ -128,10 +155,19 @@ const PostUploadModal = ({
                 placeholder="숫자 입력"
                 value={generation}
                 onChange={(event) => setGeneration(event.target.value)}
+                status={showErrors && isEmpty(generation) ? 'negative' : 'normal'}
+                description={showErrors && isEmpty(generation) ? '기수를 입력해 주세요.' : undefined}
               />
             </NarrowField>
             {categoryLabel && categoryOptions && (
-              <CategorySelect label={categoryLabel} options={categoryOptions} value={category} onChange={setCategory} />
+              <CategorySelect
+                label={categoryLabel}
+                options={categoryOptions}
+                value={category}
+                onChange={setCategory}
+                status={showErrors && isEmpty(category) ? 'negative' : 'normal'}
+                description={showErrors && isEmpty(category) ? `${categoryLabel}을 선택해 주세요.` : undefined}
+              />
             )}
             {showWeekField && (
               <NarrowField>
@@ -141,6 +177,8 @@ const PostUploadModal = ({
                   placeholder="숫자 입력"
                   value={week}
                   onChange={(event) => setWeek(event.target.value)}
+                  status={showErrors && isEmpty(week) ? 'negative' : 'normal'}
+                  description={showErrors && isEmpty(week) ? '주차를 입력해 주세요.' : undefined}
                 />
               </NarrowField>
             )}
@@ -184,7 +222,17 @@ const PostUploadModal = ({
                 {dateFieldLabel}
                 <RequiredSmall>*</RequiredSmall>
               </FieldHeadingSmall>
-              <DateField mode={dateMode} initialValue={initialValues?.date} initialRange={initialValues?.dateRange} />
+              <DateField
+                mode={dateMode}
+                value={date}
+                onChange={setDate}
+                rangeValue={dateRange}
+                onRangeChange={(index, value) =>
+                  setDateRange((prev) => (index === 0 ? [value, prev[1]] : [prev[0], value]))
+                }
+                invalid={showErrors && isDateInvalid}
+              />
+              {showErrors && isDateInvalid && <DateDescription>날짜를 선택해 주세요.</DateDescription>}
             </RowField>
           </Row>
         </Information>
@@ -211,15 +259,7 @@ const PostUploadModal = ({
             <Button variant="outlined" color="assistive" size="large" onClick={onClose}>
               취소
             </Button>
-            <Button
-              variant="solid"
-              color="primary"
-              size="large"
-              onClick={() => {
-                onSubmit?.();
-                onClose();
-              }}
-            >
+            <Button variant="solid" color="primary" size="large" onClick={handleSubmit}>
               {mode === 'edit' ? '저장하기' : '등록하기'}
             </Button>
           </ActionGroup>
@@ -236,11 +276,15 @@ const CategorySelect = ({
   options,
   value,
   onChange,
+  status,
+  description,
 }: {
   label: string;
   options: string[];
   value: string;
   onChange: (value: string) => void;
+  status?: 'normal' | 'positive' | 'negative';
+  description?: string;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -253,6 +297,8 @@ const CategorySelect = ({
         value={value}
         onClick={() => setIsOpen((prev) => !prev)}
         aria-expanded={isOpen}
+        status={status}
+        description={description}
       />
       {isOpen && (
         <OptionList role="listbox">
@@ -279,24 +325,32 @@ const CategorySelect = ({
 const SingleDateInput = ({
   placeholder,
   ariaLabel,
-  initialValue = '',
+  value,
+  onChange,
+  invalid = false,
 }: {
   placeholder: string;
   ariaLabel: string;
-  initialValue?: string;
+  value: string;
+  onChange: (value: string) => void;
+  invalid?: boolean;
 }) => {
-  const [date, setDate] = useState(initialValue);
   const inputRef = useRef<HTMLInputElement>(null);
 
   return (
-    <DateInputWrapper onClick={() => inputRef.current?.showPicker?.()}>
+    <DateInputWrapper $invalid={invalid} onClick={() => inputRef.current?.showPicker?.()}>
       <IcCalender width={22} height={22} />
-      <DateValue $placeholder={!date}>{date || placeholder}</DateValue>
+      <DateValue $placeholder={!value}>{value || placeholder}</DateValue>
+      {invalid && (
+        <IconSlot>
+          <IcCircleExclamation width={22} height={22} />
+        </IconSlot>
+      )}
       <HiddenDateInput
         ref={inputRef}
         type="date"
-        value={date}
-        onChange={(event) => setDate(event.target.value)}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
         aria-label={ariaLabel}
       />
     </DateInputWrapper>
@@ -305,25 +359,51 @@ const SingleDateInput = ({
 
 const DateField = ({
   mode,
-  initialValue,
-  initialRange,
+  value,
+  onChange,
+  rangeValue,
+  onRangeChange,
+  invalid = false,
 }: {
   mode: 'single' | 'range';
-  initialValue?: string;
-  initialRange?: [string, string];
+  value?: string;
+  onChange?: (value: string) => void;
+  rangeValue?: [string, string];
+  onRangeChange?: (index: 0 | 1, value: string) => void;
+  invalid?: boolean;
 }) => {
   if (mode === 'single') {
-    return <SingleDateInput placeholder="캘린더 선택" ariaLabel="일자" initialValue={initialValue} />;
+    return (
+      <SingleDateInput
+        placeholder="캘린더 선택"
+        ariaLabel="일자"
+        value={value ?? ''}
+        onChange={(next) => onChange?.(next)}
+        invalid={invalid}
+      />
+    );
   }
 
   return (
     <DateRangeRow>
       <DateRangeItem>
-        <SingleDateInput placeholder="시작일 선택" ariaLabel="시작일" initialValue={initialRange?.[0]} />
+        <SingleDateInput
+          placeholder="시작일 선택"
+          ariaLabel="시작일"
+          value={rangeValue?.[0] ?? ''}
+          onChange={(next) => onRangeChange?.(0, next)}
+          invalid={invalid}
+        />
       </DateRangeItem>
       <DateRangeDivider width={16} height={16} />
       <DateRangeItem>
-        <SingleDateInput placeholder="종료일 선택" ariaLabel="종료일" initialValue={initialRange?.[1]} />
+        <SingleDateInput
+          placeholder="종료일 선택"
+          ariaLabel="종료일"
+          value={rangeValue?.[1] ?? ''}
+          onChange={(next) => onRangeChange?.(1, next)}
+          invalid={invalid}
+        />
       </DateRangeItem>
     </DateRangeRow>
   );
@@ -551,7 +631,7 @@ const RadioItem = styled.div`
   min-width: 0;
 `;
 
-const DateInputWrapper = styled.div`
+const DateInputWrapper = styled.div<{ $invalid: boolean }>`
   position: relative;
   display: flex;
   align-items: center;
@@ -562,14 +642,28 @@ const DateInputWrapper = styled.div`
   border-radius: 12px;
   background-color: rgba(255, 255, 255, 0.08);
   color: ${Label.normal};
-  box-shadow:
-    inset 0 0 0 1px ${Line.normal},
-    0 1px 2px -1px rgba(23, 23, 23, 0.1);
+  box-shadow: ${(props) =>
+    props.$invalid
+      ? 'inset 0 0 0 1px rgba(255, 0, 0, 0.28), 0 1px 2px -1px rgba(23, 23, 23, 0.1)'
+      : `inset 0 0 0 1px ${Line.normal}, 0 1px 2px -1px rgba(23, 23, 23, 0.1)`};
   cursor: pointer;
 
   &:focus-within {
     box-shadow: inset 0 0 0 2px rgba(71, 172, 255, 0.43);
   }
+`;
+
+const IconSlot = styled.span`
+  display: flex;
+  flex-shrink: 0;
+  color: ${State.error};
+`;
+
+const DateDescription = styled.p`
+  margin: 0;
+  width: 100%;
+  color: ${State.error};
+  ${typographyCss(Typography.caption1.regular)}
 `;
 
 const DateRangeRow = styled.div`
