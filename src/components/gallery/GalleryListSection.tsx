@@ -11,6 +11,7 @@ import useOutsideClick from 'src/hooks/useOutsideClick';
 import { BackgroundColor, Fill, Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
+import { CATEGORY_OPTIONS } from './component/constants';
 import HistoryDetailModal from './component/HistoryDetailModal';
 import HistoryEditModal from './component/HistoryEditModal';
 import HistoryUploadModal from './component/HistoryUploadModal';
@@ -22,7 +23,7 @@ import SessionEditModal from './component/SessionEditModal';
 import SessionUploadModal from './component/SessionUploadModal';
 
 type GalleryTabKey = 'session' | 'project' | 'gallery';
-type FilterKey = 'generation' | 'track';
+type FilterKey = 'generation' | 'track' | 'category';
 
 interface GalleryCardItem {
   id: number;
@@ -63,7 +64,8 @@ const ADD_BUTTON_LABEL: Record<GalleryTabKey, string> = {
 };
 
 const GENERATION_OPTIONS = ['전체', '13기', '12기', '11기'];
-const TRACK_OPTIONS = ['전체', '기획디자인', '프론트엔드', '백엔드'];
+const TRACK_FILTER_OPTIONS = ['전체', '기획디자인', '프론트엔드', '백엔드'];
+const PROJECT_CATEGORY_FILTER_OPTIONS = ['전체', ...CATEGORY_OPTIONS];
 const WIKI_URL = 'https://wiki.cau-likelion.org';
 const MOCK_CONTENT = '예시)이 서비스는 ~~한 서비스입니다\n서비스의 핵심기능\n\n· 이런거\n· 이\n· 이';
 
@@ -103,7 +105,8 @@ const CARDS_BY_TAB: Record<GalleryTabKey, GalleryCardItem[]> = {
 const GalleryListSection = () => {
   const [activeTab, setActiveTab] = useState<GalleryTabKey>('session');
   const [generation, setGeneration] = useState(GENERATION_OPTIONS[0]);
-  const [track, setTrack] = useState(TRACK_OPTIONS[0]);
+  const [track, setTrack] = useState(TRACK_FILTER_OPTIONS[0]);
+  const [projectCategory, setProjectCategory] = useState(PROJECT_CATEGORY_FILTER_OPTIONS[0]);
   const [openFilter, setOpenFilter] = useState<FilterKey | null>(null);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [selectedCard, setSelectedCard] = useState<GalleryCardItem | null>(null);
@@ -140,8 +143,12 @@ const GalleryListSection = () => {
 
   const cards = CARDS_BY_TAB[activeTab].filter((card) => {
     const matchesGeneration = generation === GENERATION_OPTIONS[0] || `${card.generation}기` === generation;
-    const matchesTrack = activeTab !== 'session' || track === TRACK_OPTIONS[0] || card.category === track;
-    return matchesGeneration && matchesTrack;
+    const matchesTrack = activeTab !== 'session' || track === TRACK_FILTER_OPTIONS[0] || card.category === track;
+    const matchesCategory =
+      activeTab !== 'project' ||
+      projectCategory === PROJECT_CATEGORY_FILTER_OPTIONS[0] ||
+      card.category === projectCategory;
+    return matchesGeneration && matchesTrack && matchesCategory;
   });
 
   const UploadModal = UPLOAD_MODAL_BY_TAB[activeTab];
@@ -218,18 +225,34 @@ const GalleryListSection = () => {
                 setOpenFilter(null);
               }}
             />
-            <FilterSelect
-              label="파트 구분"
-              value={track}
-              options={TRACK_OPTIONS}
-              isOpen={openFilter === 'track'}
-              onToggle={() => setOpenFilter((prev) => (prev === 'track' ? null : 'track'))}
-              onClose={() => setOpenFilter(null)}
-              onSelect={(option) => {
-                setTrack(option);
-                setOpenFilter(null);
-              }}
-            />
+            {activeTab === 'session' && (
+              <FilterSelect
+                label="파트 구분"
+                value={track}
+                options={TRACK_FILTER_OPTIONS}
+                isOpen={openFilter === 'track'}
+                onToggle={() => setOpenFilter((prev) => (prev === 'track' ? null : 'track'))}
+                onClose={() => setOpenFilter(null)}
+                onSelect={(option) => {
+                  setTrack(option);
+                  setOpenFilter(null);
+                }}
+              />
+            )}
+            {activeTab === 'project' && (
+              <FilterSelect
+                label="프로젝트 구분"
+                value={projectCategory}
+                options={PROJECT_CATEGORY_FILTER_OPTIONS}
+                isOpen={openFilter === 'category'}
+                onToggle={() => setOpenFilter((prev) => (prev === 'category' ? null : 'category'))}
+                onClose={() => setOpenFilter(null)}
+                onSelect={(option) => {
+                  setProjectCategory(option);
+                  setOpenFilter(null);
+                }}
+              />
+            )}
           </FilterGroup>
           <Button
             variant="solid"
