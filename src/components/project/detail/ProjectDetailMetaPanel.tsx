@@ -2,6 +2,7 @@ import { IProjectDetail } from '@@types/request';
 import { IcLineHorizontal } from '@assets/svg';
 import Chip from '@common/chip/Chip';
 import { DEV_STACK } from '@utils/constant';
+import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { FiLink } from 'react-icons/fi';
 import styled from 'styled-components';
@@ -25,7 +26,7 @@ const ProjectDetailMetaPanel = ({ date, devStack, link }: ProjectDetailMetaPanel
           <Chip size="small">{startDate}</Chip>
           {endDate && (
             <>
-              <IcLineHorizontal width={24} height={24} />
+              <IcLineHorizontal width={24} height={24} style={{ color: Label.assistive }} />
               <Chip size="small">{endDate}</Chip>
             </>
           )}
