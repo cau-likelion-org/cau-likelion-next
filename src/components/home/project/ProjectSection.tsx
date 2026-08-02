@@ -43,7 +43,7 @@ const ProjectSection = () => {
       >
         {SLIDES.map((project, index) => (
           <SwiperSlide key={index}>
-            <ProjectCard {...project} onClick={() => router.push('/project')} />
+            <ProjectCard {...project} href="/project" />
           </SwiperSlide>
         ))}
       </CardSwiper>

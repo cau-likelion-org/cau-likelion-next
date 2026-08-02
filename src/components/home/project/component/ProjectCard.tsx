@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import styled from 'styled-components';
 
 import ContentBadge from '@common/badge/ContentBadge';
@@ -12,25 +13,27 @@ export interface IProject {
   award?: string;
 }
 
-const ProjectCard = ({ name, generation, category, award, onClick }: IProject & { onClick?: () => void }) => {
+const ProjectCard = ({ name, generation, category, award, href }: IProject & { href: string }) => {
   return (
-    <Wrapper onClick={onClick}>
-      <ThumbnailArea>
-        {award && (
-          <AwardBanner>
-            <LogoTrophy width={24} height={24} />
-            <AwardText>{award}</AwardText>
-          </AwardBanner>
-        )}
-      </ThumbnailArea>
-      <Container>
-        <Name>{name}</Name>
-        <BadgeRow>
-          <ContentBadge text={generation} color="accent" size="medium" />
-          <ContentBadge text={category} color="accent" size="medium" />
-        </BadgeRow>
-      </Container>
-    </Wrapper>
+    <Link href={href}>
+      <Wrapper>
+        <ThumbnailArea>
+          {award && (
+            <AwardBanner>
+              <LogoTrophy width={24} height={24} />
+              <AwardText>{award}</AwardText>
+            </AwardBanner>
+          )}
+        </ThumbnailArea>
+        <Container>
+          <Name>{name}</Name>
+          <BadgeRow>
+            <ContentBadge text={generation} color="accent" size="medium" />
+            <ContentBadge text={category} color="accent" size="medium" />
+          </BadgeRow>
+        </Container>
+      </Wrapper>
+    </Link>
   );
 };
 
