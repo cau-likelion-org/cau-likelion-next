@@ -94,6 +94,13 @@ const ModalCard = styled.div`
   max-width: 100%;
   max-height: 90vh;
   overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
   border-radius: 16px;
   background-color: #fff;
 `;
