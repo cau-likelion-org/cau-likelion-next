@@ -1,11 +1,11 @@
 import { useDragIndexCarousel, useInterval } from '@rapiders/react-hooks';
-import { Orange } from '@utils/constant/color';
+import { Label } from '@utils/constant/color';
 import Image from 'next/image';
 import { useEffect } from 'react';
 import styled from 'styled-components';
 
 const ProjectDetailCarousel = ({ images }: { images: string[] }) => {
-  const { CarouselWrapper, ref, next, index, isDragging } = useDragIndexCarousel(images.length, { infinity: true });
+  const { CarouselWrapper, ref, next, index, isDragging } = useDragIndexCarousel(images.length);
   const { stop, continueTimer } = useInterval(next, 4000);
 
   useEffect(() => {
@@ -76,6 +76,6 @@ const Dot = styled.div<{ $active: boolean }>`
   width: 10px;
   height: 10px;
   border-radius: 999px;
-  background-color: ${Orange.o500};
+  background-color: ${Label.normal};
   opacity: ${(props) => (props.$active ? 1 : 0.16)};
 `;
