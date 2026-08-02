@@ -18,6 +18,12 @@ const nextConfig = {
     ],
   },
   async headers() {
+    // 개발 모드에서는 /_next/static 청크가 프로덕션처럼 콘텐츠 해시로 고정되지 않아,
+    // immutable 캐시를 적용하면 브라우저가 재컴파일된 새 코드 대신 예전 청크를 계속 써버린다.
+    if (process.env.NODE_ENV !== 'production') {
+      return [];
+    }
+
     return [
       {
         source: '/_next/static/:path*',
