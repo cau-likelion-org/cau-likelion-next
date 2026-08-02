@@ -1,22 +1,23 @@
-import { useDragIndexCarousel, useInterval } from '@rapiders/react-hooks';
 import { Label } from '@utils/constant/color';
 import Image from 'next/image';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 const ProjectDetailCarousel = ({ images }: { images: string[] }) => {
-  const { CarouselWrapper, ref, next, index, isDragging } = useDragIndexCarousel(images.length);
-  const { stop, continueTimer } = useInterval(next, 4000);
+  const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
-    if (isDragging) stop();
-    else continueTimer();
-  }, [isDragging]);
+    if (images.length <= 1) return undefined;
+    const timer = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % images.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [images.length]);
 
   return (
     <Wrapper>
       <ThumbnailFrame>
-        <CarouselWrapper ref={ref} style={{ width: '100%', height: '100%' }}>
+        <SlideTrack style={{ transform: `translateX(-${activeIndex * 100}%)` }}>
           {images.map((image) => (
             <ImageSlide key={image}>
               <Image
@@ -28,12 +29,18 @@ const ProjectDetailCarousel = ({ images }: { images: string[] }) => {
               />
             </ImageSlide>
           ))}
-        </CarouselWrapper>
+        </SlideTrack>
       </ThumbnailFrame>
       {images.length > 1 && (
         <Dots>
           {images.map((image, i) => (
-            <Dot key={image} $active={index === i} />
+            <Dot
+              key={image}
+              type="button"
+              aria-label={`${i + 1}번째 이미지 보기`}
+              $active={activeIndex === i}
+              onClick={() => setActiveIndex(i)}
+            />
           ))}
         </Dots>
       )}
@@ -60,10 +67,18 @@ const ThumbnailFrame = styled.div`
   background-color: #f5f7f9;
 `;
 
+const SlideTrack = styled.div`
+  display: flex;
+  width: 100%;
+  height: 100%;
+  transition: transform 300ms ease-out;
+`;
+
 const ImageSlide = styled.div`
   position: relative;
   width: 100%;
   height: 100%;
+  flex-shrink: 0;
 `;
 
 const Dots = styled.div`
@@ -72,10 +87,13 @@ const Dots = styled.div`
   gap: 10px;
 `;
 
-const Dot = styled.div<{ $active: boolean }>`
+const Dot = styled.button<{ $active: boolean }>`
   width: 10px;
   height: 10px;
+  padding: 0;
+  border: none;
   border-radius: 999px;
   background-color: ${Label.normal};
   opacity: ${(props) => (props.$active ? 1 : 0.16)};
+  cursor: pointer;
 `;
