@@ -44,6 +44,7 @@ const nextConfig = {
       alias: {
         '@common': path.resolve(__dirname, 'src/components/common'),
         '@home': path.resolve(__dirname, 'src/components/home'),
+        '@about': path.resolve(__dirname, 'src/components/about'),
         '@gallery': path.resolve(__dirname, 'src/components/gallery'),
         '@project': path.resolve(__dirname, 'src/components/project'),
         '@session': path.resolve(__dirname, 'src/components/session'),
