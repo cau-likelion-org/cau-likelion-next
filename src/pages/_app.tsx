@@ -1,4 +1,5 @@
 import '@styles/global.css';
+import 'swiper/css';
 import Head from 'next/head';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { AppProps } from 'next/app';

@@ -1,124 +1,187 @@
-import React from 'react';
 import styled from 'styled-components';
-import QuestionLion from '@image/가치_물음표 사자.gif';
-import Image, { StaticImageData } from 'next/image';
-import FadeInComponent from '@home/common/FadeInComponent';
-import CircleComponent from './component/CircleComponent';
-import 해커톤 from '@image/해커톤.png';
-import 아이디어톤 from '@image/아이디어톤.png';
-import 스터디 from '@image/스터디.png';
-import 정기세션 from '@image/정기세션.png';
-import 중커톤 from '@image/중커톤.png';
+import { useRouter } from 'next/router';
 
-export interface IActivityData {
+import Button from '@common/button/Button';
+import { IcChevronDown } from '@assets/svg';
+import { Black, BackgroundWhite, BackgroundLight, Line, Fill, Orange } from '@utils/constant/color';
+import { Typography, typographyCss } from '@utils/constant/typography';
+
+interface IActivity {
   title: string;
-  text: string;
-  image: StaticImageData;
+  subtitle: string;
+  description: string;
+  buttonText: string;
+  href: string;
 }
+
+const DESCRIPTION =
+  '소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글';
+const SUBTITLE = '일주일에 1번 정기적 대면 모임';
+
+const ACTIVITIES: IActivity[] = [
+  { title: '세션', subtitle: SUBTITLE, description: DESCRIPTION, buttonText: '파트별 커리큘럼 보기', href: '#' },
+  { title: '프로젝트', subtitle: SUBTITLE, description: DESCRIPTION, buttonText: '프로젝트 더보기', href: '/project' },
+  { title: '선배와의 만남', subtitle: SUBTITLE, description: DESCRIPTION, buttonText: '더보기', href: '/gallery' },
+  { title: '스터디', subtitle: SUBTITLE, description: DESCRIPTION, buttonText: '더보기', href: '/gallery' },
+  { title: '소모임', subtitle: SUBTITLE, description: DESCRIPTION, buttonText: '더보기', href: '/gallery' },
+];
+
 const ActivitySection = () => {
-  const data = [
-    {
-      title: '정기세션',
-      text: '트랙별 정기 세션',
-      image: 정기세션,
-    },
-    {
-      title: '아이디어톤',
-      text: '해커톤을 위한 청사진',
-      image: 아이디어톤,
-    },
-    {
-      title: '해커톤',
-      text: '아이디어 실현의 장',
-      image: 해커톤,
-    },
-    {
-      title: '중커톤',
-      text: '중앙대 멋사만의 해커톤',
-      image: 중커톤,
-    },
-    {
-      title: '스터디',
-      text: '함께 공부하며 성장하기',
-      image: 스터디,
-    },
-  ] as IActivityData[];
+  const router = useRouter();
+
   return (
-    <FadeInComponent>
-      <Wrapper>
-        <ImageWrapper>
-          <Image src={QuestionLion} fill style={{ objectFit: 'fill', objectPosition: 'center' }} alt="소개하는 사자" />
-        </ImageWrapper>
-        <TitleText>멋사의 다양한 활동</TitleText>
-        <ThreeCircleWrapper>
-          {Array.from({ length: 3 }).map((_, index) => (
-            <CircleComponent key={index} data={data[index]} />
-          ))}
-        </ThreeCircleWrapper>
-        <TwoCircleWrapper>
-          {Array.from({ length: 2 }).map((_, index) => (
-            <CircleComponent key={index + 3} data={data[index + 3]} />
-          ))}
-        </TwoCircleWrapper>
-      </Wrapper>
-    </FadeInComponent>
+    <Wrapper>
+      <Content>
+        <Title>활동 소개</Title>
+        <ListGroup>
+          <List>
+            {ACTIVITIES.map(({ title, subtitle, description, buttonText, href }) => (
+              <Card key={title}>
+                <TextGroup>
+                  <CardTitle>{title}</CardTitle>
+                  <CardSubtitle>{subtitle}</CardSubtitle>
+                  <CardDescription>{description}</CardDescription>
+                </TextGroup>
+                <Thumbnail />
+                <HoverButtonWrapper>
+                  <Button
+                    size="large"
+                    variant="solid"
+                    color="primary"
+                    trailingIcon={<ChevronRightIcon />}
+                    onClick={() => router.push(href)}
+                  >
+                    {buttonText}
+                  </Button>
+                </HoverButtonWrapper>
+              </Card>
+            ))}
+          </List>
+          <Footnote>*출처정보 (2026년 02월 기준)</Footnote>
+        </ListGroup>
+      </Content>
+    </Wrapper>
   );
 };
 
 export default ActivitySection;
 
 const Wrapper = styled.div`
+  width: 1440px;
+  padding: 80px 0;
+  display: flex;
+  justify-content: center;
+  background-color: ${BackgroundLight.secondary};
+  scroll-snap-align: start;
+`;
+
+const Content = styled.div`
+  width: 1060px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 52px;
+`;
+
+const Title = styled.p`
+  ${typographyCss(Typography.display2.bold)}
+  color: ${Black.b900};
+  margin: 0;
+`;
+
+const ListGroup = styled.div`
   width: 100%;
-  @media (min-width: 1850px) {
-    margin-top: 20rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 28px;
+`;
+
+const List = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+`;
+
+const Thumbnail = styled.div`
+  flex-shrink: 0;
+  width: 300px;
+  height: 169px;
+  border-radius: 12px;
+  background-color: ${Fill.normal};
+`;
+
+const HoverButtonWrapper = styled.div`
+  display: none;
+  flex-shrink: 0;
+  align-self: flex-end;
+`;
+
+const Card = styled.div`
+  width: 100%;
+  min-height: 233px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 32px;
+  border-radius: 22px;
+  background-color: ${BackgroundWhite.secondary};
+  box-shadow: inset 0 0 0 1px ${Line.subtle};
+
+  &:hover {
+    justify-content: space-between;
+    gap: 0;
+    background-color: ${Orange.o50};
+    box-shadow: inset 0 0 0 1px ${Orange.o500};
+
+    ${Thumbnail} {
+      display: none;
+    }
+
+    ${HoverButtonWrapper} {
+      display: flex;
+    }
   }
 `;
 
-const ThreeCircleWrapper = styled.div`
+const TextGroup = styled.div`
+  width: 676px;
+  flex-shrink: 0;
   display: flex;
-  justify-content: space-evenly;
-  gap: 50px;
-  @media (max-width: 400px) {
-    gap: 20px;
-  }
-`;
-const TwoCircleWrapper = styled.div`
-  display: flex;
-  gap: 50px;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
 `;
 
-const ImageWrapper = styled.div`
-  position: relative;
-  width: 150px;
-  height: 150px;
-  @media (max-width: 900px) {
-    width: 80px;
-    height: 80px;
-  }
-  @media (max-width: 1200px) {
-    width: 130px;
-    height: 130px;
-  }
-  filter: brightness(50%);
-  border-radius: 50%;
+const CardTitle = styled.p`
+  ${typographyCss(Typography.title2.bold)}
+  color: ${Black.b900};
+  margin: 0;
 `;
 
-const TitleText = styled.div`
-  display: flex;
-  justify-content: flex-start;
-  font-family: 'Gmarket Sans';
-  font-style: normal;
-  font-weight: 800;
-  line-height: 4rem;
-  margin: 2.5rem 0;
-  font-size: 3rem;
-  @media (max-width: 900px) {
-    justify-content: center;
-    font-size: 2.5rem;
-  }
+const CardSubtitle = styled.p`
+  ${typographyCss(Typography.headline1.regular)}
+  color: ${Black.b80};
+  margin: 0;
+`;
+
+const CardDescription = styled.p`
+  ${typographyCss(Typography.body1Normal.medium)}
+  color: ${Black.b900};
+  margin: 0;
+`;
+
+const ChevronRightIcon = styled(IcChevronDown)`
+  width: 16px;
+  height: 16px;
+  transform: rotate(-90deg);
+`;
+
+const Footnote = styled.p`
+  ${typographyCss(Typography.caption1.regular)}
+  color: ${Black.b50};
+  align-self: flex-start;
+  margin: 0;
 `;

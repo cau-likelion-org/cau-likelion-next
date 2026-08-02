@@ -1,71 +1,84 @@
-import FadeInComponent from '@home/common/FadeInComponent';
-import { Variants } from 'framer-motion';
 import styled from 'styled-components';
-import ProjectButton from './component/ProjectButton';
-import ProjectSlider from './component/ProjectSlider';
+import { useRouter } from 'next/router';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay } from 'swiper/modules';
 
-const fadeInAnimation: Variants = {
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 1 },
-  },
-  hidden: {
-    opacity: 0,
-    y: -100,
-  },
-};
+import Button from '@common/button/Button';
+import { Black } from '@utils/constant/color';
+import { Typography, typographyCss } from '@utils/constant/typography';
+
+import ProjectCard, { IProject } from './component/ProjectCard';
+
+const PROJECTS: IProject[] = [
+  { name: '서비스명', generation: '13기', category: '아이디어톤' },
+  { name: '서비스명', generation: '13기', category: '아이디어톤' },
+  { name: '서비스명', generation: '13기', category: '아이디어톤', award: '일이상사오일이상사오일이상사오' },
+  { name: '서비스명', generation: '13기', category: '아이디어톤' },
+  { name: '서비스명', generation: '13기', category: '아이디어톤' },
+];
+
+// Swiper's loop mode needs roughly 2x slidesPerView worth of real slides to cycle smoothly,
+// so the 5 real projects are repeated to give it enough material.
+const REPEAT_COUNT = 3;
+const SLIDES = Array.from({ length: REPEAT_COUNT }, () => PROJECTS).flat();
+const FEATURED_INDEX = PROJECTS.findIndex((project) => project.award);
+const INITIAL_SLIDE = FEATURED_INDEX === -1 ? 0 : PROJECTS.length + FEATURED_INDEX;
 
 const ProjectSection = () => {
+  const router = useRouter();
+
   return (
-    <FadeInComponent variants={fadeInAnimation}>
-      <Wrapper>
-        <TitleWrapper>
-          <Title>프로젝트 소개</Title>
-          <Text>멋쟁이사자처럼에서 탄생한 서비스들을 소개합니다. </Text>
-        </TitleWrapper>
-        <ProjectSlider />
-        <ButtonWrapper>
-          <ProjectButton />
-        </ButtonWrapper>
-      </Wrapper>
-    </FadeInComponent>
+    <Wrapper>
+      <Title>프로젝트</Title>
+      <CardSwiper
+        modules={[Autoplay]}
+        slidesPerView="auto"
+        centeredSlides
+        loop
+        observer
+        observeParents
+        spaceBetween={32}
+        initialSlide={INITIAL_SLIDE}
+        autoplay={{ delay: 3000, disableOnInteraction: false }}
+      >
+        {SLIDES.map((project, index) => (
+          <SwiperSlide key={index}>
+            <ProjectCard {...project} href="/project" />
+          </SwiperSlide>
+        ))}
+      </CardSwiper>
+      <Button size="large" variant="solid" color="assistive" onClick={() => router.push('/project')}>
+        프로젝트 더보기
+      </Button>
+    </Wrapper>
   );
 };
 
 export default ProjectSection;
+
 const Wrapper = styled.div`
-  height: 100%;
-  width: 100%;
-`;
-const TitleWrapper = styled.div`
-  margin-top: 6rem;
+  width: 1060px;
+  padding: 80px 0;
   display: flex;
-  margin-bottom: 4rem;
-  align-items: center;
   flex-direction: column;
-  @media (min-width: 1850px) {
-    margin-top: 30rem;
-  }
+  align-items: center;
+  gap: 52px;
+  scroll-snap-align: start;
 `;
-const Title = styled.div`
-  font-family: 'Gmarket Sans';
-  font-weight: 700;
-  font-size: 3rem;
-  @media (max-width: 900px) {
-    font-size: 2.5rem;
-  }
+
+const Title = styled.p`
+  ${typographyCss(Typography.display2.bold)}
+  color: ${Black.b900};
+  margin: 0;
 `;
-const Text = styled.div`
-  font-family: 'Gmarket Sans';
-  font-weight: 500;
-  font-size: 17px;
-  margin-top: 23px;
-  @media (max-width: 900px) {
-    font-size: 1.5rem;
+
+const CardSwiper = styled(Swiper)`
+  width: calc(100% + 380px);
+  margin-left: -190px;
+  margin-right: -190px;
+  padding: 32px 0 50px;
+
+  .swiper-slide {
+    width: 340px;
   }
-`;
-const ButtonWrapper = styled.div`
-  display: flex;
-  justify-content: center;
 `;

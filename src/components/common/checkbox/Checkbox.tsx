@@ -2,8 +2,7 @@ import { useEffect, useId, useRef } from 'react';
 import type { ReactNode } from 'react';
 import styled, { css } from 'styled-components';
 
-import IcCheck from '@assets/svg/ic-check.svg';
-import IcLineHorizontal from '@assets/svg/ic-line-horizontal.svg';
+import { IcCheck, IcLineHorizontal } from '@assets/svg';
 import { BackgroundColor, Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import type { TypographyToken } from '@utils/constant/typography';

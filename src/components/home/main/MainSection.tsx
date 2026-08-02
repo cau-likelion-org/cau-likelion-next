@@ -1,66 +1,52 @@
-import Image from 'next/image';
-import union from '@image/union.png';
-import generationDia from '@image/generationDia.png';
-import circle from '@image/circle.png';
-import loadingPic from '@image/loading.png';
+import { useState } from 'react';
 import styled from 'styled-components';
-import { Primary } from '@utils/constant/color';
-import LandingRectangle from '@image/landingRectangle.svg';
-import { motion } from 'framer-motion';
-import { HiOutlineArrowDown } from 'react-icons/hi';
-import { GENERATION_CHECKER } from '@utils/constant';
+import { HiOutlineBell } from 'react-icons/hi';
+import Button from '@common/button/Button';
+import { Black } from '@utils/constant/color';
+import { Typography, typographyCss } from '@utils/constant/typography';
+import BgLanding from 'src/assets/svg/bg-landing.svg';
+import LogoLikelion from 'src/assets/svg/logo/logo-likelion.svg';
+import LogoX from 'src/assets/svg/logo/logo-x.svg';
+import LogoCAU from 'src/assets/svg/logo/logo-cau.svg';
+import LogoCatchphrase from 'src/assets/svg/logo/logo-catchphrase.svg';
 
-const MainSection = ({ clickMore }: { clickMore: () => void }) => {
-  const generation = new Date().getFullYear() - GENERATION_CHECKER;
+import RecruitNotifyModal from './RecruitNotifyModal';
+
+const DESCRIPTION =
+  '중앙대학교 멋쟁이사자처럼은 중앙대 학생들로 이루어진 IT 창업 동아리입니다\n아이디어를 현실로 만들고, 세계를 향한 첫 발자국을 멋쟁이사자처럼에서 내딛어보세요';
+
+const MainSection = () => {
+  const [isRecruitModalOpen, setIsRecruitModalOpen] = useState(false);
 
   return (
     <Wrapper>
-      <MainWrapper>
-        <LeftSection>
-          <LionWrapper>
-            {Array.from({ length: 3 }).map((_, i) => (
-              <ImageWrapper key={i} animate={animationSetting(i)}>
-                <Lion key={i} src={loadingPic} fill style={{ objectFit: 'cover', objectPosition: 'center' }} alt="사자 이미지" />
-              </ImageWrapper>
-            ))}
-          </LionWrapper>
-          <TextWrapper>
-            <UnionTextWrapper>
-              <BlueBlockText>멋쟁이</BlueBlockText>
-              <UnionText className="union">
-                <Union src={union} alt="" />
-              </UnionText>
-            </UnionTextWrapper>
-            <BlueBlockText>사자처럼</BlueBlockText>
-            <LandingRectangle style={{ marginTop: '22px' }} />
-            <WhiteBlockText>중앙대학교</WhiteBlockText>
-          </TextWrapper>
-        </LeftSection>
+      <BgLanding width={1440} height={666} aria-label="배경 이미지" />
 
-        <RightSection>
-          <ImagesWrapper>
-            <GenerationDiaWrapper>
-              <GenerationText>{generation}기</GenerationText>
-              <GenerationDia src={generationDia} alt="" />
-            </GenerationDiaWrapper>
-            <CircleWrapper className="circle">
-              <Circle src={circle} alt="" />
-            </CircleWrapper>
-            <UnionRow>
-              <UnionWrapper className="union">
-                <Union src={union} alt="" />
-              </UnionWrapper>
-            </UnionRow>
-          </ImagesWrapper>
-        </RightSection>
-      </MainWrapper>
+      <Content>
+        <TopGroup>
+          <LogoRow>
+            <LogoLikelion />
+            <LogoX />
+            <LogoCAU />
+          </LogoRow>
+          <LogoCatchphrase />
+        </TopGroup>
 
-      <MoreWrapper>
-        <Text onClick={clickMore}>더 알아보기</Text>
-        <ArrowCircle onClick={clickMore}>
-          <HiOutlineArrowDown className="arrow" color={Primary.default} />
-        </ArrowCircle>
-      </MoreWrapper>
+        <BottomGroup>
+          <Description>{DESCRIPTION}</Description>
+          <Button
+            variant="solid"
+            color="assistive"
+            size="large"
+            trailingIcon={<HiOutlineBell />}
+            onClick={() => setIsRecruitModalOpen(true)}
+          >
+            다음 기수 모집 알림받기
+          </Button>
+        </BottomGroup>
+      </Content>
+
+      {isRecruitModalOpen && <RecruitNotifyModal onClose={() => setIsRecruitModalOpen(false)} />}
     </Wrapper>
   );
 };
@@ -68,390 +54,48 @@ const MainSection = ({ clickMore }: { clickMore: () => void }) => {
 export default MainSection;
 
 const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: space-evenly;
-  width: 100%;
-  @media (min-width: 900px) {
-    scroll-snap-align: start;
-    min-height: 70vh;
-    height: 100vh;
-  }
-`;
-
-const MainWrapper = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
   position: relative;
-
-  @media (max-width: 900px) {
-    justify-content: space-between;
-  }
-`;
-
-const LeftSection = styled.div``;
-
-const RightSection = styled.div``;
-
-const LionWrapper = styled.div`
+  width: 1440px;
+  padding-top: 209px;
   display: flex;
-  justify-content: flex-start;
-  gap: 9px;
-  @media (max-width: 900px) {
-    gap: 0;
-  }
+  align-items: center;
+  justify-content: center;
+  scroll-snap-align: start;
 `;
 
-const Lion = styled(Image)``;
-
-const animationSetting = (i: number) => {
-  return {
-    rotate: 360,
-    transition: {
-      duration: 1,
-      delay: i,
-      repeat: Infinity,
-      repeatDelay: 3,
-    },
-  };
-};
-
-const ImageWrapper = styled(motion.div)`
-  position: relative;
-  width: 7rem;
-  height: 7rem;
-  margin-left: 4.5px;
-  margin-right: 4.5px;
-  @media (max-width: 1440px) {
-    width: 5.6rem;
-    height: 5.6rem;
-  }
-  @media (max-width: 900px) {
-    width: 4.4rem;
-    height: 4.4rem;
-  }
-  @media (max-width: 750px) {
-    width: 3.6rem;
-    height: 3.6rem;
-  }
-  @media (max-width: 524px) {
-    width: 2.5rem;
-    height: 2.5rem;
-  }
-`;
-
-const ImagesWrapper = styled.div`
+const Content = styled.div`
   position: absolute;
-  right: 0;
-  bottom: 30rem;
+  left: 190px;
+  top: 114px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-
-  @media (max-width: 1920px) {
-    bottom: 25rem;
-  }
-
-  @media (max-width: 1440px) {
-    bottom: 13rem;
-  }
-
-  @media (max-width: 900px) {
-    bottom: 10rem;
-  }
-
-  @media (max-width: 750px) {
-    bottom: 19rem;
-  }
-
-  @media (max-width: 524px) {
-    bottom: 19rem;
-  }
-
-  @media (max-width: 360px) {
-    bottom: 16rem;
-  }
+  align-items: flex-start;
+  gap: 77px;
 `;
 
-const GenerationDiaWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 19.6rem;
-  height: 19.6rem;
-  z-index: 1;
-  margin-bottom: -9.4rem;
-
-  @media (max-width: 1600px) {
-    width: 15rem;
-    height: 15rem;
-    margin-bottom: -8rem;
-  }
-
-  @media (max-width: 1440px) {
-    width: 14rem;
-    height: 14rem;
-    margin-bottom: -8.3rem;
-  }
-
-  @media (max-width: 900px) {
-    width: 13rem;
-    height: 13rem;
-    margin-bottom: -7rem;
-  }
-
-  @media (max-width: 750px) {
-    width: 9rem;
-    height: 9rem;
-    margin-bottom: -5rem;
-  }
-
-  @media (max-width: 524px) {
-    width: 7rem;
-    height: 7rem;
-    margin-bottom: -3.7rem;
-  }
-
-  @media (max-width: 360px) {
-    width: 6rem;
-    height: 6rem;
-    margin-bottom: -2.7rem;
-  }
-`;
-
-const CircleWrapper = styled.div`
-  width: 40rem;
-  height: 22rem;
-  @media (max-width: 1280px) {
-    width: 36rem;
-    height: 18rem;
-  }
-
-  @media (max-width: 900px) {
-    width: 288px;
-    height: 161.8px;
-  }
-  @media (max-width: 750px) {
-    width: 21rem;
-    height: 12rem;
-  }
-
-  @media (max-width: 524px) {
-    width: 17rem;
-    height: 9.5rem;
-  }
-  @media (max-width: 360px) {
-    width: 15rem;
-    height: 7rem;
-  }
-`;
-
-const UnionRow = styled.div`
-  display: flex;
-  width: 80%;
-  justify-content: flex-end;
-`;
-
-const UnionWrapper = styled.div`
-  width: 10rem;
-  height: 10rem;
-
-  margin-top: -20px;
-
-  @media (max-width: 1280px) {
-    width: 6rem;
-    height: 6rem;
-  }
-
-  @media (max-width: 900px) {
-    width: 5rem;
-    height: 5rem;
-  }
-
-  @media (max-width: 750px) {
-    width: 4rem;
-    height: 4rem;
-  }
-
-  @media (max-width: 524px) {
-    width: 3rem;
-    height: 3rem;
-  }
-
-  @media (max-width: 360px) {
-    width: 3rem;
-    height: 3rem;
-  }
-`;
-
-const UnionText = styled.div`
-  width: 7rem;
-  height: 7rem;
-  margin-left: -2.3rem;
-  margin-top: -3.5rem;
-  rotate: calc(45deg);
-
-  @media (max-width: 750px) {
-    width: 6rem;
-    height: 6rem;
-    margin-left: -2rem;
-    margin-top: -3rem;
-  }
-
-  @media (max-width: 524px) {
-    width: 5rem;
-    height: 5rem;
-    margin-left: -1.8rem;
-    margin-top: -2.5rem;
-  }
-
-  @media (max-width: 360px) {
-    width: 4rem;
-    height: 4rem;
-    margin-left: -1.3rem;
-    margin-top: -2.2rem;
-  }
-`;
-
-const GenerationDia = styled(Image)`
-  position: absolute;
-`;
-
-const Circle = styled(Image)``;
-const Union = styled(Image)``;
-
-const GenerationText = styled.div`
-  position: absolute;
-  z-index: 1;
-  font-family: 'Gmarket Sans';
-  font-style: normal;
-  font-weight: 700;
-  font-size: 5rem;
-  color: #ffffff;
-
-  @media (max-height: 1280px) {
-    font-size: 4rem;
-  }
-
-  @media (max-width: 900px) {
-    font-size: 3rem;
-  }
-
-  @media (max-width: 750px) {
-    font-size: 2rem;
-  }
-
-  @media (max-height: 524px) {
-    font-size: 1.7rem;
-  }
-
-  @media (max-width: 360px) {
-    font-size: 1.7rem;
-  }
-`;
-
-const TextWrapper = styled.div`
+const TopGroup = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
+  gap: 36px;
 `;
 
-const BlueBlockText = styled.div`
-  font-family: 'Gmarket Sans';
-  font-weight: 700;
-  font-size: 13rem;
-  color: #1a21bd;
-  @media (max-width: 1440px) {
-    font-size: 9.5rem;
-  }
-  @media (max-width: 900px) {
-    font-size: 7rem;
-  }
-
-  @media (max-width: 360px) {
-    font-size: 4rem;
-  }
-`;
-
-const WhiteBlockText = styled(BlueBlockText)`
-  margin-top: 22px;
-  color: white;
-  text-shadow: -1px -1px 0 ${Primary.default}, 1px -1px 0 ${Primary.default}, -1px 1px 0 ${Primary.default},
-    1px 1px 0 ${Primary.default};
-
-  @media (max-width: 360px) {
-    font-size: 4rem;
-  }
-`;
-
-const UnionTextWrapper = styled.div`
+const LogoRow = styled.div`
   display: flex;
-`;
-
-const MoreWrapper = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  margin: 2rem 0;
-  @media (max-width: 524px) {
-    justify-content: center;
-  }
-  @media (max-width: 360px) {
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-  }
-`;
-
-const ArrowCircle = styled.div`
-  display: flex;
-  justify-content: center;
   align-items: center;
-  border-radius: 100%;
-  width: 5rem;
-  cursor: pointer;
-
-  height: 5rem;
-  border: 2px solid ${Primary.default};
-  box-shadow: 1rem 1rem 1rem 0rem #2b22784d;
-  .arrow {
-    width: 3rem;
-    height: 3rem;
-    @media (max-width: 900px) {
-      width: 1.8rem;
-      height: 1.8rem;
-    }
-    @media (max-width: 750px) {
-      width: 1.3rem;
-      height: 1.3rem;
-    }
-  }
-  @media (max-width: 900px) {
-    width: 3rem;
-    height: 3rem;
-    box-shadow: 0.4rem 0.4rem 0.4rem 0rem #2b22784d;
-  }
-  @media (max-width: 750px) {
-    width: 2.3rem;
-    height: 2.3rem;
-    box-shadow: 0.2rem 0.2rem 0.2rem 0rem #2b22784d;
-  }
+  gap: 14px;
 `;
 
-const Text = styled.div`
+const BottomGroup = styled.div`
   display: flex;
-  cursor: pointer;
-  justify-content: center;
-  align-items: center;
-  font-family: 'Gmarket Sans';
-  font-size: 2.3rem;
-  color: ${Primary.default};
-  font-weight: 700;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 32px;
+`;
 
-  @media (max-width: 900px) {
-    font-size: 1.7rem;
-  }
+const Description = styled.p`
+  ${typographyCss(Typography.body1Normal.medium)}
+  color: ${Black.b70};
+  white-space: pre-line;
+  margin: 0;
 `;
