@@ -1,10 +1,9 @@
 import PostUploadModal from './PostUploadModal';
 
-const CONTENT = '예시)이 서비스는 ~~한 서비스입니다\n서비스의 핵심기능\n\n· 이런거\n· 이\n· 이';
-
 interface HistoryEditModalProps {
   initialValues: {
     title: string;
+    content: string;
     generation: string;
     dateRange: [string, string];
   };
@@ -24,7 +23,7 @@ const HistoryEditModal = ({ initialValues, onClose, onDelete, onSubmit }: Histor
     dateMode="range"
     initialValues={{
       title: initialValues.title,
-      content: CONTENT,
+      content: initialValues.content,
       generation: initialValues.generation,
       dateRange: initialValues.dateRange,
     }}
