@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState } from 'react';
+import { useState } from 'react';
 import styled from 'styled-components';
 import Button from '@common/button/Button';
 import Card from '@common/card/Card';
@@ -7,7 +7,7 @@ import Select from '@common/select/Select';
 import Tab from '@common/tab/Tab';
 import Toast from '@common/toast/Toast';
 import IcAdd from '@assets/svg/ic-add.svg';
-import useOutsideClick from 'src/hooks/useOutsideClick';
+import useListboxSelect from 'src/hooks/useListboxSelect';
 import { PROJECT_CATEGORY_OPTIONS } from '@utils/constant';
 import { BackgroundColor, Fill, Label, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -344,69 +344,14 @@ const FilterSelect = ({
   onClose: () => void;
   onSelect: (option: string) => void;
 }) => {
-  const wrapperRef = useRef<HTMLDivElement>(null);
-  const listId = useId();
-  const [activeIndex, setActiveIndex] = useState(() => Math.max(options.indexOf(value), 0));
-  useOutsideClick(wrapperRef, onClose, isOpen);
-
-  useEffect(() => {
-    if (!isOpen) return;
-    const timer = setTimeout(() => setActiveIndex(Math.max(options.indexOf(value), 0)), 0);
-    return () => clearTimeout(timer);
-  }, [isOpen, value, options]);
-
-  const moveActive = (nextIndex: number) => {
-    setActiveIndex(Math.min(Math.max(nextIndex, 0), options.length - 1));
-  };
-
-  const selectOption = (option: string, index: number) => {
-    setActiveIndex(index);
-    onSelect(option);
-  };
-
-  const handleKeyDown = (event: React.KeyboardEvent) => {
-    if (['ArrowDown', 'ArrowUp', 'Enter', ' ', 'Escape', 'Home', 'End'].includes(event.key)) {
-      event.stopPropagation();
-    }
-
-    if (!isOpen) {
-      if (event.key === 'ArrowDown' || event.key === 'ArrowUp' || event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault();
-        onToggle();
-      }
-      return;
-    }
-
-    switch (event.key) {
-      case 'ArrowDown':
-        event.preventDefault();
-        moveActive(activeIndex + 1);
-        break;
-      case 'ArrowUp':
-        event.preventDefault();
-        moveActive(activeIndex - 1);
-        break;
-      case 'Home':
-        event.preventDefault();
-        moveActive(0);
-        break;
-      case 'End':
-        event.preventDefault();
-        moveActive(options.length - 1);
-        break;
-      case 'Enter':
-      case ' ':
-        event.preventDefault();
-        selectOption(options[activeIndex], activeIndex);
-        break;
-      case 'Escape':
-        event.preventDefault();
-        onClose();
-        break;
-      default:
-        break;
-    }
-  };
+  const { listId, wrapperRef, activeIndex, handleKeyDown, selectOption } = useListboxSelect({
+    isOpen,
+    options,
+    value,
+    onOpen: onToggle,
+    onClose,
+    onSelect,
+  });
 
   return (
     <SelectWrapper ref={wrapperRef} onKeyDownCapture={handleKeyDown}>

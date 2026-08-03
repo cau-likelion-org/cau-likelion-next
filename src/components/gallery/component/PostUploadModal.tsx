@@ -1,4 +1,4 @@
-import { KeyboardEvent, useEffect, useId, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import styled from 'styled-components';
 import Button from '@common/button/Button';
 import Radio from '@common/radio/Radio';
@@ -12,7 +12,7 @@ import IcCircleExclamation from '@assets/svg/icon/ic-circle-exclamation.svg';
 import IcLineHorizontal from '@assets/svg/icon/ic-line-horizontal.svg';
 import IcXButton from '@assets/svg/ic-XButton.svg';
 import useFocusTrap from 'src/hooks/useFocusTrap';
-import useOutsideClick from 'src/hooks/useOutsideClick';
+import useListboxSelect from 'src/hooks/useListboxSelect';
 import { BackgroundColor, Fill, Label, Line, Material, Orange, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
@@ -303,70 +303,14 @@ const CategorySelect = ({
   description?: string;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const listId = useId();
-  const [activeIndex, setActiveIndex] = useState(() => Math.max(options.indexOf(value), 0));
-  const wrapperRef = useRef<HTMLDivElement>(null);
-  useOutsideClick(wrapperRef, () => setIsOpen(false), isOpen);
-
-  useEffect(() => {
-    if (!isOpen) return;
-    const timer = setTimeout(() => setActiveIndex(Math.max(options.indexOf(value), 0)), 0);
-    return () => clearTimeout(timer);
-  }, [isOpen, value, options]);
-
-  const moveActive = (nextIndex: number) => {
-    setActiveIndex(Math.min(Math.max(nextIndex, 0), options.length - 1));
-  };
-
-  const selectOption = (option: string, index: number) => {
-    setActiveIndex(index);
-    onChange(option);
-    setIsOpen(false);
-  };
-
-  const handleKeyDown = (event: KeyboardEvent) => {
-    if (['ArrowDown', 'ArrowUp', 'Enter', ' ', 'Escape', 'Home', 'End'].includes(event.key)) {
-      event.stopPropagation();
-    }
-
-    if (!isOpen) {
-      if (event.key === 'ArrowDown' || event.key === 'ArrowUp' || event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault();
-        setIsOpen(true);
-      }
-      return;
-    }
-
-    switch (event.key) {
-      case 'ArrowDown':
-        event.preventDefault();
-        moveActive(activeIndex + 1);
-        break;
-      case 'ArrowUp':
-        event.preventDefault();
-        moveActive(activeIndex - 1);
-        break;
-      case 'Home':
-        event.preventDefault();
-        moveActive(0);
-        break;
-      case 'End':
-        event.preventDefault();
-        moveActive(options.length - 1);
-        break;
-      case 'Enter':
-      case ' ':
-        event.preventDefault();
-        selectOption(options[activeIndex], activeIndex);
-        break;
-      case 'Escape':
-        event.preventDefault();
-        setIsOpen(false);
-        break;
-      default:
-        break;
-    }
-  };
+  const { listId, wrapperRef, activeIndex, handleKeyDown, selectOption } = useListboxSelect({
+    isOpen,
+    options,
+    value,
+    onOpen: () => setIsOpen(true),
+    onClose: () => setIsOpen(false),
+    onSelect: onChange,
+  });
 
   return (
     <NarrowSelectWrapper ref={wrapperRef} onKeyDownCapture={handleKeyDown}>

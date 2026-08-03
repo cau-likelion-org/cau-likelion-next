@@ -1,4 +1,4 @@
-import { KeyboardEvent, useEffect, useId, useRef, useState } from 'react';
+import { useId, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import Button from '@common/button/Button';
@@ -6,7 +6,7 @@ import Select from '@common/select/Select';
 import TextField from '@common/textField/TextField';
 import { IcKakaotalk } from '@assets/svg';
 import useFocusTrap from 'src/hooks/useFocusTrap';
-import useOutsideClick from 'src/hooks/useOutsideClick';
+import useListboxSelect from 'src/hooks/useListboxSelect';
 import { TRACK, TRACK_NAME } from '@utils/constant';
 import { BackgroundColor, Fill, Label, Material } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -19,77 +19,27 @@ const RecruitNotifyModal = ({ onClose }: { onClose: () => void }) => {
   const [name, setName] = useState('');
   const [department, setDepartment] = useState('');
   const [isDepartmentOpen, setIsDepartmentOpen] = useState(false);
-  const [activeDepartmentIndex, setActiveDepartmentIndex] = useState(0);
   const [email, setEmail] = useState('');
   const [showEmailError, setShowEmailError] = useState(false);
 
   const titleId = useId();
-  const departmentListId = useId();
   const modalRef = useRef<HTMLDivElement>(null);
   useFocusTrap(modalRef, onClose);
 
-  const departmentSelectRef = useRef<HTMLDivElement>(null);
-  useOutsideClick(departmentSelectRef, () => setIsDepartmentOpen(false), isDepartmentOpen);
-
-  useEffect(() => {
-    if (!isDepartmentOpen) return;
-    const timer = setTimeout(() => setActiveDepartmentIndex(Math.max(DEPARTMENT_OPTIONS.indexOf(department), 0)), 0);
-    return () => clearTimeout(timer);
-  }, [isDepartmentOpen, department]);
-
-  const moveActiveDepartment = (nextIndex: number) => {
-    setActiveDepartmentIndex(Math.min(Math.max(nextIndex, 0), DEPARTMENT_OPTIONS.length - 1));
-  };
-
-  const selectDepartment = (option: string, index: number) => {
-    setActiveDepartmentIndex(index);
-    setDepartment(option);
-    setIsDepartmentOpen(false);
-  };
-
-  const handleDepartmentKeyDown = (event: KeyboardEvent) => {
-    if (['ArrowDown', 'ArrowUp', 'Enter', ' ', 'Escape', 'Home', 'End'].includes(event.key)) {
-      event.stopPropagation();
-    }
-
-    if (!isDepartmentOpen) {
-      if (event.key === 'ArrowDown' || event.key === 'ArrowUp' || event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault();
-        setIsDepartmentOpen(true);
-      }
-      return;
-    }
-
-    switch (event.key) {
-      case 'ArrowDown':
-        event.preventDefault();
-        moveActiveDepartment(activeDepartmentIndex + 1);
-        break;
-      case 'ArrowUp':
-        event.preventDefault();
-        moveActiveDepartment(activeDepartmentIndex - 1);
-        break;
-      case 'Home':
-        event.preventDefault();
-        moveActiveDepartment(0);
-        break;
-      case 'End':
-        event.preventDefault();
-        moveActiveDepartment(DEPARTMENT_OPTIONS.length - 1);
-        break;
-      case 'Enter':
-      case ' ':
-        event.preventDefault();
-        selectDepartment(DEPARTMENT_OPTIONS[activeDepartmentIndex], activeDepartmentIndex);
-        break;
-      case 'Escape':
-        event.preventDefault();
-        setIsDepartmentOpen(false);
-        break;
-      default:
-        break;
-    }
-  };
+  const {
+    listId: departmentListId,
+    wrapperRef: departmentSelectRef,
+    activeIndex: activeDepartmentIndex,
+    handleKeyDown: handleDepartmentKeyDown,
+    selectOption: selectDepartment,
+  } = useListboxSelect({
+    isOpen: isDepartmentOpen,
+    options: DEPARTMENT_OPTIONS,
+    value: department,
+    onOpen: () => setIsDepartmentOpen(true),
+    onClose: () => setIsDepartmentOpen(false),
+    onSelect: setDepartment,
+  });
 
   const isEmailInvalid = showEmailError && !EMAIL_REGEX.test(email);
   const isValid = name.trim() !== '' && department !== '' && email.trim() !== '';
