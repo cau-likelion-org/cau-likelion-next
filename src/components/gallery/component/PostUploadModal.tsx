@@ -322,6 +322,7 @@ const CategorySelect = ({
         onClick={() => setIsOpen((prev) => !prev)}
         aria-expanded={isOpen}
         aria-activedescendant={isOpen ? `${listId}-${activeIndex}` : undefined}
+        aria-controls={listId}
         status={status}
         description={description}
       />

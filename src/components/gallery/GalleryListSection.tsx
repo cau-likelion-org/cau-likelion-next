@@ -361,6 +361,7 @@ const FilterSelect = ({
         onClick={onToggle}
         aria-expanded={isOpen}
         aria-activedescendant={isOpen ? `${listId}-${activeIndex}` : undefined}
+        aria-controls={listId}
       />
       {isOpen && (
         <OptionList role="listbox" id={listId}>

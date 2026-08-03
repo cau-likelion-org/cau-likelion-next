@@ -90,6 +90,7 @@ const RecruitNotifyModal = ({ onClose }: { onClose: () => void }) => {
                 onClick={() => setIsDepartmentOpen((prev) => !prev)}
                 aria-expanded={isDepartmentOpen}
                 aria-activedescendant={isDepartmentOpen ? `${departmentListId}-${activeDepartmentIndex}` : undefined}
+                aria-controls={departmentListId}
               />
               {isDepartmentOpen && (
                 <OptionList role="listbox" id={departmentListId}>
