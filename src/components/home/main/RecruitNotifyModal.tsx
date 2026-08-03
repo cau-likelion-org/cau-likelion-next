@@ -29,6 +29,7 @@ const RecruitNotifyModal = ({ onClose }: { onClose: () => void }) => {
   const {
     listId: departmentListId,
     wrapperRef: departmentSelectRef,
+    triggerRef: departmentTriggerRef,
     activeIndex: activeDepartmentIndex,
     handleKeyDown: handleDepartmentKeyDown,
     handleBlur: handleDepartmentBlur,
@@ -83,6 +84,7 @@ const RecruitNotifyModal = ({ onClose }: { onClose: () => void }) => {
               onBlur={handleDepartmentBlur}
             >
               <Select
+                ref={departmentTriggerRef}
                 heading="관심파트"
                 required
                 placeholder="선택"

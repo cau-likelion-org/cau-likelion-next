@@ -1,4 +1,4 @@
-import { ReactNode, useId } from 'react';
+import { ReactNode, forwardRef, useId } from 'react';
 import styled from 'styled-components';
 
 import { IcChevronDown, IcCircleCheck, IcCircleExclamation } from '@assets/svg';
@@ -37,21 +37,24 @@ const getBoxShadow = (status: SelectStatus, disabled: boolean) => {
   return `inset 0 0 0 1px ${Line.normal}, 0 1px 2px -1px rgba(23, 23, 23, 0.1)`;
 };
 
-const Select = ({
-  className,
-  status = 'normal',
-  placeholder,
-  value,
-  chips,
-  leadingIcon,
-  heading,
-  required = false,
-  description,
-  disabled = false,
-  onClick,
-  id,
-  ...rest
-}: SelectProps & { id?: string }) => {
+const Select = forwardRef<HTMLDivElement, SelectProps & { id?: string }>(function Select(
+  {
+    className,
+    status = 'normal',
+    placeholder,
+    value,
+    chips,
+    leadingIcon,
+    heading,
+    required = false,
+    description,
+    disabled = false,
+    onClick,
+    id,
+    ...rest
+  },
+  ref,
+) {
   const generatedId = useId();
   const selectId = id ?? generatedId;
   const descriptionId = description ? `${selectId}-description` : undefined;
@@ -76,6 +79,7 @@ const Select = ({
         </Heading>
       )}
       <Trigger
+        ref={ref}
         id={selectId}
         role="combobox"
         tabIndex={disabled ? -1 : 0}
@@ -123,7 +127,7 @@ const Select = ({
       )}
     </Root>
   );
-};
+});
 
 export default Select;
 

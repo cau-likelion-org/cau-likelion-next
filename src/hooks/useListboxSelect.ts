@@ -14,6 +14,7 @@ export interface UseListboxSelectParams {
 const useListboxSelect = ({ isOpen, options, value, onOpen, onClose, onSelect }: UseListboxSelectParams) => {
   const listId = useId();
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(() => Math.max(options.indexOf(value), 0));
 
   useOutsideClick(wrapperRef, onClose, isOpen);
@@ -32,6 +33,7 @@ const useListboxSelect = ({ isOpen, options, value, onOpen, onClose, onSelect }:
     setActiveIndex(index);
     onSelect(option);
     onClose();
+    triggerRef.current?.focus();
   };
 
   const handleKeyDown = (event: KeyboardEvent) => {
@@ -84,7 +86,7 @@ const useListboxSelect = ({ isOpen, options, value, onOpen, onClose, onSelect }:
     }
   };
 
-  return { listId, wrapperRef, activeIndex, handleKeyDown, handleBlur, selectOption };
+  return { listId, wrapperRef, triggerRef, activeIndex, handleKeyDown, handleBlur, selectOption };
 };
 
 export default useListboxSelect;

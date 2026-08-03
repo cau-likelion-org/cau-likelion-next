@@ -344,7 +344,7 @@ const FilterSelect = ({
   onClose: () => void;
   onSelect: (option: string) => void;
 }) => {
-  const { listId, wrapperRef, activeIndex, handleKeyDown, handleBlur, selectOption } = useListboxSelect({
+  const { listId, wrapperRef, triggerRef, activeIndex, handleKeyDown, handleBlur, selectOption } = useListboxSelect({
     isOpen,
     options,
     value,
@@ -356,6 +356,7 @@ const FilterSelect = ({
   return (
     <SelectWrapper ref={wrapperRef} onKeyDownCapture={handleKeyDown} onBlur={handleBlur}>
       <Select
+        ref={triggerRef}
         heading={label}
         value={value}
         onClick={onToggle}

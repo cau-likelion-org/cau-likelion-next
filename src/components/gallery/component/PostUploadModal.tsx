@@ -303,7 +303,7 @@ const CategorySelect = ({
   description?: string;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const { listId, wrapperRef, activeIndex, handleKeyDown, handleBlur, selectOption } = useListboxSelect({
+  const { listId, wrapperRef, triggerRef, activeIndex, handleKeyDown, handleBlur, selectOption } = useListboxSelect({
     isOpen,
     options,
     value,
@@ -315,6 +315,7 @@ const CategorySelect = ({
   return (
     <NarrowSelectWrapper ref={wrapperRef} onKeyDownCapture={handleKeyDown} onBlur={handleBlur}>
       <Select
+        ref={triggerRef}
         heading={label}
         required
         placeholder="선택"
