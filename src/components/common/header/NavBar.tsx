@@ -1,6 +1,8 @@
-import React from 'react';
+import { useState } from 'react';
 import styled from 'styled-components';
 import Button from '@common/button/Button';
+import RecruitClosedAlert from '@home/main/RecruitClosedAlert';
+import RecruitNotifyModal from '@home/main/RecruitNotifyModal';
 import { BackgroundColor, Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import Link from 'next/link';
@@ -14,12 +16,14 @@ export interface IMenu {
   target?: string;
 }
 
+const RECRUIT_MENU_TITLE = '지원하기';
+
 const MENU_ITEMS: IMenu[] = [
   { title: '소개', routing: '#' },
   { title: '프로젝트', routing: '/project' },
   { title: '갤러리', routing: '/gallery' },
   { title: '블로그', routing: 'https://blog.cau-likelion.org', target: '_blank' },
-  { title: '지원하기', routing: '#' },
+  { title: RECRUIT_MENU_TITLE, routing: '#' },
 ];
 
 const NavBar = () => {
@@ -27,6 +31,8 @@ const NavBar = () => {
   const { access: tokenState } = useTokenStore((state) => state.token);
   const hasHydrated = useTokenStore((state) => state.hasHydrated);
   const isLogin = hasHydrated && !!tokenState;
+  const [isRecruitClosedAlertOpen, setIsRecruitClosedAlertOpen] = useState(false);
+  const [isRecruitModalOpen, setIsRecruitModalOpen] = useState(false);
 
   return (
     <Wrapper>
@@ -42,7 +48,11 @@ const NavBar = () => {
         <RightSection>
           <MenuList>
             {MENU_ITEMS.map(({ title, routing, target }) =>
-              target ? (
+              title === RECRUIT_MENU_TITLE ? (
+                <MenuLink key={title} as="button" type="button" onClick={() => setIsRecruitClosedAlertOpen(true)}>
+                  {title}
+                </MenuLink>
+              ) : target ? (
                 <MenuLink key={title} href={routing} target={target} rel="noopener noreferrer">
                   {title}
                 </MenuLink>
@@ -58,6 +68,17 @@ const NavBar = () => {
           </Button>
         </RightSection>
       </Content>
+
+      {isRecruitClosedAlertOpen && (
+        <RecruitClosedAlert
+          onClose={() => setIsRecruitClosedAlertOpen(false)}
+          onConfirm={() => {
+            setIsRecruitClosedAlertOpen(false);
+            setIsRecruitModalOpen(true);
+          }}
+        />
+      )}
+      {isRecruitModalOpen && <RecruitNotifyModal onClose={() => setIsRecruitModalOpen(false)} />}
     </Wrapper>
   );
 };
@@ -111,6 +132,9 @@ const MenuList = styled.div`
 
 const MenuLink = styled.a`
   ${typographyCss(Typography.body2Normal.bold)}
+  padding: 0;
+  border: none;
+  background: none;
   color: ${Label.normal};
   cursor: pointer;
   white-space: nowrap;
