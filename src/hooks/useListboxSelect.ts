@@ -1,4 +1,4 @@
-import { KeyboardEvent, useEffect, useId, useRef, useState } from 'react';
+import { FocusEvent, KeyboardEvent, useEffect, useId, useRef, useState } from 'react';
 
 import useOutsideClick from './useOutsideClick';
 
@@ -78,7 +78,13 @@ const useListboxSelect = ({ isOpen, options, value, onOpen, onClose, onSelect }:
     }
   };
 
-  return { listId, wrapperRef, activeIndex, handleKeyDown, selectOption };
+  const handleBlur = (event: FocusEvent) => {
+    if (!wrapperRef.current?.contains(event.relatedTarget as Node)) {
+      onClose();
+    }
+  };
+
+  return { listId, wrapperRef, activeIndex, handleKeyDown, handleBlur, selectOption };
 };
 
 export default useListboxSelect;

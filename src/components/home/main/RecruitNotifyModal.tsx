@@ -31,6 +31,7 @@ const RecruitNotifyModal = ({ onClose }: { onClose: () => void }) => {
     wrapperRef: departmentSelectRef,
     activeIndex: activeDepartmentIndex,
     handleKeyDown: handleDepartmentKeyDown,
+    handleBlur: handleDepartmentBlur,
     selectOption: selectDepartment,
   } = useListboxSelect({
     isOpen: isDepartmentOpen,
@@ -76,7 +77,11 @@ const RecruitNotifyModal = ({ onClose }: { onClose: () => void }) => {
                 onChange={(event) => setName(event.target.value)}
               />
             </FieldWrapper>
-            <SelectWrapper ref={departmentSelectRef} onKeyDownCapture={handleDepartmentKeyDown}>
+            <SelectWrapper
+              ref={departmentSelectRef}
+              onKeyDownCapture={handleDepartmentKeyDown}
+              onBlur={handleDepartmentBlur}
+            >
               <Select
                 heading="관심파트"
                 required
