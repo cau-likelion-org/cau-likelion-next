@@ -47,7 +47,7 @@ const WeeklyAttendanceCard = ({ record }: { record: WeeklyAttendanceRecord }) =>
           <ContentBadge text={badge.label} color={badge.color} variant={badge.variant} size="medium" />
           {isTooltipVisible && record.reason && (
             <TooltipSlot>
-              <Tooltip size="small" position="bottom" align="end" text={record.reason} />
+              <Tooltip size="small" position="bottom" align="center" text={record.reason} />
             </TooltipSlot>
           )}
         </BadgeSlot>
@@ -112,7 +112,8 @@ const BadgeSlot = styled.div`
 const TooltipSlot = styled.div`
   position: absolute;
   top: calc(100% + 4px);
-  right: 0;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 10;
   width: max-content;
 `;
