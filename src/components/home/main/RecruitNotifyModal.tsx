@@ -41,7 +41,8 @@ const RecruitNotifyModal = ({ onClose }: { onClose: () => void }) => {
     setActiveDepartmentIndex(Math.min(Math.max(nextIndex, 0), DEPARTMENT_OPTIONS.length - 1));
   };
 
-  const selectDepartment = (option: string) => {
+  const selectDepartment = (option: string, index: number) => {
+    setActiveDepartmentIndex(index);
     setDepartment(option);
     setIsDepartmentOpen(false);
   };
@@ -79,7 +80,7 @@ const RecruitNotifyModal = ({ onClose }: { onClose: () => void }) => {
       case 'Enter':
       case ' ':
         event.preventDefault();
-        selectDepartment(DEPARTMENT_OPTIONS[activeDepartmentIndex]);
+        selectDepartment(DEPARTMENT_OPTIONS[activeDepartmentIndex], activeDepartmentIndex);
         break;
       case 'Escape':
         event.preventDefault();
@@ -145,7 +146,7 @@ const RecruitNotifyModal = ({ onClose }: { onClose: () => void }) => {
                       role="option"
                       aria-selected={department === option}
                       $active={index === activeDepartmentIndex}
-                      onClick={() => selectDepartment(option)}
+                      onClick={() => selectDepartment(option, index)}
                     >
                       {option}
                     </Option>

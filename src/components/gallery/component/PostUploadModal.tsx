@@ -318,7 +318,8 @@ const CategorySelect = ({
     setActiveIndex(Math.min(Math.max(nextIndex, 0), options.length - 1));
   };
 
-  const selectOption = (option: string) => {
+  const selectOption = (option: string, index: number) => {
+    setActiveIndex(index);
     onChange(option);
     setIsOpen(false);
   };
@@ -356,7 +357,7 @@ const CategorySelect = ({
       case 'Enter':
       case ' ':
         event.preventDefault();
-        selectOption(options[activeIndex]);
+        selectOption(options[activeIndex], activeIndex);
         break;
       case 'Escape':
         event.preventDefault();
@@ -390,7 +391,7 @@ const CategorySelect = ({
               role="option"
               aria-selected={value === option}
               $active={index === activeIndex}
-              onClick={() => selectOption(option)}
+              onClick={() => selectOption(option, index)}
             >
               {option}
             </Option>

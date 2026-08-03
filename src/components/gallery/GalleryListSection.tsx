@@ -359,6 +359,11 @@ const FilterSelect = ({
     setActiveIndex(Math.min(Math.max(nextIndex, 0), options.length - 1));
   };
 
+  const selectOption = (option: string, index: number) => {
+    setActiveIndex(index);
+    onSelect(option);
+  };
+
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (['ArrowDown', 'ArrowUp', 'Enter', ' ', 'Escape', 'Home', 'End'].includes(event.key)) {
       event.stopPropagation();
@@ -392,7 +397,7 @@ const FilterSelect = ({
       case 'Enter':
       case ' ':
         event.preventDefault();
-        onSelect(options[activeIndex]);
+        selectOption(options[activeIndex], activeIndex);
         break;
       case 'Escape':
         event.preventDefault();
@@ -422,7 +427,7 @@ const FilterSelect = ({
               role="option"
               aria-selected={value === option}
               $active={index === activeIndex}
-              onClick={() => onSelect(option)}
+              onClick={() => selectOption(option, index)}
             >
               {option}
             </Option>
