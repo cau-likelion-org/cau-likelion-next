@@ -12,6 +12,7 @@ import IcCircleExclamation from '@assets/svg/icon/ic-circle-exclamation.svg';
 import IcLineHorizontal from '@assets/svg/icon/ic-line-horizontal.svg';
 import IcXButton from '@assets/svg/ic-XButton.svg';
 import useFocusTrap from 'src/hooks/useFocusTrap';
+import useOutsideClick from 'src/hooks/useOutsideClick';
 import { BackgroundColor, Fill, Label, Line, Material, Orange, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
@@ -304,6 +305,8 @@ const CategorySelect = ({
   const [isOpen, setIsOpen] = useState(false);
   const listId = useId();
   const [activeIndex, setActiveIndex] = useState(() => Math.max(options.indexOf(value), 0));
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  useOutsideClick(wrapperRef, () => setIsOpen(false), isOpen);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -365,7 +368,7 @@ const CategorySelect = ({
   };
 
   return (
-    <NarrowSelectWrapper onKeyDownCapture={handleKeyDown}>
+    <NarrowSelectWrapper ref={wrapperRef} onKeyDownCapture={handleKeyDown}>
       <Select
         heading={label}
         required
