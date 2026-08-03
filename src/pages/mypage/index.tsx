@@ -1,15 +1,15 @@
 import { UserProfile } from '@@types/request';
 import { AxiosError } from 'axios';
-import React, { useEffect, useState } from 'react';
+import { ReactElement, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import useTokenStore from 'src/store/useTokenStore';
 import useProfileChangedStore from 'src/store/useProfileChangedStore';
 import { getUserProfile } from 'src/apis/account';
-import NameCard from '@mypage/component/NameCard';
 import styled from 'styled-components';
+import LayoutFullWidth from '@common/layout/LayoutFullWidth';
+import MyPageShell from '@mypage/component/MyPageShell';
 import ProfileCard from '@mypage/component/ProfileCard';
-import { GreyScale } from '@utils/constant/color';
-import { checkGeneration } from '@utils/index';
+import AttendanceCheckCard from '@mypage/component/AttendanceCheckCard';
 import MyScoreSection from '@mypage/MyScoreSection';
 import TotalScoreSection from '@mypage/TotalScoreSection';
 import { useRouter } from 'next/router';
@@ -20,11 +20,7 @@ const MyPage = () => {
   const profileChanged = useProfileChangedStore((state) => state.profileChanged);
   const router = useRouter();
 
-  const {
-    data: userProfile,
-    isLoading: profileLoading,
-    error: profileError,
-  } = useQuery<UserProfile, AxiosError>({
+  const { data: userProfile } = useQuery<UserProfile, AxiosError>({
     queryKey: ['userProfile', profileChanged],
     queryFn: () => getUserProfile(tokenState),
     retry: false,
@@ -35,56 +31,32 @@ const MyPage = () => {
     if (hasHydrated && !tokenState.access) router.push('/login');
   }, [hasHydrated, tokenState, router]);
 
-  const isActiveGeneration = !!userProfile && checkGeneration(userProfile.generation);
+  if (!userProfile) return null;
+
   return (
-    <>
-      {userProfile && (
-        <Wrapper>
-          <Header>
-            <NameCard name={userProfile.name} generation={userProfile?.generation} />
-          </Header>
-          <RowWrapper>
-            <ProfileCard user={userProfile} />
-            {isActiveGeneration ? (
-              userProfile.is_admin ? (
-                <TotalScoreSection myName={userProfile.name} />
-              ) : (
-                <MyScoreSection userProfile={userProfile} />
-              )
-            ) : null}
-          </RowWrapper>
-        </Wrapper>
+    <MyPageShell active="home">
+      <CardRow>
+        <ProfileCard user={userProfile} />
+        <AttendanceCheckCard />
+      </CardRow>
+      {userProfile.is_admin ? (
+        <TotalScoreSection myName={userProfile.name} />
+      ) : (
+        <MyScoreSection userProfile={userProfile} />
       )}
-    </>
+    </MyPageShell>
   );
+};
+
+MyPage.getLayout = function getLayout(page: ReactElement) {
+  return <LayoutFullWidth>{page}</LayoutFullWidth>;
 };
 
 export default MyPage;
 
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-`;
-
-const Header = styled.div`
+const CardRow = styled.div`
   display: flex;
   align-items: center;
-  font-family: 'Inter';
-  font-style: normal;
-  font-weight: 400;
-  font-size: 1.6rem;
-  color: ${GreyScale.default};
-`;
-
-const RowWrapper = styled.div`
-  margin-top: 2rem;
-  display: flex;
-  justify-content: center;
+  gap: 20px;
   width: 100%;
-  gap: 35px;
-
-  @media (max-width: 900px) {
-    flex-direction: column;
-  }
 `;
