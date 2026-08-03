@@ -9,16 +9,12 @@ export type SidebarActive = 'home' | 'attendance' | 'assignment';
 const Sidebar = ({ active }: { active: SidebarActive }) => {
   return (
     <Wrapper>
-      <Link href="/mypage">
-        <Item as="span" $active={active === 'home'}>
-          홈
-        </Item>
-      </Link>
-      <Link href="/mypage/attendance">
-        <Item as="span" $active={active === 'attendance'}>
-          출결관리
-        </Item>
-      </Link>
+      <StyledLink href="/mypage">
+        <Item $active={active === 'home'}>홈</Item>
+      </StyledLink>
+      <StyledLink href="/mypage/attendance">
+        <Item $active={active === 'attendance'}>출결관리</Item>
+      </StyledLink>
       <Item $active={active === 'assignment'}>과제관리</Item>
     </Wrapper>
   );
@@ -36,13 +32,17 @@ const Wrapper = styled.div`
   padding: 0 6px;
 `;
 
-const Item = styled.p<{ $active?: boolean }>`
+const StyledLink = styled(Link)`
   display: block;
+  width: 100%;
+  text-decoration: none;
+`;
+
+const Item = styled.p<{ $active?: boolean }>`
   margin: 0;
   width: 100%;
   padding: 8px 0;
-  text-align: center;
-  text-decoration: none;
+  text-align: left;
   color: ${(props) => (props.$active ? Label.strong : Label.assistive)};
   ${typographyCss(Typography.heading2.bold)}
 `;
