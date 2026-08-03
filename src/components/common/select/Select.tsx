@@ -76,7 +76,7 @@ const Select = ({
       )}
       <Trigger
         id={selectId}
-        role="button"
+        role="combobox"
         tabIndex={disabled ? -1 : 0}
         onClick={disabled ? undefined : onClick}
         onKeyDown={(event) => {
