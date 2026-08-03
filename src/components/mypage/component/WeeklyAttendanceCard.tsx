@@ -13,7 +13,7 @@ export interface WeeklyAttendanceRecord {
   date: string;
   status: WeeklyAttendanceStatus;
   checkInTime?: string;
-  excuseReason?: string;
+  reason?: string;
 }
 
 const BADGE_CONFIG: Record<
@@ -41,13 +41,13 @@ const WeeklyAttendanceCard = ({ record }: { record: WeeklyAttendanceRecord }) =>
       <Right>
         {record.checkInTime && <CheckInTime>{record.checkInTime}</CheckInTime>}
         <BadgeSlot
-          onMouseEnter={() => record.excuseReason && setIsTooltipVisible(true)}
+          onMouseEnter={() => record.reason && setIsTooltipVisible(true)}
           onMouseLeave={() => setIsTooltipVisible(false)}
         >
           <ContentBadge text={badge.label} color={badge.color} variant={badge.variant} size="medium" />
-          {isTooltipVisible && record.excuseReason && (
+          {isTooltipVisible && record.reason && (
             <TooltipSlot>
-              <Tooltip size="small" position="bottom" align="end" text={record.excuseReason} />
+              <Tooltip size="small" position="bottom" align="end" text={record.reason} />
             </TooltipSlot>
           )}
         </BadgeSlot>

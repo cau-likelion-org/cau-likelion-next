@@ -14,9 +14,9 @@ const MOCK_WEEKLY_ATTENDANCE: WeeklyAttendanceRecord[] = [
   { week: 19, date: '2026/12/13', status: 'before' },
   { week: 18, date: '2026/12/12', status: 'present', checkInTime: '18:55:42' },
   { week: 17, date: '2026/12/11', status: 'late', checkInTime: '18:55:42' },
-  { week: 16, date: '2026/12/10', status: 'absent' },
+  { week: 16, date: '2026/12/10', status: 'absent', reason: '병원 진료로 인한 결석' },
   { week: 15, date: '2026/12/10', status: 'unauthorized' },
-  { week: 14, date: '2026/12/12', status: 'excused', excuseReason: '엘레베이터 고장 이슈' },
+  { week: 14, date: '2026/12/12', status: 'excused', reason: '엘레베이터 고장 이슈' },
 ];
 
 const MyPageAttendance = () => {
