@@ -114,6 +114,7 @@ export interface UserProfile {
   track: number;
   is_admin: boolean;
   generation: number;
+  email?: string;
 }
 
 export interface UserScore {
