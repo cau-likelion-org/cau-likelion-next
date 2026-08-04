@@ -7,9 +7,10 @@ import Select from '@common/select/Select';
 import Tab from '@common/tab/Tab';
 import Toast from '@common/toast/Toast';
 import IcAdd from '@assets/svg/ic-add.svg';
+import PageHeader from '@common/pageHeader/PageHeader';
 import useListboxSelect from 'src/hooks/useListboxSelect';
 import { PROJECT_CATEGORY_OPTIONS } from '@utils/constant';
-import { BackgroundColor, Fill, Label, Orange } from '@utils/constant/color';
+import { BackgroundColor, Fill, Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 import HistoryDetailModal from './component/HistoryDetailModal';
@@ -229,10 +230,7 @@ const GalleryListSection = () => {
   return (
     <Wrapper>
       <Header>
-        <Intro>
-          <Title>갤러리</Title>
-          <Subtitle>페이지 소개 글 페이지 소개 글 페이지 소개 글 페이지 소개 글</Subtitle>
-        </Intro>
+        <Intro title="갤러리" subtitle="페이지 소개 글 페이지 소개 글 페이지 소개 글 페이지 소개 글" />
         <Tab items={TABS} activeKey={activeTab} onChange={handleTabChange} size="medium" />
         <FilterRow>
           <FilterGroup>
@@ -401,25 +399,9 @@ const Header = styled.div`
   gap: 42px;
 `;
 
-const Intro = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+const Intro = styled(PageHeader)`
   gap: 24px;
-  padding: 80px 0 22px;
-`;
-
-const Title = styled.p`
-  ${typographyCss(Typography.display2.bold)}
-  color: ${Orange.o500};
-  margin: 0;
-`;
-
-const Subtitle = styled.p`
-  ${typographyCss(Typography.heading2.medium)}
-  color: ${Orange.o500};
-  margin: 0;
+  padding-bottom: 22px;
 `;
 
 const FilterRow = styled.div`
