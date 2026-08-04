@@ -15,7 +15,9 @@ const Sidebar = ({ active }: { active: SidebarActive }) => {
       <StyledLink href="/mypage/attendance">
         <Item $active={active === 'attendance'}>출결관리</Item>
       </StyledLink>
-      <Item $active={active === 'assignment'}>과제관리</Item>
+      <StyledLink href="/mypage/assignment">
+        <Item $active={active === 'assignment'}>과제관리</Item>
+      </StyledLink>
     </Wrapper>
   );
 };
