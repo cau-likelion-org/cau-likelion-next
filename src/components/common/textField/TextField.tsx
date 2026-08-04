@@ -2,7 +2,7 @@ import { InputHTMLAttributes, ReactNode, useId } from 'react';
 import styled from 'styled-components';
 
 import { IcCircleCheck, IcCircleExclamation } from '@assets/svg';
-import { Label, Line, State } from '@utils/constant/color';
+import { Label, Line, Orange, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 type TextFieldStatus = 'normal' | 'positive' | 'negative';
@@ -47,7 +47,7 @@ const TextField = ({
   const inputId = id ?? generatedId;
   const descriptionId = description ? `${inputId}-description` : undefined;
 
-  const trailing =
+  const statusIcon =
     status === 'negative' ? (
       <IconSlot $color={State.error}>
         <IcCircleExclamation width={22} height={22} />
@@ -56,13 +56,20 @@ const TextField = ({
       <IconSlot $color={State.info}>
         <IcCircleCheck width={22} height={22} />
       </IconSlot>
-    ) : trailingButton ? (
-      <TrailingButton type="button" onClick={trailingButton.onClick} disabled={trailingButton.disabled}>
-        {trailingButton.label}
-      </TrailingButton>
-    ) : (
-      (trailingContent ?? trailingIcon ?? null)
-    );
+    ) : null;
+
+  const trailing = (
+    <>
+      {statusIcon}
+      {trailingButton ? (
+        <TrailingButton type="button" onClick={trailingButton.onClick} disabled={trailingButton.disabled}>
+          {trailingButton.label}
+        </TrailingButton>
+      ) : (
+        !statusIcon && (trailingContent ?? trailingIcon ?? null)
+      )}
+    </>
+  );
 
   return (
     <Root className={className}>
@@ -180,12 +187,12 @@ const TrailingButton = styled.button`
     inset 0 0 0 1px ${Line.normal},
     0 1px 2px rgba(0, 0, 0, 0.03);
   background: none;
-  color: ${State.info};
+  color: ${Orange.o500};
   cursor: pointer;
   ${typographyCss(Typography.body1Normal.bold)}
 
   &:disabled {
-    color: ${Label.disable};
+    color: ${Label.assistive};
     cursor: not-allowed;
   }
 `;
