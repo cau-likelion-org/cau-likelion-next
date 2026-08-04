@@ -13,10 +13,11 @@ import IcCircleExclamation from '@assets/svg/icon/ic-circle-exclamation.svg';
 import IcLineHorizontal from '@assets/svg/icon/ic-line-horizontal.svg';
 import IcXButton from '@assets/svg/ic-XButton.svg';
 import useFocusTrap from 'src/hooks/useFocusTrap';
+import useInput from 'src/hooks/useInput';
 import useListboxSelect from 'src/hooks/useListboxSelect';
+import { NUMERIC_ONLY_REGEX } from '@utils/constant';
 import { BackgroundColor, Fill, Label, Line, Material, Orange, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
-
 const MAX_IMAGE_COUNT = 10;
 const CONTENT_PLACEHOLDER = '예시)이 서비스는 ~~한 서비스입니다\n서비스의 핵심기능\n\n· 이런거\n· 이\n· 이';
 
@@ -70,9 +71,9 @@ const PostUploadModal = ({
 }: PostUploadModalProps) => {
   const [title, setTitle] = useState(initialValues?.title ?? '');
   const [content, setContent] = useState(initialValues?.content ?? '');
-  const [generation, setGeneration] = useState(initialValues?.generation ?? '');
+  const [generation, onChangeGeneration] = useInput(initialValues?.generation ?? '', NUMERIC_ONLY_REGEX);
   const [category, setCategory] = useState(initialValues?.category ?? '');
-  const [week, setWeek] = useState(initialValues?.week ?? '');
+  const [week, onChangeWeek] = useInput(initialValues?.week ?? '', NUMERIC_ONLY_REGEX);
   const [date, setDate] = useState(initialValues?.date ?? '');
   const [dateRange, setDateRange] = useState<[string, string]>(initialValues?.dateRange ?? ['', '']);
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
@@ -171,7 +172,7 @@ const PostUploadModal = ({
                 required
                 placeholder="숫자 입력"
                 value={generation}
-                onChange={(event) => setGeneration(event.target.value)}
+                onChange={onChangeGeneration}
                 status={showErrors && isEmpty(generation) ? 'negative' : 'normal'}
                 description={showErrors && isEmpty(generation) ? '기수를 입력해 주세요.' : undefined}
               />
@@ -193,7 +194,7 @@ const PostUploadModal = ({
                   required
                   placeholder="숫자 입력"
                   value={week}
-                  onChange={(event) => setWeek(event.target.value)}
+                  onChange={onChangeWeek}
                   status={showErrors && isEmpty(week) ? 'negative' : 'normal'}
                   description={showErrors && isEmpty(week) ? '주차를 입력해 주세요.' : undefined}
                 />

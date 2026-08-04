@@ -8,16 +8,15 @@ import PageHeader from '@common/pageHeader/PageHeader';
 import Select from '@common/select/Select';
 import ListboxOptions from '@common/select/ListboxOptions';
 import TextField from '@common/textField/TextField';
+import useInput from 'src/hooks/useInput';
 import useListboxSelect from 'src/hooks/useListboxSelect';
 import useTokenStore from 'src/store/useTokenStore';
 import { signUp, SignUpMutationProps } from 'src/apis/signUp';
-import { TRACK, TRACK_INDEX, TRACK_NAME } from '@utils/constant';
-
-const TRACK_OPTIONS = [TRACK_NAME[TRACK.PM_DESIGN], TRACK_NAME[TRACK.FRONTEND], TRACK_NAME[TRACK.BACKEND]];
+import { NUMERIC_ONLY_REGEX, TRACK_INDEX, TRACK_OPTIONS } from '@utils/constant';
 
 const SignUpFormSection = () => {
   const [name, setName] = useState('');
-  const [generation, setGeneration] = useState('');
+  const [generation, onChangeGeneration] = useInput('', NUMERIC_ONLY_REGEX);
   const [track, setTrack] = useState('');
   const [isTrackOpen, setIsTrackOpen] = useState(false);
 
@@ -101,10 +100,7 @@ const SignUpFormSection = () => {
             placeholder="14"
             description="본인의 기수를 숫자로 입력해 주세요."
             value={generation}
-            onChange={(event) => {
-              const nextValue = event.target.value;
-              if (/^[0-9]*$/.test(nextValue)) setGeneration(nextValue);
-            }}
+            onChange={onChangeGeneration}
           />
           <TrackSelectWrapper ref={wrapperRef} onKeyDownCapture={handleKeyDown} onBlur={handleBlur}>
             <Select

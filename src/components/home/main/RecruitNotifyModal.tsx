@@ -8,12 +8,11 @@ import TextField from '@common/textField/TextField';
 import { IcKakaotalk } from '@assets/svg';
 import useFocusTrap from 'src/hooks/useFocusTrap';
 import useListboxSelect from 'src/hooks/useListboxSelect';
-import { TRACK, TRACK_NAME } from '@utils/constant';
+import { TRACK_OPTIONS } from '@utils/constant';
 import { BackgroundColor, Fill, Label, Material } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 const KAKAO_CHANNEL_URL = 'https://pf.kakao.com/_HMPxfG';
-const DEPARTMENT_OPTIONS = [TRACK_NAME[TRACK.PM_DESIGN], TRACK_NAME[TRACK.FRONTEND], TRACK_NAME[TRACK.BACKEND]];
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const RecruitNotifyModal = ({ onClose }: { onClose: () => void }) => {
@@ -37,7 +36,7 @@ const RecruitNotifyModal = ({ onClose }: { onClose: () => void }) => {
     selectOption: selectDepartment,
   } = useListboxSelect({
     isOpen: isDepartmentOpen,
-    options: DEPARTMENT_OPTIONS,
+    options: TRACK_OPTIONS,
     value: department,
     onOpen: () => setIsDepartmentOpen(true),
     onClose: () => setIsDepartmentOpen(false),
@@ -98,7 +97,7 @@ const RecruitNotifyModal = ({ onClose }: { onClose: () => void }) => {
               {isDepartmentOpen && (
                 <ListboxOptions
                   listId={departmentListId}
-                  options={DEPARTMENT_OPTIONS}
+                  options={TRACK_OPTIONS}
                   value={department}
                   activeIndex={activeDepartmentIndex}
                   onSelect={selectDepartment}
