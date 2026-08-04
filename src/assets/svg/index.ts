@@ -7,6 +7,7 @@ import IcEmail from './icon/ic-email.svg';
 import IcInstagram from './icon/ic-instagram.svg';
 import IcKakaotalk from './icon/ic-kakaotalk.svg';
 import IcLineHorizontal from './icon/ic-line-horizontal.svg';
+import IcLogout from './icon/ic-logout.svg';
 import IcTriangleExclamation from './icon/ic-triangle-exclamation.svg';
 
 export {
@@ -19,5 +20,6 @@ export {
   IcInstagram,
   IcKakaotalk,
   IcLineHorizontal,
+  IcLogout,
   IcTriangleExclamation,
 };

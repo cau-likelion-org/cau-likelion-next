@@ -22,8 +22,8 @@ const MENU_ITEMS: IMenu[] = [
   { title: '소개', routing: '#' },
   { title: '프로젝트', routing: '/project' },
   { title: '갤러리', routing: '/gallery' },
-  { title: '블로그', routing: 'https://blog.cau-likelion.org', target: '_blank' },
-  { title: RECRUIT_MENU_TITLE, routing: '#' },
+  { title: '블로그', routing: '/blog' },
+  { title: '지원하기', routing: '#' },
 ];
 
 const NavBar = () => {

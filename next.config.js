@@ -15,6 +15,7 @@ const nextConfig = {
       { protocol: 'https', hostname: 'd1e39uzon1ymuo.cloudfront.net', pathname: '/**' },
       { protocol: 'https', hostname: 'likelion13bucket.s3.amazonaws.com', pathname: '/**' },
       { protocol: 'https', hostname: 'chunghaha-14th.s3.amazonaws.com', pathname: '/**' },
+      { protocol: 'https', hostname: 'chunghaha-14th.s3.ap-northeast-2.amazonaws.com', pathname: '/**' },
     ],
   },
   async headers() {
@@ -52,6 +53,7 @@ const nextConfig = {
         '@home': path.resolve(__dirname, 'src/components/home'),
         '@about': path.resolve(__dirname, 'src/components/about'),
         '@gallery': path.resolve(__dirname, 'src/components/gallery'),
+        '@blog': path.resolve(__dirname, 'src/components/blog'),
         '@project': path.resolve(__dirname, 'src/components/project'),
         '@session': path.resolve(__dirname, 'src/components/session'),
         '@signup': path.resolve(__dirname, 'src/components/signup'),

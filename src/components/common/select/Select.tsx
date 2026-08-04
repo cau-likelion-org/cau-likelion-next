@@ -27,6 +27,7 @@ export interface SelectProps {
   onClick?: () => void;
   'aria-expanded'?: boolean;
   'aria-label'?: string;
+  'aria-activedescendant'?: string;
 }
 
 const getBoxShadow = (status: SelectStatus, disabled: boolean) => {
@@ -75,7 +76,7 @@ const Select = ({
       )}
       <Trigger
         id={selectId}
-        role="button"
+        role="combobox"
         tabIndex={disabled ? -1 : 0}
         onClick={disabled ? undefined : onClick}
         onKeyDown={(event) => {

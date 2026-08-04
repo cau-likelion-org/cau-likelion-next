@@ -1,5 +1,6 @@
 export type MemberStack = 'pm_design' | 'frontend' | 'backend';
 export type MemberStackKor = '기획디자인' | '프론트엔드' | '백엔드';
+export type ProjectMemberRole = 'pm' | 'design' | 'frontend' | 'backend';
 export type ShareURL = 'github' | 'youtube' | 'web';
 export type ArchivingType = 'gallery' | 'session' | 'project';
 
@@ -58,7 +59,7 @@ export interface IGalleryData extends IArchivingData {
 export interface IProjectDetail extends IProjectData {
   subtitle: string;
   team_name: string;
-  team_member: Record<MemberStack, string[]>;
+  team_member: Record<ProjectMemberRole, string[]>;
   date: string;
   link: IShareURL;
   generation: number;
@@ -114,6 +115,7 @@ export interface UserProfile {
   track: number;
   is_admin: boolean;
   generation: number;
+  email?: string;
 }
 
 export interface UserScore {

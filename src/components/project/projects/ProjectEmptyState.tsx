@@ -1,0 +1,40 @@
+import { IcCircleExclamation } from '@assets/svg';
+import { CoolNeutral, Label } from '@utils/constant/color';
+import { Typography, typographyCss } from '@utils/constant/typography';
+import styled from 'styled-components';
+
+const ProjectEmptyState = ({ message = '조건에 맞는 프로젝트가 없습니다.' }: { message?: string }) => {
+  return (
+    <Wrapper>
+      <IconWrapper>
+        <IcCircleExclamation width={64} height={64} />
+      </IconWrapper>
+      <Message>{message}</Message>
+    </Wrapper>
+  );
+};
+
+export default ProjectEmptyState;
+
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  width: 100%;
+  min-height: 468px;
+  padding: 10px;
+`;
+
+const IconWrapper = styled.div`
+  display: flex;
+  color: ${CoolNeutral.neutral70};
+`;
+
+const Message = styled.p`
+  margin: 0;
+  color: ${Label.alternative};
+  text-align: center;
+  ${typographyCss(Typography.body1Normal.medium)}
+`;
