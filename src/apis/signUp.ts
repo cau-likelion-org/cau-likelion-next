@@ -1,28 +1,5 @@
 import { RequestSignUpForm } from '@@types/request';
-import { IToken } from 'src/store/useTokenStore';
-import { url } from '.';
 import { getAuthAxios } from './authAxios';
-
-export const getEmailSecret = async (token: IToken, emailValue: string) => {
-  const axiosInstance = getAuthAxios(token);
-  const response = await axiosInstance.get(`/api/caumail`, {
-    params: { email: `${emailValue}@cau.ac.kr` },
-  });
-  return response;
-};
-
-interface IMailResponse {
-  data: boolean;
-}
-
-export const postEmailSecret = async (token: IToken, secretValue: string) => {
-  const axiosInstance = getAuthAxios(token);
-  const response = await axiosInstance.post<IMailResponse>(`/api/caumail`, {
-    code: secretValue,
-  });
-
-  return response.data;
-};
 
 export interface SignUpMutationProps {
   form: RequestSignUpForm;
