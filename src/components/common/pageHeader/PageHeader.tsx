@@ -36,6 +36,10 @@ const Title = styled.p`
   width: 100%;
   color: ${Orange.o500};
   ${typographyCss(Typography.display2.bold)}
+
+  @media (max-width: 900px) {
+    ${typographyCss(Typography.title2.bold)}
+  }
 `;
 
 const Subtitle = styled.p`

@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import styled from 'styled-components';
+import PageHeader from '@common/pageHeader/PageHeader';
 import Select from '@common/select/Select';
 import { IcCircleExclamation } from '@assets/svg';
 import useListboxSelect from 'src/hooks/useListboxSelect';
-import { BackgroundColor, Fill, Label, Orange } from '@utils/constant/color';
+import { BackgroundColor, Fill, Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 import BlogCard from './component/BlogCard';
@@ -60,10 +61,7 @@ const BlogListSection = () => {
   return (
     <Wrapper>
       <Header>
-        <Intro>
-          <Title>블로그</Title>
-          <Subtitle>페이지 소개 글 페이지 소개 글 페이지 소개 글 페이지 소개 글</Subtitle>
-        </Intro>
+        <Intro title="블로그" subtitle="페이지 소개 글 페이지 소개 글 페이지 소개 글 페이지 소개 글" />
         <FilterRow>
           <FilterSelect
             label="기수 구분"
@@ -193,25 +191,9 @@ const Header = styled.div`
   gap: 42px;
 `;
 
-const Intro = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+const Intro = styled(PageHeader)`
   gap: 24px;
-  padding: 80px 0 22px;
-`;
-
-const Title = styled.p`
-  ${typographyCss(Typography.display2.bold)}
-  color: ${Orange.o500};
-  margin: 0;
-`;
-
-const Subtitle = styled.p`
-  ${typographyCss(Typography.heading2.medium)}
-  color: ${Orange.o500};
-  margin: 0;
+  padding-bottom: 22px;
 `;
 
 const FilterRow = styled.div`
