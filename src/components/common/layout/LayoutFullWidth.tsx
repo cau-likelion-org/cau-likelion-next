@@ -22,7 +22,7 @@ export default LayoutFullWidth;
 
 const PageContainer = styled.div`
   background-color: ${BackgroundColor};
-  min-height: calc(100vh - 184px);
+  min-height: calc(100vh - 165px);
   width: 100%;
   padding-top: 68px;
   padding-bottom: 93px;
