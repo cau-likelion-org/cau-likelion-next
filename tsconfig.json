@@ -23,6 +23,7 @@
       "@home/*": ["src/components/home/*"],
       "@about/*": ["src/components/about/*"],
       "@gallery/*": ["src/components/gallery/*"],
+      "@blog/*": ["src/components/blog/*"],
       "@project/*": ["src/components/project/*"],
       "@session/*": ["src/components/session/*"],
       "@signup/*": ["src/components/signup/*"],
