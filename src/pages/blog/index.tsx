@@ -1,5 +1,5 @@
 import type { ReactElement } from 'react';
-import LayoutArchiving from '@common/layout/LayoutArchiving';
+import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import BlogListSection from '@blog/BlogListSection';
 
 const Blog = () => {
@@ -7,7 +7,7 @@ const Blog = () => {
 };
 
 Blog.getLayout = function getLayout(page: ReactElement) {
-  return <LayoutArchiving>{page}</LayoutArchiving>;
+  return <LayoutFullWidth>{page}</LayoutFullWidth>;
 };
 
 export default Blog;

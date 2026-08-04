@@ -25,6 +25,7 @@ const PageContainer = styled.div`
   min-height: calc(100vh - 184px);
   width: 100%;
   padding-top: 68px;
+  padding-bottom: 93px;
   display: flex;
   flex-direction: column;
   align-items: center;

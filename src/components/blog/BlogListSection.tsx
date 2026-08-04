@@ -1,9 +1,10 @@
-import { useEffect, useId, useRef, useState } from 'react';
+import { useState } from 'react';
 import styled from 'styled-components';
+import PageHeader from '@common/pageHeader/PageHeader';
 import Select from '@common/select/Select';
 import { IcCircleExclamation } from '@assets/svg';
-import useOutsideClick from 'src/hooks/useOutsideClick';
-import { BackgroundColor, Fill, Label, Orange } from '@utils/constant/color';
+import useListboxSelect from 'src/hooks/useListboxSelect';
+import { BackgroundColor, Fill, Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 import BlogCard from './component/BlogCard';
@@ -60,10 +61,7 @@ const BlogListSection = () => {
   return (
     <Wrapper>
       <Header>
-        <Intro>
-          <Title>블로그</Title>
-          <Subtitle>페이지 소개 글 페이지 소개 글 페이지 소개 글 페이지 소개 글</Subtitle>
-        </Intro>
+        <Intro title="블로그" subtitle="페이지 소개 글 페이지 소개 글 페이지 소개 글 페이지 소개 글" />
         <FilterRow>
           <FilterSelect
             label="기수 구분"
@@ -136,73 +134,25 @@ const FilterSelect = ({
   onClose: () => void;
   onSelect: (option: string) => void;
 }) => {
-  const wrapperRef = useRef<HTMLDivElement>(null);
-  const listId = useId();
-  const [activeIndex, setActiveIndex] = useState(() => Math.max(options.indexOf(value), 0));
-  useOutsideClick(wrapperRef, onClose, isOpen);
-
-  useEffect(() => {
-    if (!isOpen) return;
-    const timer = setTimeout(() => setActiveIndex(Math.max(options.indexOf(value), 0)), 0);
-    return () => clearTimeout(timer);
-  }, [isOpen, value, options]);
-
-  const moveActive = (nextIndex: number) => {
-    setActiveIndex(Math.min(Math.max(nextIndex, 0), options.length - 1));
-  };
-
-  const handleKeyDown = (event: React.KeyboardEvent) => {
-    if (['ArrowDown', 'ArrowUp', 'Enter', ' ', 'Escape', 'Home', 'End'].includes(event.key)) {
-      event.stopPropagation();
-    }
-
-    if (!isOpen) {
-      if (event.key === 'ArrowDown' || event.key === 'ArrowUp' || event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault();
-        onToggle();
-      }
-      return;
-    }
-
-    switch (event.key) {
-      case 'ArrowDown':
-        event.preventDefault();
-        moveActive(activeIndex + 1);
-        break;
-      case 'ArrowUp':
-        event.preventDefault();
-        moveActive(activeIndex - 1);
-        break;
-      case 'Home':
-        event.preventDefault();
-        moveActive(0);
-        break;
-      case 'End':
-        event.preventDefault();
-        moveActive(options.length - 1);
-        break;
-      case 'Enter':
-      case ' ':
-        event.preventDefault();
-        onSelect(options[activeIndex]);
-        break;
-      case 'Escape':
-        event.preventDefault();
-        onClose();
-        break;
-      default:
-        break;
-    }
-  };
+  const { listId, wrapperRef, triggerRef, activeIndex, handleKeyDown, handleBlur, selectOption } = useListboxSelect({
+    isOpen,
+    options,
+    value,
+    onOpen: onToggle,
+    onClose,
+    onSelect,
+  });
 
   return (
-    <SelectWrapper ref={wrapperRef} onKeyDownCapture={handleKeyDown}>
+    <SelectWrapper ref={wrapperRef} onKeyDownCapture={handleKeyDown} onBlur={handleBlur}>
       <Select
+        ref={triggerRef}
         heading={label}
         value={value}
         onClick={onToggle}
         aria-expanded={isOpen}
         aria-activedescendant={isOpen ? `${listId}-${activeIndex}` : undefined}
+        aria-controls={listId}
       />
       {isOpen && (
         <OptionList role="listbox" id={listId}>
@@ -214,7 +164,7 @@ const FilterSelect = ({
               role="option"
               aria-selected={value === option}
               $active={index === activeIndex}
-              onClick={() => onSelect(option)}
+              onClick={() => selectOption(option, index)}
             >
               {option}
             </Option>
@@ -241,25 +191,9 @@ const Header = styled.div`
   gap: 42px;
 `;
 
-const Intro = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+const Intro = styled(PageHeader)`
   gap: 24px;
-  padding: 80px 0 22px;
-`;
-
-const Title = styled.p`
-  ${typographyCss(Typography.display2.bold)}
-  color: ${Orange.o500};
-  margin: 0;
-`;
-
-const Subtitle = styled.p`
-  ${typographyCss(Typography.heading2.medium)}
-  color: ${Orange.o500};
-  margin: 0;
+  padding-bottom: 22px;
 `;
 
 const FilterRow = styled.div`

@@ -1,8 +1,10 @@
-import Select from '@common/select/Select';
-import { Label, Line } from '@utils/constant/color';
-import { Typography, typographyCss } from '@utils/constant/typography';
-import { KeyboardEvent, useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import styled from 'styled-components';
+
+import Select from '@common/select/Select';
+import useListboxSelect from 'src/hooks/useListboxSelect';
+import { BackgroundColor, Fill, Label } from '@utils/constant/color';
+import { Typography, typographyCss } from '@utils/constant/typography';
 
 interface ProjectFilterSelectProps {
   heading: string;
@@ -13,69 +15,37 @@ interface ProjectFilterSelectProps {
 
 const ProjectFilterSelect = ({ heading, options, value, onChange }: ProjectFilterSelectProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const wrapperRef = useRef<HTMLDivElement>(null);
-  const optionRefs = useRef<(HTMLLIElement | null)[]>([]);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  useEffect(() => {
-    if (!isOpen) return;
-    const activeIndex = Math.max(options.indexOf(value), 0);
-    optionRefs.current[activeIndex]?.focus();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen]);
-
-  const handleSelect = (option: string) => {
-    onChange(option);
-    setIsOpen(false);
-  };
-
-  const handleOptionKeyDown = (event: KeyboardEvent<HTMLLIElement>, index: number) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      handleSelect(options[index]);
-      return;
-    }
-    if (event.key === 'Escape') {
-      setIsOpen(false);
-      return;
-    }
-    if (event.key === 'ArrowDown') {
-      event.preventDefault();
-      optionRefs.current[(index + 1) % options.length]?.focus();
-      return;
-    }
-    if (event.key === 'ArrowUp') {
-      event.preventDefault();
-      optionRefs.current[(index - 1 + options.length) % options.length]?.focus();
-    }
-  };
+  const { listId, wrapperRef, triggerRef, activeIndex, handleKeyDown, handleBlur, selectOption } = useListboxSelect({
+    isOpen,
+    options,
+    value,
+    onOpen: () => setIsOpen(true),
+    onClose: () => setIsOpen(false),
+    onSelect: onChange,
+  });
 
   return (
-    <Wrapper ref={wrapperRef}>
-      <Select heading={heading} value={value} onClick={() => setIsOpen((prev) => !prev)} aria-expanded={isOpen} />
+    <Wrapper ref={wrapperRef} onKeyDownCapture={handleKeyDown} onBlur={handleBlur}>
+      <Select
+        ref={triggerRef}
+        heading={heading}
+        value={value}
+        onClick={() => setIsOpen((prev) => !prev)}
+        aria-expanded={isOpen}
+        aria-activedescendant={isOpen ? `${listId}-${activeIndex}` : undefined}
+        aria-controls={listId}
+      />
       {isOpen && (
-        <OptionList role="listbox">
+        <OptionList role="listbox" id={listId}>
           {options.map((option, index) => (
             <Option
               key={option}
-              ref={(el) => {
-                optionRefs.current[index] = el;
-              }}
+              id={`${listId}-${index}`}
+              type="button"
               role="option"
-              tabIndex={-1}
               aria-selected={option === value}
-              $active={option === value}
-              onClick={() => handleSelect(option)}
-              onKeyDown={(event) => handleOptionKeyDown(event, index)}
+              $active={index === activeIndex}
+              onClick={() => selectOption(option, index)}
             >
               {option}
             </Option>
@@ -91,34 +61,39 @@ export default ProjectFilterSelect;
 const Wrapper = styled.div`
   position: relative;
   width: 160px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 `;
 
-const OptionList = styled.ul`
+const OptionList = styled.div`
   position: absolute;
   top: calc(100% + 4px);
   left: 0;
-  z-index: 10;
   width: 100%;
-  max-height: 240px;
-  overflow-y: auto;
-  margin: 0;
-  padding: 6px;
-  list-style: none;
+  display: flex;
+  flex-direction: column;
+  padding: 4px;
   border-radius: 12px;
-  background-color: #fff;
-  box-shadow: 0 4px 16px rgba(23, 23, 23, 0.12);
-  box-sizing: border-box;
+  background-color: ${BackgroundColor};
+  box-shadow:
+    0px 10px 15px -3px rgba(23, 23, 23, 0.07),
+    0px 4px 6px -2px rgba(23, 23, 23, 0.07);
+  z-index: 1;
 `;
 
-const Option = styled.li<{ $active: boolean }>`
-  padding: 10px 8px;
+const Option = styled.button<{ $active: boolean }>`
+  width: 100%;
+  padding: 8px;
+  border: none;
   border-radius: 8px;
+  background-color: ${(props) => (props.$active ? Fill.subtle : 'transparent')};
+  text-align: left;
+  color: ${Label.normal};
   cursor: pointer;
-  color: ${(props) => (props.$active ? Label.normal : Label.alternative)};
-  background-color: ${(props) => (props.$active ? Line.alternative : 'transparent')};
   ${typographyCss(Typography.body1Normal.regular)}
 
   &:hover {
-    background-color: ${Line.alternative};
+    background-color: ${Fill.subtle};
   }
 `;

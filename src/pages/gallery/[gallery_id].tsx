@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { useQuery } from '@tanstack/react-query';
 
 import Carousel from '@archiving/Carousel';
-import LayoutArchiving from '@common/layout/LayoutArchiving';
+import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import { IGalleryDetail } from '@@types/request';
 import { GreyScale } from '@utils/constant/color';
 import { GetStaticPaths } from 'next';
@@ -43,7 +43,7 @@ const GalleryDetail = ({ galleryDetailStaticData }: { galleryDetailStaticData: I
 };
 
 GalleryDetail.getLayout = function getLayout(page: ReactElement) {
-  return <LayoutArchiving>{page}</LayoutArchiving>;
+  return <LayoutFullWidth>{page}</LayoutFullWidth>;
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {

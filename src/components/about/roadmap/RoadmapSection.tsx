@@ -26,7 +26,6 @@ const Wrapper = styled.div`
   justify-content: center;
   width: 100%;
   padding: 80px 20px;
-  margin-bottom: 93px;
   background-color: ${BackgroundWhite.tertiary};
 `;
 

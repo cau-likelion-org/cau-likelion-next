@@ -1,4 +1,4 @@
-import LayoutArchiving from '@common/layout/LayoutArchiving';
+import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import ProjectDetailModal from '@project/detail/ProjectDetailModal';
 import ProjectPageHeader from '@project/projects/ProjectPageHeader';
 import ProjectsSection from '@project/projects/ProjectsSection';
@@ -55,7 +55,7 @@ const ProjectList = ({
 };
 
 ProjectList.getLayout = function getLayout(page: ReactElement) {
-  return <LayoutArchiving>{page}</LayoutArchiving>;
+  return <LayoutFullWidth>{page}</LayoutFullWidth>;
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
