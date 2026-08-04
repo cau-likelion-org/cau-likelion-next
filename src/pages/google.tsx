@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { login } from 'src/apis/account';
+import { login, LOGIN_UNREGISTERED_FLAG_KEY } from 'src/apis/account';
 import { useMutation } from '@tanstack/react-query';
 import useTokenStore from 'src/store/useTokenStore';
 import Loading from '@common/loading/Loading';
@@ -31,9 +31,10 @@ const Google = () => {
       }
       setToken({ access: res.token.access, refresh: res.token.refresh });
     },
-    onError: (res) => {
+    onError: () => {
       track('Login Failed', { login_method: 'google' });
-      router.push('/login/failed', undefined, { shallow: true });
+      sessionStorage.setItem(LOGIN_UNREGISTERED_FLAG_KEY, 'true');
+      router.push('/login');
     },
   });
 

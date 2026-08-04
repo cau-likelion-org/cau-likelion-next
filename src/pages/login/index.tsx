@@ -1,18 +1,37 @@
-import { ReactElement } from 'react';
+import { ReactElement, useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import PageHeader from '@common/pageHeader/PageHeader';
+import Toast from '@common/toast/Toast';
 import LoginButton from 'src/components/login/contents/component/LoginButton';
 import useAuthRedirect from 'src/hooks/useAuthRedirect';
+import { LOGIN_UNREGISTERED_FLAG_KEY } from 'src/apis/account';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 const Login = () => {
   useAuthRedirect();
 
+  const [isErrorToastOpen, setIsErrorToastOpen] = useState(
+    () => typeof window !== 'undefined' && sessionStorage.getItem(LOGIN_UNREGISTERED_FLAG_KEY) === 'true',
+  );
+
+  useEffect(() => {
+    if (!isErrorToastOpen) return;
+    sessionStorage.removeItem(LOGIN_UNREGISTERED_FLAG_KEY);
+  }, [isErrorToastOpen]);
+
   return (
     <Wrapper>
+      <ToastWrapper>
+        <Toast
+          variant="negative"
+          text="회원가입한 이메일로만 로그인이 가능해요."
+          show={isErrorToastOpen}
+          onHidden={() => setIsErrorToastOpen(false)}
+        />
+      </ToastWrapper>
       <TextGroup
         align="center"
         title="로그인"
@@ -55,6 +74,15 @@ const TextGroup = styled(PageHeader)`
   @media (max-width: 900px) {
     padding-top: 40px;
   }
+`;
+
+const ToastWrapper = styled.div`
+  position: fixed;
+  top: 110px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10001;
+  pointer-events: none;
 `;
 
 const GuideText = styled.div`
