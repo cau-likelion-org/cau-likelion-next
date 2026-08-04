@@ -1,21 +1,17 @@
-import { Dispatch, SetStateAction, useState } from 'react';
+import { ChangeEvent, Dispatch, SetStateAction, useState } from 'react';
 
-type Handler = (e: any) => void;
-type ReturnTypes<T = any> = [T, Handler, Dispatch<SetStateAction<T>>];
+type UseInputReturn = [string, (event: ChangeEvent<HTMLInputElement>) => void, Dispatch<SetStateAction<string>>];
 
-const useInput = <T = any>(initialValue: T, regExp?: RegExp): ReturnTypes<T> => {
+const useInput = (initialValue: string, regExp?: RegExp): UseInputReturn => {
   const [value, setValue] = useState(initialValue);
-  const handler: Handler = (e) => {
-    if (regExp) {
-      if (regExp.test(e.target.value)) {
-        setValue(e.target.value);
-      }
-    } else {
-      setValue(e.target.value);
+
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    if (!regExp || regExp.test(event.target.value)) {
+      setValue(event.target.value);
     }
   };
 
-  return [value, handler, setValue];
+  return [value, handleChange, setValue];
 };
 
 export default useInput;
