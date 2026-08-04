@@ -1,7 +1,5 @@
-import React, { useRef } from 'react';
-import styled from 'styled-components';
-import Image from 'next/image';
-import googleLogo from '@image/pngwing.com.png';
+import Button from '@common/button/Button';
+import { IcLogoGoogle } from '@assets/svg';
 import { trackBeforeUnload } from 'src/lib/amplitude';
 
 const LoginButton = () => {
@@ -13,74 +11,16 @@ const LoginButton = () => {
   };
 
   return (
-    <ButtonWrapper>
-      <Button className="google" onClick={handleClick}>
-        <Image src={googleLogo} alt="구글" width={38} height={38} />
-        <p className="googleText">구글로 로그인하기</p>
-      </Button>
-      <GreyButton className="likelion">
-        <p>LIKE LION 계정으로 로그인이 가능합니다.</p>
-      </GreyButton>
-    </ButtonWrapper>
+    <Button
+      variant="solid"
+      color="assistive"
+      size="large"
+      leadingIcon={<IcLogoGoogle width={20} height={20} />}
+      onClick={handleClick}
+    >
+      구글로 로그인하기
+    </Button>
   );
 };
 
 export default LoginButton;
-
-const ButtonWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  font-size: 1rem;
-
-  .google {
-    display: flex;
-    align-items: center;
-
-    border: 1px solid #858585;
-    background-color: white;
-    margin-bottom: 2rem;
-  }
-
-  .likelion {
-    color: #858585;
-    background-color: #f5f5f5;
-    border: none;
-  }
-
-  p {
-    @media (max-width: 900px) {
-      font-size: 0.8rem;
-    }
-  }
-`;
-
-const Button = styled.button`
-  display: flex;
-  justify-content: space-between;
-
-  width: 25rem;
-  height: 5rem;
-  font-family: 'Pretendard';
-  font-style: normal;
-  font-weight: 500;
-  cursor: pointer;
-  border-radius: 70px;
-  z-index: 20;
-
-  .googleText {
-    margin-right: 5rem;
-  }
-`;
-
-const GreyButton = styled(Button)`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: default;
-
-  p {
-    text-align: center;
-  }
-`;
