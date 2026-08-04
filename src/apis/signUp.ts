@@ -2,6 +2,7 @@ import { RequestSignUpForm } from '@@types/request';
 import { getAuthAxios } from './authAxios';
 
 export const SIGNUP_SUCCESS_FLAG_KEY = 'signupSuccess';
+export const SIGNUP_UNAPPROVED_EMAIL_FLAG_KEY = 'signupUnapprovedEmail';
 
 export interface SignUpMutationProps {
   form: RequestSignUpForm;

@@ -11,7 +11,12 @@ import TextField from '@common/textField/TextField';
 import useInput from 'src/hooks/useInput';
 import useListboxSelect from 'src/hooks/useListboxSelect';
 import useTokenStore from 'src/store/useTokenStore';
-import { signUp, SIGNUP_SUCCESS_FLAG_KEY, SignUpMutationProps } from 'src/apis/signUp';
+import {
+  signUp,
+  SIGNUP_SUCCESS_FLAG_KEY,
+  SIGNUP_UNAPPROVED_EMAIL_FLAG_KEY,
+  SignUpMutationProps,
+} from 'src/apis/signUp';
 import { NUMERIC_ONLY_REGEX, TRACK_INDEX, TRACK_OPTIONS } from '@utils/constant';
 
 const SignUpFormSection = () => {
@@ -55,6 +60,10 @@ const SignUpFormSection = () => {
         sessionStorage.setItem(SIGNUP_SUCCESS_FLAG_KEY, 'true');
         router.push('/signup/success');
       }
+    },
+    onError: () => {
+      sessionStorage.setItem(SIGNUP_UNAPPROVED_EMAIL_FLAG_KEY, 'true');
+      router.push('/login');
     },
   });
 

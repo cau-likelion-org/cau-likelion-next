@@ -10,9 +10,10 @@ export type ToastVariant = 'normal' | 'positive' | 'cautionary' | 'negative';
 export interface ToastProps {
   className?: string;
   variant?: ToastVariant;
-  text: string;
+  text: React.ReactNode;
   icon?: React.ReactNode;
   show: boolean;
+  width?: number;
   delay?: number;
   duration?: number;
   onHidden?: () => void;
@@ -35,6 +36,7 @@ const Toast = ({
   text,
   icon,
   show,
+  width = 335,
   delay = 300,
   duration = 1000,
   onHidden,
@@ -87,7 +89,7 @@ const Toast = ({
   const status = variant === 'normal' ? null : statusIcon[variant];
 
   return (
-    <Container className={className} $visible={isVisible}>
+    <Container className={className} $visible={isVisible} $width={width}>
       {status && (
         <IconWrapper color={status.color}>
           <status.Icon />
@@ -101,12 +103,12 @@ const Toast = ({
 
 export default Toast;
 
-const Container = styled.div<{ $visible: boolean }>`
+const Container = styled.div<{ $visible: boolean; $width: number }>`
   position: relative;
   display: flex;
   align-items: center;
   gap: 8px;
-  width: 335px;
+  width: ${(props) => props.$width}px;
   padding: 11px 16px;
   border-radius: 12px;
   overflow: hidden;

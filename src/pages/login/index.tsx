@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useState } from 'react';
+import { ReactElement, ReactNode, useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
@@ -7,29 +7,45 @@ import Toast from '@common/toast/Toast';
 import LoginButton from 'src/components/login/contents/component/LoginButton';
 import useAuthRedirect from 'src/hooks/useAuthRedirect';
 import { LOGIN_UNREGISTERED_FLAG_KEY } from 'src/apis/account';
+import { SIGNUP_UNAPPROVED_EMAIL_FLAG_KEY } from 'src/apis/signUp';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
+
+const TOAST_MESSAGE_BY_FLAG: Record<string, ReactNode> = {
+  [LOGIN_UNREGISTERED_FLAG_KEY]: '회원가입한 이메일로만 로그인이 가능해요.',
+  [SIGNUP_UNAPPROVED_EMAIL_FLAG_KEY]: (
+    <>
+      사전 등록된 이메일로만 회원가입이 가능합니다.
+      <br />
+      운영진에게 문의해주세요.
+    </>
+  ),
+};
+const TOAST_FLAG_KEYS = Object.keys(TOAST_MESSAGE_BY_FLAG);
 
 const Login = () => {
   useAuthRedirect();
 
-  const [isErrorToastOpen, setIsErrorToastOpen] = useState(
-    () => typeof window !== 'undefined' && sessionStorage.getItem(LOGIN_UNREGISTERED_FLAG_KEY) === 'true',
-  );
+  const [toastMessage, setToastMessage] = useState<ReactNode>(() => {
+    if (typeof window === 'undefined') return '';
+    const activeKey = TOAST_FLAG_KEYS.find((key) => sessionStorage.getItem(key) === 'true');
+    return activeKey ? TOAST_MESSAGE_BY_FLAG[activeKey] : '';
+  });
 
   useEffect(() => {
-    if (!isErrorToastOpen) return;
-    sessionStorage.removeItem(LOGIN_UNREGISTERED_FLAG_KEY);
-  }, [isErrorToastOpen]);
+    if (!toastMessage) return;
+    TOAST_FLAG_KEYS.forEach((key) => sessionStorage.removeItem(key));
+  }, [toastMessage]);
 
   return (
     <Wrapper>
       <ToastWrapper>
         <Toast
           variant="negative"
-          text="회원가입한 이메일로만 로그인이 가능해요."
-          show={isErrorToastOpen}
-          onHidden={() => setIsErrorToastOpen(false)}
+          text={toastMessage}
+          show={!!toastMessage}
+          width={348}
+          onHidden={() => setToastMessage('')}
         />
       </ToastWrapper>
       <TextGroup
