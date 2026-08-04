@@ -12,6 +12,7 @@ import IcCircleExclamation from '@assets/svg/icon/ic-circle-exclamation.svg';
 import IcLineHorizontal from '@assets/svg/icon/ic-line-horizontal.svg';
 import IcXButton from '@assets/svg/ic-XButton.svg';
 import useFocusTrap from 'src/hooks/useFocusTrap';
+import useListboxSelect from 'src/hooks/useListboxSelect';
 import { BackgroundColor, Fill, Label, Line, Material, Orange, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
@@ -302,31 +303,41 @@ const CategorySelect = ({
   description?: string;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const { listId, wrapperRef, triggerRef, activeIndex, handleKeyDown, handleBlur, selectOption } = useListboxSelect({
+    isOpen,
+    options,
+    value,
+    onOpen: () => setIsOpen(true),
+    onClose: () => setIsOpen(false),
+    onSelect: onChange,
+  });
 
   return (
-    <NarrowSelectWrapper>
+    <NarrowSelectWrapper ref={wrapperRef} onKeyDownCapture={handleKeyDown} onBlur={handleBlur}>
       <Select
+        ref={triggerRef}
         heading={label}
         required
         placeholder="선택"
         value={value}
         onClick={() => setIsOpen((prev) => !prev)}
         aria-expanded={isOpen}
+        aria-activedescendant={isOpen ? `${listId}-${activeIndex}` : undefined}
+        aria-controls={listId}
         status={status}
         description={description}
       />
       {isOpen && (
-        <OptionList role="listbox">
-          {options.map((option) => (
+        <OptionList role="listbox" id={listId}>
+          {options.map((option, index) => (
             <Option
               key={option}
+              id={`${listId}-${index}`}
               type="button"
               role="option"
               aria-selected={value === option}
-              onClick={() => {
-                onChange(option);
-                setIsOpen(false);
-              }}
+              $active={index === activeIndex}
+              onClick={() => selectOption(option, index)}
             >
               {option}
             </Option>
@@ -734,12 +745,12 @@ const OptionList = styled.div`
   z-index: 1;
 `;
 
-const Option = styled.button`
+const Option = styled.button<{ $active: boolean }>`
   width: 100%;
   padding: 8px;
   border: none;
   border-radius: 8px;
-  background: none;
+  background-color: ${(props) => (props.$active ? Fill.subtle : 'transparent')};
   text-align: left;
   color: ${Label.normal};
   cursor: pointer;

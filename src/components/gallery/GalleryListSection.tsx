@@ -1,15 +1,15 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import styled from 'styled-components';
 import Button from '@common/button/Button';
 import Card from '@common/card/Card';
 import ContentBadge from '@common/badge/ContentBadge';
+import Select from '@common/select/Select';
 import Tab from '@common/tab/Tab';
 import Toast from '@common/toast/Toast';
 import IcAdd from '@assets/svg/ic-add.svg';
-import IcChevronDown from '@assets/svg/icon/ic-chevron-down.svg';
-import useOutsideClick from 'src/hooks/useOutsideClick';
+import useListboxSelect from 'src/hooks/useListboxSelect';
 import { PROJECT_CATEGORY_OPTIONS } from '@utils/constant';
-import { BackgroundColor, Fill, Label, Line, Orange } from '@utils/constant/color';
+import { BackgroundColor, Fill, Label, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 import HistoryDetailModal from './component/HistoryDetailModal';
@@ -344,25 +344,37 @@ const FilterSelect = ({
   onClose: () => void;
   onSelect: (option: string) => void;
 }) => {
-  const wrapperRef = useRef<HTMLDivElement>(null);
-  useOutsideClick(wrapperRef, onClose, isOpen);
+  const { listId, wrapperRef, triggerRef, activeIndex, handleKeyDown, handleBlur, selectOption } = useListboxSelect({
+    isOpen,
+    options,
+    value,
+    onOpen: onToggle,
+    onClose,
+    onSelect,
+  });
 
   return (
-    <SelectWrapper ref={wrapperRef}>
-      <SelectHeading>{label}</SelectHeading>
-      <SelectTrigger type="button" aria-haspopup="listbox" aria-expanded={isOpen} onClick={onToggle}>
-        <SelectValue>{value}</SelectValue>
-        <ChevronIcon $open={isOpen} width={16} height={16} />
-      </SelectTrigger>
+    <SelectWrapper ref={wrapperRef} onKeyDownCapture={handleKeyDown} onBlur={handleBlur}>
+      <Select
+        ref={triggerRef}
+        heading={label}
+        value={value}
+        onClick={onToggle}
+        aria-expanded={isOpen}
+        aria-activedescendant={isOpen ? `${listId}-${activeIndex}` : undefined}
+        aria-controls={listId}
+      />
       {isOpen && (
-        <OptionList role="listbox">
-          {options.map((option) => (
+        <OptionList role="listbox" id={listId}>
+          {options.map((option, index) => (
             <Option
               key={option}
+              id={`${listId}-${index}`}
               type="button"
               role="option"
               aria-selected={value === option}
-              onClick={() => onSelect(option)}
+              $active={index === activeIndex}
+              onClick={() => selectOption(option, index)}
             >
               {option}
             </Option>
@@ -431,41 +443,6 @@ const SelectWrapper = styled.div`
   gap: 8px;
 `;
 
-const SelectHeading = styled.p`
-  ${typographyCss(Typography.label1Normal.bold)}
-  color: ${Label.neutral};
-  margin: 0;
-`;
-
-const SelectTrigger = styled.button`
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px;
-  border: none;
-  border-radius: 12px;
-  background-color: rgba(255, 255, 255, 0.08);
-  box-shadow:
-    inset 0 0 0 1px ${Line.normal},
-    0 1px 2px -1px rgba(23, 23, 23, 0.1);
-  cursor: pointer;
-  text-align: left;
-`;
-
-const SelectValue = styled.span`
-  flex: 1 0 0;
-  min-width: 0;
-  ${typographyCss(Typography.body1Normal.regular)}
-  color: ${Label.normal};
-`;
-
-const ChevronIcon = styled(IcChevronDown)<{ $open: boolean }>`
-  flex-shrink: 0;
-  color: ${Label.normal};
-  transform: ${(props) => (props.$open ? 'rotate(180deg)' : 'rotate(0deg)')};
-`;
-
 const OptionList = styled.div`
   position: absolute;
   top: calc(100% + 4px);
@@ -482,12 +459,12 @@ const OptionList = styled.div`
   z-index: 1;
 `;
 
-const Option = styled.button`
+const Option = styled.button<{ $active: boolean }>`
   width: 100%;
   padding: 8px;
   border: none;
   border-radius: 8px;
-  background: none;
+  background-color: ${(props) => (props.$active ? Fill.subtle : 'transparent')};
   text-align: left;
   color: ${Label.normal};
   cursor: pointer;

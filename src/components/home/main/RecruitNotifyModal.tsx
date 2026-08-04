@@ -6,7 +6,7 @@ import Select from '@common/select/Select';
 import TextField from '@common/textField/TextField';
 import { IcKakaotalk } from '@assets/svg';
 import useFocusTrap from 'src/hooks/useFocusTrap';
-import useOutsideClick from 'src/hooks/useOutsideClick';
+import useListboxSelect from 'src/hooks/useListboxSelect';
 import { TRACK, TRACK_NAME } from '@utils/constant';
 import { BackgroundColor, Fill, Label, Material } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -26,8 +26,22 @@ const RecruitNotifyModal = ({ onClose }: { onClose: () => void }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   useFocusTrap(modalRef, onClose);
 
-  const departmentSelectRef = useRef<HTMLDivElement>(null);
-  useOutsideClick(departmentSelectRef, () => setIsDepartmentOpen(false), isDepartmentOpen);
+  const {
+    listId: departmentListId,
+    wrapperRef: departmentSelectRef,
+    triggerRef: departmentTriggerRef,
+    activeIndex: activeDepartmentIndex,
+    handleKeyDown: handleDepartmentKeyDown,
+    handleBlur: handleDepartmentBlur,
+    selectOption: selectDepartment,
+  } = useListboxSelect({
+    isOpen: isDepartmentOpen,
+    options: DEPARTMENT_OPTIONS,
+    value: department,
+    onOpen: () => setIsDepartmentOpen(true),
+    onClose: () => setIsDepartmentOpen(false),
+    onSelect: setDepartment,
+  });
 
   const isEmailInvalid = showEmailError && !EMAIL_REGEX.test(email);
   const isValid = name.trim() !== '' && department !== '' && email.trim() !== '';
@@ -64,27 +78,33 @@ const RecruitNotifyModal = ({ onClose }: { onClose: () => void }) => {
                 onChange={(event) => setName(event.target.value)}
               />
             </FieldWrapper>
-            <SelectWrapper ref={departmentSelectRef}>
+            <SelectWrapper
+              ref={departmentSelectRef}
+              onKeyDownCapture={handleDepartmentKeyDown}
+              onBlur={handleDepartmentBlur}
+            >
               <Select
+                ref={departmentTriggerRef}
                 heading="관심파트"
                 required
                 placeholder="선택"
                 value={department}
                 onClick={() => setIsDepartmentOpen((prev) => !prev)}
                 aria-expanded={isDepartmentOpen}
+                aria-activedescendant={isDepartmentOpen ? `${departmentListId}-${activeDepartmentIndex}` : undefined}
+                aria-controls={departmentListId}
               />
               {isDepartmentOpen && (
-                <OptionList role="listbox">
-                  {DEPARTMENT_OPTIONS.map((option) => (
+                <OptionList role="listbox" id={departmentListId}>
+                  {DEPARTMENT_OPTIONS.map((option, index) => (
                     <Option
                       key={option}
+                      id={`${departmentListId}-${index}`}
                       type="button"
                       role="option"
                       aria-selected={department === option}
-                      onClick={() => {
-                        setDepartment(option);
-                        setIsDepartmentOpen(false);
-                      }}
+                      $active={index === activeDepartmentIndex}
+                      onClick={() => selectDepartment(option, index)}
                     >
                       {option}
                     </Option>
@@ -218,12 +238,12 @@ const OptionList = styled.div`
   z-index: 1;
 `;
 
-const Option = styled.button`
+const Option = styled.button<{ $active: boolean }>`
   width: 100%;
   padding: 8px;
   border: none;
   border-radius: 8px;
-  background: none;
+  background-color: ${(props) => (props.$active ? Fill.subtle : 'transparent')};
   text-align: left;
   color: ${Label.normal};
   cursor: pointer;
