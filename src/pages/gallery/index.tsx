@@ -1,4 +1,4 @@
-import LayoutArchiving from '@common/layout/LayoutArchiving';
+import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import GalleryListSection from '@gallery/GalleryListSection';
 import { ARCHIVING } from '@utils/constant';
 import { ReactElement } from 'react';
@@ -14,7 +14,7 @@ const GalleryList = () => {
 };
 
 GalleryList.getLayout = function getLayout(page: ReactElement) {
-  return <LayoutArchiving>{page}</LayoutArchiving>;
+  return <LayoutFullWidth>{page}</LayoutFullWidth>;
 };
 
 export default GalleryList;
