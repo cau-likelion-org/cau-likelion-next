@@ -11,6 +11,7 @@ import IcInstagram from './icon/ic-instagram.svg';
 import IcKakaotalk from './icon/ic-kakaotalk.svg';
 import IcLineHorizontal from './icon/ic-line-horizontal.svg';
 import IcLink from './icon/ic-link.svg';
+import IcLogoGoogle from './icon/ic-logo-google.svg';
 import IcLogout from './icon/ic-logout.svg';
 import IcPlus from './icon/ic-plus.svg';
 import IcTriangleExclamation from './icon/ic-triangle-exclamation.svg';
@@ -29,6 +30,7 @@ export {
   IcKakaotalk,
   IcLineHorizontal,
   IcLink,
+  IcLogoGoogle,
   IcLogout,
   IcPlus,
   IcTriangleExclamation,

@@ -1,42 +1,52 @@
-import React from 'react';
+import { ReactElement } from 'react';
+import { useRouter } from 'next/router';
 import styled from 'styled-components';
+
+import LayoutFullWidth from '@common/layout/LayoutFullWidth';
+import Button from '@common/button/Button';
 import SignUpFormSection from '@signup/SignUpFormSection';
-import useAuthRedirect from 'src/hooks/useAuthRedirect';
+import { IcChevronDown } from '@assets/svg';
 
 const SignUp = () => {
-  useAuthRedirect();
+  const router = useRouter();
 
   return (
     <Wrapper>
-      <TitleText>회원정보 입력</TitleText>
-      <SmallText>CAU LIKELION 에 방문하신 것을 환영합니다!</SmallText>
-      <SmallText>회원정보 입력 후 활동을 시작해보세요.</SmallText>
+      <CloseButton
+        variant="outlined"
+        color="assistive"
+        size="medium"
+        leadingIcon={<CloseIcon width={16} height={16} />}
+        onClick={() => router.push('/login')}
+      >
+        닫기
+      </CloseButton>
       <SignUpFormSection />
     </Wrapper>
   );
 };
 
+SignUp.getLayout = function getLayout(page: ReactElement) {
+  return <LayoutFullWidth>{page}</LayoutFullWidth>;
+};
+
 export default SignUp;
 
 const Wrapper = styled.div`
+  position: relative;
   display: flex;
   flex-direction: column;
-`;
-
-const TitleText = styled.div`
-  font-family: 'Gmarket Sans';
-  font-style: normal;
-  font-weight: 900;
-  font-size: 2.5rem;
-  text-align: center;
-  display: flex;
-  justify-content: center;
   align-items: center;
-  margin-bottom: 15px;
+  width: 1060px;
+  max-width: 100%;
 `;
 
-const SmallText = styled(TitleText)`
-  font-size: 1.4rem;
-  font-weight: 500;
-  margin-bottom: 5px;
+const CloseButton = styled(Button)`
+  position: absolute;
+  left: 0;
+  top: 0;
+`;
+
+const CloseIcon = styled(IcChevronDown)`
+  transform: rotate(90deg);
 `;

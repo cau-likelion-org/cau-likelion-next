@@ -4,6 +4,7 @@ import Button from '@common/button/Button';
 import Card from '@common/card/Card';
 import ContentBadge from '@common/badge/ContentBadge';
 import Select from '@common/select/Select';
+import ListboxOptions from '@common/select/ListboxOptions';
 import Tab from '@common/tab/Tab';
 import Toast from '@common/toast/Toast';
 import IcAdd from '@assets/svg/ic-add.svg';
@@ -363,21 +364,13 @@ const FilterSelect = ({
         aria-controls={listId}
       />
       {isOpen && (
-        <OptionList role="listbox" id={listId}>
-          {options.map((option, index) => (
-            <Option
-              key={option}
-              id={`${listId}-${index}`}
-              type="button"
-              role="option"
-              aria-selected={value === option}
-              $active={index === activeIndex}
-              onClick={() => selectOption(option, index)}
-            >
-              {option}
-            </Option>
-          ))}
-        </OptionList>
+        <ListboxOptions
+          listId={listId}
+          options={options}
+          value={value}
+          activeIndex={activeIndex}
+          onSelect={selectOption}
+        />
       )}
     </SelectWrapper>
   );
@@ -423,38 +416,6 @@ const SelectWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
-`;
-
-const OptionList = styled.div`
-  position: absolute;
-  top: calc(100% + 4px);
-  left: 0;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  padding: 4px;
-  border-radius: 12px;
-  background-color: ${BackgroundColor};
-  box-shadow:
-    0px 10px 15px -3px rgba(23, 23, 23, 0.07),
-    0px 4px 6px -2px rgba(23, 23, 23, 0.07);
-  z-index: 1;
-`;
-
-const Option = styled.button<{ $active: boolean }>`
-  width: 100%;
-  padding: 8px;
-  border: none;
-  border-radius: 8px;
-  background-color: ${(props) => (props.$active ? Fill.subtle : 'transparent')};
-  text-align: left;
-  color: ${Label.normal};
-  cursor: pointer;
-  ${typographyCss(Typography.body1Normal.regular)}
-
-  &:hover {
-    background-color: ${Fill.subtle};
-  }
 `;
 
 const ToastWrapper = styled.div`

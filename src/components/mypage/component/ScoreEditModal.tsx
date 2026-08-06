@@ -9,7 +9,7 @@ import { editUserScore } from 'src/apis/mypage';
 import useInput from 'src/hooks/useInput';
 import styled from 'styled-components';
 import { HiXMark } from 'react-icons/hi2';
-import { ATTENDANCE_CATEGORY_NAME, TRACK_NAME } from '@utils/constant';
+import { ATTENDANCE_CATEGORY_NAME, NUMERIC_ONLY_REGEX, TRACK_NAME } from '@utils/constant';
 
 interface ScoreEditModalProps {
   targetUserScore: UserScore;
@@ -20,9 +20,9 @@ interface ScoreEditModalProps {
 const ScoreEditModal = ({ targetUserScore, isEditModalOn, handleScoreEditModal }: ScoreEditModalProps) => {
   const tokenState = useTokenStore((state) => state.token);
   const toggleScoreChanged = useScoreChangedStore((state) => state.toggleScoreChanged);
-  const [truancyValue, onChangeTruancyValue] = useInput(Number(targetUserScore.truancy), /^[0-9]*$/);
-  const [tardinessValue, onChangeTardinessValue] = useInput(Number(targetUserScore.tardiness), /^[0-9]*$/);
-  const [absenceValue, onChangeAbsenceValue] = useInput(Number(targetUserScore.absence), /^[0-9]*$/);
+  const [truancyValue, onChangeTruancyValue] = useInput(String(targetUserScore.truancy), NUMERIC_ONLY_REGEX);
+  const [tardinessValue, onChangeTardinessValue] = useInput(String(targetUserScore.tardiness), NUMERIC_ONLY_REGEX);
+  const [absenceValue, onChangeAbsenceValue] = useInput(String(targetUserScore.absence), NUMERIC_ONLY_REGEX);
 
   const editScore = useMutation({
     mutationFn: ({ userScore, accessToken }: { userScore: RequestEditUserScore; accessToken: IToken }) =>

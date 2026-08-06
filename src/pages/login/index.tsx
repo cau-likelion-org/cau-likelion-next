@@ -1,75 +1,112 @@
-import React, { ReactElement } from 'react';
+import { ReactElement, ReactNode, useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-import LayoutLogin from '@common/layout/LayoutLogin';
-import ContentsSection from 'src/components/login/contents/ContentsSection';
-import BorderSection from 'src/components/login/border/BorderSection';
-import LayoutArchiving from '@common/layout/LayoutArchiving';
+import LayoutFullWidth from '@common/layout/LayoutFullWidth';
+import PageHeader from '@common/pageHeader/PageHeader';
+import Toast from '@common/toast/Toast';
+import LoginButton from 'src/components/login/contents/component/LoginButton';
 import useAuthRedirect from 'src/hooks/useAuthRedirect';
+import { LOGIN_UNREGISTERED_FLAG_KEY } from 'src/apis/account';
+import { SIGNUP_UNAPPROVED_EMAIL_FLAG_KEY } from 'src/apis/signUp';
+import { Label } from '@utils/constant/color';
+import { Typography, typographyCss } from '@utils/constant/typography';
+
+const TOAST_MESSAGE_BY_FLAG: Record<string, ReactNode> = {
+  [LOGIN_UNREGISTERED_FLAG_KEY]: '회원가입한 이메일로만 로그인이 가능해요.',
+  [SIGNUP_UNAPPROVED_EMAIL_FLAG_KEY]: (
+    <>
+      사전 등록된 이메일로만 회원가입이 가능합니다.
+      <br />
+      운영진에게 문의해주세요.
+    </>
+  ),
+};
+const TOAST_FLAG_KEYS = Object.keys(TOAST_MESSAGE_BY_FLAG);
 
 const Login = () => {
   useAuthRedirect();
 
+  const [toastMessage, setToastMessage] = useState<ReactNode>(() => {
+    if (typeof window === 'undefined') return '';
+    const activeKey = TOAST_FLAG_KEYS.find((key) => sessionStorage.getItem(key) === 'true');
+    return activeKey ? TOAST_MESSAGE_BY_FLAG[activeKey] : '';
+  });
+
+  useEffect(() => {
+    if (!toastMessage) return;
+    TOAST_FLAG_KEYS.forEach((key) => sessionStorage.removeItem(key));
+  }, [toastMessage]);
+
   return (
-    <StWrapper>
-      <StContentsWrapper>
-        <ContentsSection />
-      </StContentsWrapper>
-      <StBorderWrapper>
-        <BorderSection />
-      </StBorderWrapper>
-    </StWrapper>
+    <Wrapper>
+      <ToastWrapper>
+        <Toast
+          variant="negative"
+          text={toastMessage}
+          show={!!toastMessage}
+          width={348}
+          onHidden={() => setToastMessage('')}
+        />
+      </ToastWrapper>
+      <TextGroup
+        align="center"
+        title="로그인"
+        subtitle={
+          <>
+            멋쟁이사자처럼 중앙대학교 커뮤니티
+            <br />
+            CAU LION에 오신것을 환영합니다!
+          </>
+        }
+      />
+      <LoginButton />
+      <GuideText>
+        <p>처음 이용하는 아기사자의 경우</p>
+        <p>‘구글로 로그인하기’를 눌러 회원가입을 진행해 주세요.</p>
+      </GuideText>
+    </Wrapper>
   );
 };
 
 Login.getLayout = function getLayout(page: ReactElement) {
-  return <LayoutArchiving>{page}</LayoutArchiving>;
+  return <LayoutFullWidth>{page}</LayoutFullWidth>;
 };
 
 export default Login;
 
-const StWrapper = styled.div`
+const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  width: 100rem;
-  height: 80vh;
-  padding: 0px 360px 0px 360px;
+  gap: 32px;
+  width: 1060px;
+  max-width: 100%;
+`;
 
-  @media (max-width: 1440px) {
-    padding: 0px 250px 0px 250px;
-  }
-  @media (max-width: 1280px) {
-    padding: 0px 150px 0px 150px;
-  }
-  @media (max-width: 1200px) {
-    padding: 0px;
-    width: 100%;
-    max-height: 100vh;
+const TextGroup = styled(PageHeader)`
+  gap: 24px;
+  padding-bottom: 52px;
+
+  @media (max-width: 900px) {
+    padding-top: 40px;
   }
 `;
 
-const StContentsWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-  height: 100rem;
-  width: 100rem;
-
-  @media (max-width: 1200px) {
-    width: 100%;
-    padding: 0;
-  }
+const ToastWrapper = styled.div`
+  position: fixed;
+  top: 110px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10001;
+  pointer-events: none;
 `;
 
-const StBorderWrapper = styled.div`
-  position: absolute;
-  width: 100rem;
-  height: 100rem;
-  padding-top: 10rem;
-  @media (max-width: 1200px) {
-    display: none;
+const GuideText = styled.div`
+  color: ${Label.assistive};
+  text-align: center;
+  ${typographyCss(Typography.body2Normal.medium)}
+
+  p {
+    margin: 0;
   }
 `;

@@ -4,6 +4,8 @@ import axios from 'axios';
 import { url } from '.';
 import { getAuthAxios } from './authAxios';
 
+export const LOGIN_UNREGISTERED_FLAG_KEY = 'loginUnregistered';
+
 export interface IMutationProps {
   form: RequestSignUpForm;
   accessToken: string | null;

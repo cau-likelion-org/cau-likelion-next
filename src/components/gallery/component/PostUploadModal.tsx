@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import Button from '@common/button/Button';
 import Radio from '@common/radio/Radio';
 import Select from '@common/select/Select';
+import ListboxOptions from '@common/select/ListboxOptions';
 import TextButton from '@common/textButton/TextButton';
 import TextField from '@common/textField/TextField';
 import Textarea from '@common/textarea/Textarea';
@@ -12,10 +13,11 @@ import IcCircleExclamation from '@assets/svg/icon/ic-circle-exclamation.svg';
 import IcLineHorizontal from '@assets/svg/icon/ic-line-horizontal.svg';
 import IcXButton from '@assets/svg/ic-XButton.svg';
 import useFocusTrap from 'src/hooks/useFocusTrap';
+import useInput from 'src/hooks/useInput';
 import useListboxSelect from 'src/hooks/useListboxSelect';
+import { NUMERIC_ONLY_REGEX } from '@utils/constant';
 import { BackgroundColor, Fill, Label, Line, Material, Orange, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
-
 const MAX_IMAGE_COUNT = 10;
 const CONTENT_PLACEHOLDER = '예시)이 서비스는 ~~한 서비스입니다\n서비스의 핵심기능\n\n· 이런거\n· 이\n· 이';
 
@@ -69,9 +71,9 @@ const PostUploadModal = ({
 }: PostUploadModalProps) => {
   const [title, setTitle] = useState(initialValues?.title ?? '');
   const [content, setContent] = useState(initialValues?.content ?? '');
-  const [generation, setGeneration] = useState(initialValues?.generation ?? '');
+  const [generation, onChangeGeneration] = useInput(initialValues?.generation ?? '', NUMERIC_ONLY_REGEX);
   const [category, setCategory] = useState(initialValues?.category ?? '');
-  const [week, setWeek] = useState(initialValues?.week ?? '');
+  const [week, onChangeWeek] = useInput(initialValues?.week ?? '', NUMERIC_ONLY_REGEX);
   const [date, setDate] = useState(initialValues?.date ?? '');
   const [dateRange, setDateRange] = useState<[string, string]>(initialValues?.dateRange ?? ['', '']);
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
@@ -170,7 +172,7 @@ const PostUploadModal = ({
                 required
                 placeholder="숫자 입력"
                 value={generation}
-                onChange={(event) => setGeneration(event.target.value)}
+                onChange={onChangeGeneration}
                 status={showErrors && isEmpty(generation) ? 'negative' : 'normal'}
                 description={showErrors && isEmpty(generation) ? '기수를 입력해 주세요.' : undefined}
               />
@@ -192,7 +194,7 @@ const PostUploadModal = ({
                   required
                   placeholder="숫자 입력"
                   value={week}
-                  onChange={(event) => setWeek(event.target.value)}
+                  onChange={onChangeWeek}
                   status={showErrors && isEmpty(week) ? 'negative' : 'normal'}
                   description={showErrors && isEmpty(week) ? '주차를 입력해 주세요.' : undefined}
                 />
@@ -328,21 +330,13 @@ const CategorySelect = ({
         description={description}
       />
       {isOpen && (
-        <OptionList role="listbox" id={listId}>
-          {options.map((option, index) => (
-            <Option
-              key={option}
-              id={`${listId}-${index}`}
-              type="button"
-              role="option"
-              aria-selected={value === option}
-              $active={index === activeIndex}
-              onClick={() => selectOption(option, index)}
-            >
-              {option}
-            </Option>
-          ))}
-        </OptionList>
+        <ListboxOptions
+          listId={listId}
+          options={options}
+          value={value}
+          activeIndex={activeIndex}
+          onSelect={selectOption}
+        />
       )}
     </NarrowSelectWrapper>
   );
@@ -727,38 +721,6 @@ const HiddenDateInput = styled.input`
   border: none;
   opacity: 0;
   cursor: pointer;
-`;
-
-const OptionList = styled.div`
-  position: absolute;
-  top: calc(100% + 4px);
-  left: 0;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  padding: 4px;
-  border-radius: 12px;
-  background-color: ${BackgroundColor};
-  box-shadow:
-    0px 10px 15px -3px rgba(23, 23, 23, 0.07),
-    0px 4px 6px -2px rgba(23, 23, 23, 0.07);
-  z-index: 1;
-`;
-
-const Option = styled.button<{ $active: boolean }>`
-  width: 100%;
-  padding: 8px;
-  border: none;
-  border-radius: 8px;
-  background-color: ${(props) => (props.$active ? Fill.subtle : 'transparent')};
-  text-align: left;
-  color: ${Label.normal};
-  cursor: pointer;
-  ${typographyCss(Typography.body1Normal.regular)}
-
-  &:hover {
-    background-color: ${Fill.subtle};
-  }
 `;
 
 const Actions = styled.div<{ $mode: 'create' | 'edit' }>`

@@ -1,4 +1,5 @@
 export const GENERATION_CHECKER = 2012;
+export const NUMERIC_ONLY_REGEX = /^[0-9]*$/;
 
 export enum MENU {
   SESSION,

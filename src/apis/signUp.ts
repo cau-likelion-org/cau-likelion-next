@@ -1,27 +1,14 @@
 import { RequestSignUpForm } from '@@types/request';
-import { IToken } from 'src/store/useTokenStore';
-import { url } from '.';
 import { getAuthAxios } from './authAxios';
 
-export const getEmailSecret = async (token: IToken, emailValue: string) => {
-  const axiosInstance = getAuthAxios(token);
-  const response = await axiosInstance.get(`/api/caumail`, {
-    params: { email: `${emailValue}@cau.ac.kr` },
-  });
-  return response;
-};
+export const SIGNUP_SUCCESS_FLAG_KEY = 'signupSuccess';
+export const SIGNUP_UNAPPROVED_EMAIL_FLAG_KEY = 'signupUnapprovedEmail';
+export const PENDING_SIGNUP_ACCESS_TOKEN_KEY = 'pendingSignupAccessToken';
+export const PENDING_SIGNUP_REFRESH_TOKEN_KEY = 'pendingSignupRefreshToken';
 
-interface IMailResponse {
-  data: boolean;
-}
-
-export const postEmailSecret = async (token: IToken, secretValue: string) => {
-  const axiosInstance = getAuthAxios(token);
-  const response = await axiosInstance.post<IMailResponse>(`/api/caumail`, {
-    code: secretValue,
-  });
-
-  return response.data;
+export const clearPendingSignupTokens = () => {
+  sessionStorage.removeItem(PENDING_SIGNUP_ACCESS_TOKEN_KEY);
+  sessionStorage.removeItem(PENDING_SIGNUP_REFRESH_TOKEN_KEY);
 };
 
 export interface SignUpMutationProps {
