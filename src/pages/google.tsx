@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import { login, LOGIN_UNREGISTERED_FLAG_KEY } from 'src/apis/account';
+import { PENDING_SIGNUP_ACCESS_TOKEN_KEY, PENDING_SIGNUP_REFRESH_TOKEN_KEY } from 'src/apis/signUp';
 import { useMutation } from '@tanstack/react-query';
 import useTokenStore from 'src/store/useTokenStore';
 import Loading from '@common/loading/Loading';
@@ -21,13 +22,9 @@ const Google = () => {
     onSuccess: (res) => {
       track('Login Completed', { login_method: 'google', is_new_signup: !res.is_active });
       if (!res.is_active) {
-        router.push(
-          {
-            pathname: '/signup',
-            query: { accessToken: res.token.access, refreshToken: res.token.refresh },
-          },
-          '/signup',
-        );
+        sessionStorage.setItem(PENDING_SIGNUP_ACCESS_TOKEN_KEY, res.token.access ?? '');
+        sessionStorage.setItem(PENDING_SIGNUP_REFRESH_TOKEN_KEY, res.token.refresh ?? '');
+        router.push('/signup');
         return;
       }
       setToken({ access: res.token.access, refresh: res.token.refresh });

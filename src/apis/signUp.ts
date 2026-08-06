@@ -3,6 +3,13 @@ import { getAuthAxios } from './authAxios';
 
 export const SIGNUP_SUCCESS_FLAG_KEY = 'signupSuccess';
 export const SIGNUP_UNAPPROVED_EMAIL_FLAG_KEY = 'signupUnapprovedEmail';
+export const PENDING_SIGNUP_ACCESS_TOKEN_KEY = 'pendingSignupAccessToken';
+export const PENDING_SIGNUP_REFRESH_TOKEN_KEY = 'pendingSignupRefreshToken';
+
+export const clearPendingSignupTokens = () => {
+  sessionStorage.removeItem(PENDING_SIGNUP_ACCESS_TOKEN_KEY);
+  sessionStorage.removeItem(PENDING_SIGNUP_REFRESH_TOKEN_KEY);
+};
 
 export interface SignUpMutationProps {
   form: RequestSignUpForm;

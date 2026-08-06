@@ -14,6 +14,9 @@ import useListboxSelect from 'src/hooks/useListboxSelect';
 import useTokenStore from 'src/store/useTokenStore';
 import {
   signUp,
+  clearPendingSignupTokens,
+  PENDING_SIGNUP_ACCESS_TOKEN_KEY,
+  PENDING_SIGNUP_REFRESH_TOKEN_KEY,
   SIGNUP_SUCCESS_FLAG_KEY,
   SIGNUP_UNAPPROVED_EMAIL_FLAG_KEY,
   SignUpMutationProps,
@@ -25,11 +28,16 @@ const SignUpFormSection = () => {
   const [generation, onChangeGeneration] = useInput('', NUMERIC_ONLY_REGEX);
   const [track, setTrack] = useState('');
   const [isTrackOpen, setIsTrackOpen] = useState(false);
+  const [accessToken] = useState(() =>
+    typeof window === 'undefined' ? null : sessionStorage.getItem(PENDING_SIGNUP_ACCESS_TOKEN_KEY),
+  );
+  const [refreshToken] = useState(() =>
+    typeof window === 'undefined' ? null : sessionStorage.getItem(PENDING_SIGNUP_REFRESH_TOKEN_KEY),
+  );
 
   const { access } = useTokenStore((state) => state.token);
   const setToken = useTokenStore((state) => state.setToken);
   const router = useRouter();
-  const { accessToken, refreshToken } = router.query;
 
   const { listId, wrapperRef, triggerRef, activeIndex, handleKeyDown, handleBlur, selectOption } = useListboxSelect({
     isOpen: isTrackOpen,
@@ -41,15 +49,14 @@ const SignUpFormSection = () => {
   });
 
   useEffect(() => {
-    if (!router.isReady) return;
     if (access) {
       router.push('/');
       return;
     }
-    if (typeof accessToken !== 'string' || typeof refreshToken !== 'string') {
+    if (!accessToken || !refreshToken) {
       router.push('/login');
     }
-  }, [router, router.isReady, access, accessToken, refreshToken]);
+  }, [router, access, accessToken, refreshToken]);
 
   const isFormActivated = name.trim() !== '' && generation.trim() !== '' && track !== '';
 
@@ -57,7 +64,8 @@ const SignUpFormSection = () => {
     mutationFn: (props: SignUpMutationProps) => signUp(props),
     onSuccess: (res: unknown) => {
       if (res) {
-        setToken({ access: accessToken as string, refresh: refreshToken as string });
+        setToken({ access: accessToken, refresh: refreshToken });
+        clearPendingSignupTokens();
         sessionStorage.setItem(SIGNUP_SUCCESS_FLAG_KEY, 'true');
         router.push('/signup/success');
       }
@@ -66,6 +74,7 @@ const SignUpFormSection = () => {
       const status = axios.isAxiosError(error) ? error.response?.status : undefined;
       // 4xx만 "사전 미등록 이메일" 업무 오류로 간주. 5xx·네트워크 오류는 폼에 남겨 재시도할 수 있게 함
       if (status !== undefined && status >= 400 && status < 500) {
+        clearPendingSignupTokens();
         sessionStorage.setItem(SIGNUP_UNAPPROVED_EMAIL_FLAG_KEY, 'true');
         router.push('/login');
       }
