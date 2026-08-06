@@ -44,22 +44,36 @@ SessionDetail.getLayout = function getLayout(page: ReactElement) {
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const sessionsArray = await getSessions();
-  const paths = getPaths(sessionsArray, 'session');
-  return {
-    paths,
-    fallback: true,
-  };
+  try {
+    const sessionsArray = await getSessions();
+    const paths = getPaths(sessionsArray, 'session');
+    return {
+      paths,
+      fallback: true,
+    };
+  } catch {
+    return {
+      paths: [],
+      fallback: true,
+    };
+  }
 };
 
 export async function getStaticProps({ params }: { params: { session_id: string } }) {
-  const sessionDeatilStaticData = await getSessionDetail(params.session_id);
-  return {
-    props: {
-      sessionDetailStaticData: sessionDeatilStaticData,
-    },
-    revalidate: 86400,
-  };
+  try {
+    const sessionDeatilStaticData = await getSessionDetail(params.session_id);
+    return {
+      props: {
+        sessionDetailStaticData: sessionDeatilStaticData,
+      },
+      revalidate: 86400,
+    };
+  } catch {
+    return {
+      notFound: true,
+      revalidate: 60,
+    } as const;
+  }
 }
 
 export default SessionDetail;
