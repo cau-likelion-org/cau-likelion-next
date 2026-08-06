@@ -23,12 +23,21 @@ ProjectList.getLayout = function getLayout(page: ReactElement) {
 };
 
 export async function getStaticProps() {
-  const projectStaticData = await getProjects();
-  return {
-    props: {
-      projectStaticData,
-    },
-    revalidate: 86400,
-  };
+  try {
+    const projectStaticData = await getProjects();
+    return {
+      props: {
+        projectStaticData,
+      },
+      revalidate: 86400,
+    };
+  } catch {
+    return {
+      props: {
+        projectStaticData: {},
+      },
+      revalidate: 60,
+    };
+  }
 }
 export default ProjectList;

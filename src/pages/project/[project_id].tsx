@@ -48,22 +48,36 @@ ProjectDetail.getLayout = function getLayout(page: ReactElement) {
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const projectsGenerationArray = await getProjects();
-  const paths = getPaths(projectsGenerationArray, 'project');
-  return {
-    paths,
-    fallback: true,
-  };
+  try {
+    const projectsGenerationArray = await getProjects();
+    const paths = getPaths(projectsGenerationArray, 'project');
+    return {
+      paths,
+      fallback: true,
+    };
+  } catch {
+    return {
+      paths: [],
+      fallback: true,
+    };
+  }
 };
 
 export async function getStaticProps({ params }: { params: { project_id: string } }) {
-  const projectDetailStaticData = await getProjectDetail(params.project_id);
-  return {
-    props: {
-      projectDetailStaticData,
-    },
-    revalidate: 86400,
-  };
+  try {
+    const projectDetailStaticData = await getProjectDetail(params.project_id);
+    return {
+      props: {
+        projectDetailStaticData,
+      },
+      revalidate: 86400,
+    };
+  } catch {
+    return {
+      notFound: true,
+      revalidate: 60,
+    } as const;
+  }
 }
 
 export default ProjectDetail;

@@ -31,13 +31,22 @@ SessionList.getLayout = function getLayout(page: ReactElement) {
 };
 
 export async function getStaticProps({ params }: { params: { track: string } }) {
-  const sessionStaticData = await getSessions();
-  return {
-    props: {
-      sessionStaticData,
-    },
-    revalidate: 86400,
-  };
+  try {
+    const sessionStaticData = await getSessions();
+    return {
+      props: {
+        sessionStaticData,
+      },
+      revalidate: 86400,
+    };
+  } catch {
+    return {
+      props: {
+        sessionStaticData: {},
+      },
+      revalidate: 60,
+    };
+  }
 }
 
 export default SessionList;

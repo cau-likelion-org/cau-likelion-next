@@ -46,22 +46,36 @@ GalleryDetail.getLayout = function getLayout(page: ReactElement) {
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const galleriesGenerationArray = await getGalleries();
-  const paths = getPaths(galleriesGenerationArray, 'gallery');
-  return {
-    paths,
-    fallback: true,
-  };
+  try {
+    const galleriesGenerationArray = await getGalleries();
+    const paths = getPaths(galleriesGenerationArray, 'gallery');
+    return {
+      paths,
+      fallback: true,
+    };
+  } catch {
+    return {
+      paths: [],
+      fallback: true,
+    };
+  }
 };
 
 export async function getStaticProps({ params }: { params: { gallery_id: string } }) {
-  const galleryDeatilStaticData = await getGalleryDetail(params.gallery_id);
-  return {
-    props: {
-      galleryDetailStaticData: galleryDeatilStaticData,
-    },
-    revalidate: 86400,
-  };
+  try {
+    const galleryDeatilStaticData = await getGalleryDetail(params.gallery_id);
+    return {
+      props: {
+        galleryDetailStaticData: galleryDeatilStaticData,
+      },
+      revalidate: 86400,
+    };
+  } catch {
+    return {
+      notFound: true,
+      revalidate: 60,
+    } as const;
+  }
 }
 
 export default GalleryDetail;

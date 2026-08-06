@@ -24,13 +24,22 @@ GalleryList.getLayout = function getLayout(page: ReactElement) {
 };
 
 export async function getStaticProps() {
-  const galleryStaticData = await getGalleries();
-  return {
-    props: {
-      galleryStaticData: galleryStaticData,
-    },
-    revalidate: 86400,
-  };
+  try {
+    const galleryStaticData = await getGalleries();
+    return {
+      props: {
+        galleryStaticData: galleryStaticData,
+      },
+      revalidate: 86400,
+    };
+  } catch {
+    return {
+      props: {
+        galleryStaticData: {},
+      },
+      revalidate: 60,
+    };
+  }
 }
 export default GalleryList;
 
