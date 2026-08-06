@@ -2,7 +2,6 @@ import { ReactElement } from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
 import styled, { keyframes } from 'styled-components';
-import { motion } from 'framer-motion';
 import loadingPic from '@image/loading.png';
 import { Primary, Secondary, GreyScale, BackgroundColor } from '@utils/constant/color';
 
@@ -18,42 +17,24 @@ const Maintenance = () => {
 
         <LionWrapper>
           {Array.from({ length: 3 }).map((_, i) => (
-            <ImageWrapper key={i} animate={animationSetting(i)}>
+            <ImageWrapper key={i} delay={i}>
               <Image src={loadingPic} layout="fill" objectFit="cover" objectPosition="center" alt="멋쟁이사자" />
             </ImageWrapper>
           ))}
         </LionWrapper>
 
-        <Badge
-          initial={{ opacity: 0, y: -12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          UNDER RENEWAL
-        </Badge>
+        <Badge>UNDER RENEWAL</Badge>
 
-        <Title
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.15 }}
-        >
+        <Title>
           <BlueBlockText>사이트</BlueBlockText>
           <WhiteBlockText>리뉴얼 중</WhiteBlockText>
         </Title>
 
-        <Description
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-        >
+        <Description>
           더 나은 모습으로 찾아뵙기 위해 잠시 점검하고 있어요
           <DotWrapper>
             {Array.from({ length: 3 }).map((_, i) => (
-              <Dot
-                key={i}
-                animate={{ opacity: [0.2, 1, 0.2] }}
-                transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.2 }}
-              />
+              <Dot key={i} delay={i} />
             ))}
           </DotWrapper>
         </Description>
@@ -66,18 +47,6 @@ export default Maintenance;
 
 Maintenance.getLayout = function getLayout(page: ReactElement) {
   return page;
-};
-
-const animationSetting = (i: number) => {
-  return {
-    rotate: 360,
-    transition: {
-      duration: 1,
-      delay: i,
-      repeat: Infinity,
-      repeatDelay: 3,
-    },
-  };
 };
 
 const Wrapper = styled.div`
@@ -157,12 +126,19 @@ const LionWrapper = styled.div`
   z-index: 1;
 `;
 
-const ImageWrapper = styled(motion.div)`
+const spin = keyframes`
+  0% { transform: rotate(0deg); }
+  30% { transform: rotate(360deg); }
+  100% { transform: rotate(360deg); }
+`;
+
+const ImageWrapper = styled.div<{ delay: number }>`
   position: relative;
   width: 6rem;
   height: 6rem;
   margin-left: 4.5px;
   margin-right: 4.5px;
+  animation: ${spin} 4s ease-in-out ${({ delay }) => delay}s infinite;
 
   @media (max-width: 750px) {
     width: 4rem;
@@ -170,7 +146,17 @@ const ImageWrapper = styled(motion.div)`
   }
 `;
 
-const Badge = styled(motion.div)`
+const fadeInDown = keyframes`
+  from { opacity: 0; transform: translateY(-12px); }
+  to { opacity: 1; transform: translateY(0); }
+`;
+
+const fadeInUp = keyframes`
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+`;
+
+const Badge = styled.div`
   font-family: 'Pretendard';
   font-weight: 700;
   font-size: 13px;
@@ -182,13 +168,15 @@ const Badge = styled(motion.div)`
   border: 1.5px solid ${Secondary.default};
   border-radius: 999px;
   z-index: 1;
+  animation: ${fadeInDown} 0.5s ease-out both;
 `;
 
-const Title = styled(motion.div)`
+const Title = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   z-index: 1;
+  animation: ${fadeInUp} 0.6s ease-out 0.15s both;
 `;
 
 const BlueBlockText = styled.div`
@@ -209,7 +197,7 @@ const WhiteBlockText = styled(BlueBlockText)`
     1px 1px 0 ${Primary.default};
 `;
 
-const Description = styled(motion.p)`
+const Description = styled.p`
   display: flex;
   align-items: center;
   font-family: 'Pretendard';
@@ -218,6 +206,7 @@ const Description = styled(motion.p)`
   color: ${GreyScale.default};
   margin-top: 2rem;
   z-index: 1;
+  animation: ${fadeInUp} 0.6s ease-out 0.3s both;
 `;
 
 const DotWrapper = styled.span`
@@ -226,9 +215,15 @@ const DotWrapper = styled.span`
   margin-left: 4px;
 `;
 
-const Dot = styled(motion.span)`
+const pulse = keyframes`
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 1; }
+`;
+
+const Dot = styled.span<{ delay: number }>`
   width: 5px;
   height: 5px;
   border-radius: 50%;
   background-color: ${Primary.default};
+  animation: ${pulse} 1.2s ease-in-out ${({ delay }) => delay * 0.2}s infinite;
 `;
