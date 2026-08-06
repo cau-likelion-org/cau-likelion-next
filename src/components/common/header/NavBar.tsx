@@ -19,7 +19,7 @@ export interface IMenu {
 const RECRUIT_MENU_TITLE = '지원하기';
 
 const MENU_ITEMS: IMenu[] = [
-  { title: '소개', routing: '#' },
+  { title: '소개', routing: '/about' },
   { title: '프로젝트', routing: '/project' },
   { title: '갤러리', routing: '/gallery' },
   { title: '블로그', routing: '/blog' },
