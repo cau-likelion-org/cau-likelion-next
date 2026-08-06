@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/router';
+import axios from 'axios';
 import { login, LOGIN_UNREGISTERED_FLAG_KEY } from 'src/apis/account';
 import { useMutation } from '@tanstack/react-query';
 import useTokenStore from 'src/store/useTokenStore';
@@ -31,9 +32,13 @@ const Google = () => {
       }
       setToken({ access: res.token.access, refresh: res.token.refresh });
     },
-    onError: () => {
+    onError: (error) => {
       track('Login Failed', { login_method: 'google' });
-      sessionStorage.setItem(LOGIN_UNREGISTERED_FLAG_KEY, 'true');
+      const status = axios.isAxiosError(error) ? error.response?.status : undefined;
+      // 4xx만 "미가입 이메일" 업무 오류로 간주. 5xx·네트워크 오류는 일반 로그인 화면으로만 보냄
+      if (status !== undefined && status >= 400 && status < 500) {
+        sessionStorage.setItem(LOGIN_UNREGISTERED_FLAG_KEY, 'true');
+      }
       router.push('/login');
     },
   });

@@ -1,4 +1,4 @@
-import { ReactElement, useEffect } from 'react';
+import { ReactElement, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
 
@@ -9,23 +9,29 @@ import { SIGNUP_SUCCESS_FLAG_KEY } from 'src/apis/signUp';
 import useTokenStore from 'src/store/useTokenStore';
 
 const SignUpSuccess = () => {
-  const tokenState = useTokenStore((state) => state.token);
+  const tokenAccess = useTokenStore((state) => state.token.access);
   const hasHydrated = useTokenStore((state) => state.hasHydrated);
   const router = useRouter();
 
+  const [isJustSignedUp] = useState(
+    () => typeof window !== 'undefined' && sessionStorage.getItem(SIGNUP_SUCCESS_FLAG_KEY) === 'true',
+  );
+
+  useEffect(() => {
+    if (!isJustSignedUp) return;
+    sessionStorage.removeItem(SIGNUP_SUCCESS_FLAG_KEY);
+  }, [isJustSignedUp]);
+
   useEffect(() => {
     if (!hasHydrated) return;
-    if (!tokenState.access) {
+    if (!tokenAccess) {
       router.push('/login');
       return;
     }
-    const isJustSignedUp = sessionStorage.getItem(SIGNUP_SUCCESS_FLAG_KEY);
     if (!isJustSignedUp) {
       router.push('/');
-      return;
     }
-    sessionStorage.removeItem(SIGNUP_SUCCESS_FLAG_KEY);
-  }, [hasHydrated, tokenState, router]);
+  }, [hasHydrated, tokenAccess, isJustSignedUp, router]);
 
   return (
     <Wrapper>

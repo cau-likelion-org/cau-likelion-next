@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useMutation } from '@tanstack/react-query';
+import axios from 'axios';
 import styled from 'styled-components';
 
 import Button from '@common/button/Button';
@@ -61,9 +62,13 @@ const SignUpFormSection = () => {
         router.push('/signup/success');
       }
     },
-    onError: () => {
-      sessionStorage.setItem(SIGNUP_UNAPPROVED_EMAIL_FLAG_KEY, 'true');
-      router.push('/login');
+    onError: (error) => {
+      const status = axios.isAxiosError(error) ? error.response?.status : undefined;
+      // 4xx만 "사전 미등록 이메일" 업무 오류로 간주. 5xx·네트워크 오류는 폼에 남겨 재시도할 수 있게 함
+      if (status !== undefined && status >= 400 && status < 500) {
+        sessionStorage.setItem(SIGNUP_UNAPPROVED_EMAIL_FLAG_KEY, 'true');
+        router.push('/login');
+      }
     },
   });
 
