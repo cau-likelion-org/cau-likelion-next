@@ -29,7 +29,7 @@ const TechStackInput = ({
   const removeTag = (tag: string) => onChange(value.filter((item) => item !== tag));
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.key !== 'Enter') return;
+    if (event.key !== ' ' && event.key !== ',') return;
     event.preventDefault();
     addTag();
   };
@@ -45,7 +45,6 @@ const TechStackInput = ({
         value={draft}
         onChange={(event) => setDraft(event.target.value)}
         onKeyDown={handleKeyDown}
-        onBlur={addTag}
         placeholder={value.length === 0 ? placeholder : ''}
       />
     </Wrapper>
