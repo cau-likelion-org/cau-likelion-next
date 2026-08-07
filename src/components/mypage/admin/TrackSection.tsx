@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import styled from 'styled-components';
 
 import Button from '@common/button/Button';
@@ -7,7 +8,8 @@ import AddCardButton from '@mypage/admin/component/AddCardButton';
 import RemoveCardButton from '@mypage/admin/component/RemoveCardButton';
 import CharCount from '@mypage/admin/component/CharCount';
 import TechStackInput from '@mypage/admin/component/TechStackInput';
-import { BackgroundWhite, Label, Line } from '@utils/constant/color';
+import { isUnfilled } from '@utils/index';
+import { BackgroundWhite, Label, Line, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { createId } from './utils';
 
@@ -36,6 +38,8 @@ const TrackSection = ({
   onChange: (items: TrackIntroItem[]) => void;
   onSave: () => void;
 }) => {
+  const [showErrors, setShowErrors] = useState(false);
+
   const updateItem = (id: string, patch: Partial<TrackIntroItem>) => {
     onChange(items.map((item) => (item.id === id ? { ...item, ...patch } : item)));
   };
@@ -43,6 +47,18 @@ const TrackSection = ({
   const removeItem = (id: string) => onChange(items.filter((item) => item.id !== id));
 
   const addItem = () => onChange([...items, createEmptyItem()]);
+
+  const isItemInvalid = (item: TrackIntroItem) =>
+    isUnfilled(item.nameKo) || isUnfilled(item.nameEn) || isUnfilled(item.description) || item.techStack.length === 0;
+
+  const handleSave = () => {
+    if (items.some(isItemInvalid)) {
+      setShowErrors(true);
+      return;
+    }
+    setShowErrors(false);
+    onSave();
+  };
 
   return (
     <Section>
@@ -55,12 +71,16 @@ const TrackSection = ({
               value={item.nameKo}
               placeholder="텍스트 입력"
               onChange={(event) => updateItem(item.id, { nameKo: event.target.value })}
+              status={showErrors && isUnfilled(item.nameKo) ? 'negative' : 'normal'}
+              description={showErrors && isUnfilled(item.nameKo) ? '파트명을 입력해 주세요.' : undefined}
             />
             <TextField
               heading="파트 영문명"
               value={item.nameEn}
               placeholder="텍스트 입력"
               onChange={(event) => updateItem(item.id, { nameEn: event.target.value })}
+              status={showErrors && isUnfilled(item.nameEn) ? 'negative' : 'normal'}
+              description={showErrors && isUnfilled(item.nameEn) ? '파트 영문명을 입력해 주세요.' : undefined}
             />
           </Row>
           <Textarea
@@ -70,18 +90,21 @@ const TrackSection = ({
             maxLength={1000}
             bottomTrailingContent={<CharCount>{item.description.length}/1000</CharCount>}
             onChange={(event) => updateItem(item.id, { description: event.target.value })}
+            status={showErrors && isUnfilled(item.description) ? 'negative' : 'normal'}
+            description={showErrors && isUnfilled(item.description) ? '파트소개를 입력해 주세요.' : undefined}
           />
           <StackRow>
             <StackField>
               <FieldLabel>기술 스택</FieldLabel>
               <TechStackInput value={item.techStack} onChange={(techStack) => updateItem(item.id, { techStack })} />
+              {showErrors && item.techStack.length === 0 && <ErrorText>기술 스택을 입력해 주세요.</ErrorText>}
             </StackField>
             <RemoveCardButton onClick={() => removeItem(item.id)} />
           </StackRow>
         </Card>
       ))}
       <AddCardButton onClick={addItem} ariaLabel="트랙 소개 추가" />
-      <Button size="large" onClick={onSave}>
+      <Button size="large" onClick={handleSave}>
         저장
       </Button>
     </Section>
@@ -140,4 +163,10 @@ const FieldLabel = styled.p`
   margin: 0;
   color: ${Label.neutral};
   ${typographyCss(Typography.label1Normal.bold)}
+`;
+
+const ErrorText = styled.p`
+  margin: 0;
+  color: ${State.error};
+  ${typographyCss(Typography.caption1.regular)}
 `;
