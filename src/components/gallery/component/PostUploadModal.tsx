@@ -17,6 +17,7 @@ import useInput from 'src/hooks/useInput';
 import useListboxSelect from 'src/hooks/useListboxSelect';
 import { NUMERIC_ONLY_REGEX } from '@utils/constant';
 import { BackgroundColor, Fill, Label, Line, Material, Orange, State } from '@utils/constant/color';
+import { isUnfilled } from '@utils/index';
 import { Typography, typographyCss } from '@utils/constant/typography';
 const MAX_IMAGE_COUNT = 10;
 const CONTENT_PLACEHOLDER = '예시)이 서비스는 ~~한 서비스입니다\n서비스의 핵심기능\n\n· 이런거\n· 이\n· 이';
@@ -83,14 +84,13 @@ const PostUploadModal = ({
   useFocusTrap(modalRef, onClose);
   const modalAriaLabel = `${POST_TYPE_LABEL[postType]} ${mode === 'edit' ? '수정' : '추가'}`;
 
-  const isEmpty = (value: string) => value.trim().length === 0;
-  const isDateInvalid = dateMode === 'single' ? isEmpty(date) : isEmpty(dateRange[0]) || isEmpty(dateRange[1]);
+  const isDateInvalid = dateMode === 'single' ? isUnfilled(date) : isUnfilled(dateRange[0]) || isUnfilled(dateRange[1]);
   const hasError =
-    isEmpty(title) ||
-    isEmpty(content) ||
-    isEmpty(generation) ||
-    (!!categoryConfig && isEmpty(category)) ||
-    (showWeekField && isEmpty(week)) ||
+    isUnfilled(title) ||
+    isUnfilled(content) ||
+    isUnfilled(generation) ||
+    (!!categoryConfig && isUnfilled(category)) ||
+    (showWeekField && isUnfilled(week)) ||
     isDateInvalid;
 
   const handleSubmit = () => {
@@ -144,8 +144,8 @@ const PostUploadModal = ({
               onChange={(event) => setTitle(event.target.value)}
               resize="fixed"
               bottomTrailingContent={<Counter>{title.length}/70</Counter>}
-              status={showErrors && isEmpty(title) ? 'negative' : 'normal'}
-              description={showErrors && isEmpty(title) ? '제목을 입력해 주세요.' : undefined}
+              status={showErrors && isUnfilled(title) ? 'negative' : 'normal'}
+              description={showErrors && isUnfilled(title) ? '제목을 입력해 주세요.' : undefined}
             />
           </FieldGroup>
 
@@ -160,8 +160,8 @@ const PostUploadModal = ({
               onChange={(event) => setContent(event.target.value)}
               resize="fixed"
               bottomTrailingContent={<Counter>{content.length}/300</Counter>}
-              status={showErrors && isEmpty(content) ? 'negative' : 'normal'}
-              description={showErrors && isEmpty(content) ? '내용을 입력해 주세요.' : undefined}
+              status={showErrors && isUnfilled(content) ? 'negative' : 'normal'}
+              description={showErrors && isUnfilled(content) ? '내용을 입력해 주세요.' : undefined}
             />
           </FieldGroup>
 
@@ -173,8 +173,8 @@ const PostUploadModal = ({
                 placeholder="숫자 입력"
                 value={generation}
                 onChange={onChangeGeneration}
-                status={showErrors && isEmpty(generation) ? 'negative' : 'normal'}
-                description={showErrors && isEmpty(generation) ? '기수를 입력해 주세요.' : undefined}
+                status={showErrors && isUnfilled(generation) ? 'negative' : 'normal'}
+                description={showErrors && isUnfilled(generation) ? '기수를 입력해 주세요.' : undefined}
               />
             </NarrowField>
             {categoryConfig && (
@@ -183,8 +183,10 @@ const PostUploadModal = ({
                 options={categoryConfig.options}
                 value={category}
                 onChange={setCategory}
-                status={showErrors && isEmpty(category) ? 'negative' : 'normal'}
-                description={showErrors && isEmpty(category) ? `${categoryConfig.label}을 선택해 주세요.` : undefined}
+                status={showErrors && isUnfilled(category) ? 'negative' : 'normal'}
+                description={
+                  showErrors && isUnfilled(category) ? `${categoryConfig.label}을 선택해 주세요.` : undefined
+                }
               />
             )}
             {showWeekField && (
@@ -195,8 +197,8 @@ const PostUploadModal = ({
                   placeholder="숫자 입력"
                   value={week}
                   onChange={onChangeWeek}
-                  status={showErrors && isEmpty(week) ? 'negative' : 'normal'}
-                  description={showErrors && isEmpty(week) ? '주차를 입력해 주세요.' : undefined}
+                  status={showErrors && isUnfilled(week) ? 'negative' : 'normal'}
+                  description={showErrors && isUnfilled(week) ? '주차를 입력해 주세요.' : undefined}
                 />
               </NarrowField>
             )}
