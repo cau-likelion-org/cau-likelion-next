@@ -121,7 +121,7 @@ const MyPageAdminLanding = () => {
     setFaqItems(MOCK_FAQ_ITEMS);
   };
 
-  const handleSave = () => setToastMessage('저장되었습니다.');
+  const handleSave = () => setToastMessage('변경사항이 저장되었습니다.');
 
   if (!userProfile || !userProfile.is_admin) return null;
 
