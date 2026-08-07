@@ -8,7 +8,7 @@ import Textarea from '@common/textarea/Textarea';
 import TextField from '@common/textField/TextField';
 import AddCardButton from '@mypage/admin/component/AddCardButton';
 import RemoveCardButton from '@mypage/admin/component/RemoveCardButton';
-import CharCount from '@mypage/admin/component/CharCount';
+import CharCount from '@common/charCount/CharCount';
 import useListboxSelect from 'src/hooks/useListboxSelect';
 import { BackgroundWhite, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';

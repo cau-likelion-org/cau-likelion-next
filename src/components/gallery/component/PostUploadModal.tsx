@@ -7,6 +7,7 @@ import ListboxOptions from '@common/select/ListboxOptions';
 import TextButton from '@common/textButton/TextButton';
 import TextField from '@common/textField/TextField';
 import Textarea from '@common/textarea/Textarea';
+import CharCount from '@common/charCount/CharCount';
 import IcAdd from '@assets/svg/ic-add.svg';
 import IcCalender from '@assets/svg/ic-calender.svg';
 import IcCircleExclamation from '@assets/svg/icon/ic-circle-exclamation.svg';
@@ -143,7 +144,7 @@ const PostUploadModal = ({
               value={title}
               onChange={(event) => setTitle(event.target.value)}
               resize="fixed"
-              bottomTrailingContent={<Counter>{title.length}/70</Counter>}
+              bottomTrailingContent={<CharCount>{title.length}/70</CharCount>}
               status={showErrors && isUnfilled(title) ? 'negative' : 'normal'}
               description={showErrors && isUnfilled(title) ? '제목을 입력해 주세요.' : undefined}
             />
@@ -159,7 +160,7 @@ const PostUploadModal = ({
               value={content}
               onChange={(event) => setContent(event.target.value)}
               resize="fixed"
-              bottomTrailingContent={<Counter>{content.length}/300</Counter>}
+              bottomTrailingContent={<CharCount>{content.length}/300</CharCount>}
               status={showErrors && isUnfilled(content) ? 'negative' : 'normal'}
               description={showErrors && isUnfilled(content) ? '내용을 입력해 주세요.' : undefined}
             />
@@ -593,13 +594,6 @@ const Required = styled.span`
 const RequiredSmall = styled.span`
   color: #ff4242;
   ${typographyCss(Typography.label1Normal.medium)}
-`;
-
-const Counter = styled.span`
-  padding: 0 4px;
-  opacity: 0.74;
-  color: ${Label.alternative};
-  ${typographyCss(Typography.label2.regular)}
 `;
 
 const TitleTextarea = styled(Textarea)`

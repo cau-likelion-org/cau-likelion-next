@@ -6,7 +6,7 @@ import Textarea from '@common/textarea/Textarea';
 import TextField from '@common/textField/TextField';
 import AddCardButton from '@mypage/admin/component/AddCardButton';
 import RemoveCardButton from '@mypage/admin/component/RemoveCardButton';
-import CharCount from '@mypage/admin/component/CharCount';
+import CharCount from '@common/charCount/CharCount';
 import TechStackInput from '@mypage/admin/component/TechStackInput';
 import { isUnfilled } from '@utils/index';
 import { BackgroundWhite, Label, Line, State } from '@utils/constant/color';
