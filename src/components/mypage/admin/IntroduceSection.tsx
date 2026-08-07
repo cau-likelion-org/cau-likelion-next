@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 
 import TextField from '@common/textField/TextField';
+import { NUMERIC_ONLY_REGEX } from '@utils/constant';
 import { BackgroundWhite, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
@@ -25,7 +26,11 @@ const IntroduceSection = ({
           <TextField
             heading="누적 활동 기수"
             value={metrics.generationCount}
-            onChange={(event) => onChange({ ...metrics, generationCount: event.target.value })}
+            onChange={(event) => {
+              if (NUMERIC_ONLY_REGEX.test(event.target.value)) {
+                onChange({ ...metrics, generationCount: event.target.value });
+              }
+            }}
           />
         </FieldWrapper>
         <FieldWrapper>
