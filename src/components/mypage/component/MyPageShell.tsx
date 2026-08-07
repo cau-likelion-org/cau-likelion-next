@@ -6,7 +6,15 @@ import Sidebar, { SidebarActive } from '@mypage/component/Sidebar';
 import { Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
-const MyPageShell = ({ active, children }: { active: SidebarActive; children: ReactNode }) => {
+const MyPageShell = ({
+  active,
+  isAdmin = false,
+  children,
+}: {
+  active: SidebarActive;
+  isAdmin?: boolean;
+  children: ReactNode;
+}) => {
   return (
     <Wrapper>
       <TitleRow>
@@ -14,7 +22,7 @@ const MyPageShell = ({ active, children }: { active: SidebarActive; children: Re
         <LogoutButton />
       </TitleRow>
       <Content>
-        <Sidebar active={active} />
+        <Sidebar active={active} isAdmin={isAdmin} />
         <Main>{children}</Main>
       </Content>
     </Wrapper>
