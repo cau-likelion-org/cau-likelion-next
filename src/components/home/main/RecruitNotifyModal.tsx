@@ -9,6 +9,7 @@ import { IcKakaotalk } from '@assets/svg';
 import useFocusTrap from 'src/hooks/useFocusTrap';
 import useListboxSelect from 'src/hooks/useListboxSelect';
 import { TRACK_OPTIONS } from '@utils/constant';
+import { isUnfilled } from '@utils/index';
 import { BackgroundColor, Fill, Label, Material } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
@@ -44,7 +45,7 @@ const RecruitNotifyModal = ({ onClose }: { onClose: () => void }) => {
   });
 
   const isEmailInvalid = showEmailError && !EMAIL_REGEX.test(email);
-  const isValid = name.trim() !== '' && department !== '' && email.trim() !== '';
+  const isValid = !isUnfilled(name) && !isUnfilled(department) && !isUnfilled(email);
 
   const handleSubmit = () => {
     if (!isValid) return;
