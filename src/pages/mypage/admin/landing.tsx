@@ -9,11 +9,11 @@ import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import Button from '@common/button/Button';
 import Toast from '@common/toast/Toast';
 import MyPageShell from '@mypage/component/MyPageShell';
-import IntroduceSection, { LandingMetrics } from '@mypage/admin/IntroduceSection';
-import TrackSection, { TrackIntroItem } from '@mypage/admin/TrackSection';
-import ActivitySection, { ActivityIntroItem } from '@mypage/admin/ActivitySection';
+import IntroduceSection, { LandingMetrics, isMetricsInvalid } from '@mypage/admin/IntroduceSection';
+import TrackSection, { TrackIntroItem, isTrackItemInvalid } from '@mypage/admin/TrackSection';
+import ActivitySection, { ActivityIntroItem, isActivityItemInvalid } from '@mypage/admin/ActivitySection';
 import ProjectSection, { FeaturedProject } from '@mypage/admin/ProjectSection';
-import FAQSection, { FaqItem } from '@mypage/admin/FAQSection';
+import FAQSection, { FaqItem, isFaqItemInvalid } from '@mypage/admin/FAQSection';
 import { getUserProfile } from 'src/apis/account';
 import useTokenStore from 'src/store/useTokenStore';
 import { TRACK, TRACK_NAME } from '@utils/constant';
@@ -104,6 +104,7 @@ const MyPageAdminLanding = () => {
   const [projects, setProjects] = useState(MOCK_PROJECTS);
   const [faqItems, setFaqItems] = useState(MOCK_FAQ_ITEMS);
   const [toastMessage, setToastMessage] = useState<ReactNode>('');
+  const [showErrors, setShowErrors] = useState(false);
 
   useEffect(() => {
     if (hasHydrated && !tokenState.access) router.push('/login');
@@ -119,9 +120,23 @@ const MyPageAdminLanding = () => {
     setActivityItems(MOCK_ACTIVITY_ITEMS);
     setProjects(MOCK_PROJECTS);
     setFaqItems(MOCK_FAQ_ITEMS);
+    setShowErrors(false);
   };
 
-  const handleSave = () => setToastMessage('변경사항이 저장되었습니다.');
+  const handleSave = () => {
+    const hasError =
+      isMetricsInvalid(metrics) ||
+      trackItems.some(isTrackItemInvalid) ||
+      activityItems.some(isActivityItemInvalid) ||
+      faqItems.some(isFaqItemInvalid);
+
+    if (hasError) {
+      setShowErrors(true);
+      return;
+    }
+    setShowErrors(false);
+    setToastMessage('변경사항이 저장되었습니다.');
+  };
 
   if (!userProfile || !userProfile.is_admin) return null;
 
@@ -139,11 +154,11 @@ const MyPageAdminLanding = () => {
             </Button>
           </ButtonRow>
         </TitleRow>
-        <IntroduceSection metrics={metrics} onChange={setMetrics} />
-        <TrackSection items={trackItems} onChange={setTrackItems} onSave={handleSave} />
-        <ActivitySection items={activityItems} onChange={setActivityItems} onSave={handleSave} />
+        <IntroduceSection metrics={metrics} onChange={setMetrics} showErrors={showErrors} />
+        <TrackSection items={trackItems} onChange={setTrackItems} showErrors={showErrors} />
+        <ActivitySection items={activityItems} onChange={setActivityItems} showErrors={showErrors} />
         <ProjectSection projects={projects} onChange={setProjects} />
-        <FAQSection items={faqItems} onChange={setFaqItems} />
+        <FAQSection items={faqItems} onChange={setFaqItems} showErrors={showErrors} />
       </MyPageShell>
       <ToastWrapper>
         <Toast variant="positive" text={toastMessage} show={!!toastMessage} onHidden={() => setToastMessage('')} />
