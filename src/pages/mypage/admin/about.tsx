@@ -9,8 +9,8 @@ import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import Button from '@common/button/Button';
 import Toast from '@common/toast/Toast';
 import MyPageShell from '@mypage/component/MyPageShell';
-import TalentSection, { TalentItem } from '@mypage/admin/TalentSection';
-import CurriculumSection, { CurriculumTrackItems } from '@mypage/admin/CurriculumSection';
+import TalentSection, { TalentItem, isTalentItemInvalid } from '@mypage/admin/TalentSection';
+import CurriculumSection, { CurriculumTrackItems, isCurriculumTracksInvalid } from '@mypage/admin/CurriculumSection';
 import RoadmapSection from '@mypage/admin/RoadmapSection';
 import { getUserProfile } from 'src/apis/account';
 import useTokenStore from 'src/store/useTokenStore';
@@ -56,6 +56,7 @@ const MyPageAdminAbout = () => {
   const [curriculumTracks, setCurriculumTracks] = useState(MOCK_CURRICULUM_TRACKS);
   const [roadmapImage, setRoadmapImage] = useState(MOCK_ROADMAP_IMAGE);
   const [toastMessage, setToastMessage] = useState<ReactNode>('');
+  const [showErrors, setShowErrors] = useState(false);
 
   useEffect(() => {
     if (hasHydrated && !tokenState.access) router.push('/login');
@@ -69,9 +70,19 @@ const MyPageAdminAbout = () => {
     setTalentItems(MOCK_TALENT_ITEMS);
     setCurriculumTracks(MOCK_CURRICULUM_TRACKS);
     setRoadmapImage(MOCK_ROADMAP_IMAGE);
+    setShowErrors(false);
   };
 
-  const handleSave = () => setToastMessage('변경사항이 저장되었습니다.');
+  const handleSave = () => {
+    const hasError = talentItems.some(isTalentItemInvalid) || isCurriculumTracksInvalid(curriculumTracks);
+
+    if (hasError) {
+      setShowErrors(true);
+      return;
+    }
+    setShowErrors(false);
+    setToastMessage('변경사항이 저장되었습니다.');
+  };
 
   if (!userProfile || !userProfile.is_admin) return null;
 
@@ -89,8 +100,8 @@ const MyPageAdminAbout = () => {
             </Button>
           </ButtonRow>
         </TitleRow>
-        <TalentSection items={talentItems} onChange={setTalentItems} onSave={handleSave} />
-        <CurriculumSection tracks={curriculumTracks} onChange={setCurriculumTracks} onSave={handleSave} />
+        <TalentSection items={talentItems} onChange={setTalentItems} showErrors={showErrors} />
+        <CurriculumSection tracks={curriculumTracks} onChange={setCurriculumTracks} showErrors={showErrors} />
         <RoadmapSection imageName={roadmapImage} onChange={setRoadmapImage} />
       </MyPageShell>
       <ToastWrapper>
