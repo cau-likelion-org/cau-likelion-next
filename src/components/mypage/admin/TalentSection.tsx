@@ -40,12 +40,14 @@ const TalentSection = ({
       <Title>중앙대학교 멋쟁이사자처럼 인재상</Title>
       {items.map((item) => (
         <Card key={item.id}>
-          <TextField
-            heading="파트명"
-            value={item.partName}
-            placeholder="텍스트 입력"
-            onChange={(event) => updateItem(item.id, { partName: event.target.value })}
-          />
+          <FieldWrapper>
+            <TextField
+              heading="파트명"
+              value={item.partName}
+              placeholder="텍스트 입력"
+              onChange={(event) => updateItem(item.id, { partName: event.target.value })}
+            />
+          </FieldWrapper>
           <Textarea
             heading="인재상"
             value={item.content}
@@ -97,4 +99,8 @@ const ButtonRow = styled.div`
   display: flex;
   justify-content: flex-end;
   width: 100%;
+`;
+
+const FieldWrapper = styled.div`
+  flex: 0 0 160px;
 `;
