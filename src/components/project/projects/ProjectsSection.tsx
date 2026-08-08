@@ -1,8 +1,14 @@
-import { ArchivingArrayType, IProjectData } from '@@types/request';
+import { ArchivingArrayType, IProjectData, UserProfile } from '@@types/request';
+import Button from '@common/button/Button';
 import CircularLoading from '@common/loading/CircularLoading';
+import Toast from '@common/toast/Toast';
+import IcAdd from '@assets/svg/ic-add.svg';
 import { useQuery } from '@tanstack/react-query';
-import { useMemo, useState } from 'react';
-import { getProjects } from 'src/apis/project';
+import { useEffect, useMemo, useState } from 'react';
+import { useRouter } from 'next/router';
+import { getUserProfile } from 'src/apis/account';
+import { PROJECT_DELETED_FLAG_KEY, getProjects } from 'src/apis/project';
+import useTokenStore from 'src/store/useTokenStore';
 import { sortArchivingListDesc } from '@utils/index';
 import styled from 'styled-components';
 import ProjectCard from './ProjectCard';
@@ -29,8 +35,25 @@ const ProjectsSection = ({ staticData }: { staticData: ArchivingArrayType<IProje
     initialData: staticData ?? undefined,
   });
 
+  const router = useRouter();
+  const tokenState = useTokenStore((state) => state.token);
+  const { data: userProfile } = useQuery<UserProfile>({
+    queryKey: ['userProfile'],
+    queryFn: () => getUserProfile(tokenState),
+    retry: false,
+    enabled: !!tokenState.access,
+  });
+
   const [selectedGeneration, setSelectedGeneration] = useState(ALL_OPTION);
   const [selectedCategory, setSelectedCategory] = useState(ALL_OPTION);
+
+  const [isDeletedToastOpen, setIsDeletedToastOpen] = useState(
+    () => typeof window !== 'undefined' && sessionStorage.getItem(PROJECT_DELETED_FLAG_KEY) === 'true',
+  );
+  useEffect(() => {
+    if (!isDeletedToastOpen) return;
+    sessionStorage.removeItem(PROJECT_DELETED_FLAG_KEY);
+  }, [isDeletedToastOpen]);
 
   const sortedGroups = useMemo(() => (data ? sortArchivingListDesc(data) : []), [data]);
 
@@ -70,19 +93,40 @@ const ProjectsSection = ({ staticData }: { staticData: ArchivingArrayType<IProje
 
   return (
     <Wrapper>
+      <ToastWrapper>
+        <Toast
+          variant="positive"
+          text="삭제가 완료되었습니다."
+          show={isDeletedToastOpen}
+          onHidden={() => setIsDeletedToastOpen(false)}
+        />
+      </ToastWrapper>
       <FilterRow>
-        <ProjectFilterSelect
-          heading="기수 구분"
-          options={generationOptions}
-          value={selectedGeneration}
-          onChange={setSelectedGeneration}
-        />
-        <ProjectFilterSelect
-          heading="프로젝트 구분"
-          options={categoryOptions}
-          value={selectedCategory}
-          onChange={setSelectedCategory}
-        />
+        <FilterGroup>
+          <ProjectFilterSelect
+            heading="기수 구분"
+            options={generationOptions}
+            value={selectedGeneration}
+            onChange={setSelectedGeneration}
+          />
+          <ProjectFilterSelect
+            heading="프로젝트 구분"
+            options={categoryOptions}
+            value={selectedCategory}
+            onChange={setSelectedCategory}
+          />
+        </FilterGroup>
+        {userProfile?.is_admin && (
+          <Button
+            variant="solid"
+            color="primary"
+            size="large"
+            trailingIcon={<IcAdd width={20} height={20} />}
+            onClick={() => router.push('/project/upload')}
+          >
+            프로젝트 추가
+          </Button>
+        )}
       </FilterRow>
       {isLoading ? (
         <LoadingWrapper>
@@ -111,8 +155,30 @@ const Wrapper = styled.div`
   max-width: 100%;
 `;
 
+const ToastWrapper = styled.div`
+  position: fixed;
+  top: 110px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10001;
+  pointer-events: none;
+`;
+
 const FilterRow = styled.div`
   display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  width: 100%;
+
+  @media (max-width: 500px) {
+    flex-wrap: wrap;
+  }
+`;
+
+const FilterGroup = styled.div`
+  display: flex;
+  align-items: center;
   gap: 20px;
 
   @media (max-width: 500px) {

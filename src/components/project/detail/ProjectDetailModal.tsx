@@ -1,9 +1,12 @@
-import { IProjectDetail } from '@@types/request';
+import { IProjectDetail, UserProfile } from '@@types/request';
 import { useQuery } from '@tanstack/react-query';
 import { AccentTint, Label, Material, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
+import { useRouter } from 'next/router';
 import { useEffect } from 'react';
+import { getUserProfile } from 'src/apis/account';
 import { getProjectDetail } from 'src/apis/project';
+import useTokenStore from 'src/store/useTokenStore';
 import styled from 'styled-components';
 import ProjectDetailCarousel from './ProjectDetailCarousel';
 import ProjectDetailMetaPanel from './ProjectDetailMetaPanel';
@@ -16,6 +19,15 @@ interface ProjectDetailModalProps {
 }
 
 const ProjectDetailModal = ({ projectId, staticData, onClose }: ProjectDetailModalProps) => {
+  const router = useRouter();
+  const tokenState = useTokenStore((state) => state.token);
+  const { data: userProfile } = useQuery<UserProfile>({
+    queryKey: ['userProfile'],
+    queryFn: () => getUserProfile(tokenState),
+    retry: false,
+    enabled: !!tokenState.access,
+  });
+
   const { data } = useQuery<IProjectDetail>({
     queryKey: ['projectDetail', projectId],
     queryFn: () => getProjectDetail(projectId),
@@ -65,6 +77,11 @@ const ProjectDetailModal = ({ projectId, staticData, onClose }: ProjectDetailMod
               </PanelRow>
             </Contents>
             <Actions>
+              {userProfile?.is_admin && (
+                <EditButton type="button" onClick={() => router.push(`/project/edit/${projectId}`)}>
+                  수정
+                </EditButton>
+              )}
               <CloseButton type="button" onClick={onClose}>
                 닫기
               </CloseButton>
@@ -167,6 +184,7 @@ const PanelRow = styled.div`
 const Actions = styled.div`
   display: flex;
   justify-content: flex-end;
+  gap: 24px;
   padding: 0 28px 20px;
 `;
 
@@ -176,5 +194,14 @@ const CloseButton = styled.button`
   padding: 4px 0;
   cursor: pointer;
   color: ${Orange.o500};
+  ${typographyCss(Typography.body1Normal.bold)}
+`;
+
+const EditButton = styled.button`
+  border: none;
+  background: none;
+  padding: 4px 0;
+  cursor: pointer;
+  color: ${Label.alternative};
   ${typographyCss(Typography.body1Normal.bold)}
 `;
