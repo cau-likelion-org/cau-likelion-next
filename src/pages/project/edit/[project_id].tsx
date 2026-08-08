@@ -2,14 +2,18 @@ import { ReactElement, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 
-import { UserProfile } from '@@types/request';
+import { IProjectDetail, UserProfile } from '@@types/request';
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import ProjectUploadForm from '@project/upload/ProjectUploadForm';
 import { getUserProfile } from 'src/apis/account';
+import { getProjectDetail } from 'src/apis/project';
 import useTokenStore from 'src/store/useTokenStore';
 
-const ProjectUpload = () => {
+const ProjectEdit = () => {
   const router = useRouter();
+  const projectIdParam = router.query.project_id;
+  const projectId = Array.isArray(projectIdParam) ? projectIdParam[0] : projectIdParam;
+
   const tokenState = useTokenStore((state) => state.token);
   const hasHydrated = useTokenStore((state) => state.hasHydrated);
 
@@ -18,6 +22,12 @@ const ProjectUpload = () => {
     queryFn: () => getUserProfile(tokenState),
     retry: false,
     enabled: !!tokenState.access,
+  });
+
+  const { data: project } = useQuery<IProjectDetail>({
+    queryKey: ['projectDetail', projectId],
+    queryFn: () => getProjectDetail(projectId as string),
+    enabled: !!projectId,
   });
 
   useEffect(() => {
@@ -31,13 +41,13 @@ const ProjectUpload = () => {
     }
   }, [hasHydrated, tokenState, isFetched, userProfile, router]);
 
-  if (!userProfile?.is_admin) return null;
+  if (!userProfile?.is_admin || !project) return null;
 
-  return <ProjectUploadForm />;
+  return <ProjectUploadForm mode="edit" initialData={project} />;
 };
 
-ProjectUpload.getLayout = function getLayout(page: ReactElement) {
+ProjectEdit.getLayout = function getLayout(page: ReactElement) {
   return <LayoutFullWidth>{page}</LayoutFullWidth>;
 };
 
-export default ProjectUpload;
+export default ProjectEdit;

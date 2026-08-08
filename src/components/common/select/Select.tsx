@@ -24,6 +24,7 @@ export interface SelectProps {
   required?: boolean;
   description?: string;
   disabled?: boolean;
+  hideValue?: boolean;
   onClick?: () => void;
   'aria-expanded'?: boolean;
   'aria-label'?: string;
@@ -49,6 +50,7 @@ const Select = forwardRef<HTMLDivElement, SelectProps & { id?: string }>(functio
     required = false,
     description,
     disabled = false,
+    hideValue = false,
     onClick,
     id,
     ...rest
@@ -113,7 +115,7 @@ const Select = forwardRef<HTMLDivElement, SelectProps & { id?: string }>(functio
             ))}
           </ChipRow>
         ) : (
-          <Text $placeholder={!value}>{value || placeholder}</Text>
+          !hideValue && <Text $placeholder={!value}>{value || placeholder}</Text>
         )}
         {statusIcon}
         <IconSlot $color={Label.normal}>

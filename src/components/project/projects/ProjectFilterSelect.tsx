@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
 import styled from 'styled-components';
 
 import Select from '@common/select/Select';
@@ -6,13 +6,30 @@ import ListboxOptions from '@common/select/ListboxOptions';
 import useListboxSelect from 'src/hooks/useListboxSelect';
 
 interface ProjectFilterSelectProps {
-  heading: string;
+  className?: string;
+  heading?: string;
   options: string[];
   value: string;
   onChange: (value: string) => void;
+  required?: boolean;
+  status?: 'normal' | 'positive' | 'negative';
+  description?: string;
+  leadingIcon?: ReactNode;
+  hideValue?: boolean;
 }
 
-const ProjectFilterSelect = ({ heading, options, value, onChange }: ProjectFilterSelectProps) => {
+const ProjectFilterSelect = ({
+  className,
+  heading = '',
+  options,
+  value,
+  onChange,
+  required,
+  status,
+  description,
+  leadingIcon,
+  hideValue,
+}: ProjectFilterSelectProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const { listId, wrapperRef, triggerRef, activeIndex, handleKeyDown, handleBlur, selectOption } = useListboxSelect({
     isOpen,
@@ -24,15 +41,20 @@ const ProjectFilterSelect = ({ heading, options, value, onChange }: ProjectFilte
   });
 
   return (
-    <Wrapper ref={wrapperRef} onKeyDownCapture={handleKeyDown} onBlur={handleBlur}>
+    <Wrapper className={className} ref={wrapperRef} onKeyDownCapture={handleKeyDown} onBlur={handleBlur}>
       <Select
         ref={triggerRef}
         heading={heading}
+        required={required}
         value={value}
         onClick={() => setIsOpen((prev) => !prev)}
         aria-expanded={isOpen}
         aria-activedescendant={isOpen ? `${listId}-${activeIndex}` : undefined}
         aria-controls={listId}
+        status={status}
+        description={description}
+        leadingIcon={leadingIcon}
+        hideValue={hideValue}
       />
       {isOpen && (
         <ListboxOptions
