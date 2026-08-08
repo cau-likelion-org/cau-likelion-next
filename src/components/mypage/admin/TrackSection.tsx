@@ -1,7 +1,5 @@
-import { useState } from 'react';
 import styled from 'styled-components';
 
-import Button from '@common/button/Button';
 import Textarea from '@common/textarea/Textarea';
 import TextField from '@common/textField/TextField';
 import AddCardButton from '@mypage/admin/component/AddCardButton';
@@ -21,6 +19,9 @@ export interface TrackIntroItem {
   techStack: string[];
 }
 
+export const isTrackItemInvalid = (item: TrackIntroItem) =>
+  isUnfilled(item.nameKo) || isUnfilled(item.nameEn) || isUnfilled(item.description) || item.techStack.length === 0;
+
 const createEmptyItem = (): TrackIntroItem => ({
   id: createId(),
   nameKo: '',
@@ -32,14 +33,12 @@ const createEmptyItem = (): TrackIntroItem => ({
 const TrackSection = ({
   items,
   onChange,
-  onSave,
+  showErrors,
 }: {
   items: TrackIntroItem[];
   onChange: (items: TrackIntroItem[]) => void;
-  onSave: () => void;
+  showErrors: boolean;
 }) => {
-  const [showErrors, setShowErrors] = useState(false);
-
   const updateItem = (id: string, patch: Partial<TrackIntroItem>) => {
     onChange(items.map((item) => (item.id === id ? { ...item, ...patch } : item)));
   };
@@ -47,18 +46,6 @@ const TrackSection = ({
   const removeItem = (id: string) => onChange(items.filter((item) => item.id !== id));
 
   const addItem = () => onChange([...items, createEmptyItem()]);
-
-  const isItemInvalid = (item: TrackIntroItem) =>
-    isUnfilled(item.nameKo) || isUnfilled(item.nameEn) || isUnfilled(item.description) || item.techStack.length === 0;
-
-  const handleSave = () => {
-    if (items.some(isItemInvalid)) {
-      setShowErrors(true);
-      return;
-    }
-    setShowErrors(false);
-    onSave();
-  };
 
   return (
     <Section>
@@ -108,9 +95,6 @@ const TrackSection = ({
         </Card>
       ))}
       <AddCardButton onClick={addItem} ariaLabel="트랙 소개 추가" />
-      <Button size="large" onClick={handleSave}>
-        저장
-      </Button>
     </Section>
   );
 };
