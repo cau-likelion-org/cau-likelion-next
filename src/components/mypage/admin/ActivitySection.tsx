@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import styled from 'styled-components';
 
-import Button from '@common/button/Button';
 import Select from '@common/select/Select';
 import ListboxOptions from '@common/select/ListboxOptions';
 import Textarea from '@common/textarea/Textarea';
@@ -10,6 +9,7 @@ import AddCardButton from '@mypage/admin/component/AddCardButton';
 import RemoveCardButton from '@mypage/admin/component/RemoveCardButton';
 import CharCount from '@common/charCount/CharCount';
 import useListboxSelect from 'src/hooks/useListboxSelect';
+import { isUnfilled } from '@utils/index';
 import { BackgroundWhite, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { createId } from './utils';
@@ -23,6 +23,13 @@ export interface ActivityIntroItem {
   buttonText: string;
   href: string;
 }
+
+export const isActivityItemInvalid = (item: ActivityIntroItem) =>
+  isUnfilled(item.title) ||
+  isUnfilled(item.subtitle) ||
+  isUnfilled(item.description) ||
+  isUnfilled(item.buttonText) ||
+  isUnfilled(item.href);
 
 const PAGE_LINK_OPTIONS = ['소개 페이지 / 커리큘럼 영역', '프로젝트 페이지', '갤러리 페이지 / 세션', '블로그 페이지'];
 
@@ -39,11 +46,11 @@ const createEmptyItem = (): ActivityIntroItem => ({
 const ActivitySection = ({
   items,
   onChange,
-  onSave,
+  showErrors,
 }: {
   items: ActivityIntroItem[];
   onChange: (items: ActivityIntroItem[]) => void;
-  onSave: () => void;
+  showErrors: boolean;
 }) => {
   const updateItem = (id: string, patch: Partial<ActivityIntroItem>) => {
     onChange(items.map((item) => (item.id === id ? { ...item, ...patch } : item)));
@@ -60,14 +67,12 @@ const ActivitySection = ({
         <ActivityCard
           key={item.id}
           item={item}
+          showErrors={showErrors}
           onChange={(patch) => updateItem(item.id, patch)}
           onRemove={() => removeItem(item.id)}
         />
       ))}
       <AddCardButton onClick={addItem} ariaLabel="활동 소개 추가" />
-      <Button size="large" onClick={onSave}>
-        저장
-      </Button>
     </Section>
   );
 };
@@ -76,10 +81,12 @@ export default ActivitySection;
 
 const ActivityCard = ({
   item,
+  showErrors,
   onChange,
   onRemove,
 }: {
   item: ActivityIntroItem;
+  showErrors: boolean;
   onChange: (patch: Partial<ActivityIntroItem>) => void;
   onRemove: () => void;
 }) => {
@@ -110,6 +117,8 @@ const ActivityCard = ({
             value={item.title}
             placeholder="텍스트 입력"
             onChange={(event) => onChange({ title: event.target.value })}
+            status={showErrors && isUnfilled(item.title) ? 'negative' : 'normal'}
+            description={showErrors && isUnfilled(item.title) ? '활동명을 입력해 주세요.' : undefined}
           />
         </NameFieldWrapper>
         <FieldWrapper>
@@ -126,6 +135,8 @@ const ActivityCard = ({
         value={item.subtitle}
         placeholder="텍스트 입력"
         onChange={(event) => onChange({ subtitle: event.target.value })}
+        status={showErrors && isUnfilled(item.subtitle) ? 'negative' : 'normal'}
+        description={showErrors && isUnfilled(item.subtitle) ? '한줄 소개를 입력해 주세요.' : undefined}
       />
       <Textarea
         heading="설명글"
@@ -134,6 +145,8 @@ const ActivityCard = ({
         maxLength={1000}
         bottomTrailingContent={<CharCount>{item.description.length}/1000</CharCount>}
         onChange={(event) => onChange({ description: event.target.value })}
+        status={showErrors && isUnfilled(item.description) ? 'negative' : 'normal'}
+        description={showErrors && isUnfilled(item.description) ? '설명글을 입력해 주세요.' : undefined}
       />
       <Row>
         <FieldWrapper>
@@ -142,6 +155,8 @@ const ActivityCard = ({
             value={item.buttonText}
             placeholder="텍스트 입력"
             onChange={(event) => onChange({ buttonText: event.target.value })}
+            status={showErrors && isUnfilled(item.buttonText) ? 'negative' : 'normal'}
+            description={showErrors && isUnfilled(item.buttonText) ? '버튼명을 입력해 주세요.' : undefined}
           />
         </FieldWrapper>
         <SelectWrapper ref={pageLinkRef} onKeyDownCapture={handlePageLinkKeyDown} onBlur={handlePageLinkBlur}>
@@ -154,6 +169,8 @@ const ActivityCard = ({
             aria-expanded={isPageLinkOpen}
             aria-activedescendant={isPageLinkOpen ? `${pageLinkListId}-${pageLinkActiveIndex}` : undefined}
             aria-controls={pageLinkListId}
+            status={showErrors && isUnfilled(item.href) ? 'negative' : 'normal'}
+            description={showErrors && isUnfilled(item.href) ? '페이지 이동을 선택해 주세요.' : undefined}
           />
           {isPageLinkOpen && (
             <ListboxOptions
