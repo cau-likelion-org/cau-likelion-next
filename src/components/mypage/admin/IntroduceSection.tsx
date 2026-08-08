@@ -2,6 +2,7 @@ import styled from 'styled-components';
 
 import TextField from '@common/textField/TextField';
 import { NUMERIC_ONLY_REGEX } from '@utils/constant';
+import { isUnfilled } from '@utils/index';
 import { BackgroundWhite, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
@@ -11,12 +12,22 @@ export interface LandingMetrics {
   projectCount: string;
 }
 
+// 숫자 뒤에 "+"만 선택적으로 허용 (예: "230+")
+const NUMERIC_WITH_PLUS_REGEX = /^[0-9]+\+?$/;
+
+const isCountInvalid = (value: string) => isUnfilled(value) || !NUMERIC_WITH_PLUS_REGEX.test(value);
+
+export const isMetricsInvalid = (metrics: LandingMetrics) =>
+  isUnfilled(metrics.generationCount) || isCountInvalid(metrics.graduateCount) || isCountInvalid(metrics.projectCount);
+
 const IntroduceSection = ({
   metrics,
   onChange,
+  showErrors,
 }: {
   metrics: LandingMetrics;
   onChange: (metrics: LandingMetrics) => void;
+  showErrors: boolean;
 }) => {
   return (
     <Section>
@@ -31,6 +42,8 @@ const IntroduceSection = ({
                 onChange({ ...metrics, generationCount: event.target.value });
               }
             }}
+            status={showErrors && isUnfilled(metrics.generationCount) ? 'negative' : 'normal'}
+            description={showErrors && isUnfilled(metrics.generationCount) ? '기수를 입력해 주세요.' : undefined}
           />
         </FieldWrapper>
         <FieldWrapper>
@@ -38,6 +51,10 @@ const IntroduceSection = ({
             heading="누적 수료자 수"
             value={metrics.graduateCount}
             onChange={(event) => onChange({ ...metrics, graduateCount: event.target.value })}
+            status={showErrors && isCountInvalid(metrics.graduateCount) ? 'negative' : 'normal'}
+            description={
+              showErrors && isCountInvalid(metrics.graduateCount) ? '숫자로 입력해 주세요. (예: 230+)' : undefined
+            }
           />
         </FieldWrapper>
         <FieldWrapper>
@@ -45,6 +62,10 @@ const IntroduceSection = ({
             heading="누적 프로젝트 개수"
             value={metrics.projectCount}
             onChange={(event) => onChange({ ...metrics, projectCount: event.target.value })}
+            status={showErrors && isCountInvalid(metrics.projectCount) ? 'negative' : 'normal'}
+            description={
+              showErrors && isCountInvalid(metrics.projectCount) ? '숫자로 입력해 주세요. (예: 60+)' : undefined
+            }
           />
         </FieldWrapper>
       </Card>
