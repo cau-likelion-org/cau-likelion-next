@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import styled from 'styled-components';
 
-import Button from '@common/button/Button';
 import Tab from '@common/tab/Tab';
 import Textarea from '@common/textarea/Textarea';
 import TextField from '@common/textField/TextField';
 import CharCount from '@common/charCount/CharCount';
 import AddCardButton from '@mypage/admin/component/AddCardButton';
 import RemoveCardButton from '@mypage/admin/component/RemoveCardButton';
+import { isUnfilled } from '@utils/index';
 import { BackgroundWhite, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { createId } from './utils';
@@ -25,16 +25,22 @@ export interface CurriculumTrackItems {
   weeks: CurriculumWeekItem[];
 }
 
+// 설명은 실제 소개 페이지 데이터(CurriculumWeek.content)에서도 선택 항목이라 필수에서 제외
+const isCurriculumWeekInvalid = (week: CurriculumWeekItem) => isUnfilled(week.week) || isUnfilled(week.title);
+
+export const isCurriculumTracksInvalid = (tracks: CurriculumTrackItems[]) =>
+  tracks.some((track) => track.weeks.some(isCurriculumWeekInvalid));
+
 const createEmptyWeek = (): CurriculumWeekItem => ({ id: createId(), week: '', title: '', description: '' });
 
 const CurriculumSection = ({
   tracks,
   onChange,
-  onSave,
+  showErrors,
 }: {
   tracks: CurriculumTrackItems[];
   onChange: (tracks: CurriculumTrackItems[]) => void;
-  onSave: () => void;
+  showErrors: boolean;
 }) => {
   const [activeKey, setActiveKey] = useState(tracks[0].key);
   const activeTrack = tracks.find((track) => track.key === activeKey) ?? tracks[0];
@@ -69,6 +75,8 @@ const CurriculumSection = ({
                 value={week.week}
                 placeholder="텍스트 입력"
                 onChange={(event) => updateWeek(week.id, { week: event.target.value })}
+                status={showErrors && isUnfilled(week.week) ? 'negative' : 'normal'}
+                description={showErrors && isUnfilled(week.week) ? '주차를 입력해 주세요.' : undefined}
               />
             </WeekFieldWrapper>
             <TitleFieldWrapper>
@@ -77,6 +85,8 @@ const CurriculumSection = ({
                 value={week.title}
                 placeholder="텍스트 입력"
                 onChange={(event) => updateWeek(week.id, { title: event.target.value })}
+                status={showErrors && isUnfilled(week.title) ? 'negative' : 'normal'}
+                description={showErrors && isUnfilled(week.title) ? '커리큘럼 제목을 입력해 주세요.' : undefined}
               />
             </TitleFieldWrapper>
           </Row>
@@ -94,9 +104,6 @@ const CurriculumSection = ({
         </Card>
       ))}
       <AddCardButton onClick={addWeek} ariaLabel="커리큘럼 주차 추가" />
-      <Button size="large" onClick={onSave}>
-        저장
-      </Button>
     </Section>
   );
 };
