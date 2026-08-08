@@ -104,18 +104,22 @@ const ActivityCard = ({
   return (
     <Card>
       <Row>
-        <TextField
-          heading="활동명"
-          value={item.title}
-          placeholder="텍스트 입력"
-          onChange={(event) => onChange({ title: event.target.value })}
-        />
-        <TextField
-          heading="이미지 첨부"
-          value={item.imageName}
-          placeholder="이미지 파일을 선택해 주세요."
-          onChange={(event) => onChange({ imageName: event.target.value })}
-        />
+        <NameFieldWrapper>
+          <TextField
+            heading="활동명"
+            value={item.title}
+            placeholder="텍스트 입력"
+            onChange={(event) => onChange({ title: event.target.value })}
+          />
+        </NameFieldWrapper>
+        <FieldWrapper>
+          <TextField
+            heading="이미지 첨부"
+            value={item.imageName}
+            placeholder="이미지 파일을 선택해 주세요."
+            onChange={(event) => onChange({ imageName: event.target.value })}
+          />
+        </FieldWrapper>
       </Row>
       <TextField
         heading="한줄 소개"
@@ -198,6 +202,10 @@ const Row = styled.div`
   align-items: flex-start;
   gap: 20px;
   width: 100%;
+`;
+
+const NameFieldWrapper = styled.div`
+  flex: 0 0 160px;
 `;
 
 const FieldWrapper = styled.div`

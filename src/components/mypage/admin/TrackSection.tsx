@@ -66,22 +66,26 @@ const TrackSection = ({
       {items.map((item) => (
         <Card key={item.id}>
           <Row>
-            <TextField
-              heading="파트명"
-              value={item.nameKo}
-              placeholder="텍스트 입력"
-              onChange={(event) => updateItem(item.id, { nameKo: event.target.value })}
-              status={showErrors && isUnfilled(item.nameKo) ? 'negative' : 'normal'}
-              description={showErrors && isUnfilled(item.nameKo) ? '파트명을 입력해 주세요.' : undefined}
-            />
-            <TextField
-              heading="파트 영문명"
-              value={item.nameEn}
-              placeholder="텍스트 입력"
-              onChange={(event) => updateItem(item.id, { nameEn: event.target.value })}
-              status={showErrors && isUnfilled(item.nameEn) ? 'negative' : 'normal'}
-              description={showErrors && isUnfilled(item.nameEn) ? '파트 영문명을 입력해 주세요.' : undefined}
-            />
+            <NameFieldWrapper>
+              <TextField
+                heading="파트명"
+                value={item.nameKo}
+                placeholder="텍스트 입력"
+                onChange={(event) => updateItem(item.id, { nameKo: event.target.value })}
+                status={showErrors && isUnfilled(item.nameKo) ? 'negative' : 'normal'}
+                description={showErrors && isUnfilled(item.nameKo) ? '파트명을 입력해 주세요.' : undefined}
+              />
+            </NameFieldWrapper>
+            <EnglishNameFieldWrapper>
+              <TextField
+                heading="파트 영문명"
+                value={item.nameEn}
+                placeholder="텍스트 입력"
+                onChange={(event) => updateItem(item.id, { nameEn: event.target.value })}
+                status={showErrors && isUnfilled(item.nameEn) ? 'negative' : 'normal'}
+                description={showErrors && isUnfilled(item.nameEn) ? '파트 영문명을 입력해 주세요.' : undefined}
+              />
+            </EnglishNameFieldWrapper>
           </Row>
           <Textarea
             heading="파트소개"
@@ -142,6 +146,15 @@ const Row = styled.div`
   align-items: flex-start;
   gap: 20px;
   width: 100%;
+`;
+
+const NameFieldWrapper = styled.div`
+  flex: 0 0 160px;
+`;
+
+const EnglishNameFieldWrapper = styled.div`
+  flex: 1 0 0;
+  min-width: 0;
 `;
 
 const StackRow = styled.div`
