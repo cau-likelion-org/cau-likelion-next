@@ -59,25 +59,39 @@ ProjectList.getLayout = function getLayout(page: ReactElement) {
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const projectsGenerationArray = await getProjects();
-  const detailPaths = getPaths(projectsGenerationArray, 'project').map(({ params }) => ({
-    params: { project_id: [params.project_id] },
-  }));
-  return {
-    paths: [{ params: { project_id: [] } }, ...detailPaths],
-    fallback: true,
-  };
+  try {
+    const projectsGenerationArray = await getProjects();
+    const detailPaths = getPaths(projectsGenerationArray, 'project').map(({ params }) => ({
+      params: { project_id: [params.project_id] },
+    }));
+    return {
+      paths: [{ params: { project_id: [] } }, ...detailPaths],
+      fallback: true,
+    };
+  } catch {
+    return {
+      paths: [{ params: { project_id: [] } }],
+      fallback: true,
+    };
+  }
 };
 
 export async function getStaticProps({ params }: { params: { project_id: string[] } }) {
   const id = params.project_id?.[0];
 
   if (!id) {
-    const projectStaticData = await getProjects();
-    return {
-      props: { projectStaticData, projectDetailStaticData: null },
-      revalidate: 86400,
-    };
+    try {
+      const projectStaticData = await getProjects();
+      return {
+        props: { projectStaticData, projectDetailStaticData: null },
+        revalidate: 86400,
+      };
+    } catch {
+      return {
+        props: { projectStaticData: {}, projectDetailStaticData: null },
+        revalidate: 60,
+      };
+    }
   }
 
   try {
