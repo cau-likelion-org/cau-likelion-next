@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import useTokenStore from 'src/store/useTokenStore';
 import useProfileChangedStore from 'src/store/useProfileChangedStore';
 import { getUserProfile } from 'src/apis/account';
+import { isAdminRole } from '@utils/index';
 import styled from 'styled-components';
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import MyPageShell from '@mypage/component/MyPageShell';
@@ -39,7 +40,7 @@ const MyPage = () => {
         <ProfileCard user={userProfile} />
         <AttendanceCheckCard />
       </CardRow>
-      {userProfile.is_admin ? (
+      {isAdminRole(userProfile.role) ? (
         <TotalScoreSection myName={userProfile.name} />
       ) : (
         <MyScoreSection userProfile={userProfile} />

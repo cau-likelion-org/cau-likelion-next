@@ -10,7 +10,6 @@ import MyPageShell from '@mypage/component/MyPageShell';
 import WeeklyAssignmentCard, { WeeklyAssignmentGroup } from '@mypage/component/WeeklyAssignmentCard';
 import { getUserProfile } from 'src/apis/account';
 import useTokenStore from 'src/store/useTokenStore';
-import { TRACK_NAME } from '@utils/constant';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
@@ -94,7 +93,7 @@ const MyPageAssignment = () => {
     <MyPageShell active="assignment">
       <TitleRow>
         <SectionTitle>주차별 과제 현황</SectionTitle>
-        <TrackName>{TRACK_NAME[userProfile.track]} 파트</TrackName>
+        <TrackName>{userProfile.partName} 파트</TrackName>
       </TitleRow>
       <List>
         {MOCK_WEEKLY_ASSIGNMENTS.map((group) => (

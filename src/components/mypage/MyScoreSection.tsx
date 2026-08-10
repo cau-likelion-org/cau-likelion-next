@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import { UserProfile } from '@@types/request';
 import { getAssignments, getUserAttendance } from 'src/apis/mypage';
 import useTokenStore from 'src/store/useTokenStore';
-import { checkGeneration, getTotalScore } from '@utils/index';
+import { getTotalScore } from '@utils/index';
 import { BackgroundWhite, Black, Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
@@ -14,7 +14,7 @@ const TOTAL_SCORE_MAX = 3;
 
 const MyScoreSection = ({ userProfile }: { userProfile: UserProfile }) => {
   const tokenValue = useTokenStore((state) => state.token);
-  const isActiveGeneration = checkGeneration(userProfile.generation);
+  const isActiveGeneration = userProfile.role === 'BABY_LION';
 
   const { data: userAttendance } = useQuery({
     queryKey: ['userAttendance'],

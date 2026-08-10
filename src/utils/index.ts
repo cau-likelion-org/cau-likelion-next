@@ -3,10 +3,11 @@ import {
   IGalleryData,
   IProjectData,
   ISessionData,
+  MemberRole,
   TotalScoreParams,
   UserScore,
 } from '@@types/request';
-import { GENERATION_CHECKER, TRACK_INDEX } from './constant';
+import { TRACK_INDEX } from './constant';
 
 export const toDateString = (date?: Date, formatter = '-') => {
   if (!date) return '';
@@ -42,11 +43,9 @@ export const getTotalScore = (target: TotalScoreParams) => {
   return Number(totalScore.toFixed(1)) > 0 ? Number(totalScore.toFixed(1)) : 0;
 };
 
-export const checkGeneration = (generation: number) => {
-  let year = new Date().getFullYear();
-  if (year - generation == GENERATION_CHECKER) return true;
-  return false;
-};
+const ADMIN_ROLES: MemberRole[] = ['STAFF', 'PRESIDENT', 'ADMIN'];
+
+export const isAdminRole = (role: MemberRole) => ADMIN_ROLES.includes(role);
 
 export const getTotalNameObject = (data: any): Record<string, UserScore> => {
   let totalNameObject: Record<string, UserScore> = {};
