@@ -1,40 +1,27 @@
 import { useState } from 'react';
 import styled from 'styled-components';
+import { useQuery } from '@tanstack/react-query';
 import { IcChevronDown } from '@assets/svg';
+import { getFaqs } from 'src/apis/faq';
 import { Black, BackgroundWhite, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
-interface IFaq {
-  question: string;
-  answer: string;
-}
-
-const QUESTION = 'Q. 질문 내용 질문 내용 질문 내용 질문 내용 질문 내용 질문 내용';
-const ANSWER =
-  '답변 내용 답변 내용 답변 내용 답변 내용 답변 내용 답변 내용 답변 내용 답변 내용 답변 내용 답변 내용 답변 내용 답변 내용 답변 내용 답변 내용 답변 내용';
-
-const FAQS: IFaq[] = [
-  { question: QUESTION, answer: ANSWER },
-  { question: QUESTION, answer: ANSWER },
-  { question: QUESTION, answer: ANSWER },
-  { question: QUESTION, answer: ANSWER },
-];
-
 const FAQSection = () => {
-  const [openIndexes, setOpenIndexes] = useState<number[]>([]);
+  const { data: faqs } = useQuery({ queryKey: ['faqs'], queryFn: getFaqs });
+  const [openIds, setOpenIds] = useState<number[]>([]);
 
-  const toggle = (index: number) => {
-    setOpenIndexes((prev) => (prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]));
+  const toggle = (id: number) => {
+    setOpenIds((prev) => (prev.includes(id) ? prev.filter((openId) => openId !== id) : [...prev, id]));
   };
 
   return (
     <Wrapper>
       <Title>FAQ</Title>
       <List>
-        {FAQS.map(({ question, answer }, index) => {
-          const isOpen = openIndexes.includes(index);
+        {faqs?.map(({ id, question, answer }) => {
+          const isOpen = openIds.includes(id);
           return (
-            <Item key={index} type="button" $open={isOpen} aria-expanded={isOpen} onClick={() => toggle(index)}>
+            <Item key={id} type="button" $open={isOpen} aria-expanded={isOpen} onClick={() => toggle(id)}>
               <TextGroup>
                 <Question>{question}</Question>
                 {isOpen && <Answer>{answer}</Answer>}
