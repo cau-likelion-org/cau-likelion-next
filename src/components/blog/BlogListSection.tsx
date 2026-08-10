@@ -1,10 +1,13 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import styled from 'styled-components';
+import { useQuery } from '@tanstack/react-query';
 import PageHeader from '@common/pageHeader/PageHeader';
 import Select from '@common/select/Select';
 import ListboxOptions from '@common/select/ListboxOptions';
 import { IcCircleExclamation } from '@assets/svg';
 import useListboxSelect from 'src/hooks/useListboxSelect';
+import { getBlogs, BlogCategory } from 'src/apis/blog';
+import { toDateString } from '@utils/index';
 import { BackgroundColor, Fill, Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
@@ -12,50 +15,30 @@ import BlogCard from './component/BlogCard';
 
 type FilterKey = 'generation' | 'category';
 
-interface BlogPostItem {
-  id: number;
-  title: string;
-  description: string;
-  badges: string[];
-  date: string;
-  url: string;
-  generation: string;
-  category: string;
-  thumbnailUrl?: string;
-}
+const ALL_OPTION = '전체';
 
-const GENERATION_OPTIONS = ['전체', '13기', '12기', '11기'];
-const CATEGORY_OPTIONS = ['전체', '활동 후기', '프로젝트 회고', '인턴·취업 후기', '기타'];
-
-const MOCK_DESCRIPTION =
-  '서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설';
-
-const MOCK_POST_VARIANTS: { generation: string; category: string }[] = [
-  { generation: '13', category: '활동 후기' },
-  { generation: '13', category: '프로젝트 회고' },
-  { generation: '12', category: '활동 후기' },
-  { generation: '11', category: '인턴·취업 후기' },
-];
-
-const POSTS: BlogPostItem[] = MOCK_POST_VARIANTS.map((variant, index) => ({
-  id: index + 1,
-  title: '제목 텍스트',
-  description: MOCK_DESCRIPTION,
-  badges: [`${variant.generation}기`, '코코몽', variant.category],
-  date: '2026/12/12',
-  url: `https://blog.cau-likelion.org/posts/${index + 1}`,
-  generation: variant.generation,
-  category: variant.category,
-}));
+const CATEGORY_LABEL: Record<BlogCategory, string> = {
+  ACTIVITY_REVIEW: '활동 후기',
+  PROJECT_REVIEW: '프로젝트 회고',
+  CAREER: '인턴·취업 후기',
+  ETC: '기타',
+};
+const CATEGORY_OPTIONS = [ALL_OPTION, ...Object.values(CATEGORY_LABEL)];
 
 const BlogListSection = () => {
-  const [generation, setGeneration] = useState(GENERATION_OPTIONS[0]);
-  const [category, setCategory] = useState(CATEGORY_OPTIONS[0]);
+  const { data: blogs } = useQuery({ queryKey: ['blogs'], queryFn: getBlogs });
+  const [generation, setGeneration] = useState(ALL_OPTION);
+  const [category, setCategory] = useState(ALL_OPTION);
   const [openFilter, setOpenFilter] = useState<FilterKey | null>(null);
 
-  const posts = POSTS.filter((post) => {
-    const matchesGeneration = generation === GENERATION_OPTIONS[0] || `${post.generation}기` === generation;
-    const matchesCategory = category === CATEGORY_OPTIONS[0] || post.category === category;
+  const generationOptions = useMemo(() => {
+    const generations = Array.from(new Set((blogs ?? []).map((blog) => blog.generationNumber))).sort((a, b) => b - a);
+    return [ALL_OPTION, ...generations.map((generationNumber) => `${generationNumber}기`)];
+  }, [blogs]);
+
+  const posts = (blogs ?? []).filter((blog) => {
+    const matchesGeneration = generation === ALL_OPTION || `${blog.generationNumber}기` === generation;
+    const matchesCategory = category === ALL_OPTION || CATEGORY_LABEL[blog.category] === category;
     return matchesGeneration && matchesCategory;
   });
 
@@ -67,7 +50,7 @@ const BlogListSection = () => {
           <FilterSelect
             label="기수 구분"
             value={generation}
-            options={GENERATION_OPTIONS}
+            options={generationOptions}
             isOpen={openFilter === 'generation'}
             onToggle={() => setOpenFilter((prev) => (prev === 'generation' ? null : 'generation'))}
             onClose={() => setOpenFilter(null)}
@@ -102,9 +85,9 @@ const BlogListSection = () => {
             <BlogCard
               key={post.id}
               title={post.title}
-              description={post.description}
-              badges={post.badges}
-              date={post.date}
+              description={post.summary}
+              badges={[`${post.generationNumber}기`, post.writer, CATEGORY_LABEL[post.category]]}
+              date={toDateString(new Date(post.createdAt), '/')}
               url={post.url}
               thumbnailUrl={post.thumbnailUrl}
               thumbnailAlt={post.title}
