@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import styled from 'styled-components';
 
@@ -9,72 +9,106 @@ import PageHeader from '@common/pageHeader/PageHeader';
 import Select from '@common/select/Select';
 import ListboxOptions from '@common/select/ListboxOptions';
 import TextField from '@common/textField/TextField';
-import useInput from 'src/hooks/useInput';
 import useListboxSelect from 'src/hooks/useListboxSelect';
 import useTokenStore from 'src/store/useTokenStore';
+import { getGenerations } from 'src/apis/account';
 import {
   signUp,
-  clearPendingSignupTokens,
-  PENDING_SIGNUP_ACCESS_TOKEN_KEY,
-  PENDING_SIGNUP_REFRESH_TOKEN_KEY,
+  clearPendingSignupToken,
+  PENDING_SIGNUP_TOKEN_KEY,
   SIGNUP_SUCCESS_FLAG_KEY,
   SIGNUP_UNAPPROVED_EMAIL_FLAG_KEY,
-  SignUpMutationProps,
 } from 'src/apis/signUp';
-import { NUMERIC_ONLY_REGEX, TRACK_INDEX, TRACK_OPTIONS } from '@utils/constant';
+
+type OpenField = 'generation' | 'part' | null;
 
 const SignUpFormSection = () => {
   const [name, setName] = useState('');
-  const [generation, onChangeGeneration] = useInput('', NUMERIC_ONLY_REGEX);
-  const [track, setTrack] = useState('');
-  const [isTrackOpen, setIsTrackOpen] = useState(false);
-  const [accessToken] = useState(() =>
-    typeof window === 'undefined' ? null : sessionStorage.getItem(PENDING_SIGNUP_ACCESS_TOKEN_KEY),
-  );
-  const [refreshToken] = useState(() =>
-    typeof window === 'undefined' ? null : sessionStorage.getItem(PENDING_SIGNUP_REFRESH_TOKEN_KEY),
+  const [generationLabel, setGenerationLabel] = useState('');
+  const [partName, setPartName] = useState('');
+  const [openField, setOpenField] = useState<OpenField>(null);
+  const [signupToken] = useState(() =>
+    typeof window === 'undefined' ? null : sessionStorage.getItem(PENDING_SIGNUP_TOKEN_KEY),
   );
 
-  const { access } = useTokenStore((state) => state.token);
   const setToken = useTokenStore((state) => state.setToken);
   const router = useRouter();
 
-  const { listId, wrapperRef, triggerRef, activeIndex, handleKeyDown, handleBlur, selectOption } = useListboxSelect({
-    isOpen: isTrackOpen,
-    options: TRACK_OPTIONS,
-    value: track,
-    onOpen: () => setIsTrackOpen(true),
-    onClose: () => setIsTrackOpen(false),
-    onSelect: setTrack,
+  const { data: generations } = useQuery({
+    queryKey: ['generations'],
+    queryFn: getGenerations,
+  });
+
+  const generationOptions = useMemo(() => generations?.map((g) => `${g.number}기`) ?? [], [generations]);
+  const selectedGeneration = useMemo(
+    () => generations?.find((g) => `${g.number}기` === generationLabel),
+    [generations, generationLabel],
+  );
+  const partOptions = useMemo(() => selectedGeneration?.parts.map((p) => p.name) ?? [], [selectedGeneration]);
+
+  const {
+    listId: generationListId,
+    wrapperRef: generationWrapperRef,
+    triggerRef: generationTriggerRef,
+    activeIndex: generationActiveIndex,
+    handleKeyDown: handleGenerationKeyDown,
+    handleBlur: handleGenerationBlur,
+    selectOption: selectGenerationOption,
+  } = useListboxSelect({
+    isOpen: openField === 'generation',
+    options: generationOptions,
+    value: generationLabel,
+    onOpen: () => setOpenField('generation'),
+    onClose: () => setOpenField(null),
+    onSelect: (option) => {
+      setGenerationLabel(option);
+      setPartName('');
+      setOpenField(null);
+    },
+  });
+
+  const {
+    listId: partListId,
+    wrapperRef: partWrapperRef,
+    triggerRef: partTriggerRef,
+    activeIndex: partActiveIndex,
+    handleKeyDown: handlePartKeyDown,
+    handleBlur: handlePartBlur,
+    selectOption: selectPartOption,
+  } = useListboxSelect({
+    isOpen: openField === 'part',
+    options: partOptions,
+    value: partName,
+    onOpen: () => setOpenField('part'),
+    onClose: () => setOpenField(null),
+    onSelect: (option) => {
+      setPartName(option);
+      setOpenField(null);
+    },
   });
 
   useEffect(() => {
-    if (access) {
-      router.push('/');
-      return;
-    }
-    if (!accessToken || !refreshToken) {
+    if (!signupToken) {
       router.push('/login');
     }
-  }, [router, access, accessToken, refreshToken]);
+  }, [router, signupToken]);
 
-  const isFormActivated = name.trim() !== '' && generation.trim() !== '' && track !== '';
+  const selectedPart = selectedGeneration?.parts.find((p) => p.name === partName);
+  const isFormActivated = name.trim() !== '' && !!selectedGeneration && !!selectedPart;
 
   const signUpFormPost = useMutation({
-    mutationFn: (props: SignUpMutationProps) => signUp(props),
-    onSuccess: (res: unknown) => {
-      if (res) {
-        setToken({ access: accessToken, refresh: refreshToken });
-        clearPendingSignupTokens();
-        sessionStorage.setItem(SIGNUP_SUCCESS_FLAG_KEY, 'true');
-        router.push('/signup/success');
-      }
+    mutationFn: signUp,
+    onSuccess: (res) => {
+      setToken({ access: res.accessToken, refresh: res.refreshToken });
+      clearPendingSignupToken();
+      sessionStorage.setItem(SIGNUP_SUCCESS_FLAG_KEY, 'true');
+      router.push('/signup/success');
     },
     onError: (error) => {
       const status = axios.isAxiosError(error) ? error.response?.status : undefined;
       // 4xx만 "사전 미등록 이메일" 업무 오류로 간주. 5xx·네트워크 오류는 폼에 남겨 재시도할 수 있게 함
       if (status !== undefined && status >= 400 && status < 500) {
-        clearPendingSignupTokens();
+        clearPendingSignupToken();
         sessionStorage.setItem(SIGNUP_UNAPPROVED_EMAIL_FLAG_KEY, 'true');
         router.push('/login');
       }
@@ -82,16 +116,12 @@ const SignUpFormSection = () => {
   });
 
   const handleSubmit = () => {
-    if (!isFormActivated || typeof accessToken !== 'string' || typeof refreshToken !== 'string') return;
+    if (!isFormActivated || !selectedGeneration || !selectedPart || typeof signupToken !== 'string') return;
     signUpFormPost.mutate({
-      form: {
-        name,
-        generation: Number(generation),
-        track: TRACK_INDEX[track],
-        is_admin: false,
-      },
-      accessToken,
-      refreshToken,
+      signupToken,
+      name,
+      generationId: selectedGeneration.id,
+      partId: selectedPart.id,
     });
   };
 
@@ -118,37 +148,59 @@ const SignUpFormSection = () => {
             value={name}
             onChange={(event) => setName(event.target.value)}
           />
-          <TextField
-            heading="기수"
-            required
-            placeholder="14"
-            description="본인의 기수를 숫자로 입력해 주세요."
-            value={generation}
-            onChange={onChangeGeneration}
-          />
-          <TrackSelectWrapper ref={wrapperRef} onKeyDownCapture={handleKeyDown} onBlur={handleBlur}>
+          <SelectWrapper
+            ref={generationWrapperRef}
+            onKeyDownCapture={handleGenerationKeyDown}
+            onBlur={handleGenerationBlur}
+          >
             <Select
-              ref={triggerRef}
+              ref={generationTriggerRef}
+              heading="기수"
+              required
+              placeholder="선택"
+              value={generationLabel}
+              onClick={() => setOpenField((prev) => (prev === 'generation' ? null : 'generation'))}
+              description="본인의 기수를 선택해 주세요."
+              aria-expanded={openField === 'generation'}
+              aria-activedescendant={
+                openField === 'generation' ? `${generationListId}-${generationActiveIndex}` : undefined
+              }
+              aria-controls={generationListId}
+            />
+            {openField === 'generation' && (
+              <ListboxOptions
+                listId={generationListId}
+                options={generationOptions}
+                value={generationLabel}
+                activeIndex={generationActiveIndex}
+                onSelect={selectGenerationOption}
+              />
+            )}
+          </SelectWrapper>
+          <SelectWrapper ref={partWrapperRef} onKeyDownCapture={handlePartKeyDown} onBlur={handlePartBlur}>
+            <Select
+              ref={partTriggerRef}
               heading="파트"
               required
               placeholder="선택"
-              value={track}
-              onClick={() => setIsTrackOpen((prev) => !prev)}
-              description="트랙을 선택해 주세요."
-              aria-expanded={isTrackOpen}
-              aria-activedescendant={isTrackOpen ? `${listId}-${activeIndex}` : undefined}
-              aria-controls={listId}
+              value={partName}
+              onClick={() => setOpenField((prev) => (prev === 'part' ? null : 'part'))}
+              description="파트를 선택해 주세요."
+              disabled={!selectedGeneration}
+              aria-expanded={openField === 'part'}
+              aria-activedescendant={openField === 'part' ? `${partListId}-${partActiveIndex}` : undefined}
+              aria-controls={partListId}
             />
-            {isTrackOpen && (
+            {openField === 'part' && (
               <ListboxOptions
-                listId={listId}
-                options={TRACK_OPTIONS}
-                value={track}
-                activeIndex={activeIndex}
-                onSelect={selectOption}
+                listId={partListId}
+                options={partOptions}
+                value={partName}
+                activeIndex={partActiveIndex}
+                onSelect={selectPartOption}
               />
             )}
-          </TrackSelectWrapper>
+          </SelectWrapper>
         </FieldGroup>
       </ContentGroup>
       <SubmitButton
@@ -196,7 +248,7 @@ const FieldGroup = styled.div`
   width: 100%;
 `;
 
-const TrackSelectWrapper = styled.div`
+const SelectWrapper = styled.div`
   position: relative;
   width: 100%;
 `;
