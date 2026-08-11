@@ -3,33 +3,41 @@ import styled from 'styled-components';
 
 import ContentBadge from '@common/badge/ContentBadge';
 import LogoTrophy from 'src/assets/svg/logo/logo-trophy.svg';
+import { ProjectCategory } from 'src/apis/project';
 import { Black, Fill, Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
+export const PROJECT_CATEGORY_LABEL: Record<ProjectCategory, string> = {
+  IDEATHON: '아이디어톤',
+  HACKATHON: '해커톤',
+  CHUNGKATHON: '중커톤',
+  ETC: '기타',
+};
+
 export interface IProject {
-  name: string;
-  generation: string;
-  category: string;
-  award?: string;
+  title: string;
+  generationNumber: number;
+  category: ProjectCategory;
+  banner: string;
 }
 
-const ProjectCard = ({ name, generation, category, award, href }: IProject & { href: string }) => {
+const ProjectCard = ({ title, generationNumber, category, banner, href }: IProject & { href: string }) => {
   return (
     <Link href={href}>
       <Wrapper>
         <ThumbnailArea>
-          {award && (
+          {banner && (
             <AwardBanner>
               <LogoTrophy width={24} height={24} />
-              <AwardText>{award}</AwardText>
+              <AwardText>{banner}</AwardText>
             </AwardBanner>
           )}
         </ThumbnailArea>
         <Container>
-          <Name>{name}</Name>
+          <Name>{title}</Name>
           <BadgeRow>
-            <ContentBadge text={generation} color="accent" size="medium" />
-            <ContentBadge text={category} color="accent" size="medium" />
+            <ContentBadge text={`${generationNumber}기`} color="accent" size="medium" />
+            <ContentBadge text={PROJECT_CATEGORY_LABEL[category]} color="accent" size="medium" />
           </BadgeRow>
         </Container>
       </Wrapper>
@@ -81,15 +89,6 @@ const AwardText = styled.p`
   margin: 0;
 `;
 
-const Container = styled.div`
-  width: 100%;
-  padding: 0 6px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 10px;
-`;
-
 const Name = styled.p`
   ${typographyCss(Typography.title3.bold)}
   color: ${Label.normal};
@@ -99,6 +98,13 @@ const Name = styled.p`
 
 const BadgeRow = styled.div`
   display: flex;
-  align-items: center;
   gap: 6px;
+  flex-wrap: wrap;
+`;
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 6px;
 `;

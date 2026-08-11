@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Button from '@common/button/Button';
 import RecruitClosedAlert from '@home/main/RecruitClosedAlert';
 import RecruitNotifyModal from '@home/main/RecruitNotifyModal';
-import { BackgroundColor, Label } from '@utils/constant/color';
+import { Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -33,9 +33,17 @@ const NavBar = () => {
   const isLogin = hasHydrated && !!tokenState;
   const [isRecruitClosedAlertOpen, setIsRecruitClosedAlertOpen] = useState(false);
   const [isRecruitModalOpen, setIsRecruitModalOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 0);
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
-    <Wrapper>
+    <Wrapper $isScrolled={isScrolled}>
       <Content>
         <LogoWrapper>
           <Link href={'/'}>
@@ -85,7 +93,7 @@ const NavBar = () => {
 
 export default NavBar;
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{ $isScrolled: boolean }>`
   width: 100%;
   display: flex;
   justify-content: center;
@@ -93,8 +101,10 @@ const Wrapper = styled.div`
   top: 0;
   left: 0;
   right: 0;
-  background-color: ${BackgroundColor};
   z-index: 9999;
+  background-color: ${(props) => (props.$isScrolled ? 'rgba(255, 255, 255, 0.88)' : 'transparent')};
+  backdrop-filter: ${(props) => (props.$isScrolled ? 'blur(32px)' : 'none')};
+  border-bottom: 1px solid ${(props) => (props.$isScrolled ? Line.normal : 'transparent')};
 `;
 
 const Content = styled.div`

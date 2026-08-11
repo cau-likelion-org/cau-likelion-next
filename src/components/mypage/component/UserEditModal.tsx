@@ -5,7 +5,7 @@ import TextInputBox from '@signup/component/TextInputBox';
 import ToggleBox from '@signup/component/ToggleBox';
 import { TRACK, TRACK_INDEX, TRACK_NAME } from '@utils/constant';
 import { BackgroundColor, Basic } from '@utils/constant/color';
-import { isEmptyString } from '@utils/index';
+import { isUnfilled } from '@utils/index';
 import React, { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import useTokenStore, { IToken } from 'src/store/useTokenStore';
@@ -35,7 +35,7 @@ const UserEditModal = ({ userProfile, isEditModalOn, handleUserEditModal }: User
   const [toggleIsClicked, setToggleIsClicked] = useState(userProfile.is_admin ? [false, true] : [true, false]);
   const [dropdownValue, setDropdownValue] = useState(track[userProfile.track]);
   const tokenState = useTokenStore((state) => state.token);
-  const isFormActivated = !isEmptyString(nameValue) && !isEmptyString(generationValue);
+  const isFormActivated = !isUnfilled(nameValue) && !isUnfilled(generationValue);
 
   const editUserProfile = useMutation({
     mutationFn: ({ userProfile, tokenState }: { userProfile: UserProfile; tokenState: IToken }) =>
