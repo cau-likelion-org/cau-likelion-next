@@ -1,14 +1,42 @@
+import { useRouter } from 'next/router';
+import { useMutation } from '@tanstack/react-query';
+import axios from 'axios';
+
 import Button from '@common/button/Button';
 import { IcLogoGoogle } from '@assets/svg';
-import { trackBeforeUnload } from 'src/lib/amplitude';
+import useTokenStore from 'src/store/useTokenStore';
+import useGoogleIdentity from 'src/hooks/useGoogleIdentity';
+import { googleLogin } from 'src/apis/account';
+import { PENDING_SIGNUP_TOKEN_KEY } from 'src/apis/signUp';
 
-const LoginButton = () => {
-  const loginUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}&response_type=code&redirect_uri=${process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI}&scope=${process.env.NEXT_PUBLIC_GOOGLE_SCOPE}`;
+interface LoginButtonProps {
+  onUnregistered: () => void;
+}
 
-  const handleClick = () => {
-    trackBeforeUnload('Login Started', { button_label: '구글로 로그인하기' });
-    window.location.assign(loginUrl);
-  };
+const LoginButton = ({ onUnregistered }: LoginButtonProps) => {
+  const router = useRouter();
+  const setToken = useTokenStore((state) => state.setToken);
+
+  const loginMutation = useMutation({
+    mutationFn: (idToken: string) => googleLogin(idToken),
+    onSuccess: (res) => {
+      if (res.status === 'SIGNUP_REQUIRED') {
+        sessionStorage.setItem(PENDING_SIGNUP_TOKEN_KEY, res.signupToken);
+        router.push('/signup');
+        return;
+      }
+      setToken({ access: res.tokens.accessToken, refresh: res.tokens.refreshToken });
+    },
+    onError: (error) => {
+      const status = axios.isAxiosError(error) ? error.response?.status : undefined;
+      // 4xx(EMAIL_NOT_ALLOWED)만 "미가입 이메일" 업무 오류로 간주. 5xx·네트워크 오류는 조용히 무시
+      if (status !== undefined && status >= 400 && status < 500) {
+        onUnregistered();
+      }
+    },
+  });
+
+  const { promptLogin } = useGoogleIdentity((idToken) => loginMutation.mutate(idToken));
 
   return (
     <Button
@@ -16,7 +44,8 @@ const LoginButton = () => {
       color="assistive"
       size="large"
       leadingIcon={<IcLogoGoogle width={20} height={20} />}
-      onClick={handleClick}
+      onClick={promptLogin}
+      loading={loginMutation.isPending}
     >
       구글로 로그인하기
     </Button>

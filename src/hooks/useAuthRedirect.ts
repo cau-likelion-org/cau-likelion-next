@@ -8,7 +8,7 @@ const useAuthRedirect = () => {
 
   useEffect(() => {
     if (tokenState.access) {
-      router.push('/');
+      router.replace('/mypage');
     }
   }, [tokenState.access]);
 };

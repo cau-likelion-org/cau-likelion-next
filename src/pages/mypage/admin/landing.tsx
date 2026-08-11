@@ -16,6 +16,7 @@ import ProjectSection, { FeaturedProject } from '@mypage/admin/ProjectSection';
 import FAQSection, { FaqItem, isFaqItemInvalid } from '@mypage/admin/FAQSection';
 import { getUserProfile } from 'src/apis/account';
 import useTokenStore from 'src/store/useTokenStore';
+import { isAdminRole } from '@utils/index';
 import { TRACK, TRACK_NAME } from '@utils/constant';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -111,7 +112,7 @@ const MyPageAdminLanding = () => {
   }, [hasHydrated, tokenState, router]);
 
   useEffect(() => {
-    if (userProfile && !userProfile.is_admin) router.push('/mypage');
+    if (userProfile && !isAdminRole(userProfile.role)) router.push('/mypage');
   }, [userProfile, router]);
 
   const handleCancel = () => {
@@ -138,11 +139,11 @@ const MyPageAdminLanding = () => {
     setToastMessage('변경사항이 저장되었습니다.');
   };
 
-  if (!userProfile || !userProfile.is_admin) return null;
+  if (!userProfile || !isAdminRole(userProfile.role)) return null;
 
   return (
     <>
-      <MyPageShell active="admin-landing" isAdmin={userProfile.is_admin}>
+      <MyPageShell active="admin-landing" isAdmin={isAdminRole(userProfile.role)}>
         <TitleRow>
           <PageTitle>랜딩페이지 관리</PageTitle>
           <ButtonRow>

@@ -80,27 +80,49 @@ export interface TodayAttendanceData {
 }
 export type TodayAttendanceListData = Record<MemberStack, string[]>;
 
-export interface RequestSignUpForm {
-  name: string;
-  generation: number;
-  track: number;
-  is_admin: boolean;
+export type MemberRole = 'BABY_LION' | 'ADULT_LION' | 'STAFF' | 'PRESIDENT' | 'ADMIN';
+
+export interface TokenResponse {
+  accessToken: string;
+  refreshToken: string;
 }
 
-export interface LoginResponse {
-  is_active: boolean;
-  token: {
-    access: string;
-    refresh: string;
-  };
+export type GoogleLoginResponse =
+  { status: 'LOGIN_SUCCESS'; tokens: TokenResponse } | { status: 'SIGNUP_REQUIRED'; signupToken: string };
+
+export interface JoinRequest {
+  signupToken: string;
+  name: string;
+  generationId: number;
+  partId: number;
+}
+
+export interface MemberUpdateRequest {
+  name: string;
+  role: MemberRole;
+  partId: number | null;
+}
+
+export interface GenerationPart {
+  id: number;
+  name: string;
+}
+
+export interface Generation {
+  id: number;
+  number: number;
+  year: number;
+  status: 'BEFORE_ACTIVITY' | 'IN_ACTIVITY' | 'AFTER_ACTIVITY';
+  parts: GenerationPart[];
 }
 
 export interface UserProfile {
+  id: number;
   name: string;
-  track: number;
-  is_admin: boolean;
-  generation: number;
-  email?: string;
+  email: string;
+  role: MemberRole;
+  partId: number;
+  partName: string;
 }
 
 export interface UserScore {
