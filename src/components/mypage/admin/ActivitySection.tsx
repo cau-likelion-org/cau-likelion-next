@@ -10,6 +10,7 @@ import RemoveCardButton from '@mypage/admin/component/RemoveCardButton';
 import CharCount from '@common/charCount/CharCount';
 import useListboxSelect from 'src/hooks/useListboxSelect';
 import { isUnfilled } from '@utils/index';
+import { PageNavigation } from 'src/apis/activity';
 import { BackgroundWhite, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { createId } from './utils';
@@ -31,7 +32,18 @@ export const isActivityItemInvalid = (item: ActivityIntroItem) =>
   isUnfilled(item.buttonText) ||
   isUnfilled(item.href);
 
-const PAGE_LINK_OPTIONS = ['소개 페이지 / 커리큘럼 영역', '프로젝트 페이지', '갤러리 페이지 / 세션', '블로그 페이지'];
+// 실제 백엔드 pageNavigation enum(5개)에 맞춘 라벨 — href 필드는 화면에서 이 라벨 문자열을 그대로 씀
+export const PAGE_NAVIGATION_LABEL: Record<PageNavigation, string> = {
+  INTRO_CURRICULUM: '소개 페이지 / 커리큘럼',
+  PROJECT: '프로젝트 페이지',
+  GALLERY_SESSION: '갤러리 페이지 / 세션',
+  GALLERY_PROJECT: '갤러리 페이지 / 프로젝트',
+  GALLERY_MEMORY: '갤러리 페이지 / 추억',
+};
+export const PAGE_NAVIGATION_BY_LABEL: Record<string, PageNavigation> = Object.fromEntries(
+  Object.entries(PAGE_NAVIGATION_LABEL).map(([navigation, label]) => [label, navigation]),
+) as Record<string, PageNavigation>;
+const PAGE_LINK_OPTIONS = Object.values(PAGE_NAVIGATION_LABEL);
 
 const createEmptyItem = (): ActivityIntroItem => ({
   id: createId(),
