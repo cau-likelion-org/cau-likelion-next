@@ -11,7 +11,7 @@ import IcAdd from '@assets/svg/ic-add.svg';
 import PageHeader from '@common/pageHeader/PageHeader';
 import useListboxSelect from 'src/hooks/useListboxSelect';
 import { PROJECT_CATEGORY_OPTIONS } from '@utils/constant';
-import { BackgroundColor, Fill, Label } from '@utils/constant/color';
+import { BackgroundColor, Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 import HistoryDetailModal from './component/HistoryDetailModal';
@@ -63,7 +63,7 @@ const ADD_BUTTON_LABEL: Record<GalleryTabKey, string> = {
 const GENERATION_OPTIONS = ['전체', '13기', '12기', '11기'];
 const TRACK_FILTER_OPTIONS = ['전체', '기획디자인', '프론트엔드', '백엔드'];
 const PROJECT_CATEGORY_FILTER_OPTIONS = ['전체', ...PROJECT_CATEGORY_OPTIONS];
-const WIKI_URL = 'https://wiki.cau-likelion.org';
+// const WIKI_URL = 'https://wiki.cau-likelion.org';
 const MOCK_CONTENT = '예시)이 서비스는 ~~한 서비스입니다\n서비스의 핵심기능\n\n· 이런거\n· 이\n· 이';
 const MOCK_DESCRIPTION =
   '서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명';
@@ -294,12 +294,12 @@ const GalleryListSection = () => {
       <ToastWrapper>
         <Toast variant="positive" text={toastText} show={isToastOpen} onHidden={() => setIsToastOpen(false)} />
       </ToastWrapper>
-      <WikiBanner
+      {/* <WikiBanner
         href={WIKI_URL}
         target="_blank"
         rel="noopener noreferrer"
         aria-label="중앙대학교 멋쟁이사자처럼 위키 바로가기"
-      />
+      /> */}
       <CardGrid>
         {cards.map((card) => (
           <Card
@@ -427,14 +427,14 @@ const ToastWrapper = styled.div`
   pointer-events: none;
 `;
 
-const WikiBanner = styled.a`
-  display: block;
-  width: 100%;
-  height: 80px;
-  border-radius: 8px;
-  background-color: ${Fill.subtle};
-  cursor: pointer;
-`;
+// const WikiBanner = styled.a`
+//   display: block;
+//   width: 100%;
+//   height: 80px;
+//   border-radius: 8px;
+//   background-color: ${Fill.subtle};
+//   cursor: pointer;
+// `;
 
 const CardGrid = styled.div`
   width: 100%;
