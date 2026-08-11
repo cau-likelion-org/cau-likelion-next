@@ -153,7 +153,7 @@ const GalleryListSection = () => {
       return (
         <SessionDetailModal
           title={sessionDetail.title}
-          badges={[`${sessionDetail.generationNumber}기`, sessionDetail.partName, `${sessionDetail.degree}회차`]}
+          badges={[`${sessionDetail.generationNumber}기`, sessionDetail.partName, `${sessionDetail.degree}주차`]}
           description={sessionDetail.description}
           date={toDisplayDate(sessionDetail.sessionDate)}
           onClose={closeDetailModal}
@@ -325,7 +325,7 @@ const GalleryListSection = () => {
               bottomContent={
                 <BottomContent>
                   <BadgeRow>
-                    {[`${item.generationNumber}기`, item.partName, `${item.degree}회차`].map((badge) => (
+                    {[`${item.generationNumber}기`, item.partName, `${item.degree}주차`].map((badge) => (
                       <ContentBadge key={badge} text={badge} color="accent" size="medium" />
                     ))}
                   </BadgeRow>
