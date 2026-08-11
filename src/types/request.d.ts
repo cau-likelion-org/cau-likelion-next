@@ -102,11 +102,8 @@ export interface TokenResponse {
   refreshToken: string;
 }
 
-export interface GoogleLoginResponse {
-  status: 'LOGIN_SUCCESS' | 'SIGNUP_REQUIRED';
-  tokens?: TokenResponse;
-  signupToken?: string;
-}
+export type GoogleLoginResponse =
+  { status: 'LOGIN_SUCCESS'; tokens: TokenResponse } | { status: 'SIGNUP_REQUIRED'; signupToken: string };
 
 export interface JoinRequest {
   signupToken: string;

@@ -22,14 +22,12 @@ const LoginButton = ({ onUnregistered }: LoginButtonProps) => {
     mutationFn: (idToken: string) => googleLogin(idToken),
     onSuccess: (res) => {
       track('Login Completed', { login_method: 'google', is_new_signup: res.status === 'SIGNUP_REQUIRED' });
-      if (res.status === 'SIGNUP_REQUIRED' && res.signupToken) {
+      if (res.status === 'SIGNUP_REQUIRED') {
         sessionStorage.setItem(PENDING_SIGNUP_TOKEN_KEY, res.signupToken);
         router.push('/signup');
         return;
       }
-      if (res.tokens) {
-        setToken({ access: res.tokens.accessToken, refresh: res.tokens.refreshToken });
-      }
+      setToken({ access: res.tokens.accessToken, refresh: res.tokens.refreshToken });
     },
     onError: (error) => {
       track('Login Failed', { login_method: 'google' });
