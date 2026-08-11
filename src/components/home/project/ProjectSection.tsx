@@ -1,31 +1,29 @@
 import styled from 'styled-components';
 import { useRouter } from 'next/router';
+import { useQuery } from '@tanstack/react-query';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay } from 'swiper/modules';
 
 import Button from '@common/button/Button';
+import { getProjectList } from 'src/apis/project';
 import { Black } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
-import ProjectCard, { IProject } from './component/ProjectCard';
-
-const PROJECTS: IProject[] = [
-  { name: '서비스명', generation: '13기', category: '아이디어톤' },
-  { name: '서비스명', generation: '13기', category: '아이디어톤' },
-  { name: '서비스명', generation: '13기', category: '아이디어톤', award: '일이상사오일이상사오일이상사오' },
-  { name: '서비스명', generation: '13기', category: '아이디어톤' },
-  { name: '서비스명', generation: '13기', category: '아이디어톤' },
-];
+import ProjectCard from './component/ProjectCard';
 
 // Swiper's loop mode needs roughly 2x slidesPerView worth of real slides to cycle smoothly,
-// so the 5 real projects are repeated to give it enough material.
+// so the fetched projects are repeated to give it enough material.
 const REPEAT_COUNT = 3;
-const SLIDES = Array.from({ length: REPEAT_COUNT }, () => PROJECTS).flat();
-const FEATURED_INDEX = PROJECTS.findIndex((project) => project.award);
-const INITIAL_SLIDE = FEATURED_INDEX === -1 ? 0 : PROJECTS.length + FEATURED_INDEX;
 
 const ProjectSection = () => {
   const router = useRouter();
+  const { data: projects } = useQuery({ queryKey: ['landingProjects'], queryFn: getProjectList });
+
+  if (!projects || projects.length === 0) return null;
+
+  const slides = Array.from({ length: REPEAT_COUNT }, () => projects).flat();
+  const featuredIndex = projects.findIndex((project) => project.banner);
+  const initialSlide = featuredIndex === -1 ? 0 : projects.length + featuredIndex;
 
   return (
     <Wrapper>
@@ -38,10 +36,10 @@ const ProjectSection = () => {
         observer
         observeParents
         spaceBetween={32}
-        initialSlide={INITIAL_SLIDE}
+        initialSlide={initialSlide}
         autoplay={{ delay: 3000, disableOnInteraction: false }}
       >
-        {SLIDES.map((project, index) => (
+        {slides.map((project, index) => (
           <SwiperSlide key={index}>
             <ProjectCard {...project} href="/project" />
           </SwiperSlide>
