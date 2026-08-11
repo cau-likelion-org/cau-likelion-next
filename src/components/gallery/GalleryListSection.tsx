@@ -167,7 +167,7 @@ const GalleryListSection = () => {
           title={projectDetail.title}
           badges={[`${projectDetail.generationNumber}기`, PROJECT_CATEGORY_LABEL[projectDetail.category]]}
           description={projectDetail.summary}
-          date={[projectDetail.startDate, projectDetail.endDate]}
+          date={[toDisplayDate(projectDetail.startDate), toDisplayDate(projectDetail.endDate)]}
           onClose={closeDetailModal}
           onEdit={openEditModal}
         />
@@ -179,7 +179,10 @@ const GalleryListSection = () => {
           title={historyDetail.title}
           badges={[`${historyDetail.generationNumber}기`]}
           description={historyDetail.description}
-          date={[historyDetail.startDate, historyDetail.endDate ?? historyDetail.startDate]}
+          date={[
+            toDisplayDate(historyDetail.startDate),
+            toDisplayDate(historyDetail.endDate ?? historyDetail.startDate),
+          ]}
           onClose={closeDetailModal}
           onEdit={openEditModal}
         />
