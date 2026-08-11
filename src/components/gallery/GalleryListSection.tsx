@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import styled from 'styled-components';
+import { useQuery } from '@tanstack/react-query';
 import Button from '@common/button/Button';
 import Card from '@common/card/Card';
 import ContentBadge from '@common/badge/ContentBadge';
@@ -10,9 +11,11 @@ import Toast from '@common/toast/Toast';
 import IcAdd from '@assets/svg/ic-add.svg';
 import PageHeader from '@common/pageHeader/PageHeader';
 import useListboxSelect from 'src/hooks/useListboxSelect';
-import { PROJECT_CATEGORY_OPTIONS } from '@utils/constant';
-import { BackgroundColor, Label } from '@utils/constant/color';
+import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
+import { getSessionList, getSession } from 'src/apis/session';
+import { getHistoryList, getHistory } from 'src/apis/history';
+import { getGalleryProjectList, GalleryProjectCategory } from 'src/apis/project';
 
 import HistoryDetailModal from './component/HistoryDetailModal';
 import HistoryEditModal from './component/HistoryEditModal';
@@ -26,21 +29,6 @@ import SessionUploadModal from './component/SessionUploadModal';
 
 type GalleryTabKey = 'session' | 'project' | 'gallery';
 type FilterKey = 'generation' | 'track' | 'category';
-
-interface GalleryCardItem {
-  id: number;
-  title: string;
-  content: string;
-  description: string;
-  generation: string;
-  category?: string;
-  week?: string;
-  date?: string;
-  period?: string;
-}
-
-const toBadges = (card: GalleryCardItem): string[] =>
-  [`${card.generation}기`, card.category, card.week && `${card.week}주차`].filter(Boolean) as string[];
 
 const UPLOAD_MODAL_BY_TAB: Record<GalleryTabKey, typeof SessionUploadModal> = {
   session: SessionUploadModal,
@@ -60,68 +48,47 @@ const ADD_BUTTON_LABEL: Record<GalleryTabKey, string> = {
   gallery: '추억 추가',
 };
 
-const GENERATION_OPTIONS = ['전체', '13기', '12기', '11기'];
-const TRACK_FILTER_OPTIONS = ['전체', '기획디자인', '프론트엔드', '백엔드'];
-const PROJECT_CATEGORY_FILTER_OPTIONS = ['전체', ...PROJECT_CATEGORY_OPTIONS];
+const PROJECT_CATEGORY_LABEL: Record<GalleryProjectCategory, string> = {
+  IDEATHON: '아이디어톤',
+  HACKATHON: '해커톤',
+  CHUNGKATHON: '중커톤',
+  ETC: '기타',
+};
+const PROJECT_CATEGORY_FILTER_OPTIONS = ['전체', ...Object.values(PROJECT_CATEGORY_LABEL)];
+const ALL_OPTION = '전체';
 // const WIKI_URL = 'https://wiki.cau-likelion.org';
-const MOCK_CONTENT = '예시)이 서비스는 ~~한 서비스입니다\n서비스의 핵심기능\n\n· 이런거\n· 이\n· 이';
-const MOCK_DESCRIPTION =
-  '서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명 서비스설명';
 
-const parseDateRange = (period: string | undefined): [string, string] => {
-  const [start, end] = (period ?? '').split('-');
-  const toIsoDate = (date: string) => date.replaceAll('/', '-');
-  return [start ? toIsoDate(start) : '', end ? toIsoDate(end) : ''];
-};
-
-const splitPeriodForDisplay = (period: string | undefined): [string, string] => {
-  const [start, end] = (period ?? '').split('-');
-  return [start ?? '', end ?? ''];
-};
-
-const toDisplayDate = (isoDate: string | undefined) => (isoDate ?? '').replaceAll('-', '/');
-
-const CARDS_BY_TAB: Record<GalleryTabKey, GalleryCardItem[]> = {
-  session: Array.from({ length: 8 }, (_, index) => ({
-    id: index + 1,
-    title: '제목',
-    content: MOCK_CONTENT,
-    description: MOCK_DESCRIPTION,
-    generation: '13',
-    category: '기획디자인',
-    week: '3',
-    date: '2026-12-12',
-  })),
-  project: Array.from({ length: 8 }, (_, index) => ({
-    id: index + 1,
-    title: '제목',
-    content: MOCK_CONTENT,
-    description: MOCK_DESCRIPTION,
-    generation: '13',
-    category: '아이디어톤',
-    period: '2026/12/12-2012/12/12',
-  })),
-  gallery: Array.from({ length: 8 }, (_, index) => ({
-    id: index + 1,
-    title: '제목',
-    content: MOCK_CONTENT,
-    description: MOCK_DESCRIPTION,
-    generation: '13',
-    period: '2026/12/12-2012/12/12',
-  })),
-};
+const toDisplayDate = (isoDate: string | undefined) => (isoDate ?? '').split('T')[0].replaceAll('-', '/');
+const toPeriodDisplay = (startDate: string, endDate: string | null) =>
+  `${toDisplayDate(startDate)}${endDate ? `-${toDisplayDate(endDate)}` : ''}`;
 
 const GalleryListSection = () => {
   const [activeTab, setActiveTab] = useState<GalleryTabKey>('session');
-  const [generation, setGeneration] = useState(GENERATION_OPTIONS[0]);
-  const [track, setTrack] = useState(TRACK_FILTER_OPTIONS[0]);
-  const [projectCategory, setProjectCategory] = useState(PROJECT_CATEGORY_FILTER_OPTIONS[0]);
+  const [generation, setGeneration] = useState(ALL_OPTION);
+  const [track, setTrack] = useState(ALL_OPTION);
+  const [projectCategory, setProjectCategory] = useState(ALL_OPTION);
   const [openFilter, setOpenFilter] = useState<FilterKey | null>(null);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
-  const [selectedCard, setSelectedCard] = useState<GalleryCardItem | null>(null);
+  const [selectedId, setSelectedId] = useState<number | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [toastText, setToastText] = useState('');
   const [isToastOpen, setIsToastOpen] = useState(false);
+
+  const { data: sessions } = useQuery({ queryKey: ['gallerySessions'], queryFn: getSessionList });
+  const { data: projects } = useQuery({ queryKey: ['galleryProjects'], queryFn: getGalleryProjectList });
+  const { data: histories } = useQuery({ queryKey: ['galleryHistories'], queryFn: getHistoryList });
+
+  const { data: sessionDetail } = useQuery({
+    queryKey: ['gallerySessionDetail', selectedId],
+    queryFn: () => getSession(selectedId as number),
+    enabled: activeTab === 'session' && selectedId !== null,
+  });
+  const { data: historyDetail } = useQuery({
+    queryKey: ['galleryHistoryDetail', selectedId],
+    queryFn: () => getHistory(selectedId as number),
+    enabled: activeTab === 'gallery' && selectedId !== null,
+  });
+  const projectDetail = useMemo(() => projects?.find((project) => project.id === selectedId), [projects, selectedId]);
 
   const showToast = (text: string) => {
     setToastText(text);
@@ -130,66 +97,108 @@ const GalleryListSection = () => {
 
   const handleTabChange = (key: string) => {
     setActiveTab(key as GalleryTabKey);
-    setSelectedCard(null);
+    setSelectedId(null);
     setIsEditModalOpen(false);
     setOpenFilter(null);
+    setGeneration(ALL_OPTION);
+    setTrack(ALL_OPTION);
+    setProjectCategory(ALL_OPTION);
   };
 
   const closeUploadModal = () => setIsUploadModalOpen(false);
-  const closeDetailModal = () => setSelectedCard(null);
+  const closeDetailModal = () => setSelectedId(null);
   const openEditModal = () => setIsEditModalOpen(true);
   const closeEditModal = () => {
     setIsEditModalOpen(false);
-    setSelectedCard(null);
+    setSelectedId(null);
   };
   const handleDelete = () => {
     setIsEditModalOpen(false);
-    setSelectedCard(null);
+    setSelectedId(null);
     showToast('삭제가 완료되었습니다.');
   };
   const handleUploadSubmit = () => showToast('등록이 완료되었습니다.');
   const handleEditSubmit = () => showToast('변경사항이 저장되었습니다.');
 
-  const cards = CARDS_BY_TAB[activeTab].filter((card) => {
-    const matchesGeneration = generation === GENERATION_OPTIONS[0] || `${card.generation}기` === generation;
-    const matchesTrack = activeTab !== 'session' || track === TRACK_FILTER_OPTIONS[0] || card.category === track;
-    const matchesCategory =
-      activeTab !== 'project' ||
-      projectCategory === PROJECT_CATEGORY_FILTER_OPTIONS[0] ||
-      card.category === projectCategory;
-    return matchesGeneration && matchesTrack && matchesCategory;
-  });
+  const generationOptions = useMemo(() => {
+    const source: { generationNumber: number }[] =
+      activeTab === 'session' ? (sessions ?? []) : activeTab === 'project' ? (projects ?? []) : (histories ?? []);
+    const numbers = Array.from(new Set(source.map((item) => item.generationNumber))).sort((a, b) => b - a);
+    return [ALL_OPTION, ...numbers.map((n) => `${n}기`)];
+  }, [activeTab, sessions, projects, histories]);
+
+  const partOptions = useMemo(() => {
+    const parts = Array.from(new Set((sessions ?? []).map((item) => item.partName)));
+    return [ALL_OPTION, ...parts];
+  }, [sessions]);
+
+  const sessionCards = (sessions ?? []).filter(
+    (item) =>
+      (generation === ALL_OPTION || `${item.generationNumber}기` === generation) &&
+      (track === ALL_OPTION || item.partName === track),
+  );
+  const projectCards = (projects ?? []).filter(
+    (item) =>
+      (generation === ALL_OPTION || `${item.generationNumber}기` === generation) &&
+      (projectCategory === ALL_OPTION || PROJECT_CATEGORY_LABEL[item.category] === projectCategory),
+  );
+  const historyCards = (histories ?? []).filter(
+    (item) => generation === ALL_OPTION || `${item.generationNumber}기` === generation,
+  );
 
   const UploadModal = UPLOAD_MODAL_BY_TAB[activeTab];
 
-  const renderDetailModal = (card: GalleryCardItem) => {
-    const commonProps = {
-      title: card.title,
-      badges: toBadges(card),
-      description: card.description,
-      onClose: closeDetailModal,
-      onEdit: openEditModal,
-    };
-    if (activeTab === 'session') {
-      return <SessionDetailModal {...commonProps} date={toDisplayDate(card.date)} />;
+  const renderDetailModal = () => {
+    if (activeTab === 'session' && sessionDetail) {
+      return (
+        <SessionDetailModal
+          title={sessionDetail.title}
+          badges={[`${sessionDetail.generationNumber}기`, sessionDetail.partName, `${sessionDetail.degree}회차`]}
+          description={sessionDetail.description}
+          date={toDisplayDate(sessionDetail.sessionDate)}
+          onClose={closeDetailModal}
+          onEdit={openEditModal}
+        />
+      );
     }
-    if (activeTab === 'project') {
-      return <ProjectDetailModal {...commonProps} date={splitPeriodForDisplay(card.period)} />;
+    if (activeTab === 'project' && projectDetail) {
+      return (
+        <ProjectDetailModal
+          title={projectDetail.title}
+          badges={[`${projectDetail.generationNumber}기`, PROJECT_CATEGORY_LABEL[projectDetail.category]]}
+          description={projectDetail.summary}
+          date={[projectDetail.startDate, projectDetail.endDate]}
+          onClose={closeDetailModal}
+          onEdit={openEditModal}
+        />
+      );
     }
-    return <HistoryDetailModal {...commonProps} date={splitPeriodForDisplay(card.period)} />;
+    if (activeTab === 'gallery' && historyDetail) {
+      return (
+        <HistoryDetailModal
+          title={historyDetail.title}
+          badges={[`${historyDetail.generationNumber}기`]}
+          description={historyDetail.description}
+          date={[historyDetail.startDate, historyDetail.endDate ?? historyDetail.startDate]}
+          onClose={closeDetailModal}
+          onEdit={openEditModal}
+        />
+      );
+    }
+    return null;
   };
 
-  const renderEditModal = (card: GalleryCardItem) => {
-    if (activeTab === 'session') {
+  const renderEditModal = () => {
+    if (activeTab === 'session' && sessionDetail) {
       return (
         <SessionEditModal
           initialValues={{
-            title: card.title,
-            content: card.content,
-            generation: card.generation,
-            category: card.category ?? '',
-            week: card.week ?? '',
-            date: card.date ?? '',
+            title: sessionDetail.title,
+            content: sessionDetail.description,
+            generation: String(sessionDetail.generationNumber),
+            category: sessionDetail.partName,
+            week: String(sessionDetail.degree),
+            date: sessionDetail.sessionDate.split('T')[0],
           }}
           onClose={closeEditModal}
           onDelete={handleDelete}
@@ -197,15 +206,15 @@ const GalleryListSection = () => {
         />
       );
     }
-    if (activeTab === 'project') {
+    if (activeTab === 'project' && projectDetail) {
       return (
         <ProjectEditModal
           initialValues={{
-            title: card.title,
-            content: card.content,
-            generation: card.generation,
-            category: card.category ?? '',
-            dateRange: parseDateRange(card.period),
+            title: projectDetail.title,
+            content: projectDetail.summary,
+            generation: String(projectDetail.generationNumber),
+            category: PROJECT_CATEGORY_LABEL[projectDetail.category],
+            dateRange: [projectDetail.startDate, projectDetail.endDate],
           }}
           onClose={closeEditModal}
           onDelete={handleDelete}
@@ -213,19 +222,22 @@ const GalleryListSection = () => {
         />
       );
     }
-    return (
-      <HistoryEditModal
-        initialValues={{
-          title: card.title,
-          content: card.content,
-          generation: card.generation,
-          dateRange: parseDateRange(card.period),
-        }}
-        onClose={closeEditModal}
-        onDelete={handleDelete}
-        onSubmit={handleEditSubmit}
-      />
-    );
+    if (activeTab === 'gallery' && historyDetail) {
+      return (
+        <HistoryEditModal
+          initialValues={{
+            title: historyDetail.title,
+            content: historyDetail.description,
+            generation: String(historyDetail.generationNumber),
+            dateRange: [historyDetail.startDate, historyDetail.endDate ?? historyDetail.startDate],
+          }}
+          onClose={closeEditModal}
+          onDelete={handleDelete}
+          onSubmit={handleEditSubmit}
+        />
+      );
+    }
+    return null;
   };
 
   return (
@@ -238,7 +250,7 @@ const GalleryListSection = () => {
             <FilterSelect
               label="기수 구분"
               value={generation}
-              options={GENERATION_OPTIONS}
+              options={generationOptions}
               isOpen={openFilter === 'generation'}
               onToggle={() => setOpenFilter((prev) => (prev === 'generation' ? null : 'generation'))}
               onClose={() => setOpenFilter(null)}
@@ -251,7 +263,7 @@ const GalleryListSection = () => {
               <FilterSelect
                 label="파트 구분"
                 value={track}
-                options={TRACK_FILTER_OPTIONS}
+                options={partOptions}
                 isOpen={openFilter === 'track'}
                 onToggle={() => setOpenFilter((prev) => (prev === 'track' ? null : 'track'))}
                 onClose={() => setOpenFilter(null)}
@@ -289,8 +301,8 @@ const GalleryListSection = () => {
       </Header>
 
       {isUploadModalOpen && <UploadModal onClose={closeUploadModal} onSubmit={handleUploadSubmit} />}
-      {selectedCard && !isEditModalOpen && renderDetailModal(selectedCard)}
-      {selectedCard && isEditModalOpen && renderEditModal(selectedCard)}
+      {selectedId !== null && !isEditModalOpen && renderDetailModal()}
+      {selectedId !== null && isEditModalOpen && renderEditModal()}
       <ToastWrapper>
         <Toast variant="positive" text={toastText} show={isToastOpen} onHidden={() => setIsToastOpen(false)} />
       </ToastWrapper>
@@ -300,26 +312,76 @@ const GalleryListSection = () => {
         rel="noopener noreferrer"
         aria-label="중앙대학교 멋쟁이사자처럼 위키 바로가기"
       /> */}
-      <CardGrid>
-        {cards.map((card) => (
-          <Card
-            key={card.id}
-            thumbnailRatio={16 / 9}
-            title={card.title}
-            onClick={() => setSelectedCard(card)}
-            bottomContent={
-              <BottomContent>
-                <BadgeRow>
-                  {toBadges(card).map((badge) => (
-                    <ContentBadge key={badge} text={badge} color="accent" size="medium" />
-                  ))}
-                </BadgeRow>
-                {card.period && <Period>{card.period}</Period>}
-              </BottomContent>
-            }
-          />
-        ))}
-      </CardGrid>
+
+      {activeTab === 'session' && (
+        <CardGrid>
+          {sessionCards.map((item) => (
+            <Card
+              key={item.id}
+              thumbnailRatio={16 / 9}
+              thumbnailSrc={item.thumbnailUrl}
+              title={item.title}
+              onClick={() => setSelectedId(item.id)}
+              bottomContent={
+                <BottomContent>
+                  <BadgeRow>
+                    {[`${item.generationNumber}기`, item.partName, `${item.degree}회차`].map((badge) => (
+                      <ContentBadge key={badge} text={badge} color="accent" size="medium" />
+                    ))}
+                  </BadgeRow>
+                </BottomContent>
+              }
+            />
+          ))}
+        </CardGrid>
+      )}
+      {activeTab === 'project' && (
+        <CardGrid>
+          {projectCards.map((item) => {
+            const thumbnail = item.images.find((image) => image.isMain)?.imageUrl ?? item.images[0]?.imageUrl;
+            return (
+              <Card
+                key={item.id}
+                thumbnailRatio={16 / 9}
+                thumbnailSrc={thumbnail}
+                title={item.title}
+                onClick={() => setSelectedId(item.id)}
+                bottomContent={
+                  <BottomContent>
+                    <BadgeRow>
+                      {[`${item.generationNumber}기`, PROJECT_CATEGORY_LABEL[item.category]].map((badge) => (
+                        <ContentBadge key={badge} text={badge} color="accent" size="medium" />
+                      ))}
+                    </BadgeRow>
+                    <Period>{toPeriodDisplay(item.startDate, item.endDate)}</Period>
+                  </BottomContent>
+                }
+              />
+            );
+          })}
+        </CardGrid>
+      )}
+      {activeTab === 'gallery' && (
+        <CardGrid>
+          {historyCards.map((item) => (
+            <Card
+              key={item.id}
+              thumbnailRatio={16 / 9}
+              thumbnailSrc={item.thumbnailUrl}
+              title={item.title}
+              onClick={() => setSelectedId(item.id)}
+              bottomContent={
+                <BottomContent>
+                  <BadgeRow>
+                    <ContentBadge text={`${item.generationNumber}기`} color="accent" size="medium" />
+                  </BadgeRow>
+                  <Period>{toPeriodDisplay(item.startDate, item.endDate)}</Period>
+                </BottomContent>
+              }
+            />
+          ))}
+        </CardGrid>
+      )}
     </Wrapper>
   );
 };
