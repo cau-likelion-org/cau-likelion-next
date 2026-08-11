@@ -4,9 +4,9 @@ import styled from 'styled-components';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
-export type SidebarActive = 'home' | 'attendance' | 'assignment';
+export type SidebarActive = 'home' | 'attendance' | 'assignment' | 'admin-landing';
 
-const Sidebar = ({ active }: { active: SidebarActive }) => {
+const Sidebar = ({ active, isAdmin = false }: { active: SidebarActive; isAdmin?: boolean }) => {
   return (
     <Wrapper>
       <StyledLink href="/mypage">
@@ -18,6 +18,14 @@ const Sidebar = ({ active }: { active: SidebarActive }) => {
       <StyledLink href="/mypage/assignment">
         <Item $active={active === 'assignment'}>과제관리</Item>
       </StyledLink>
+      {isAdmin && (
+        <AdminGroup>
+          <GroupTitle>관리자</GroupTitle>
+          <StyledLink href="/mypage/admin/landing">
+            <Item $active={active === 'admin-landing'}>랜딩페이지 관리</Item>
+          </StyledLink>
+        </AdminGroup>
+      )}
     </Wrapper>
   );
 };
@@ -32,6 +40,22 @@ const Wrapper = styled.div`
   gap: 4px;
   width: 160px;
   padding: 0 6px;
+`;
+
+const AdminGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+`;
+
+const GroupTitle = styled.p`
+  margin: 0;
+  width: 100%;
+  padding: 8px 0;
+  text-align: left;
+  color: ${Label.strong};
+  ${typographyCss(Typography.heading2.bold)}
 `;
 
 const StyledLink = styled(Link)`

@@ -22,6 +22,7 @@ import {
   SignUpMutationProps,
 } from 'src/apis/signUp';
 import { NUMERIC_ONLY_REGEX, TRACK_INDEX, TRACK_OPTIONS } from '@utils/constant';
+import { isUnfilled } from '@utils/index';
 
 const SignUpFormSection = () => {
   const [name, setName] = useState('');
@@ -58,7 +59,7 @@ const SignUpFormSection = () => {
     }
   }, [router, access, accessToken, refreshToken]);
 
-  const isFormActivated = name.trim() !== '' && generation.trim() !== '' && track !== '';
+  const isFormActivated = !isUnfilled(name) && !isUnfilled(generation) && !isUnfilled(track);
 
   const signUpFormPost = useMutation({
     mutationFn: (props: SignUpMutationProps) => signUp(props),

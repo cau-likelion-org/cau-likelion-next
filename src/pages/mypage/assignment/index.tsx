@@ -91,7 +91,7 @@ const MyPageAssignment = () => {
   if (!userProfile) return null;
 
   return (
-    <MyPageShell active="assignment">
+    <MyPageShell active="assignment" isAdmin={userProfile.is_admin}>
       <TitleRow>
         <SectionTitle>주차별 과제 현황</SectionTitle>
         <TrackName>{TRACK_NAME[userProfile.track]} 파트</TrackName>
