@@ -51,7 +51,9 @@ export const getAuthAxios = (token: IToken) => {
       }
     }
 
-    config.headers.Authorization = `Bearer ${accessToken}`;
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
+    }
     return config;
   });
 
