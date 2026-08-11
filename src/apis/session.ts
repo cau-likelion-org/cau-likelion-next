@@ -1,17 +1,25 @@
-import { ISessionDetail, ArchivingArrayType, ISessionData, ResponseData } from '@@types/request';
 import axios from 'axios';
 import { url } from '.';
 
-export async function getSessionDetail(id: string) {
-  const data = await axios.get<ResponseData<ISessionDetail>>(`${url}/api/session/${id}`).then((res) => res.data.data);
-
-  return data;
+export interface SessionListItem {
+  id: number;
+  title: string;
+  thumbnailUrl: string;
+  partName: string;
+  generationNumber: number;
+  degree: number;
 }
 
-export async function getSessions() {
-  const data = await axios
-    .get<ResponseData<ArchivingArrayType<ISessionData>>>(`${url}/api/session`)
-    .then((res) => res.data.data);
-
-  return data;
+export interface SessionDetail extends SessionListItem {
+  description: string;
+  sessionDate: string;
+  imageUrls: string[];
 }
+
+export const getSessionList = () => {
+  return axios.get<SessionListItem[]>(`${url}/api/sessions`).then((res) => res.data);
+};
+
+export const getSession = (id: number) => {
+  return axios.get<SessionDetail>(`${url}/api/sessions/${id}`).then((res) => res.data);
+};

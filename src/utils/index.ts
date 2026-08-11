@@ -3,10 +3,11 @@ import {
   IGalleryData,
   IProjectData,
   ISessionData,
+  MemberRole,
   TotalScoreParams,
   UserScore,
 } from '@@types/request';
-import { GENERATION_CHECKER, TRACK_INDEX } from './constant';
+import { TRACK_INDEX } from './constant';
 
 export const toDateString = (date?: Date, formatter = '-') => {
   if (!date) return '';
@@ -39,11 +40,20 @@ export const getTotalScore = (target: TotalScoreParams) => {
   return Number(totalScore.toFixed(1)) > 0 ? Number(totalScore.toFixed(1)) : 0;
 };
 
-export const checkGeneration = (generation: number) => {
-  let year = new Date().getFullYear();
-  if (year - generation == GENERATION_CHECKER) return true;
-  return false;
-};
+// 운영진(STAFF) 이상 — 담당 파트에 한정된 관리 권한까지 포함해 "관리자 화면 접근 가능 여부" 판단에 사용
+const ADMIN_ROLES: MemberRole[] = ['STAFF', 'PRESIDENT', 'ADMIN'];
+
+// 회장(PRESIDENT)/중하하 관리자(ADMIN) — 전체 파트·전체 회원 데이터에 대한 무제한 권한이 필요한 기능에 사용
+const FULL_ADMIN_ROLES: MemberRole[] = ['PRESIDENT', 'ADMIN'];
+
+export const isAdminRole = (role: MemberRole) => ADMIN_ROLES.includes(role);
+export const isFullAdminRole = (role: MemberRole) => FULL_ADMIN_ROLES.includes(role);
+
+// 출석부 생성은 회장 전용 권한
+export const canCreateAttendance = (role: MemberRole) => role === 'PRESIDENT';
+
+// 전체 구성원 권한 설정은 중하하 관리자 전용 권한
+export const canManageMemberRoles = (role: MemberRole) => role === 'ADMIN';
 
 export const getTotalNameObject = (data: any): Record<string, UserScore> => {
   let totalNameObject: Record<string, UserScore> = {};

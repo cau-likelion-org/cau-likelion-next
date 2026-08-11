@@ -1,4 +1,4 @@
-import { LoginResponse, RequestSignUpForm, UserProfile } from '@@types/request';
+import { Generation, GoogleLoginResponse, MemberUpdateRequest, TokenResponse, UserProfile } from '@@types/request';
 import { IToken } from 'src/store/useTokenStore';
 import axios from 'axios';
 import { url } from '.';
@@ -6,45 +6,30 @@ import { getAuthAxios } from './authAxios';
 
 export const LOGIN_UNREGISTERED_FLAG_KEY = 'loginUnregistered';
 
-export interface IMutationProps {
-  form: RequestSignUpForm;
-  accessToken: string | null;
-  refreshToken: string | null;
-}
+export const googleLogin = (idToken: string) => {
+  return axios.post<GoogleLoginResponse>(`${url}/api/auth/google-login`, { idToken }).then((res) => res.data);
+};
+
+export const reissueToken = (refreshToken: string) => {
+  return axios.post<TokenResponse>(`${url}/api/auth/reissue`, { refreshToken }).then((res) => res.data);
+};
+
+export const logout = (refreshToken: string | null) => {
+  return axios.post(`${url}/api/auth/logout`, { refreshToken });
+};
 
 export const getUserProfile = async (token: IToken) => {
   const authAxios = getAuthAxios(token);
-  const response = await authAxios.get(`/api/profile`);
-  return response.data.data.user as UserProfile;
-};
-
-export const putUserProfile = async (props: IMutationProps) => {
-  const authAxios = getAuthAxios({ access: props.accessToken, refresh: props.refreshToken });
-  const response = await authAxios.put(`/api/profile`, {
-    name: props.form.name,
-    generation: props.form.generation,
-    track: props.form.track,
-    is_admin: props.form.is_admin,
-  });
+  const response = await authAxios.get<UserProfile>(`/api/members/me`);
   return response.data;
 };
 
-export function login(code: string | string[]) {
-  return axios
-    .post<LoginResponse>(`${url}/api/google/callback`, {
-      code: code,
-    })
-    .then((res) => {
-      return res.data;
-    });
-}
+export const putUserProfile = async (props: { id: number; form: MemberUpdateRequest; tokenState: IToken }) => {
+  const authAxios = getAuthAxios(props.tokenState);
+  const response = await authAxios.put<UserProfile>(`/api/members/${props.id}`, props.form);
+  return response.data;
+};
 
-export function getNewToken(refresh_code: string | null) {
-  return axios
-    .post(`${url}/api/token`, {
-      refresh: refresh_code,
-    })
-    .then((res) => {
-      return res.data;
-    });
-}
+export const getGenerations = () => {
+  return axios.get<Generation[]>(`${url}/api/generations`).then((res) => res.data);
+};
