@@ -10,6 +10,7 @@ import MyPageShell from '@mypage/component/MyPageShell';
 import WeeklyAssignmentCard, { WeeklyAssignmentGroup } from '@mypage/component/WeeklyAssignmentCard';
 import { getUserProfile } from 'src/apis/account';
 import useTokenStore from 'src/store/useTokenStore';
+import { isAdminRole } from '@utils/index';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
@@ -90,7 +91,7 @@ const MyPageAssignment = () => {
   if (!userProfile) return null;
 
   return (
-    <MyPageShell active="assignment">
+    <MyPageShell active="assignment" isAdmin={isAdminRole(userProfile.role)}>
       <TitleRow>
         <SectionTitle>주차별 과제 현황</SectionTitle>
         <TrackName>{userProfile.partName} 파트</TrackName>

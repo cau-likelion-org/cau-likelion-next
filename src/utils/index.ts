@@ -25,10 +25,7 @@ export const concatDateString = (startDate: string, endDate: string) => {
   return newStartDate + '~' + newEndDate;
 };
 
-export const isEmptyString = (str: string) => {
-  if (str.length == 0) return true;
-  else return false;
-};
+export const isUnfilled = (value: string) => value.trim().length === 0;
 
 export const getTotalScore = (target: TotalScoreParams) => {
   let defaultScore = 3;

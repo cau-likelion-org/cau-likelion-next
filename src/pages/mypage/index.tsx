@@ -35,7 +35,7 @@ const MyPage = () => {
   if (!userProfile) return null;
 
   return (
-    <MyPageShell active="home">
+    <MyPageShell active="home" isAdmin={isAdminRole(userProfile.role)}>
       <CardRow>
         <ProfileCard user={userProfile} />
         <AttendanceCheckCard />

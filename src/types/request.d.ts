@@ -66,22 +66,7 @@ export interface IProjectDetail extends IProjectData {
   image: string[];
 }
 
-export interface IGalleryDetail extends IGalleryData {
-  description: string;
-  image: string[];
-}
-
 export type ArchivingArrayType<T> = Record<string, T[]>;
-
-export interface ISessionDetail extends ISessionData {
-  presenter: string;
-  image: string[];
-  track: string;
-  topic: string;
-  description: string;
-  date: string;
-  reference?: string;
-}
 
 interface ResponseData<T> {
   message: string;

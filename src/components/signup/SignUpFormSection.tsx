@@ -19,6 +19,7 @@ import {
   SIGNUP_SUCCESS_FLAG_KEY,
   SIGNUP_UNAPPROVED_EMAIL_FLAG_KEY,
 } from 'src/apis/signUp';
+import { isUnfilled } from '@utils/index';
 
 type OpenField = 'generation' | 'part' | null;
 
@@ -94,7 +95,7 @@ const SignUpFormSection = () => {
   }, [router, signupToken]);
 
   const selectedPart = selectedGeneration?.parts.find((p) => p.name === partName);
-  const isFormActivated = name.trim() !== '' && !!selectedGeneration && !!selectedPart;
+  const isFormActivated = !isUnfilled(name) && !!selectedGeneration && !!selectedPart;
 
   const signUpFormPost = useMutation({
     mutationFn: signUp,
