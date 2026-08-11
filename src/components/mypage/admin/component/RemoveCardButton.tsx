@@ -4,7 +4,7 @@ import { IcTrash } from '@assets/svg';
 const RemoveCardButton = ({ onClick }: { onClick: () => void }) => {
   return (
     <Button
-      variant="outlined"
+      variant="solid"
       color="assistive"
       size="medium"
       trailingIcon={<IcTrash width={18} height={18} />}
