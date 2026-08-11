@@ -14,6 +14,7 @@ import CurriculumSection, { CurriculumTrackItems, isCurriculumTracksInvalid } fr
 import RoadmapSection from '@mypage/admin/RoadmapSection';
 import { getUserProfile } from 'src/apis/account';
 import useTokenStore from 'src/store/useTokenStore';
+import { isAdminRole } from '@utils/index';
 import { CURRICULUM_TRACKS } from '@about/curriculum/data';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -63,7 +64,7 @@ const MyPageAdminAbout = () => {
   }, [hasHydrated, tokenState, router]);
 
   useEffect(() => {
-    if (userProfile && !userProfile.is_admin) router.push('/mypage');
+    if (userProfile && !isAdminRole(userProfile.role)) router.push('/mypage');
   }, [userProfile, router]);
 
   const handleCancel = () => {
@@ -84,11 +85,11 @@ const MyPageAdminAbout = () => {
     setToastMessage('변경사항이 저장되었습니다.');
   };
 
-  if (!userProfile || !userProfile.is_admin) return null;
+  if (!userProfile || !isAdminRole(userProfile.role)) return null;
 
   return (
     <>
-      <MyPageShell active="admin-about" isAdmin={userProfile.is_admin}>
+      <MyPageShell active="admin-about" isAdmin={isAdminRole(userProfile.role)}>
         <TitleRow>
           <PageTitle>소개 페이지 관리</PageTitle>
           <ButtonRow>
