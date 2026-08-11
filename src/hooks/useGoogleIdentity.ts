@@ -27,9 +27,15 @@ const useGoogleIdentity = (onCredential: (idToken: string) => void) => {
   });
 
   useEffect(() => {
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+    if (!clientId) {
+      console.error('NEXT_PUBLIC_GOOGLE_CLIENT_ID is not configured.');
+      return;
+    }
+
     const initialize = () => {
       window.google?.accounts.id.initialize({
-        client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? '',
+        client_id: clientId,
         callback: (response) => callbackRef.current(response.credential),
       });
     };
