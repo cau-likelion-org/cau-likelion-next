@@ -1,4 +1,4 @@
-import { ChangeEvent, KeyboardEvent, useRef, useState } from 'react';
+import { ChangeEvent, KeyboardEvent, ReactNode, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import styled from 'styled-components';
@@ -30,26 +30,47 @@ import {
 import useTokenStore from 'src/store/useTokenStore';
 import IcAdd from '@assets/svg/ic-add.svg';
 import IcCalender from '@assets/svg/ic-calender.svg';
-import { IcChevronLeft, IcCircleClose, IcCircleExclamation, IcLineHorizontal, IcLink } from '@assets/svg';
+import {
+  IcBehance,
+  IcChevronDown,
+  IcChevronLeft,
+  IcCircleClose,
+  IcCircleExclamation,
+  IcGithub,
+  IcLineHorizontal,
+  IcLink,
+} from '@assets/svg';
 import useInput from 'src/hooks/useInput';
+import useListboxSelect from 'src/hooks/useListboxSelect';
 import { NUMERIC_ONLY_REGEX, PROJECT_CATEGORY_OPTIONS } from '@utils/constant';
 import { AccentTint, BackgroundColor, Fill, Label, Line, Orange, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 const MAX_IMAGE_COUNT = 4;
-const LINK_TYPE_OPTIONS = ['GitHub', 'Web', 'Behance'];
+const LINK_TYPE_OPTIONS = ['Web', 'GitHub', 'Behance'];
 const MAX_LINK_COUNT = LINK_TYPE_OPTIONS.length;
 const CONTENT_PLACEHOLDER = '예시)이 서비스는 ~~한 서비스입니다\n서비스의 핵심기능\n\n· 이런거\n· 이\n· 이';
 
 const LINK_TYPE_TO_PLATFORM: Record<string, LinkPlatform> = {
-  GitHub: 'GITHUB',
   Web: 'WEB',
+  GitHub: 'GITHUB',
   Behance: 'BEHANCE',
 };
 const PLATFORM_TO_LINK_TYPE: Record<LinkPlatform, string> = {
   GITHUB: 'GitHub',
   WEB: 'Web',
   BEHANCE: 'Behance',
+};
+
+const LINK_TYPE_LABEL: Record<string, string> = {
+  Web: '웹링크',
+  GitHub: '깃허브',
+  Behance: '비핸스',
+};
+const LINK_TYPE_ICON: Record<string, ReactNode> = {
+  Web: <IcLink width={20} height={20} />,
+  GitHub: <IcGithub width={20} height={20} />,
+  Behance: <IcBehance width={20} height={14} />,
 };
 
 const CATEGORY_LABEL_TO_CODE: Record<string, ProjectCategoryCode> = {
@@ -637,11 +658,9 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
         {linkRows.map((row) => (
           <LinkRowWrapper key={row.id}>
             <LinkTypeSelect
-              leadingIcon={<IcLink width={20} height={20} />}
               value={row.type}
               options={[row.type, ...availableLinkTypes]}
               onChange={(type) => setLinkRows((prev) => prev.map((r) => (r.id === row.id ? { ...r, type } : r)))}
-              hideValue
             />
             <TextField
               placeholder="www.example.com"
@@ -711,9 +730,156 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
 
 export default ProjectUploadForm;
 
-const LinkTypeSelect = styled(ProjectFilterSelect)`
+const LinkTypeSelect = ({
+  value,
+  options,
+  onChange,
+}: {
+  value: string;
+  options: string[];
+  onChange: (value: string) => void;
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const { listId, wrapperRef, triggerRef, activeIndex, handleKeyDown, handleBlur, selectOption } = useListboxSelect({
+    isOpen,
+    options,
+    value,
+    onOpen: () => setIsOpen(true),
+    onClose: () => setIsOpen(false),
+    onSelect: onChange,
+  });
+
+  return (
+    <LinkTypeWrapper ref={wrapperRef} onKeyDownCapture={handleKeyDown} onBlur={handleBlur}>
+      <LinkTypeTrigger
+        ref={triggerRef}
+        tabIndex={0}
+        role="combobox"
+        aria-haspopup="listbox"
+        aria-expanded={isOpen}
+        aria-controls={listId}
+        aria-activedescendant={isOpen ? `${listId}-${activeIndex}` : undefined}
+        aria-label="링크 타입 선택"
+        onClick={() => setIsOpen((prev) => !prev)}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            setIsOpen((prev) => !prev);
+          }
+        }}
+      >
+        <LinkTypeIconSlot>{LINK_TYPE_ICON[value]}</LinkTypeIconSlot>
+        <LinkTypeChevronSlot $open={isOpen}>
+          <IcChevronDown width={16} height={16} />
+        </LinkTypeChevronSlot>
+      </LinkTypeTrigger>
+      {isOpen && (
+        <LinkTypeMenu role="listbox" id={listId}>
+          {options.map((option, index) => (
+            <LinkTypeMenuItem
+              key={option}
+              id={`${listId}-${index}`}
+              type="button"
+              role="option"
+              aria-selected={value === option}
+              $active={index === activeIndex}
+              onClick={() => selectOption(option, index)}
+            >
+              <LinkTypeIconSlot>{LINK_TYPE_ICON[option]}</LinkTypeIconSlot>
+              <LinkTypeMenuLabel>{LINK_TYPE_LABEL[option]}</LinkTypeMenuLabel>
+            </LinkTypeMenuItem>
+          ))}
+        </LinkTypeMenu>
+      )}
+    </LinkTypeWrapper>
+  );
+};
+
+const LinkTypeWrapper = styled.div`
+  position: relative;
   flex-shrink: 0;
   width: fit-content;
+`;
+
+const LinkTypeTrigger = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.08);
+  box-shadow:
+    inset 0 0 0 1px ${Line.normal},
+    0 1px 2px -1px rgba(23, 23, 23, 0.1);
+  cursor: pointer;
+
+  &:focus-within {
+    box-shadow: inset 0 0 0 2px rgba(71, 172, 255, 0.43);
+  }
+`;
+
+const LinkTypeIconSlot = styled.span`
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  color: ${Label.normal};
+`;
+
+const LinkTypeChevronSlot = styled.span<{ $open: boolean }>`
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  color: ${Label.normal};
+  transform: rotate(${(props) => (props.$open ? '180deg' : '0deg')});
+  transition: transform 0.15s ease;
+`;
+
+const LinkTypeMenu = styled.div`
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: max-content;
+  min-width: 160px;
+  max-height: 400px;
+  padding: 8px;
+  overflow: auto;
+  border: 1px solid ${Line.neutral};
+  border-radius: 16px;
+  background-color: ${BackgroundColor};
+  box-shadow:
+    0px 2px 4px -2px rgba(23, 23, 23, 0.06),
+    0px 4px 6px -1px rgba(23, 23, 23, 0.06);
+`;
+
+const LinkTypeMenuItem = styled.button<{ $active: boolean }>`
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 12px;
+  background-color: ${(props) => (props.$active ? 'rgba(23, 23, 25, 0.04)' : 'transparent')};
+  text-align: left;
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgba(23, 23, 25, 0.04);
+  }
+`;
+
+const LinkTypeMenuLabel = styled.span`
+  color: ${Label.normal};
+  ${typographyCss(Typography.body1Normal.regular)}
 `;
 
 const TagChipInput = ({

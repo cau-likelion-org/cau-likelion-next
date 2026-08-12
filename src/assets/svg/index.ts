@@ -1,3 +1,4 @@
+import IcBehance from './icon/ic-behance.svg';
 import IcBlank from './icon/ic-blank.svg';
 import IcCheck from './icon/ic-check.svg';
 import IcChevronDown from './icon/ic-chevron-down.svg';
@@ -7,6 +8,7 @@ import IcCircleClose from './icon/ic-circle-close.svg';
 import IcCircleExclamation from './icon/ic-circle-exclamation.svg';
 import IcDocument from './icon/ic-document.svg';
 import IcEmail from './icon/ic-email.svg';
+import IcGithub from './icon/ic-github.svg';
 import IcInstagram from './icon/ic-instagram.svg';
 import IcKakaotalk from './icon/ic-kakaotalk.svg';
 import IcLineHorizontal from './icon/ic-line-horizontal.svg';
@@ -17,6 +19,7 @@ import IcPlus from './icon/ic-plus.svg';
 import IcTriangleExclamation from './icon/ic-triangle-exclamation.svg';
 
 export {
+  IcBehance,
   IcBlank,
   IcCheck,
   IcChevronDown,
@@ -26,6 +29,7 @@ export {
   IcCircleExclamation,
   IcDocument,
   IcEmail,
+  IcGithub,
   IcInstagram,
   IcKakaotalk,
   IcLineHorizontal,
