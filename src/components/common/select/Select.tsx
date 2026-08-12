@@ -100,7 +100,7 @@ const Select = forwardRef<HTMLDivElement, SelectProps & { id?: string }>(functio
         $disabled={disabled}
         {...rest}
       >
-        {leadingIcon && <IconSlot $color={Label.alternative}>{leadingIcon}</IconSlot>}
+        {leadingIcon && <IconSlot $color={Label.normal}>{leadingIcon}</IconSlot>}
         {chips && chips.length > 0 ? (
           <ChipRow onClick={(event) => event.stopPropagation()} onKeyDown={(event) => event.stopPropagation()}>
             {chips.map((chip, index) => (
