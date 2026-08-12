@@ -2,11 +2,11 @@ import { ReactElement, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 
-import { IProjectDetail, UserProfile } from '@@types/request';
+import { UserProfile } from '@@types/request';
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import ProjectUploadForm from '@project/upload/ProjectUploadForm';
 import { getUserProfile } from 'src/apis/account';
-import { getProjectDetail } from 'src/apis/project';
+import { ProjectResponseDto, getProjectById } from 'src/apis/project';
 import useTokenStore from 'src/store/useTokenStore';
 
 const ProjectEdit = () => {
@@ -24,10 +24,10 @@ const ProjectEdit = () => {
     enabled: !!tokenState.access,
   });
 
-  const { data: project } = useQuery<IProjectDetail>({
+  const { data: project } = useQuery<ProjectResponseDto>({
     queryKey: ['projectDetail', projectId],
-    queryFn: () => getProjectDetail(projectId as string),
-    enabled: !!projectId,
+    queryFn: () => getProjectById(tokenState, Number(projectId)),
+    enabled: !!projectId && !!tokenState.access,
   });
 
   useEffect(() => {
