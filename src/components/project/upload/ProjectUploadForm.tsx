@@ -1392,7 +1392,7 @@ const ActionArea = styled.div`
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 8px;
+  gap: 16px;
   width: 375px;
   max-width: 100%;
   margin: 0 auto;
