@@ -3,6 +3,7 @@ import Button from '@common/button/Button';
 import CircularLoading from '@common/loading/CircularLoading';
 import Toast from '@common/toast/Toast';
 import IcAdd from '@assets/svg/ic-add.svg';
+import { IcFailure } from '@assets/svg';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
@@ -34,7 +35,7 @@ interface FlatProject extends IProjectData {
 }
 
 const ProjectsSection = ({ staticData }: { staticData: ArchivingArrayType<IProjectData> | null }) => {
-  const { data, isLoading } = useQuery<ArchivingArrayType<IProjectData>>({
+  const { data, isLoading, isError } = useQuery<ArchivingArrayType<IProjectData>>({
     queryKey: ['projects'],
     queryFn: getProjects,
     initialData: staticData ?? undefined,
@@ -165,6 +166,8 @@ const ProjectsSection = ({ staticData }: { staticData: ArchivingArrayType<IProje
         <LoadingWrapper>
           <CircularLoading size={32} />
         </LoadingWrapper>
+      ) : isError ? (
+        <ProjectEmptyState icon={<IcFailure width={64} height={64} />} message="정보 불러오기를 실패했어요." />
       ) : sortedProjects.length === 0 ? (
         <ProjectEmptyState />
       ) : (
