@@ -1,8 +1,8 @@
 import { ChangeEvent, KeyboardEvent, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import styled from 'styled-components';
 
-import { IProjectDetail } from '@@types/request';
 import Alert from '@common/alert/Alert';
 import Button from '@common/button/Button';
 import Chip from '@common/chip/Chip';
@@ -11,19 +11,66 @@ import TextField from '@common/textField/TextField';
 import Textarea from '@common/textarea/Textarea';
 import Toast from '@common/toast/Toast';
 import ProjectFilterSelect from '@project/projects/ProjectFilterSelect';
-import { PROJECT_DELETED_FLAG_KEY } from 'src/apis/project';
+import {
+  GenerationListItem,
+  LinkPlatform,
+  PROJECT_DELETED_FLAG_KEY,
+  ProjectCategoryCode,
+  ProjectImagePayload,
+  ProjectLinkPayload,
+  ProjectMemberPayload,
+  ProjectRequestPayload,
+  ProjectResponseDto,
+  createProject,
+  deleteProject,
+  getGenerations,
+  updateProject,
+  uploadProjectImage,
+} from 'src/apis/project';
+import useTokenStore from 'src/store/useTokenStore';
 import IcAdd from '@assets/svg/ic-add.svg';
 import IcCalender from '@assets/svg/ic-calender.svg';
 import { IcChevronLeft, IcCircleClose, IcCircleExclamation, IcLineHorizontal, IcLink } from '@assets/svg';
 import useInput from 'src/hooks/useInput';
-import { DEV_STACK, NUMERIC_ONLY_REGEX, PROJECT_CATEGORY_OPTIONS } from '@utils/constant';
+import { NUMERIC_ONLY_REGEX, PROJECT_CATEGORY_OPTIONS } from '@utils/constant';
 import { AccentTint, BackgroundColor, Fill, Label, Line, Orange, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 const MAX_IMAGE_COUNT = 4;
-const LINK_TYPE_OPTIONS = ['GitHub', 'YouTube', 'Web'];
+const LINK_TYPE_OPTIONS = ['GitHub', 'Web', 'Behance'];
 const MAX_LINK_COUNT = LINK_TYPE_OPTIONS.length;
 const CONTENT_PLACEHOLDER = '예시)이 서비스는 ~~한 서비스입니다\n서비스의 핵심기능\n\n· 이런거\n· 이\n· 이';
+
+const LINK_TYPE_TO_PLATFORM: Record<string, LinkPlatform> = {
+  GitHub: 'GITHUB',
+  Web: 'WEB',
+  Behance: 'BEHANCE',
+};
+const PLATFORM_TO_LINK_TYPE: Record<LinkPlatform, string> = {
+  GITHUB: 'GitHub',
+  WEB: 'Web',
+  BEHANCE: 'Behance',
+};
+
+const CATEGORY_LABEL_TO_CODE: Record<string, ProjectCategoryCode> = {
+  아이디어톤: 'IDEATHON',
+  해커톤: 'HACKATHON',
+  중커톤: 'CHUNGKATHON',
+};
+const CATEGORY_CODE_TO_LABEL: Record<ProjectCategoryCode, string> = {
+  IDEATHON: '아이디어톤',
+  HACKATHON: '해커톤',
+  CHUNGKATHON: '중커톤',
+  ETC: '중커톤',
+};
+
+const PART_LABELS = {
+  pm: '기획',
+  design: '디자인',
+  frontend: '프론트',
+  backend: '백엔드',
+} as const;
+const KNOWN_PART_LABELS: string[] = Object.values(PART_LABELS);
 
 const ImagePlaceholderIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -57,34 +104,51 @@ const nextId = () => {
   return idCounter;
 };
 
-const LINK_TYPE_BY_KEY: Record<keyof IProjectDetail['link'], string> = {
-  github: 'GitHub',
-  youtube: 'YouTube',
-  web: 'Web',
-};
-
 interface ProjectUploadFormProps {
   mode?: 'create' | 'edit';
-  initialData?: IProjectDetail;
+  initialData?: ProjectResponseDto;
 }
 
 const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormProps) => {
   const router = useRouter();
+  const tokenState = useTokenStore((state) => state.token);
   const isEditMode = mode === 'edit';
 
+  const sortedInitialImages = initialData
+    ? [...initialData.images].sort((a, b) => a.displayOrder - b.displayOrder)
+    : [];
   const initialImages =
-    initialData?.image && initialData.image.length > 0
-      ? Array.from({ length: MAX_IMAGE_COUNT }, (_, index) => initialData.image[index] ?? null)
+    sortedInitialImages.length > 0
+      ? Array.from({ length: MAX_IMAGE_COUNT }, (_, index) => sortedInitialImages[index]?.imageUrl ?? null)
       : Array(MAX_IMAGE_COUNT).fill(null);
+  const initialFeaturedIndex = Math.max(
+    sortedInitialImages.findIndex((image) => image.isMain),
+    0,
+  );
 
   const initialLinkRows: LinkRow[] = initialData
-    ? (Object.keys(LINK_TYPE_BY_KEY) as (keyof IProjectDetail['link'])[])
-        .filter((key) => initialData.link?.[key])
-        .map((key) => ({ id: nextId(), type: LINK_TYPE_BY_KEY[key], url: initialData.link[key] }))
+    ? initialData.links.map((link) => ({ id: nextId(), type: PLATFORM_TO_LINK_TYPE[link.platform], url: link.url }))
     : [];
 
+  const initialExtraParts: ExtraPart[] = initialData
+    ? Object.entries(
+        initialData.members
+          .filter((member) => !KNOWN_PART_LABELS.includes(member.part))
+          .reduce<Record<string, string[]>>((acc, member) => {
+            const key = member.part || '기타';
+            acc[key] = [...(acc[key] ?? []), member.name];
+            return acc;
+          }, {}),
+      ).map(([name, members]) => ({ id: nextId(), name, members }))
+    : [];
+
+  const membersByPart = (part: string) =>
+    initialData?.members.filter((member) => member.part === part).map((member) => member.name) ?? [];
+
   const [images, setImages] = useState<(string | null)[]>(initialImages);
-  const [featuredIndex, setFeaturedIndex] = useState(0);
+  const [imageFiles, setImageFiles] = useState<(File | null)[]>(Array(MAX_IMAGE_COUNT).fill(null));
+  const [featuredIndex, setFeaturedIndex] = useState(initialFeaturedIndex);
+  const [isUploadingImages, setIsUploadingImages] = useState(false);
 
   const handleFileChange = (index: number, event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -97,6 +161,11 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
       if (prev[index]) URL.revokeObjectURL(prev[index] as string);
       const next = [...prev];
       next[index] = objectUrl;
+      return next;
+    });
+    setImageFiles((prev) => {
+      const next = [...prev];
+      next[index] = file;
       return next;
     });
     if (hadNoImages) setFeaturedIndex(index);
@@ -113,45 +182,66 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
       }
       return next;
     });
+    setImageFiles((prev) => {
+      const next = [...prev];
+      next[index] = null;
+      return next;
+    });
   };
 
   const [title, setTitle] = useState(initialData?.title ?? '');
-  const [subtitle, setSubtitle] = useState(initialData?.subtitle ?? '');
-  const [description, setDescription] = useState(initialData?.description ?? '');
+  const [subtitle, setSubtitle] = useState(initialData?.tagline ?? '');
+  const [description, setDescription] = useState(initialData?.summary ?? '');
   const [generation, onChangeGeneration] = useInput(
-    initialData ? String(initialData.generation) : '',
+    initialData ? String(initialData.generationNumber) : '',
     NUMERIC_ONLY_REGEX,
   );
-  const [category, setCategory] = useState(initialData?.category ?? PROJECT_CATEGORY_OPTIONS[0]);
-  const [teamName, setTeamName] = useState(initialData?.team_name ?? '');
-  const [pmMembers, setPmMembers] = useState<string[]>(initialData?.team_member.pm ?? []);
-  const [designMembers, setDesignMembers] = useState<string[]>(initialData?.team_member.design ?? []);
-  const [frontendMembers, setFrontendMembers] = useState<string[]>(initialData?.team_member.frontend ?? []);
-  const [backendMembers, setBackendMembers] = useState<string[]>(initialData?.team_member.backend ?? []);
-  const [extraParts, setExtraParts] = useState<ExtraPart[]>([]);
-  const [dateRange, setDateRange] = useState<[string, string]>(() => {
-    if (!initialData?.date) return ['', ''];
-    const [start, end] = initialData.date.split('~');
-    return [start ?? '', end ?? ''];
-  });
-  const [techStackItems, setTechStackItems] = useState<string[]>(
-    initialData?.dev_stack.map((stack) => DEV_STACK[stack]) ?? [],
+  const [category, setCategory] = useState(
+    initialData ? CATEGORY_CODE_TO_LABEL[initialData.category] : PROJECT_CATEGORY_OPTIONS[0],
   );
-  const [banner, setBanner] = useState('');
+  const [teamName, setTeamName] = useState(initialData?.teamName ?? '');
+  const [pmMembers, setPmMembers] = useState<string[]>(membersByPart(PART_LABELS.pm));
+  const [designMembers, setDesignMembers] = useState<string[]>(membersByPart(PART_LABELS.design));
+  const [frontendMembers, setFrontendMembers] = useState<string[]>(membersByPart(PART_LABELS.frontend));
+  const [backendMembers, setBackendMembers] = useState<string[]>(membersByPart(PART_LABELS.backend));
+  const [extraParts, setExtraParts] = useState<ExtraPart[]>(initialExtraParts);
+  const [dateRange, setDateRange] = useState<[string, string]>([
+    initialData?.startDate ?? '',
+    initialData?.endDate ?? '',
+  ]);
+  const [techStackItems, setTechStackItems] = useState<string[]>(
+    initialData?.stack
+      ? initialData.stack
+          .split(',')
+          .map((item) => item.trim())
+          .filter(Boolean)
+      : [],
+  );
+  const [banner, setBanner] = useState(initialData?.banner ?? '');
   const [linkRows, setLinkRows] = useState<LinkRow[]>(
     initialLinkRows.length > 0 ? initialLinkRows : [{ id: nextId(), type: LINK_TYPE_OPTIONS[0], url: '' }],
   );
   const [showErrors, setShowErrors] = useState(false);
   const [isToastOpen, setIsToastOpen] = useState(false);
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+
+  const { data: generations } = useQuery<GenerationListItem[]>({
+    queryKey: ['generations'],
+    queryFn: () => getGenerations(tokenState),
+    enabled: !!tokenState.access,
+  });
+  const matchedGeneration = generations?.find((item) => item.number === Number(generation));
 
   const isEmpty = (value: string) => value.trim().length === 0;
   const isDateInvalid = isEmpty(dateRange[0]) || isEmpty(dateRange[1]);
+  const isGenerationInvalid = !isEmpty(generation) && !matchedGeneration;
   const hasError =
     isEmpty(title) ||
     isEmpty(subtitle) ||
     isEmpty(description) ||
     isEmpty(generation) ||
+    isGenerationInvalid ||
     isEmpty(category) ||
     isEmpty(teamName) ||
     isDateInvalid;
@@ -180,12 +270,93 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
     router.push('/project');
   };
 
-  const handleSubmit = () => {
-    if (hasError) {
+  const createMutation = useMutation({
+    mutationFn: (payload: ProjectRequestPayload) => createProject(tokenState, payload),
+  });
+  const updateMutation = useMutation({
+    mutationFn: (payload: ProjectRequestPayload) => updateProject(tokenState, initialData!.id, payload),
+  });
+  const deleteMutation = useMutation({
+    mutationFn: () => deleteProject(tokenState, initialData!.id),
+  });
+  const isSubmitting = createMutation.isPending || updateMutation.isPending || isUploadingImages;
+
+  const buildImagesPayload = async (): Promise<ProjectImagePayload[]> => {
+    const filledIndices = images.map((image, index) => (image ? index : -1)).filter((index) => index !== -1);
+
+    const imageUrls = await Promise.all(
+      filledIndices.map((index) => {
+        const file = imageFiles[index];
+        return file ? uploadProjectImage(tokenState, file) : Promise.resolve(images[index] as string);
+      }),
+    );
+
+    return filledIndices.map((index, order) => ({
+      imageUrl: imageUrls[order],
+      isMain: index === featuredIndex,
+      displayOrder: order,
+    }));
+  };
+
+  const buildPayload = (): ProjectRequestPayload | null => {
+    if (!matchedGeneration) return null;
+
+    const members: ProjectMemberPayload[] = [
+      ...pmMembers.map((name) => ({ name, part: PART_LABELS.pm })),
+      ...designMembers.map((name) => ({ name, part: PART_LABELS.design })),
+      ...frontendMembers.map((name) => ({ name, part: PART_LABELS.frontend })),
+      ...backendMembers.map((name) => ({ name, part: PART_LABELS.backend })),
+      ...extraParts.flatMap((part) => part.members.map((name) => ({ name, part: part.name || '기타' }))),
+    ];
+
+    const links: ProjectLinkPayload[] = linkRows
+      .filter((row) => row.url.trim())
+      .map((row) => ({ platform: LINK_TYPE_TO_PLATFORM[row.type], url: row.url.trim() }));
+
+    return {
+      generationId: matchedGeneration.id,
+      title,
+      category: CATEGORY_LABEL_TO_CODE[category],
+      stack: techStackItems.join(', '),
+      tagline: subtitle,
+      summary: description,
+      teamName,
+      startDate: dateRange[0],
+      endDate: dateRange[1],
+      banner: banner || undefined,
+      images: [],
+      links,
+      members,
+    };
+  };
+
+  const handleSubmit = async () => {
+    if (hasError || isSubmitting) {
       setShowErrors(true);
       return;
     }
-    setIsToastOpen(true);
+    const payload = buildPayload();
+    if (!payload) {
+      setShowErrors(true);
+      return;
+    }
+    setSubmitError('');
+
+    setIsUploadingImages(true);
+    try {
+      payload.images = await buildImagesPayload();
+    } catch {
+      setSubmitError('이미지 업로드에 실패했어요. 잠시 후 다시 시도해 주세요.');
+      setIsUploadingImages(false);
+      return;
+    }
+    setIsUploadingImages(false);
+
+    const mutation = isEditMode ? updateMutation : createMutation;
+    mutation.mutate(payload, {
+      onSuccess: () => setIsToastOpen(true),
+      onError: () => setSubmitError('저장에 실패했어요. 잠시 후 다시 시도해 주세요.'),
+    });
   };
 
   const handleDelete = () => {
@@ -194,8 +365,13 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
 
   const handleConfirmDelete = () => {
     setIsDeleteAlertOpen(false);
-    sessionStorage.setItem(PROJECT_DELETED_FLAG_KEY, 'true');
-    router.push('/project');
+    deleteMutation.mutate(undefined, {
+      onSuccess: () => {
+        sessionStorage.setItem(PROJECT_DELETED_FLAG_KEY, 'true');
+        router.push('/project');
+      },
+      onError: () => setSubmitError('삭제에 실패했어요. 잠시 후 다시 시도해 주세요.'),
+    });
   };
 
   return (
@@ -330,8 +506,14 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
             placeholder="숫자 입력"
             value={generation}
             onChange={onChangeGeneration}
-            status={showErrors && isEmpty(generation) ? 'negative' : 'normal'}
-            description={showErrors && isEmpty(generation) ? '기수를 입력해 주세요.' : undefined}
+            status={showErrors && (isEmpty(generation) || isGenerationInvalid) ? 'negative' : 'normal'}
+            description={
+              showErrors && isEmpty(generation)
+                ? '기수를 입력해 주세요.'
+                : showErrors && isGenerationInvalid
+                  ? '존재하지 않는 기수예요.'
+                  : undefined
+            }
           />
         </NarrowField>
         <ProjectFilterSelect
@@ -485,7 +667,7 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
       <ActionArea>
         {isEditMode ? (
           <EditActionGroup>
-            <Button variant="solid" color="primary" size="large" onClick={handleSubmit}>
+            <Button variant="solid" color="primary" size="large" onClick={handleSubmit} disabled={isSubmitting}>
               수정하기
             </Button>
             <Button variant="outlined" color="assistive" size="large" onClick={handleDelete}>
@@ -495,7 +677,7 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
         ) : (
           <>
             <ActionDescription>등록 후 수정할 수 있어요</ActionDescription>
-            <Button variant="solid" color="primary" size="large" onClick={handleSubmit}>
+            <Button variant="solid" color="primary" size="large" onClick={handleSubmit} disabled={isSubmitting}>
               등록하기
             </Button>
           </>
@@ -509,6 +691,7 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
           show={isToastOpen}
           onHidden={() => router.push('/project')}
         />
+        <Toast variant="negative" text={submitError} show={!!submitError} onHidden={() => setSubmitError('')} />
       </ToastWrapper>
 
       {isDeleteAlertOpen && (
