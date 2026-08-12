@@ -5,7 +5,10 @@ import styled from 'styled-components';
 
 import Alert from '@common/alert/Alert';
 import Button from '@common/button/Button';
+import CharCount from '@common/charCount/CharCount';
 import Chip from '@common/chip/Chip';
+import Menu from '@common/menu/Menu';
+import Select from '@common/select/Select';
 import TextButton from '@common/textButton/TextButton';
 import TextField from '@common/textField/TextField';
 import Textarea from '@common/textarea/Textarea';
@@ -34,7 +37,6 @@ import IcAdd from '@assets/svg/ic-add.svg';
 import IcCalender from '@assets/svg/ic-calender.svg';
 import {
   IcBehance,
-  IcChevronDown,
   IcChevronLeft,
   IcCircleClose,
   IcCircleExclamation,
@@ -47,6 +49,7 @@ import useInput from 'src/hooks/useInput';
 import useListboxSelect from 'src/hooks/useListboxSelect';
 import { NUMERIC_ONLY_REGEX, PROJECT_CATEGORY_OPTIONS } from '@utils/constant';
 import { AccentTint, BackgroundColor, Fill, Label, Line, Orange, State } from '@utils/constant/color';
+import { isUnfilled } from '@utils/index';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 const MAX_IMAGE_COUNT = 4;
@@ -255,17 +258,16 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
   });
   const matchedGeneration = generations?.find((item) => item.number === Number(generation));
 
-  const isEmpty = (value: string) => value.trim().length === 0;
-  const isDateInvalid = isEmpty(dateRange[0]) || isEmpty(dateRange[1]);
-  const isGenerationInvalid = !isEmpty(generation) && !matchedGeneration;
+  const isDateInvalid = isUnfilled(dateRange[0]) || isUnfilled(dateRange[1]);
+  const isGenerationInvalid = !isUnfilled(generation) && !matchedGeneration;
   const hasError =
-    isEmpty(title) ||
-    isEmpty(subtitle) ||
-    isEmpty(description) ||
-    isEmpty(generation) ||
+    isUnfilled(title) ||
+    isUnfilled(subtitle) ||
+    isUnfilled(description) ||
+    isUnfilled(generation) ||
     isGenerationInvalid ||
-    isEmpty(category) ||
-    isEmpty(teamName) ||
+    isUnfilled(category) ||
+    isUnfilled(teamName) ||
     isDateInvalid;
 
   const handleAddPart = () => {
@@ -488,9 +490,9 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
           value={title}
           onChange={(event) => setTitle(event.target.value)}
           resize="fixed"
-          bottomTrailingContent={<Counter>{title.length}/12</Counter>}
-          status={showErrors && isEmpty(title) ? 'negative' : 'normal'}
-          description={showErrors && isEmpty(title) ? '서비스명을 입력해 주세요.' : undefined}
+          bottomTrailingContent={<CharCount>{title.length}/12</CharCount>}
+          status={showErrors && isUnfilled(title) ? 'negative' : 'normal'}
+          description={showErrors && isUnfilled(title) ? '서비스명을 입력해 주세요.' : undefined}
         />
       </FieldGroup>
 
@@ -504,9 +506,9 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
           value={subtitle}
           onChange={(event) => setSubtitle(event.target.value)}
           resize="fixed"
-          bottomTrailingContent={<Counter>{subtitle.length}/80</Counter>}
-          status={showErrors && isEmpty(subtitle) ? 'negative' : 'normal'}
-          description={showErrors && isEmpty(subtitle) ? '서비스 한줄소개를 입력해 주세요.' : undefined}
+          bottomTrailingContent={<CharCount>{subtitle.length}/80</CharCount>}
+          status={showErrors && isUnfilled(subtitle) ? 'negative' : 'normal'}
+          description={showErrors && isUnfilled(subtitle) ? '서비스 한줄소개를 입력해 주세요.' : undefined}
         />
       </FieldGroup>
 
@@ -520,9 +522,9 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
           value={description}
           onChange={(event) => setDescription(event.target.value)}
           resize="fixed"
-          bottomTrailingContent={<Counter>{description.length}/300</Counter>}
-          status={showErrors && isEmpty(description) ? 'negative' : 'normal'}
-          description={showErrors && isEmpty(description) ? '서비스 설명을 입력해 주세요.' : undefined}
+          bottomTrailingContent={<CharCount>{description.length}/300</CharCount>}
+          status={showErrors && isUnfilled(description) ? 'negative' : 'normal'}
+          description={showErrors && isUnfilled(description) ? '서비스 설명을 입력해 주세요.' : undefined}
         />
       </FieldGroup>
 
@@ -534,9 +536,9 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
             placeholder="숫자 입력"
             value={generation}
             onChange={onChangeGeneration}
-            status={showErrors && (isEmpty(generation) || isGenerationInvalid) ? 'negative' : 'normal'}
+            status={showErrors && (isUnfilled(generation) || isGenerationInvalid) ? 'negative' : 'normal'}
             description={
-              showErrors && isEmpty(generation)
+              showErrors && isUnfilled(generation)
                 ? '기수를 입력해 주세요.'
                 : showErrors && isGenerationInvalid
                   ? '존재하지 않는 기수예요.'
@@ -550,8 +552,8 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
           options={PROJECT_CATEGORY_OPTIONS}
           value={category}
           onChange={setCategory}
-          status={showErrors && isEmpty(category) ? 'negative' : 'normal'}
-          description={showErrors && isEmpty(category) ? '프로젝트 구분을 선택해 주세요.' : undefined}
+          status={showErrors && isUnfilled(category) ? 'negative' : 'normal'}
+          description={showErrors && isUnfilled(category) ? '프로젝트 구분을 선택해 주세요.' : undefined}
         />
       </Row>
 
@@ -563,8 +565,8 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
             placeholder="텍스트 입력"
             value={teamName}
             onChange={(event) => setTeamName(event.target.value)}
-            status={showErrors && isEmpty(teamName) ? 'negative' : 'normal'}
-            description={showErrors && isEmpty(teamName) ? '팀명을 입력해 주세요.' : undefined}
+            status={showErrors && isUnfilled(teamName) ? 'negative' : 'normal'}
+            description={showErrors && isUnfilled(teamName) ? '팀명을 입력해 주세요.' : undefined}
           />
           <TagChipInput heading="기획" placeholder="이름을 입력해 주세요." values={pmMembers} onChange={setPmMembers} />
           <TagChipInput
@@ -670,7 +672,7 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
               onChange={(type) => setLinkRows((prev) => prev.map((r) => (r.id === row.id ? { ...r, type } : r)))}
             />
             <TextField
-              placeholder="www.example.com"
+              placeholder="링크를 복붙해주세요."
               value={row.url}
               onChange={(event) =>
                 setLinkRows((prev) => prev.map((r) => (r.id === row.id ? { ...r, url: event.target.value } : r)))
@@ -750,136 +752,34 @@ const LinkTypeSelect = ({
 
   return (
     <LinkTypeWrapper ref={wrapperRef} onKeyDownCapture={handleKeyDown} onBlur={handleBlur}>
-      <LinkTypeTrigger
+      <Select
         ref={triggerRef}
-        tabIndex={0}
-        role="combobox"
-        aria-haspopup="listbox"
-        aria-expanded={isOpen}
-        aria-controls={listId}
-        aria-activedescendant={isOpen ? `${listId}-${activeIndex}` : undefined}
-        aria-label="링크 타입 선택"
+        value={value}
         onClick={() => setIsOpen((prev) => !prev)}
-        onKeyDown={(event) => {
-          if (event.key === 'Enter' || event.key === ' ') {
-            event.preventDefault();
-            setIsOpen((prev) => !prev);
-          }
-        }}
-      >
-        <LinkTypeIconSlot>{LINK_TYPE_ICON[value]}</LinkTypeIconSlot>
-        <LinkTypeChevronSlot $open={isOpen}>
-          <IcChevronDown width={16} height={16} />
-        </LinkTypeChevronSlot>
-      </LinkTypeTrigger>
+        aria-expanded={isOpen}
+        aria-activedescendant={isOpen ? `${listId}-${activeIndex}` : undefined}
+        aria-controls={listId}
+        aria-label="링크 타입 선택"
+        hideValue
+        leadingIcon={LINK_TYPE_ICON[value]}
+      />
       {isOpen && (
-        <LinkTypeMenu role="listbox" id={listId}>
-          {options.map((option, index) => (
-            <LinkTypeMenuItem
-              key={option}
-              id={`${listId}-${index}`}
-              type="button"
-              role="option"
-              aria-selected={value === option}
-              $active={index === activeIndex}
-              onClick={() => selectOption(option, index)}
-            >
-              <LinkTypeIconSlot>{LINK_TYPE_ICON[option]}</LinkTypeIconSlot>
-              <LinkTypeMenuLabel>{LINK_TYPE_LABEL[option]}</LinkTypeMenuLabel>
-            </LinkTypeMenuItem>
-          ))}
-        </LinkTypeMenu>
+        <MenuPositioner>
+          <Menu
+            items={options.map((option, index) => ({
+              id: `${listId}-${index}`,
+              label: LINK_TYPE_LABEL[option],
+              icon: LINK_TYPE_ICON[option],
+              selected: option === value,
+              active: index === activeIndex,
+              onClick: () => selectOption(option, index),
+            }))}
+          />
+        </MenuPositioner>
       )}
     </LinkTypeWrapper>
   );
 };
-
-const LinkTypeWrapper = styled.div`
-  position: relative;
-  flex-shrink: 0;
-  width: fit-content;
-`;
-
-const LinkTypeTrigger = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px;
-  border: none;
-  border-radius: 12px;
-  background-color: rgba(255, 255, 255, 0.08);
-  box-shadow:
-    inset 0 0 0 1px ${Line.normal},
-    0 1px 2px -1px rgba(23, 23, 23, 0.1);
-  cursor: pointer;
-
-  &:focus-within {
-    box-shadow: inset 0 0 0 2px rgba(71, 172, 255, 0.43);
-  }
-`;
-
-const LinkTypeIconSlot = styled.span`
-  display: flex;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  color: ${Label.normal};
-`;
-
-const LinkTypeChevronSlot = styled.span<{ $open: boolean }>`
-  display: flex;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  color: ${Label.normal};
-  transform: rotate(${(props) => (props.$open ? '180deg' : '0deg')});
-  transition: transform 0.15s ease;
-`;
-
-const LinkTypeMenu = styled.div`
-  position: absolute;
-  top: calc(100% + 8px);
-  left: 0;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  width: max-content;
-  min-width: 160px;
-  max-height: 400px;
-  padding: 8px;
-  overflow: auto;
-  border: 1px solid ${Line.neutral};
-  border-radius: 16px;
-  background-color: ${BackgroundColor};
-  box-shadow:
-    0px 2px 4px -2px rgba(23, 23, 23, 0.06),
-    0px 4px 6px -1px rgba(23, 23, 23, 0.06);
-`;
-
-const LinkTypeMenuItem = styled.button<{ $active: boolean }>`
-  display: flex;
-  width: 100%;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  border: none;
-  border-radius: 12px;
-  background-color: ${(props) => (props.$active ? 'rgba(23, 23, 25, 0.04)' : 'transparent')};
-  text-align: left;
-  cursor: pointer;
-
-  &:hover {
-    background-color: rgba(23, 23, 25, 0.04);
-  }
-`;
-
-const LinkTypeMenuLabel = styled.span`
-  color: ${Label.normal};
-  ${typographyCss(Typography.body1Normal.regular)}
-`;
 
 const TagChipInput = ({
   heading,
@@ -895,6 +795,7 @@ const TagChipInput = ({
   onChange: (values: string[]) => void;
 }) => {
   const [inputValue, setInputValue] = useState('');
+  const isComposingRef = useRef(false);
 
   const commitValue = () => {
     const trimmed = inputValue.trim();
@@ -903,6 +804,7 @@ const TagChipInput = ({
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (isComposingRef.current) return;
     if (event.key === 'Enter' || event.key === ' ' || event.key === ',') {
       event.preventDefault();
       commitValue();
@@ -938,6 +840,12 @@ const TagChipInput = ({
           value={inputValue}
           onChange={(event) => setInputValue(event.target.value)}
           onKeyDown={handleKeyDown}
+          onCompositionStart={() => {
+            isComposingRef.current = true;
+          }}
+          onCompositionEnd={() => {
+            isComposingRef.current = false;
+          }}
           onBlur={commitValue}
           placeholder={values.length === 0 ? placeholder : ''}
         />
@@ -1194,13 +1102,6 @@ const RequiredSmall = styled.span`
   ${typographyCss(Typography.label1Normal.medium)}
 `;
 
-const Counter = styled.span`
-  padding: 0 4px;
-  opacity: 0.74;
-  color: ${Label.alternative};
-  ${typographyCss(Typography.label2.regular)}
-`;
-
 const TitleTextarea = styled(Textarea)`
   textarea {
     min-height: 26px;
@@ -1362,6 +1263,19 @@ const LinkRowWrapper = styled.div`
   gap: 20px;
 `;
 
+const LinkTypeWrapper = styled.div`
+  position: relative;
+  flex-shrink: 0;
+  width: fit-content;
+`;
+
+const MenuPositioner = styled.div`
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 1;
+`;
+
 const DeleteLinkButton = styled.button`
   display: flex;
   flex-shrink: 0;
@@ -1370,7 +1284,7 @@ const DeleteLinkButton = styled.button`
   padding: 0;
   border: none;
   background: none;
-  color: ${Label.assistive};
+  color: ${Label.normal};
   cursor: pointer;
 `;
 
