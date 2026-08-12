@@ -16,6 +16,7 @@ import IcLink from './icon/ic-link.svg';
 import IcLogoGoogle from './icon/ic-logo-google.svg';
 import IcLogout from './icon/ic-logout.svg';
 import IcPlus from './icon/ic-plus.svg';
+import IcTrash from './icon/ic-trash.svg';
 import IcTriangleExclamation from './icon/ic-triangle-exclamation.svg';
 
 export {
@@ -37,5 +38,6 @@ export {
   IcLogoGoogle,
   IcLogout,
   IcPlus,
+  IcTrash,
   IcTriangleExclamation,
 };

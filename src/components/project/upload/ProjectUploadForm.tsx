@@ -39,6 +39,7 @@ import {
   IcGithub,
   IcLineHorizontal,
   IcLink,
+  IcTrash,
 } from '@assets/svg';
 import useInput from 'src/hooks/useInput';
 import useListboxSelect from 'src/hooks/useListboxSelect';
@@ -48,7 +49,6 @@ import { Typography, typographyCss } from '@utils/constant/typography';
 
 const MAX_IMAGE_COUNT = 4;
 const LINK_TYPE_OPTIONS = ['Web', 'GitHub', 'Behance'];
-const MAX_LINK_COUNT = LINK_TYPE_OPTIONS.length;
 const CONTENT_PLACEHOLDER = '예시)이 서비스는 ~~한 서비스입니다\n서비스의 핵심기능\n\n· 이런거\n· 이\n· 이';
 
 const LINK_TYPE_TO_PLATFORM: Record<string, LinkPlatform> = {
@@ -119,12 +119,6 @@ interface LinkRow {
   url: string;
 }
 
-let idCounter = 0;
-const nextId = () => {
-  idCounter += 1;
-  return idCounter;
-};
-
 interface ProjectUploadFormProps {
   mode?: 'create' | 'edit';
   initialData?: ProjectResponseDto;
@@ -134,6 +128,12 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
   const router = useRouter();
   const tokenState = useTokenStore((state) => state.token);
   const isEditMode = mode === 'edit';
+
+  const idCounterRef = useRef(0);
+  const nextId = () => {
+    idCounterRef.current += 1;
+    return idCounterRef.current;
+  };
 
   const sortedInitialImages = initialData
     ? [...initialData.images].sort((a, b) => a.displayOrder - b.displayOrder)
@@ -275,12 +275,8 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
     setExtraParts((prev) => prev.filter((part) => part.id !== id));
   };
 
-  const usedLinkTypes = linkRows.map((row) => row.type);
-  const availableLinkTypes = LINK_TYPE_OPTIONS.filter((type) => !usedLinkTypes.includes(type));
-
   const handleAddLinkRow = () => {
-    if (availableLinkTypes.length === 0) return;
-    setLinkRows((prev) => [...prev, { id: nextId(), type: availableLinkTypes[0], url: '' }]);
+    setLinkRows((prev) => [...prev, { id: nextId(), type: LINK_TYPE_OPTIONS[0], url: '' }]);
   };
 
   const handleRemoveLinkRow = (id: number) => {
@@ -436,11 +432,18 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
             image ? (
               <ThumbnailSlot
                 key={index}
-                as="button"
-                type="button"
+                as="div"
+                role="button"
+                tabIndex={0}
                 $active={index === featuredIndex}
                 aria-label={`${index + 1}번째 이미지를 대표사진으로 설정`}
                 onClick={() => setFeaturedIndex(index)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    setFeaturedIndex(index);
+                  }
+                }}
               >
                 <ThumbnailImage src={image} alt="" />
                 {index === featuredIndex && (
@@ -655,11 +658,11 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
 
       <FieldGroup>
         <LinkHeading>링크첨부</LinkHeading>
-        {linkRows.map((row) => (
+        {linkRows.map((row, index) => (
           <LinkRowWrapper key={row.id}>
             <LinkTypeSelect
               value={row.type}
-              options={[row.type, ...availableLinkTypes]}
+              options={LINK_TYPE_OPTIONS}
               onChange={(type) => setLinkRows((prev) => prev.map((r) => (r.id === row.id ? { ...r, type } : r)))}
             />
             <TextField
@@ -668,19 +671,17 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
               onChange={(event) =>
                 setLinkRows((prev) => prev.map((r) => (r.id === row.id ? { ...r, url: event.target.value } : r)))
               }
-              trailingContent={
-                <RemoveLinkButton type="button" onClick={() => handleRemoveLinkRow(row.id)} aria-label="링크 삭제">
-                  <IcCircleClose width={20} height={20} />
-                </RemoveLinkButton>
-              }
             />
+            {index > 0 && (
+              <DeleteLinkButton type="button" onClick={() => handleRemoveLinkRow(row.id)} aria-label="링크 삭제">
+                <IcTrash width={24} height={24} />
+              </DeleteLinkButton>
+            )}
           </LinkRowWrapper>
         ))}
-        {availableLinkTypes.length > 0 && (
-          <AddLinkButton type="button" onClick={handleAddLinkRow} aria-label="링크 추가">
-            <IcAdd width={20} height={20} />
-          </AddLinkButton>
-        )}
+        <AddLinkButton type="button" onClick={handleAddLinkRow} aria-label="링크 추가">
+          <IcAdd width={20} height={20} />
+        </AddLinkButton>
       </FieldGroup>
 
       <ActionArea>
@@ -1359,11 +1360,11 @@ const LinkHeading = styled.p`
 const LinkRowWrapper = styled.div`
   width: 100%;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 20px;
 `;
 
-const RemoveLinkButton = styled.button`
+const DeleteLinkButton = styled.button`
   display: flex;
   flex-shrink: 0;
   align-items: center;
