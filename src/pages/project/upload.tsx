@@ -7,6 +7,7 @@ import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import ProjectUploadForm from '@project/upload/ProjectUploadForm';
 import { getUserProfile } from 'src/apis/account';
 import useTokenStore from 'src/store/useTokenStore';
+import { isAdminRole } from '@utils/index';
 
 const ProjectUpload = () => {
   const router = useRouter();
@@ -26,12 +27,12 @@ const ProjectUpload = () => {
       router.push('/project');
       return;
     }
-    if (isFetched && !userProfile?.is_admin) {
+    if (isFetched && !(userProfile && isAdminRole(userProfile.role))) {
       router.push('/project');
     }
   }, [hasHydrated, tokenState, isFetched, userProfile, router]);
 
-  if (!userProfile?.is_admin) return null;
+  if (!userProfile || !isAdminRole(userProfile.role)) return null;
 
   return <ProjectUploadForm />;
 };

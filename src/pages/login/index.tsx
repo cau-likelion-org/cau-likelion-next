@@ -59,7 +59,7 @@ const Login = () => {
           </>
         }
       />
-      <LoginButton />
+      <LoginButton onUnregistered={() => setToastMessage(TOAST_MESSAGE_BY_FLAG[LOGIN_UNREGISTERED_FLAG_KEY])} />
       <GuideText>
         <p>처음 이용하는 아기사자의 경우</p>
         <p>‘구글로 로그인하기’를 눌러 회원가입을 진행해 주세요.</p>

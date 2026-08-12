@@ -1,5 +1,12 @@
-export const GENERATION_CHECKER = 2012;
 export const NUMERIC_ONLY_REGEX = /^[0-9]*$/;
+
+export const ROLE_LABEL: Record<'BABY_LION' | 'ADULT_LION' | 'STAFF' | 'PRESIDENT' | 'ADMIN', string> = {
+  BABY_LION: '아기사자',
+  ADULT_LION: '어른사자',
+  STAFF: '운영진',
+  PRESIDENT: '회장',
+  ADMIN: '관리자',
+};
 
 export enum MENU {
   SESSION,

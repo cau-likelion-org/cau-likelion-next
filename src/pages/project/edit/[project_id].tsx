@@ -8,6 +8,7 @@ import ProjectUploadForm from '@project/upload/ProjectUploadForm';
 import { getUserProfile } from 'src/apis/account';
 import { ProjectResponseDto, getProjectById } from 'src/apis/project';
 import useTokenStore from 'src/store/useTokenStore';
+import { isAdminRole } from '@utils/index';
 
 const ProjectEdit = () => {
   const router = useRouter();
@@ -36,12 +37,12 @@ const ProjectEdit = () => {
       router.push('/project');
       return;
     }
-    if (isFetched && !userProfile?.is_admin) {
+    if (isFetched && !(userProfile && isAdminRole(userProfile.role))) {
       router.push('/project');
     }
   }, [hasHydrated, tokenState, isFetched, userProfile, router]);
 
-  if (!userProfile?.is_admin || !project) return null;
+  if (!userProfile || !isAdminRole(userProfile.role) || !project) return null;
 
   return <ProjectUploadForm mode="edit" initialData={project} />;
 };

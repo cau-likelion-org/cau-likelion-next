@@ -15,7 +15,7 @@ import {
   getProjects,
 } from 'src/apis/project';
 import useTokenStore from 'src/store/useTokenStore';
-import { sortArchivingListDesc } from '@utils/index';
+import { isAdminRole, sortArchivingListDesc } from '@utils/index';
 import styled from 'styled-components';
 import ProjectCard from './ProjectCard';
 import ProjectEmptyState from './ProjectEmptyState';
@@ -150,7 +150,7 @@ const ProjectsSection = ({ staticData }: { staticData: ArchivingArrayType<IProje
             onChange={setSelectedCategory}
           />
         </FilterGroup>
-        {userProfile?.is_admin && (
+        {userProfile && isAdminRole(userProfile.role) && (
           <Button
             variant="solid"
             color="primary"

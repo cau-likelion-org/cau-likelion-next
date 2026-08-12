@@ -1,33 +1,25 @@
 import styled from 'styled-components';
 import { useRouter } from 'next/router';
+import { useQuery } from '@tanstack/react-query';
 
 import Button from '@common/button/Button';
 import { IcChevronDown } from '@assets/svg';
+import { getActivities, PageNavigation } from 'src/apis/activity';
 import { Black, BackgroundWhite, BackgroundLight, Line, Fill, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
-interface IActivity {
-  title: string;
-  subtitle: string;
-  description: string;
-  buttonText: string;
-  href: string;
-}
-
-const DESCRIPTION =
-  '소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글';
-const SUBTITLE = '일주일에 1번 정기적 대면 모임';
-
-const ACTIVITIES: IActivity[] = [
-  { title: '세션', subtitle: SUBTITLE, description: DESCRIPTION, buttonText: '파트별 커리큘럼 보기', href: '#' },
-  { title: '프로젝트', subtitle: SUBTITLE, description: DESCRIPTION, buttonText: '프로젝트 더보기', href: '/project' },
-  { title: '선배와의 만남', subtitle: SUBTITLE, description: DESCRIPTION, buttonText: '더보기', href: '/gallery' },
-  { title: '스터디', subtitle: SUBTITLE, description: DESCRIPTION, buttonText: '더보기', href: '/gallery' },
-  { title: '소모임', subtitle: SUBTITLE, description: DESCRIPTION, buttonText: '더보기', href: '/gallery' },
-];
+// 갤러리 페이지가 아직 세션/프로젝트/추억 탭을 URL로 지정하는 기능이 없어 셋 다 우선 /gallery로 이동
+const PAGE_NAVIGATION_HREF: Record<PageNavigation, string> = {
+  INTRO_CURRICULUM: '/about',
+  PROJECT: '/project',
+  GALLERY_SESSION: '/gallery',
+  GALLERY_PROJECT: '/gallery',
+  GALLERY_MEMORY: '/gallery',
+};
 
 const ActivitySection = () => {
   const router = useRouter();
+  const { data: activities } = useQuery({ queryKey: ['activities'], queryFn: getActivities });
 
   return (
     <Wrapper>
@@ -35,23 +27,23 @@ const ActivitySection = () => {
         <Title>활동 소개</Title>
         <ListGroup>
           <List>
-            {ACTIVITIES.map(({ title, subtitle, description, buttonText, href }) => (
-              <Card key={title}>
+            {activities?.map(({ id, name, imageUrl, introduction, description, buttonName, pageNavigation }) => (
+              <Card key={id}>
                 <TextGroup>
-                  <CardTitle>{title}</CardTitle>
-                  <CardSubtitle>{subtitle}</CardSubtitle>
+                  <CardTitle>{name}</CardTitle>
+                  <CardSubtitle>{introduction}</CardSubtitle>
                   <CardDescription>{description}</CardDescription>
                 </TextGroup>
-                <Thumbnail />
+                <Thumbnail $imageUrl={imageUrl} />
                 <HoverButtonWrapper>
                   <Button
                     size="large"
                     variant="solid"
                     color="primary"
                     trailingIcon={<ChevronRightIcon />}
-                    onClick={() => router.push(href)}
+                    onClick={() => router.push(PAGE_NAVIGATION_HREF[pageNavigation])}
                   >
-                    {buttonText}
+                    {buttonName}
                   </Button>
                 </HoverButtonWrapper>
               </Card>
@@ -105,12 +97,15 @@ const List = styled.div`
   gap: 20px;
 `;
 
-const Thumbnail = styled.div`
+const Thumbnail = styled.div<{ $imageUrl?: string }>`
   flex-shrink: 0;
   width: 300px;
   height: 169px;
   border-radius: 12px;
   background-color: ${Fill.normal};
+  background-image: ${(props) => (props.$imageUrl ? `url(${props.$imageUrl})` : 'none')};
+  background-size: cover;
+  background-position: center;
 `;
 
 const HoverButtonWrapper = styled.div`

@@ -1,21 +1,17 @@
 import { UserProfile } from '@@types/request';
 import ContentBadge from '@common/badge/ContentBadge';
 import { BackgroundWhite, Black, Label, Line } from '@utils/constant/color';
-import { TRACK_NAME } from '@utils/constant';
-import { checkGeneration } from '@utils/index';
+import { ROLE_LABEL } from '@utils/constant';
 import styled from 'styled-components';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 const ProfileCard = ({ user }: { user: UserProfile }) => {
-  const role = checkGeneration(user.generation) ? '아기사자' : '어른사자';
-
   return (
     <Wrapper>
       <Name>{user.name}</Name>
       <BadgeRow>
-        <ContentBadge color="accent" size="medium" text={`${user.generation}기`} />
-        <ContentBadge color="accent" size="medium" text={TRACK_NAME[user.track]} />
-        <ContentBadge color="accent" size="medium" text={role} />
+        <ContentBadge color="accent" size="medium" text={user.partName} />
+        <ContentBadge color="accent" size="medium" text={ROLE_LABEL[user.role]} />
       </BadgeRow>
       {user.email && <Email>{user.email}</Email>}
     </Wrapper>

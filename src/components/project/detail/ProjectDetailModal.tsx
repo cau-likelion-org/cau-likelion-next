@@ -7,6 +7,7 @@ import { useEffect } from 'react';
 import { getUserProfile } from 'src/apis/account';
 import { getProjectDetail } from 'src/apis/project';
 import useTokenStore from 'src/store/useTokenStore';
+import { isAdminRole } from '@utils/index';
 import styled from 'styled-components';
 import ProjectDetailCarousel from './ProjectDetailCarousel';
 import ProjectDetailMetaPanel from './ProjectDetailMetaPanel';
@@ -77,7 +78,7 @@ const ProjectDetailModal = ({ projectId, staticData, onClose }: ProjectDetailMod
               </PanelRow>
             </Contents>
             <Actions>
-              {userProfile?.is_admin && (
+              {userProfile && isAdminRole(userProfile.role) && (
                 <EditButton type="button" onClick={() => router.push(`/project/edit/${projectId}`)}>
                   수정
                 </EditButton>
