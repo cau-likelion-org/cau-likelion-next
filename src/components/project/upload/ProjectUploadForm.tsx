@@ -14,7 +14,9 @@ import ProjectFilterSelect from '@project/projects/ProjectFilterSelect';
 import {
   GenerationListItem,
   LinkPlatform,
+  PROJECT_CREATED_FLAG_KEY,
   PROJECT_DELETED_FLAG_KEY,
+  PROJECT_UPDATED_FLAG_KEY,
   ProjectCategoryCode,
   ProjectImagePayload,
   ProjectLinkPayload,
@@ -243,7 +245,6 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
     initialLinkRows.length > 0 ? initialLinkRows : [{ id: nextId(), type: LINK_TYPE_OPTIONS[0], url: '' }],
   );
   const [showErrors, setShowErrors] = useState(false);
-  const [isToastOpen, setIsToastOpen] = useState(false);
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
   const [submitError, setSubmitError] = useState('');
 
@@ -371,7 +372,10 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
 
     const mutation = isEditMode ? updateMutation : createMutation;
     mutation.mutate(payload, {
-      onSuccess: () => setIsToastOpen(true),
+      onSuccess: () => {
+        sessionStorage.setItem(isEditMode ? PROJECT_UPDATED_FLAG_KEY : PROJECT_CREATED_FLAG_KEY, 'true');
+        router.push('/project');
+      },
       onError: () => setSubmitError('저장에 실패했어요. 잠시 후 다시 시도해 주세요.'),
     });
   };
@@ -705,12 +709,6 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
       </ActionArea>
 
       <ToastWrapper>
-        <Toast
-          variant="positive"
-          text={isEditMode ? '수정이 완료되었습니다.' : '등록이 완료되었습니다.'}
-          show={isToastOpen}
-          onHidden={() => router.push('/project')}
-        />
         <Toast variant="negative" text={submitError} show={!!submitError} onHidden={() => setSubmitError('')} />
       </ToastWrapper>
 

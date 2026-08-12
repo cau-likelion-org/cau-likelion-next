@@ -5,6 +5,8 @@ import { url } from '.';
 import { getAuthAxios } from './authAxios';
 
 export const PROJECT_DELETED_FLAG_KEY = 'project_deleted';
+export const PROJECT_CREATED_FLAG_KEY = 'project_created';
+export const PROJECT_UPDATED_FLAG_KEY = 'project_updated';
 
 export async function getProjects() {
   const data = await axios

@@ -7,7 +7,12 @@ import { useQuery } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
 import { getUserProfile } from 'src/apis/account';
-import { PROJECT_DELETED_FLAG_KEY, getProjects } from 'src/apis/project';
+import {
+  PROJECT_CREATED_FLAG_KEY,
+  PROJECT_DELETED_FLAG_KEY,
+  PROJECT_UPDATED_FLAG_KEY,
+  getProjects,
+} from 'src/apis/project';
 import useTokenStore from 'src/store/useTokenStore';
 import { sortArchivingListDesc } from '@utils/index';
 import styled from 'styled-components';
@@ -55,6 +60,22 @@ const ProjectsSection = ({ staticData }: { staticData: ArchivingArrayType<IProje
     sessionStorage.removeItem(PROJECT_DELETED_FLAG_KEY);
   }, [isDeletedToastOpen]);
 
+  const [isCreatedToastOpen, setIsCreatedToastOpen] = useState(
+    () => typeof window !== 'undefined' && sessionStorage.getItem(PROJECT_CREATED_FLAG_KEY) === 'true',
+  );
+  useEffect(() => {
+    if (!isCreatedToastOpen) return;
+    sessionStorage.removeItem(PROJECT_CREATED_FLAG_KEY);
+  }, [isCreatedToastOpen]);
+
+  const [isUpdatedToastOpen, setIsUpdatedToastOpen] = useState(
+    () => typeof window !== 'undefined' && sessionStorage.getItem(PROJECT_UPDATED_FLAG_KEY) === 'true',
+  );
+  useEffect(() => {
+    if (!isUpdatedToastOpen) return;
+    sessionStorage.removeItem(PROJECT_UPDATED_FLAG_KEY);
+  }, [isUpdatedToastOpen]);
+
   const sortedGroups = useMemo(() => (data ? sortArchivingListDesc(data) : []), [data]);
 
   const flatProjects: FlatProject[] = useMemo(
@@ -99,6 +120,18 @@ const ProjectsSection = ({ staticData }: { staticData: ArchivingArrayType<IProje
           text="삭제가 완료되었습니다."
           show={isDeletedToastOpen}
           onHidden={() => setIsDeletedToastOpen(false)}
+        />
+        <Toast
+          variant="positive"
+          text="등록이 완료되었습니다."
+          show={isCreatedToastOpen}
+          onHidden={() => setIsCreatedToastOpen(false)}
+        />
+        <Toast
+          variant="positive"
+          text="변경사항이 저장되었습니다."
+          show={isUpdatedToastOpen}
+          onHidden={() => setIsUpdatedToastOpen(false)}
         />
       </ToastWrapper>
       <FilterRow>
