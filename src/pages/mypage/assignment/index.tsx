@@ -162,7 +162,12 @@ const MyPageAssignment = () => {
             </Header>
             <List>
               {weeks.map((group) => (
-                <StaffAssignmentCard key={group.week} week={group.week} assignments={group.assignments} />
+                <StaffAssignmentCard
+                  key={group.week}
+                  week={group.week}
+                  assignments={group.assignments}
+                  onDetail={() => router.push(`/mypage/assignment/${group.week}`)}
+                />
               ))}
             </List>
           </>
