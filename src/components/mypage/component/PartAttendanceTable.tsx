@@ -8,6 +8,7 @@ import {
   AttendanceStatusUpdate,
   MemberAttendanceResponse,
 } from 'src/apis/attendance';
+import AttendanceReasonModal from '@mypage/component/AttendanceReasonModal';
 import ListboxOptions from '@common/select/ListboxOptions';
 import useListboxSelect from 'src/hooks/useListboxSelect';
 import { IcCaretDown, IcCaretUp } from '@assets/svg';
@@ -222,10 +223,23 @@ interface PartAttendanceTableProps {
   isSaving?: boolean;
 }
 
+// 결석·공결은 사유(reason)가 필수 → 선택 시 사유 모달을 띄운다.
+const REASON_REQUIRED: AttendanceStatus[] = ['ABSENT', 'EXCUSED'];
+
+interface EditValue {
+  status: AttendanceStatus;
+  reason?: string;
+}
+
 const PartAttendanceTable = ({ members, partName, partFilter, onSave, isSaving }: PartAttendanceTableProps) => {
   const [isEditing, setIsEditing] = useState(false);
-  // 변경된 출결만 detailAttendanceId → 상태로 추적
-  const [edits, setEdits] = useState<Map<number, AttendanceStatus>>(new Map());
+  // 변경된 출결만 detailAttendanceId → {상태, 사유}로 추적
+  const [edits, setEdits] = useState<Map<number, EditValue>>(new Map());
+  // 사유 입력 대기 중인 셀 (결석·공결 선택 시)
+  const [reasonTarget, setReasonTarget] = useState<{
+    record: AttendanceStatusResponse;
+    status: AttendanceStatus;
+  } | null>(null);
 
   // 최신 주차부터 1주차까지 연속으로 표시 (예: 최신 18주차면 18 → 1)
   const { weeks, recordMaps } = useMemo(() => {
@@ -250,18 +264,35 @@ const PartAttendanceTable = ({ members, partName, partFilter, onSave, isSaving }
   };
 
   const changeStatus = (record: AttendanceStatusResponse, status: AttendanceStatus) => {
+    // 결석·공결은 사유 입력 후 확정
+    if (REASON_REQUIRED.includes(status)) {
+      setReasonTarget({ record, status });
+      return;
+    }
     setEdits((prev) => {
       const next = new Map(prev);
       if (status === record.status) next.delete(record.detailAttendanceId);
-      else next.set(record.detailAttendanceId, status);
+      else next.set(record.detailAttendanceId, { status });
       return next;
     });
   };
 
+  const commitReason = (reason: string) => {
+    if (!reasonTarget) return;
+    const { record, status } = reasonTarget;
+    setEdits((prev) => {
+      const next = new Map(prev);
+      next.set(record.detailAttendanceId, { status, reason });
+      return next;
+    });
+    setReasonTarget(null);
+  };
+
   const handleSave = () => {
-    const updates: AttendanceStatusUpdate[] = Array.from(edits, ([detailAttendanceId, status]) => ({
+    const updates: AttendanceStatusUpdate[] = Array.from(edits, ([detailAttendanceId, { status, reason }]) => ({
       detailAttendanceId,
       status,
+      ...(reason ? { reason } : {}),
     }));
     onSave?.(updates);
     setIsEditing(false);
@@ -316,7 +347,7 @@ const PartAttendanceTable = ({ members, partName, partFilter, onSave, isSaving }
                   <HeadCell>{week}주차</HeadCell>
                   {members.map((member, index) => {
                     const record = recordMaps[index].get(week);
-                    const status = record ? (edits.get(record.detailAttendanceId) ?? record.status) : undefined;
+                    const status = record ? (edits.get(record.detailAttendanceId)?.status ?? record.status) : undefined;
                     return (
                       <StatusCell key={member.memberId}>
                         {isEditing && record && status ? (
@@ -348,6 +379,14 @@ const PartAttendanceTable = ({ members, partName, partFilter, onSave, isSaving }
           </WeeksInner>
         </WeeksScroll>
       </TableRow>
+
+      {reasonTarget && (
+        <AttendanceReasonModal
+          initialReason={edits.get(reasonTarget.record.detailAttendanceId)?.reason ?? reasonTarget.record.reason ?? ''}
+          onClose={() => setReasonTarget(null)}
+          onSave={commitReason}
+        />
+      )}
     </Wrapper>
   );
 };
