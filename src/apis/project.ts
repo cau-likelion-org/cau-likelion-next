@@ -22,6 +22,7 @@ export interface ProjectListItem {
   title: string;
   category: ProjectCategory;
   banner: string;
+  isExposed: boolean;
 }
 
 // 랜딩페이지 프로젝트 캐러셀 전용 — 기존 /project 페이지의 getProjects()는 다른(구) 응답 스키마를 쓰고 있어 건드리지 않음
@@ -54,4 +55,22 @@ export interface GalleryProjectItem {
 
 export const getGalleryProjectList = () => {
   return axios.get<GalleryProjectItem[]>(`${url}/api/projects`).then((res) => res.data);
+};
+
+export interface AdminProjectListItem {
+  id: number;
+  title: string;
+  generationNumber: number;
+  category: ProjectCategory;
+  isExposed: boolean;
+}
+
+export const getAdminProjectList = () => {
+  return axios.get<AdminProjectListItem[]>(`${url}/api/projects`).then((res) => res.data);
+};
+
+export const updateProjectExposure = (exposedProjectIds: number[]) => {
+  return axios
+    .put<AdminProjectListItem[]>(`${url}/api/admin/landing/projects/exposure`, { exposedProjectIds })
+    .then((res) => res.data);
 };

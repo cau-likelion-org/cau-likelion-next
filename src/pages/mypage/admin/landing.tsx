@@ -24,6 +24,9 @@ import { getUserProfile } from 'src/apis/account';
 import { getTracks, createTrack, updateTrack, deleteTrack, TrackResponse } from 'src/apis/track';
 import { getActivities, createActivity, updateActivity, deleteActivity, ActivityResponse } from 'src/apis/activity';
 import { getFaqs, createFaq, updateFaq, deleteFaq, FaqResponse } from 'src/apis/faq';
+import { getIntroduce, updateIntroduce, IntroduceResponse } from 'src/apis/introduce';
+import { getAdminProjectList, updateProjectExposure, AdminProjectListItem } from 'src/apis/project';
+import { PROJECT_CATEGORY_LABEL } from '@home/project/component/ProjectCard';
 import useTokenStore from 'src/store/useTokenStore';
 import { isAdminRole } from '@utils/index';
 import { Label } from '@utils/constant/color';
@@ -64,17 +67,25 @@ const activityToRequest = (item: ActivityIntroItem) => ({
 const faqToLocal = (faq: FaqResponse): FaqItem => ({ id: String(faq.id), question: faq.question, answer: faq.answer });
 const faqToRequest = (item: FaqItem) => ({ question: item.question, answer: item.answer });
 
-// 정량지표는 백엔드 필드가 없어 프론트에서만 다루기로 함, 프로젝트 노출선택도 백엔드 필드 추가 전까지 목 데이터 유지
-const MOCK_METRICS: LandingMetrics = { generationCount: '14', graduateCount: '230+', projectCount: '60' };
+const DEFAULT_INTRODUCE_METRICS: LandingMetrics = { generationCount: '', graduateCount: '', projectCount: '' };
+const introduceToLocal = (introduce: IntroduceResponse): LandingMetrics => ({
+  generationCount: introduce.cumulativeGenerations,
+  graduateCount: introduce.cumulativeGraduates,
+  projectCount: introduce.cumulativeProjects,
+});
+const introduceToRequest = (item: LandingMetrics) => ({
+  cumulativeGenerations: item.generationCount,
+  cumulativeGraduates: item.graduateCount,
+  cumulativeProjects: item.projectCount,
+});
 
-const PROJECT_CATEGORY_CYCLE = ['아이디어톤', '해커톤', '중커톤'];
-const MOCK_PROJECTS: FeaturedProject[] = Array.from({ length: 60 }, (_, index) => ({
-  id: `project-${index}`,
-  name: '서비스명',
-  generation: index % 2 === 0 ? '13기' : '14기',
-  category: PROJECT_CATEGORY_CYCLE[index % PROJECT_CATEGORY_CYCLE.length],
-  selected: true,
-}));
+const projectToLocal = (project: AdminProjectListItem): FeaturedProject => ({
+  id: String(project.id),
+  name: project.title,
+  generation: `${project.generationNumber}기`,
+  category: PROJECT_CATEGORY_LABEL[project.category],
+  selected: project.isExposed,
+});
 
 const MyPageAdminLanding = () => {
   const tokenState = useTokenStore((state) => state.token);
@@ -89,20 +100,27 @@ const MyPageAdminLanding = () => {
     enabled: !!tokenState.access,
   });
 
+  const { data: introduce } = useQuery({ queryKey: ['adminIntroduce'], queryFn: getIntroduce });
   const { data: tracks } = useQuery({ queryKey: ['adminTracks'], queryFn: getTracks });
   const { data: activities } = useQuery({ queryKey: ['adminActivities'], queryFn: getActivities });
+  const { data: projects } = useQuery({ queryKey: ['adminProjects'], queryFn: getAdminProjectList });
   const { data: faqs } = useQuery({ queryKey: ['adminFaqs'], queryFn: getFaqs });
 
-  const [metrics, setMetrics] = useState(MOCK_METRICS);
+  const [introduceMetrics, setIntroduceMetrics] = useState(DEFAULT_INTRODUCE_METRICS);
   const [trackItems, setTrackItems] = useState<TrackIntroItem[]>([]);
   const [activityItems, setActivityItems] = useState<ActivityIntroItem[]>([]);
-  const [projects, setProjects] = useState(MOCK_PROJECTS);
+  const [projectItems, setProjectItems] = useState<FeaturedProject[]>([]);
   const [faqItems, setFaqItems] = useState<FaqItem[]>([]);
   const [toastMessage, setToastMessage] = useState<ReactNode>('');
   const [showErrors, setShowErrors] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
   // 조회된 데이터가 바뀌면(최초 로드, 저장 후 재조회) 화면 편집 상태를 다시 그 값으로 맞춤
+  const [syncedIntroduce, setSyncedIntroduce] = useState(introduce);
+  if (introduce !== syncedIntroduce) {
+    setSyncedIntroduce(introduce);
+    setIntroduceMetrics(introduce ? introduceToLocal(introduce) : DEFAULT_INTRODUCE_METRICS);
+  }
   const [syncedTracks, setSyncedTracks] = useState(tracks);
   if (tracks !== syncedTracks) {
     setSyncedTracks(tracks);
@@ -112,6 +130,11 @@ const MyPageAdminLanding = () => {
   if (activities !== syncedActivities) {
     setSyncedActivities(activities);
     setActivityItems((activities ?? []).map(activityToLocal));
+  }
+  const [syncedProjects, setSyncedProjects] = useState(projects);
+  if (projects !== syncedProjects) {
+    setSyncedProjects(projects);
+    setProjectItems((projects ?? []).map(projectToLocal));
   }
   const [syncedFaqs, setSyncedFaqs] = useState(faqs);
   if (faqs !== syncedFaqs) {
@@ -128,17 +151,17 @@ const MyPageAdminLanding = () => {
   }, [userProfile, router]);
 
   const handleCancel = () => {
-    setMetrics(MOCK_METRICS);
+    setIntroduceMetrics(introduce ? introduceToLocal(introduce) : DEFAULT_INTRODUCE_METRICS);
     setTrackItems((tracks ?? []).map(trackToLocal));
     setActivityItems((activities ?? []).map(activityToLocal));
-    setProjects(MOCK_PROJECTS);
+    setProjectItems((projects ?? []).map(projectToLocal));
     setFaqItems((faqs ?? []).map(faqToLocal));
     setShowErrors(false);
   };
 
   const handleSave = async () => {
     const hasError =
-      isMetricsInvalid(metrics) ||
+      isMetricsInvalid(introduceMetrics) ||
       trackItems.some(isTrackItemInvalid) ||
       activityItems.some(isActivityItemInvalid) ||
       faqItems.some(isFaqItemInvalid);
@@ -151,6 +174,7 @@ const MyPageAdminLanding = () => {
     setIsSaving(true);
     try {
       await Promise.all([
+        updateIntroduce(introduceToRequest(introduceMetrics)),
         syncListSection({
           currentItems: trackItems,
           originalItems: tracks ?? [],
@@ -167,6 +191,7 @@ const MyPageAdminLanding = () => {
           update: updateActivity,
           remove: deleteActivity,
         }),
+        updateProjectExposure(projectItems.filter((project) => project.selected).map((project) => Number(project.id))),
         syncListSection({
           currentItems: faqItems,
           originalItems: faqs ?? [],
@@ -177,8 +202,10 @@ const MyPageAdminLanding = () => {
         }),
       ]);
       await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['adminIntroduce'] }),
         queryClient.invalidateQueries({ queryKey: ['adminTracks'] }),
         queryClient.invalidateQueries({ queryKey: ['adminActivities'] }),
+        queryClient.invalidateQueries({ queryKey: ['adminProjects'] }),
         queryClient.invalidateQueries({ queryKey: ['adminFaqs'] }),
       ]);
       setToastMessage('변경사항이 저장되었습니다.');
@@ -205,10 +232,10 @@ const MyPageAdminLanding = () => {
             </Button>
           </ButtonRow>
         </TitleRow>
-        <IntroduceSection metrics={metrics} onChange={setMetrics} showErrors={showErrors} />
+        <IntroduceSection metrics={introduceMetrics} onChange={setIntroduceMetrics} showErrors={showErrors} />
         <TrackSection items={trackItems} onChange={setTrackItems} showErrors={showErrors} />
         <ActivitySection items={activityItems} onChange={setActivityItems} showErrors={showErrors} />
-        <ProjectSection projects={projects} onChange={setProjects} />
+        <ProjectSection projects={projectItems} onChange={setProjectItems} />
         <FAQSection items={faqItems} onChange={setFaqItems} showErrors={showErrors} />
       </MyPageShell>
       <ToastWrapper>

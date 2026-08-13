@@ -18,12 +18,13 @@ const REPEAT_COUNT = 3;
 const ProjectSection = () => {
   const router = useRouter();
   const { data: projects } = useQuery({ queryKey: ['landingProjects'], queryFn: getProjectList });
+  const exposedProjects = projects?.filter((project) => project.isExposed) ?? [];
 
-  if (!projects || projects.length === 0) return null;
+  if (exposedProjects.length === 0) return null;
 
-  const slides = Array.from({ length: REPEAT_COUNT }, () => projects).flat();
-  const featuredIndex = projects.findIndex((project) => project.banner);
-  const initialSlide = featuredIndex === -1 ? 0 : projects.length + featuredIndex;
+  const slides = Array.from({ length: REPEAT_COUNT }, () => exposedProjects).flat();
+  const featuredIndex = exposedProjects.findIndex((project) => project.banner);
+  const initialSlide = featuredIndex === -1 ? 0 : exposedProjects.length + featuredIndex;
 
   return (
     <Wrapper>
