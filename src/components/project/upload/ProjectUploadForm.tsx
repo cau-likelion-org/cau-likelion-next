@@ -258,7 +258,9 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
   });
   const matchedGeneration = generations?.find((item) => item.number === Number(generation));
 
-  const isDateInvalid = isUnfilled(dateRange[0]) || isUnfilled(dateRange[1]);
+  const isDateMissing = isUnfilled(dateRange[0]) || isUnfilled(dateRange[1]);
+  const isDateOrderInvalid = !isDateMissing && dateRange[1] < dateRange[0];
+  const isDateInvalid = isDateMissing || isDateOrderInvalid;
   const isGenerationInvalid = !isUnfilled(generation) && !matchedGeneration;
   const isTitleOverflow = title.length > 12;
   const isSubtitleOverflow = subtitle.length > 80;
@@ -669,11 +671,15 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
                 placeholder="종료일 선택"
                 ariaLabel="종료일"
                 value={dateRange[1]}
+                min={dateRange[0] || undefined}
                 onChange={(next) => setDateRange([dateRange[0], next])}
                 invalid={showErrors && isDateInvalid}
               />
             </DateRangeRow>
-            {showErrors && isDateInvalid && <DateDescription>프로젝트 기간을 선택해 주세요.</DateDescription>}
+            {showErrors && isDateMissing && <DateDescription>프로젝트 기간을 선택해 주세요.</DateDescription>}
+            {showErrors && isDateOrderInvalid && (
+              <DateDescription>종료일은 시작일 이후로 선택해 주세요.</DateDescription>
+            )}
           </DateFieldGroup>
           <TagChipInput
             heading="기술스택"
@@ -886,12 +892,14 @@ const SingleDateInput = ({
   placeholder,
   ariaLabel,
   value,
+  min,
   onChange,
   invalid = false,
 }: {
   placeholder: string;
   ariaLabel: string;
   value: string;
+  min?: string;
   onChange: (value: string) => void;
   invalid?: boolean;
 }) => {
@@ -910,6 +918,7 @@ const SingleDateInput = ({
         ref={inputRef}
         type="date"
         value={value}
+        min={min}
         onChange={(event) => onChange(event.target.value)}
         aria-label={ariaLabel}
       />
