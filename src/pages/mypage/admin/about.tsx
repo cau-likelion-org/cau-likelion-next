@@ -16,6 +16,7 @@ import CurriculumSection, {
   isCurriculumTracksInvalid,
 } from '@mypage/admin/CurriculumSection';
 import RoadmapSection from '@mypage/admin/RoadmapSection';
+import EditButton from '@mypage/admin/component/EditButton';
 import { syncListSection } from '@mypage/admin/utils';
 import { getUserProfile } from 'src/apis/account';
 import { getTracks, TrackResponse } from 'src/apis/track';
@@ -106,6 +107,7 @@ const MyPageAdminAbout = () => {
   const [toastMessage, setToastMessage] = useState<ReactNode>('');
   const [showErrors, setShowErrors] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   // 조회된 데이터가 바뀌면(최초 로드, 저장 후 재조회) 화면 편집 상태를 다시 그 값으로 맞춤
   const [syncedTalents, setSyncedTalents] = useState(talents);
@@ -134,6 +136,7 @@ const MyPageAdminAbout = () => {
     setCurriculumTracks(buildCurriculumTracks(tracks ?? [], curriculums ?? []));
     setRoadmapImage(MOCK_ROADMAP_IMAGE);
     setShowErrors(false);
+    setIsEditing(false);
   };
 
   const handleSave = async () => {
@@ -171,6 +174,7 @@ const MyPageAdminAbout = () => {
         queryClient.invalidateQueries({ queryKey: ['adminCurriculums'] }),
       ]);
       setToastMessage('변경사항이 저장되었습니다.');
+      setIsEditing(false);
     } catch {
       setToastMessage('저장 중 오류가 발생했습니다. 다시 시도해 주세요.');
     } finally {
@@ -186,19 +190,30 @@ const MyPageAdminAbout = () => {
         <TitleRow>
           <PageTitle>소개 페이지 관리</PageTitle>
           <ButtonRow>
-            <Button variant="outlined" color="assistive" size="small" onClick={handleCancel}>
-              취소
-            </Button>
-            <Button size="small" onClick={handleSave} loading={isSaving}>
-              저장
-            </Button>
+            {isEditing ? (
+              <>
+                <Button variant="outlined" color="assistive" size="small" onClick={handleCancel}>
+                  취소
+                </Button>
+                <Button size="small" onClick={handleSave} loading={isSaving}>
+                  저장
+                </Button>
+              </>
+            ) : (
+              <EditButton onClick={() => setIsEditing(true)} />
+            )}
           </ButtonRow>
         </TitleRow>
-        <TalentSection items={talentItems} onChange={setTalentItems} showErrors={showErrors} />
+        <TalentSection items={talentItems} onChange={setTalentItems} showErrors={showErrors} disabled={!isEditing} />
         {curriculumTracks.length > 0 && (
-          <CurriculumSection tracks={curriculumTracks} onChange={setCurriculumTracks} showErrors={showErrors} />
+          <CurriculumSection
+            tracks={curriculumTracks}
+            onChange={setCurriculumTracks}
+            showErrors={showErrors}
+            disabled={!isEditing}
+          />
         )}
-        <RoadmapSection imageName={roadmapImage} onChange={setRoadmapImage} />
+        <RoadmapSection imageName={roadmapImage} onChange={setRoadmapImage} disabled={!isEditing} />
       </MyPageShell>
       <ToastWrapper>
         <Toast variant="positive" text={toastMessage} show={!!toastMessage} onHidden={() => setToastMessage('')} />

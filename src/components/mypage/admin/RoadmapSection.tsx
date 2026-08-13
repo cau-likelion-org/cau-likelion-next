@@ -4,7 +4,15 @@ import TextField from '@common/textField/TextField';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
-const RoadmapSection = ({ imageName, onChange }: { imageName: string; onChange: (imageName: string) => void }) => {
+const RoadmapSection = ({
+  imageName,
+  onChange,
+  disabled = false,
+}: {
+  imageName: string;
+  onChange: (imageName: string) => void;
+  disabled?: boolean;
+}) => {
   return (
     <Section>
       <Title>활동 로드맵</Title>
@@ -12,6 +20,7 @@ const RoadmapSection = ({ imageName, onChange }: { imageName: string; onChange: 
         heading="이미지 첨부"
         value={imageName}
         placeholder="이미지 파일을 선택해 주세요."
+        disabled={disabled}
         onChange={(event) => onChange(event.target.value)}
       />
     </Section>

@@ -34,10 +34,12 @@ const TrackSection = ({
   items,
   onChange,
   showErrors,
+  disabled = false,
 }: {
   items: TrackIntroItem[];
   onChange: (items: TrackIntroItem[]) => void;
   showErrors: boolean;
+  disabled?: boolean;
 }) => {
   const updateItem = (id: string, patch: Partial<TrackIntroItem>) => {
     onChange(items.map((item) => (item.id === id ? { ...item, ...patch } : item)));
@@ -58,6 +60,7 @@ const TrackSection = ({
                 heading="파트명"
                 value={item.nameKo}
                 placeholder="텍스트 입력"
+                disabled={disabled}
                 onChange={(event) => updateItem(item.id, { nameKo: event.target.value })}
                 status={showErrors && isUnfilled(item.nameKo) ? 'negative' : 'normal'}
                 description={showErrors && isUnfilled(item.nameKo) ? '파트명을 입력해 주세요.' : undefined}
@@ -68,6 +71,7 @@ const TrackSection = ({
                 heading="파트 영문명"
                 value={item.nameEn}
                 placeholder="텍스트 입력"
+                disabled={disabled}
                 onChange={(event) => updateItem(item.id, { nameEn: event.target.value })}
                 status={showErrors && isUnfilled(item.nameEn) ? 'negative' : 'normal'}
                 description={showErrors && isUnfilled(item.nameEn) ? '파트 영문명을 입력해 주세요.' : undefined}
@@ -79,6 +83,7 @@ const TrackSection = ({
             value={item.description}
             placeholder="리스트 입력"
             maxLength={1000}
+            disabled={disabled}
             bottomTrailingContent={<CharCount>{item.description.length}/1000</CharCount>}
             onChange={(event) => updateItem(item.id, { description: event.target.value })}
             status={showErrors && isUnfilled(item.description) ? 'negative' : 'normal'}
@@ -87,14 +92,18 @@ const TrackSection = ({
           <StackRow>
             <StackField>
               <FieldLabel>기술 스택</FieldLabel>
-              <TechStackInput value={item.techStack} onChange={(techStack) => updateItem(item.id, { techStack })} />
+              <TechStackInput
+                value={item.techStack}
+                onChange={(techStack) => updateItem(item.id, { techStack })}
+                disabled={disabled}
+              />
               {showErrors && item.techStack.length === 0 && <ErrorText>기술 스택을 입력해 주세요.</ErrorText>}
             </StackField>
-            <RemoveCardButton onClick={() => removeItem(item.id)} />
+            {!disabled && <RemoveCardButton onClick={() => removeItem(item.id)} />}
           </StackRow>
         </Card>
       ))}
-      <AddCardButton onClick={addItem} ariaLabel="트랙 소개 추가" />
+      {!disabled && <AddCardButton onClick={addItem} ariaLabel="트랙 소개 추가" />}
     </Section>
   );
 };

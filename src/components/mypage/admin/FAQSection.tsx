@@ -24,10 +24,12 @@ const FAQSection = ({
   items,
   onChange,
   showErrors,
+  disabled = false,
 }: {
   items: FaqItem[];
   onChange: (items: FaqItem[]) => void;
   showErrors: boolean;
+  disabled?: boolean;
 }) => {
   const updateItem = (id: string, patch: Partial<FaqItem>) => {
     onChange(items.map((item) => (item.id === id ? { ...item, ...patch } : item)));
@@ -46,6 +48,7 @@ const FAQSection = ({
             heading="질문 내용"
             value={item.question}
             placeholder="텍스트 입력"
+            disabled={disabled}
             onChange={(event) => updateItem(item.id, { question: event.target.value })}
             status={showErrors && isUnfilled(item.question) ? 'negative' : 'normal'}
             description={showErrors && isUnfilled(item.question) ? '질문 내용을 입력해 주세요.' : undefined}
@@ -55,17 +58,20 @@ const FAQSection = ({
             value={item.answer}
             placeholder="텍스트 입력"
             maxLength={1000}
+            disabled={disabled}
             bottomTrailingContent={<CharCount>{item.answer.length}/1000</CharCount>}
             onChange={(event) => updateItem(item.id, { answer: event.target.value })}
             status={showErrors && isUnfilled(item.answer) ? 'negative' : 'normal'}
             description={showErrors && isUnfilled(item.answer) ? '답변 내용을 입력해 주세요.' : undefined}
           />
-          <ButtonRow>
-            <RemoveCardButton onClick={() => removeItem(item.id)} />
-          </ButtonRow>
+          {!disabled && (
+            <ButtonRow>
+              <RemoveCardButton onClick={() => removeItem(item.id)} />
+            </ButtonRow>
+          )}
         </Card>
       ))}
-      <AddCardButton onClick={addItem} ariaLabel="FAQ 추가" />
+      {!disabled && <AddCardButton onClick={addItem} ariaLabel="FAQ 추가" />}
     </Section>
   );
 };
