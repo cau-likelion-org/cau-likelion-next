@@ -7,11 +7,14 @@ import styled from 'styled-components';
 
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import MyPageShell from '@mypage/component/MyPageShell';
+import StaffAssignmentCard from '@mypage/component/StaffAssignmentCard';
 import WeeklyAssignmentCard, { WeeklyAssignmentGroup } from '@mypage/component/WeeklyAssignmentCard';
 import { getUserProfile } from 'src/apis/account';
+import { AssignmentWeekGroup, getStaffAssignments } from 'src/apis/assignment';
 import useTokenStore from 'src/store/useTokenStore';
 import { isAdminRole } from '@utils/index';
-import { Label } from '@utils/constant/color';
+import { IcPlus } from '@assets/svg';
+import { Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 // 백엔드 API 준비 전까지 사용하는 목 데이터
@@ -88,19 +91,50 @@ const MyPageAssignment = () => {
     if (hasHydrated && !tokenState.access) router.push('/login');
   }, [hasHydrated, tokenState, router]);
 
+  const isStaff = !!userProfile && isAdminRole(userProfile.role);
+
+  // 운영진: 본인 파트에 생성한 과제 목록 (주차별)
+  const { data: staffWeekGroups } = useQuery<AssignmentWeekGroup[]>({
+    queryKey: ['staffAssignments'],
+    queryFn: () => getStaffAssignments(tokenState),
+    enabled: isStaff,
+  });
+
   if (!userProfile) return null;
 
   return (
     <MyPageShell active="assignment" isAdmin={isAdminRole(userProfile.role)}>
-      <TitleRow>
-        <SectionTitle>주차별 과제 현황</SectionTitle>
-        <TrackName>{userProfile.partName} 파트</TrackName>
-      </TitleRow>
-      <List>
-        {MOCK_WEEKLY_ASSIGNMENTS.map((group) => (
-          <WeeklyAssignmentCard key={group.week} group={group} />
-        ))}
-      </List>
+      {isStaff ? (
+        <>
+          <Header>
+            <TitleRow>
+              <SectionTitle>주차별 과제 현황</SectionTitle>
+              <TrackName>{userProfile.partName} 파트</TrackName>
+            </TitleRow>
+            <CreateButton type="button">
+              과제 생성
+              <IcPlus width={16} height={16} />
+            </CreateButton>
+          </Header>
+          <List>
+            {(staffWeekGroups ?? []).map((group) => (
+              <StaffAssignmentCard key={group.week} week={group.week} assignments={group.assignments} />
+            ))}
+          </List>
+        </>
+      ) : (
+        <>
+          <TitleRow>
+            <SectionTitle>주차별 과제 현황</SectionTitle>
+            <TrackName>{userProfile.partName} 파트</TrackName>
+          </TitleRow>
+          <List>
+            {MOCK_WEEKLY_ASSIGNMENTS.map((group) => (
+              <WeeklyAssignmentCard key={group.week} group={group} />
+            ))}
+          </List>
+        </>
+      )}
     </MyPageShell>
   );
 };
@@ -110,6 +144,27 @@ MyPageAssignment.getLayout = function getLayout(page: ReactElement) {
 };
 
 export default MyPageAssignment;
+
+const Header = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+`;
+
+const CreateButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  padding: 6px 12px;
+  border: 1px solid ${Line.normal};
+  border-radius: 8px;
+  background: none;
+  color: ${Label.normal};
+  cursor: pointer;
+  ${typographyCss(Typography.body2Normal.medium)}
+`;
 
 const TitleRow = styled.div`
   display: flex;
