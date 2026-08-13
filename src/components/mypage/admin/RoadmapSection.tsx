@@ -20,7 +20,7 @@ const RoadmapSection = ({
         heading="이미지 첨부"
         value={imageName}
         placeholder="이미지 파일을 선택해 주세요."
-        disabled={disabled}
+        readOnly={disabled}
         onChange={(event) => onChange(event.target.value)}
       />
     </Section>

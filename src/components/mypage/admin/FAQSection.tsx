@@ -48,7 +48,7 @@ const FAQSection = ({
             heading="질문 내용"
             value={item.question}
             placeholder="텍스트 입력"
-            disabled={disabled}
+            readOnly={disabled}
             onChange={(event) => updateItem(item.id, { question: event.target.value })}
             status={showErrors && isUnfilled(item.question) ? 'negative' : 'normal'}
             description={showErrors && isUnfilled(item.question) ? '질문 내용을 입력해 주세요.' : undefined}
@@ -58,7 +58,7 @@ const FAQSection = ({
             value={item.answer}
             placeholder="텍스트 입력"
             maxLength={1000}
-            disabled={disabled}
+            readOnly={disabled}
             bottomTrailingContent={<CharCount>{item.answer.length}/1000</CharCount>}
             onChange={(event) => updateItem(item.id, { answer: event.target.value })}
             status={showErrors && isUnfilled(item.answer) ? 'negative' : 'normal'}

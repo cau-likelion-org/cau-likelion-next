@@ -19,6 +19,7 @@ export interface TextFieldProps extends Omit<InputHTMLAttributes<HTMLInputElemen
   heading?: string;
   required?: boolean;
   description?: string;
+  leadingIcon?: ReactNode;
   trailingIcon?: ReactNode;
   trailingButton?: TrailingButtonConfig;
   trailingContent?: ReactNode;
@@ -36,10 +37,12 @@ const TextField = ({
   heading,
   required = false,
   description,
+  leadingIcon,
   trailingIcon,
   trailingButton,
   trailingContent,
   disabled = false,
+  readOnly = false,
   id,
   ...inputProps
 }: TextFieldProps) => {
@@ -79,12 +82,15 @@ const TextField = ({
           {required && <Required>*</Required>}
         </Heading>
       )}
-      <InputWrapper $status={status} $disabled={disabled}>
+      <InputWrapper $status={status} $disabled={disabled} $readOnly={readOnly}>
+        {leadingIcon && <IconSlot $color={Label.alternative}>{leadingIcon}</IconSlot>}
         <Input
           id={inputId}
           disabled={disabled}
+          readOnly={readOnly}
           aria-invalid={status === 'negative'}
           aria-describedby={descriptionId}
+          $readOnly={readOnly}
           {...inputProps}
         />
         {trailing}
@@ -124,7 +130,7 @@ const Required = styled.span`
   ${typographyCss(Typography.label1Normal.medium)}
 `;
 
-const InputWrapper = styled.div<{ $status: TextFieldStatus; $disabled: boolean }>`
+const InputWrapper = styled.div<{ $status: TextFieldStatus; $disabled: boolean; $readOnly: boolean }>`
   position: relative;
   display: flex;
   align-items: center;
@@ -136,12 +142,16 @@ const InputWrapper = styled.div<{ $status: TextFieldStatus; $disabled: boolean }
   background-color: ${(props) => (props.$disabled ? '#F4F4F5' : 'rgba(255, 255, 255, 0.08)')};
   box-shadow: ${(props) => getBoxShadow(props.$status, props.$disabled)};
 
-  &:focus-within {
-    box-shadow: inset 0 0 0 2px rgba(71, 172, 255, 0.43);
-  }
+  ${(props) =>
+    !props.$readOnly &&
+    `
+    &:focus-within {
+      box-shadow: inset 0 0 0 2px rgba(71, 172, 255, 0.43);
+    }
+  `}
 `;
 
-const Input = styled.input`
+const Input = styled.input<{ $readOnly?: boolean }>`
   flex: 1 0 0;
   min-width: 0;
   padding: 0 4px;
@@ -149,6 +159,8 @@ const Input = styled.input`
   outline: none;
   background: none;
   color: ${Label.normal};
+  pointer-events: ${(props) => (props.$readOnly ? 'none' : 'auto')};
+  cursor: ${(props) => (props.$readOnly ? 'default' : 'text')};
   ${typographyCss(Typography.body1Normal.regular)}
 
   &::placeholder {
