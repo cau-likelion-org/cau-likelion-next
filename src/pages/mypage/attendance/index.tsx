@@ -1,15 +1,25 @@
-import { ReactElement, useEffect } from 'react';
+import { ReactElement, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+import { useQuery } from '@tanstack/react-query';
 import styled from 'styled-components';
 
+import { UserProfile } from '@@types/request';
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import MyPageShell from '@mypage/component/MyPageShell';
+import PartAttendanceTable from '@mypage/component/PartAttendanceTable';
 import WeeklyAttendanceCard, { WeeklyAttendanceRecord } from '@mypage/component/WeeklyAttendanceCard';
+import { getUserProfile } from 'src/apis/account';
+import { MemberAttendanceResponse, getPartAttendance } from 'src/apis/attendance';
 import useTokenStore from 'src/store/useTokenStore';
+import { isAdminRole, isFullAdminRole } from '@utils/index';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
-// 백엔드 API 준비 전까지 사용하는 목 데이터
+// 회장/관리자 파트 필터 옵션
+const ALL_PART = '전체';
+const PART_FILTER_OPTIONS = [ALL_PART, '기획디자인', '프론트엔드', '백엔드'];
+
+// 백엔드 API 준비 전까지 사용하는 목 데이터 (아기사자 본인 뷰)
 const MOCK_WEEKLY_ATTENDANCE: WeeklyAttendanceRecord[] = [
   { week: 19, date: '2026/12/13', status: 'before' },
   { week: 18, date: '2026/12/12', status: 'present', checkInTime: '18:55:42' },
@@ -28,14 +38,48 @@ const MyPageAttendance = () => {
     if (hasHydrated && !tokenState.access) router.push('/login');
   }, [hasHydrated, tokenState, router]);
 
+  const { data: userProfile } = useQuery<UserProfile>({
+    queryKey: ['userProfile'],
+    queryFn: () => getUserProfile(tokenState),
+    retry: false,
+    enabled: !!tokenState.access,
+  });
+
+  const isStaff = !!userProfile && isAdminRole(userProfile.role);
+  const isPresident = !!userProfile && isFullAdminRole(userProfile.role);
+
+  // 회장/관리자만 파트 필터. 전체면 파라미터 없이 조회.
+  const [selectedPart, setSelectedPart] = useState(ALL_PART);
+  const partParam = isPresident && selectedPart !== ALL_PART ? selectedPart : undefined;
+
+  const { data: partAttendance } = useQuery<MemberAttendanceResponse[]>({
+    queryKey: ['partAttendance', isPresident ? selectedPart : 'own'],
+    queryFn: () => getPartAttendance(tokenState, partParam),
+    enabled: isStaff,
+  });
+
+  if (!userProfile) return null;
+
   return (
-    <MyPageShell active="attendance">
-      <SectionTitle>주차별 출결 현황</SectionTitle>
-      <List>
-        {MOCK_WEEKLY_ATTENDANCE.map((record) => (
-          <WeeklyAttendanceCard key={record.week} record={record} />
-        ))}
-      </List>
+    <MyPageShell active="attendance" isAdmin={isAdminRole(userProfile.role)}>
+      {isStaff ? (
+        <PartAttendanceTable
+          members={partAttendance ?? []}
+          partName={isPresident ? undefined : userProfile.partName}
+          partFilter={
+            isPresident ? { value: selectedPart, options: PART_FILTER_OPTIONS, onChange: setSelectedPart } : undefined
+          }
+        />
+      ) : (
+        <>
+          <SectionTitle>주차별 출결 현황</SectionTitle>
+          <List>
+            {MOCK_WEEKLY_ATTENDANCE.map((record) => (
+              <WeeklyAttendanceCard key={record.week} record={record} />
+            ))}
+          </List>
+        </>
+      )}
     </MyPageShell>
   );
 };
