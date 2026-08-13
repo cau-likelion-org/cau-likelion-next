@@ -93,7 +93,7 @@ const CATEGORY_CODE_TO_LABEL: Partial<Record<ProjectCategoryCode, string>> = {
 const PART_LABELS = {
   pm: '기획',
   design: '디자인',
-  frontend: '프론트',
+  frontend: '프론트엔드',
   backend: '백엔드',
 } as const;
 const KNOWN_PART_LABELS: string[] = Object.values(PART_LABELS);
@@ -606,7 +606,7 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
             onChange={setDesignMembers}
           />
           <TagChipInput
-            heading="프론트"
+            heading="프론트엔드"
             placeholder="이름을 입력해 주세요."
             values={frontendMembers}
             onChange={setFrontendMembers}

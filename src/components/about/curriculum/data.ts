@@ -41,8 +41,8 @@ export const CURRICULUM_TRACKS: CurriculumTrack[] = [
   },
   {
     key: 'frontend',
-    label: '프론트',
-    title: '프론트',
+    label: '프론트엔드',
+    title: '프론트엔드',
     subtitle: 'Frontend Development',
     items: ['리스트', '리스트', '리스트'],
     chips: ['React', 'TypeScript', 'Next.js', 'Zustand'],
