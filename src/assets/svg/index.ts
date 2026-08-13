@@ -14,6 +14,7 @@ import IcLink from './icon/ic-link.svg';
 import IcLogoGoogle from './icon/ic-logo-google.svg';
 import IcLogout from './icon/ic-logout.svg';
 import IcPlus from './icon/ic-plus.svg';
+import IcRefresh from './icon/ic-refresh.svg';
 import IcTrash from './icon/ic-trash.svg';
 import IcTriangleExclamation from './icon/ic-triangle-exclamation.svg';
 import IllustSignupComplete from './illustration/illust-signup-complete.svg';
@@ -35,6 +36,7 @@ export {
   IcLogoGoogle,
   IcLogout,
   IcPlus,
+  IcRefresh,
   IcTrash,
   IcTriangleExclamation,
   IllustSignupComplete,
