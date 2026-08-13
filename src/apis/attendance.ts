@@ -71,15 +71,21 @@ export interface MemberAttendanceResponse {
   memberId: number;
   memberName: string;
   generationNumber: number;
+  partName: string;
   attendances: AttendanceStatusResponse[];
   attendancePenalty: number;
 }
 
-export function getPartAttendance(token: IToken, part?: string) {
+// 운영진: 본인 파트 아기사자 출결 현황
+export function getPartAttendance(token: IToken) {
   const authAxios = getAuthAxios(token);
-  return authAxios
-    .get<MemberAttendanceResponse[]>('/api/attendances/part', { params: part ? { part } : undefined })
-    .then((res) => res.data);
+  return authAxios.get<MemberAttendanceResponse[]>('/api/attendances/part').then((res) => res.data);
+}
+
+// 회장: 전체 파트 아기사자 출결 현황 (파트 필터는 응답의 partName으로 처리)
+export function getAllAttendances(token: IToken) {
+  const authAxios = getAuthAxios(token);
+  return authAxios.get<MemberAttendanceResponse[]>('/api/attendances/all').then((res) => res.data);
 }
 
 export interface AttendanceStatusUpdate {
