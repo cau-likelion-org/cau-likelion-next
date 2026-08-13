@@ -455,18 +455,16 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
                 }}
               >
                 <ThumbnailImage src={image} alt="" />
-                {index === featuredIndex && (
-                  <RemoveThumbnailButton
-                    type="button"
-                    aria-label="대표 이미지 삭제"
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      handleRemoveImage(index);
-                    }}
-                  >
-                    <IcCircleClose width={24} height={24} />
-                  </RemoveThumbnailButton>
-                )}
+                <RemoveThumbnailButton
+                  type="button"
+                  aria-label={`${index + 1}번째 이미지 삭제`}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    handleRemoveImage(index);
+                  }}
+                >
+                  <IcCircleClose width={24} height={24} />
+                </RemoveThumbnailButton>
               </ThumbnailSlot>
             ) : (
               <ThumbnailSlot key={index}>
