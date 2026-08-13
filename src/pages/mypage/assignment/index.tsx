@@ -8,12 +8,13 @@ import styled from 'styled-components';
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import Toast from '@common/toast/Toast';
 import MyPageShell from '@mypage/component/MyPageShell';
+import AssignmentPartSelect from '@mypage/component/AssignmentPartSelect';
 import StaffAssignmentCard from '@mypage/component/StaffAssignmentCard';
 import WeeklyAssignmentCard, { WeeklyAssignmentGroup } from '@mypage/component/WeeklyAssignmentCard';
-import { getUserProfile } from 'src/apis/account';
-import { AssignmentWeekGroup, getStaffAssignments } from 'src/apis/assignment';
+import { getGenerations, getUserProfile } from 'src/apis/account';
+import { AssignmentWeekGroup, getPresidentAssignments, getStaffAssignments } from 'src/apis/assignment';
 import useTokenStore from 'src/store/useTokenStore';
-import { isAdminRole } from '@utils/index';
+import { isAdminRole, isFullAdminRole } from '@utils/index';
 import { IcPlus } from '@assets/svg';
 import { Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -102,18 +103,34 @@ const MyPageAssignment = () => {
     return () => cancelAnimationFrame(frame);
   }, []);
 
-  const isStaff = !!userProfile && isAdminRole(userProfile.role);
+  const isStaffOrAdmin = !!userProfile && isAdminRole(userProfile.role); // STAFF/PRESIDENT/ADMIN
+  const isPresident = !!userProfile && isFullAdminRole(userProfile.role); // 회장/관리자 — 파트별 조회
 
-  // 운영진: 본인 파트에 생성한 과제 목록 (주차별)
-  const { data: staffWeekGroups } = useQuery<AssignmentWeekGroup[]>({
-    queryKey: ['staffAssignments'],
-    queryFn: () => getStaffAssignments(tokenState),
-    enabled: isStaff,
+  // 회장 파트 필터: 현재 활동 기수의 파트 목록(id 포함)을 사용
+  const { data: generations } = useQuery({
+    queryKey: ['generations'],
+    queryFn: getGenerations,
+    enabled: isPresident,
+  });
+  const activeGeneration =
+    generations?.find((generation) => generation.status === 'IN_ACTIVITY') ?? generations?.[generations.length - 1];
+  const parts = (activeGeneration?.parts ?? []).filter((part) => part.name !== '기타');
+  const partOptions = parts.map((part) => part.name);
+  const [selectedPartName, setSelectedPartName] = useState('');
+  const currentPartName = selectedPartName || partOptions[0] || '';
+  const selectedPartId = parts.find((part) => part.name === currentPartName)?.id;
+
+  // 회장: partId로 파트별 조회 / 운영진: 본인 파트 조회
+  const { data: weekGroups } = useQuery<AssignmentWeekGroup[]>({
+    queryKey: isPresident ? ['presidentAssignments', selectedPartId ?? null] : ['staffAssignments'],
+    queryFn: () =>
+      isPresident ? getPresidentAssignments(tokenState, selectedPartId as number) : getStaffAssignments(tokenState),
+    enabled: isStaffOrAdmin && (!isPresident || selectedPartId != null),
   });
 
   // 최신 주차가 18이면 18 → 1주차까지 연속으로 표시 (과제 없는 주차는 빈 카드)
-  const staffWeeks = (() => {
-    const groups = staffWeekGroups ?? [];
+  const weeks = (() => {
+    const groups = weekGroups ?? [];
     const maxWeek = groups.reduce((max, group) => Math.max(max, group.week), 0);
     const byWeek = new Map(groups.map((group) => [group.week, group.assignments]));
     return Array.from({ length: maxWeek }, (_, index) => {
@@ -127,12 +144,16 @@ const MyPageAssignment = () => {
   return (
     <>
       <MyPageShell active="assignment" isAdmin={isAdminRole(userProfile.role)}>
-        {isStaff ? (
+        {isStaffOrAdmin ? (
           <>
             <Header>
               <TitleRow>
                 <SectionTitle>주차별 과제 현황</SectionTitle>
-                <TrackName>{userProfile.partName} 파트</TrackName>
+                {isPresident ? (
+                  <AssignmentPartSelect value={currentPartName} options={partOptions} onChange={setSelectedPartName} />
+                ) : (
+                  <TrackName>{userProfile.partName} 파트</TrackName>
+                )}
               </TitleRow>
               <CreateButton type="button" onClick={() => router.push('/mypage/assignment/create')}>
                 과제 생성
@@ -140,7 +161,7 @@ const MyPageAssignment = () => {
               </CreateButton>
             </Header>
             <List>
-              {staffWeeks.map((group) => (
+              {weeks.map((group) => (
                 <StaffAssignmentCard key={group.week} week={group.week} assignments={group.assignments} />
               ))}
             </List>

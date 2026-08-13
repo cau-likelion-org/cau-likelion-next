@@ -23,6 +23,14 @@ export function getStaffAssignments(token: IToken) {
   return authAxios.get<AssignmentWeekGroup[]>('/api/assignments/staff').then((res) => res.data);
 }
 
+// 회장/관리자: partId로 지정한 파트의 과제 목록을 주차별로 조회 (전체 파트 조회 가능)
+export function getPresidentAssignments(token: IToken, partId: number) {
+  const authAxios = getAuthAxios(token);
+  return authAxios
+    .get<AssignmentWeekGroup[]>('/api/assignments/president', { params: { partId } })
+    .then((res) => res.data);
+}
+
 export type AssignmentSubmitType = 'FILE' | 'URL';
 
 export interface AssignmentCreateItem {
