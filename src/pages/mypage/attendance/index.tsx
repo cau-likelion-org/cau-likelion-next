@@ -1,6 +1,6 @@
 import { ReactElement, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import styled from 'styled-components';
 
 import { UserProfile } from '@@types/request';
@@ -9,7 +9,12 @@ import MyPageShell from '@mypage/component/MyPageShell';
 import PartAttendanceTable from '@mypage/component/PartAttendanceTable';
 import WeeklyAttendanceCard, { WeeklyAttendanceRecord } from '@mypage/component/WeeklyAttendanceCard';
 import { getUserProfile } from 'src/apis/account';
-import { MemberAttendanceResponse, getPartAttendance } from 'src/apis/attendance';
+import {
+  AttendanceStatusUpdate,
+  MemberAttendanceResponse,
+  getPartAttendance,
+  updateAttendanceBatch,
+} from 'src/apis/attendance';
 import useTokenStore from 'src/store/useTokenStore';
 import { isAdminRole, isFullAdminRole } from '@utils/index';
 import { Label } from '@utils/constant/color';
@@ -52,11 +57,22 @@ const MyPageAttendance = () => {
   const [selectedPart, setSelectedPart] = useState(ALL_PART);
   const partParam = isPresident && selectedPart !== ALL_PART ? selectedPart : undefined;
 
+  const attendanceQueryKey = ['partAttendance', isPresident ? selectedPart : 'own'];
   const { data: partAttendance } = useQuery<MemberAttendanceResponse[]>({
-    queryKey: ['partAttendance', isPresident ? selectedPart : 'own'],
+    queryKey: attendanceQueryKey,
     queryFn: () => getPartAttendance(tokenState, partParam),
     enabled: isStaff,
   });
+
+  const queryClient = useQueryClient();
+  const saveMutation = useMutation({
+    mutationFn: (updates: AttendanceStatusUpdate[]) => updateAttendanceBatch(tokenState, updates),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['partAttendance'] }),
+  });
+
+  const handleSave = (updates: AttendanceStatusUpdate[]) => {
+    if (updates.length > 0) saveMutation.mutate(updates);
+  };
 
   if (!userProfile) return null;
 
@@ -69,6 +85,8 @@ const MyPageAttendance = () => {
           partFilter={
             isPresident ? { value: selectedPart, options: PART_FILTER_OPTIONS, onChange: setSelectedPart } : undefined
           }
+          onSave={handleSave}
+          isSaving={saveMutation.isPending}
         />
       ) : (
         <>

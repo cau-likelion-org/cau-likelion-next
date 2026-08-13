@@ -75,11 +75,20 @@ export interface MemberAttendanceResponse {
   attendancePenalty: number;
 }
 
-// 운영진: 본인 파트 아기사자 출결 조회. 회장/관리자: part로 파트별 필터(미지정 시 전체).
-// ⚠️ 백엔드가 아직 part 쿼리 파라미터를 받지 않으면 필터가 적용되지 않을 수 있음(연동 필요).
 export function getPartAttendance(token: IToken, part?: string) {
   const authAxios = getAuthAxios(token);
   return authAxios
     .get<MemberAttendanceResponse[]>('/api/attendances/part', { params: part ? { part } : undefined })
     .then((res) => res.data);
+}
+
+export interface AttendanceStatusUpdate {
+  detailAttendanceId: number;
+  status: AttendanceStatus;
+  reason?: string;
+}
+
+export function updateAttendanceBatch(token: IToken, updates: AttendanceStatusUpdate[]) {
+  const authAxios = getAuthAxios(token);
+  return authAxios.patch<AttendanceStatusResponse[]>('/api/attendances/batch', { updates }).then((res) => res.data);
 }

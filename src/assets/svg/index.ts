@@ -1,4 +1,6 @@
 import IcBlank from './icon/ic-blank.svg';
+import IcCaretDown from './icon/ic-caretDown.svg';
+import IcCaretUp from './icon/ic-caretUp.svg';
 import IcCheck from './icon/ic-check.svg';
 import IcChevronDown from './icon/ic-chevron-down.svg';
 import IcChevronLeft from './icon/ic-chevron-left.svg';
@@ -21,6 +23,8 @@ import IllustSignupComplete from './illustration/illust-signup-complete.svg';
 
 export {
   IcBlank,
+  IcCaretDown,
+  IcCaretUp,
   IcCheck,
   IcChevronDown,
   IcChevronLeft,
