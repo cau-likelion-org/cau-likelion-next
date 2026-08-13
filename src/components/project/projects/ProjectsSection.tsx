@@ -9,6 +9,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
 import { getUserProfile } from 'src/apis/account';
 import {
+  PROJECT_CATEGORY_LABEL,
   PROJECT_CREATED_FLAG_KEY,
   PROJECT_DELETED_FLAG_KEY,
   PROJECT_UPDATED_FLAG_KEY,
@@ -22,6 +23,8 @@ import ProjectEmptyState from './ProjectEmptyState';
 import ProjectFilterSelect from './ProjectFilterSelect';
 
 const ALL_OPTION = '전체';
+
+const CATEGORY_OPTIONS = [ALL_OPTION, ...Object.values(PROJECT_CATEGORY_LABEL)];
 
 const CATEGORY_PRIORITY: Record<string, number> = {
   중커톤: 0,
@@ -89,11 +92,6 @@ const ProjectsSection = ({ staticData }: { staticData: ArchivingArrayType<IProje
     [sortedGroups],
   );
 
-  const categoryOptions = useMemo(
-    () => [ALL_OPTION, ...Array.from(new Set(flatProjects.map((project) => project.category).filter(Boolean)))],
-    [flatProjects],
-  );
-
   const filteredProjects = flatProjects.filter((project) => {
     const matchGeneration = selectedGeneration === ALL_OPTION || `${project.generation}기` === selectedGeneration;
     const matchCategory = selectedCategory === ALL_OPTION || project.category === selectedCategory;
@@ -147,7 +145,7 @@ const ProjectsSection = ({ staticData }: { staticData: ArchivingArrayType<IProje
           />
           <ProjectFilterSelect
             heading="프로젝트 구분"
-            options={categoryOptions}
+            options={CATEGORY_OPTIONS}
             value={selectedCategory}
             onChange={setSelectedCategory}
           />
