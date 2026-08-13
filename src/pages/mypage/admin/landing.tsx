@@ -1,6 +1,6 @@
 import { ReactElement, ReactNode, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import styled from 'styled-components';
 
@@ -11,86 +11,87 @@ import Toast from '@common/toast/Toast';
 import MyPageShell from '@mypage/component/MyPageShell';
 import IntroduceSection, { LandingMetrics, isMetricsInvalid } from '@mypage/admin/IntroduceSection';
 import TrackSection, { TrackIntroItem, isTrackItemInvalid } from '@mypage/admin/TrackSection';
-import ActivitySection, { ActivityIntroItem, isActivityItemInvalid } from '@mypage/admin/ActivitySection';
+import ActivitySection, {
+  ActivityIntroItem,
+  isActivityItemInvalid,
+  PAGE_NAVIGATION_LABEL,
+  PAGE_NAVIGATION_BY_LABEL,
+} from '@mypage/admin/ActivitySection';
 import ProjectSection, { FeaturedProject } from '@mypage/admin/ProjectSection';
 import FAQSection, { FaqItem, isFaqItemInvalid } from '@mypage/admin/FAQSection';
+import { syncListSection } from '@mypage/admin/utils';
 import { getUserProfile } from 'src/apis/account';
+import { getTracks, createTrack, updateTrack, deleteTrack, TrackResponse } from 'src/apis/track';
+import { getActivities, createActivity, updateActivity, deleteActivity, ActivityResponse } from 'src/apis/activity';
+import { getFaqs, createFaq, updateFaq, deleteFaq, FaqResponse } from 'src/apis/faq';
+import { getIntroduce, updateIntroduce, IntroduceResponse } from 'src/apis/introduce';
+import { getAdminProjectList, updateProjectExposure, AdminProjectListItem } from 'src/apis/project';
+import { PROJECT_CATEGORY_LABEL } from '@home/project/component/ProjectCard';
 import useTokenStore from 'src/store/useTokenStore';
 import { isAdminRole } from '@utils/index';
-import { TRACK, TRACK_NAME } from '@utils/constant';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
-// 백엔드 API 준비 전까지 사용하는 목 데이터
-const MOCK_METRICS: LandingMetrics = { generationCount: '14', graduateCount: '230+', projectCount: '60' };
+const trackToLocal = (track: TrackResponse): TrackIntroItem => ({
+  id: String(track.id),
+  nameKo: track.koName,
+  nameEn: track.enName,
+  description: track.introduction,
+  techStack: track.techStack,
+});
+const trackToRequest = (item: TrackIntroItem) => ({
+  koName: item.nameKo,
+  enName: item.nameEn,
+  introduction: item.description,
+  techStack: item.techStack,
+});
 
-const MOCK_TRACK_ITEMS: TrackIntroItem[] = [
-  {
-    id: 'pm_design',
-    nameKo: TRACK_NAME[TRACK.PM_DESIGN],
-    nameEn: 'Product Manage/Product Design',
-    description: '리스트\n리스트\n리스트',
-    techStack: ['Figma', 'UX/UI', 'Prototyping', 'Service design'],
-  },
-  {
-    id: 'frontend',
-    nameKo: TRACK_NAME[TRACK.FRONTEND],
-    nameEn: 'Frontend Devlopment',
-    description: '리스트\n리스트\n리스트',
-    techStack: ['Figma', 'UX/UI', 'Prototyping', 'Service design'],
-  },
-  {
-    id: 'backend',
-    nameKo: TRACK_NAME[TRACK.BACKEND],
-    nameEn: 'Backend Devlopment',
-    description: '리스트\n리스트\n리스트',
-    techStack: ['Figma', 'UX/UI', 'Prototyping', 'Service design'],
-  },
-];
+const activityToLocal = (activity: ActivityResponse): ActivityIntroItem => ({
+  id: String(activity.id),
+  title: activity.name,
+  imageName: activity.imageUrl,
+  subtitle: activity.introduction,
+  description: activity.description,
+  buttonText: activity.buttonName,
+  href: PAGE_NAVIGATION_LABEL[activity.pageNavigation],
+});
+const activityToRequest = (item: ActivityIntroItem) => ({
+  name: item.title,
+  imageUrl: item.imageName,
+  introduction: item.subtitle,
+  description: item.description,
+  buttonName: item.buttonText,
+  pageNavigation: PAGE_NAVIGATION_BY_LABEL[item.href],
+});
 
-const MOCK_ACTIVITY_ITEMS: ActivityIntroItem[] = [
-  {
-    id: 'session',
-    title: '세션',
-    imageName: '',
-    subtitle: '일주일에 1번 정기적 대면 모임',
-    description: '소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글',
-    buttonText: '파트별 커리큘럼 보기',
-    href: '소개 페이지 / 커리큘럼 영역',
-  },
-  {
-    id: 'project',
-    title: '프로젝트',
-    imageName: '',
-    subtitle: '일주일에 1번 정기적 대면 모임',
-    description: '소개글 소개글 소개글 소개글 소개글 소개글 소개글 소개글',
-    buttonText: '프로젝트 더보기',
-    href: '프로젝트 페이지',
-  },
-];
+const faqToLocal = (faq: FaqResponse): FaqItem => ({ id: String(faq.id), question: faq.question, answer: faq.answer });
+const faqToRequest = (item: FaqItem) => ({ question: item.question, answer: item.answer });
 
-const PROJECT_CATEGORY_CYCLE = ['아이디어톤', '해커톤', '중커톤'];
-const MOCK_PROJECTS: FeaturedProject[] = Array.from({ length: 60 }, (_, index) => ({
-  id: `project-${index}`,
-  name: '서비스명',
-  generation: index % 2 === 0 ? '13기' : '14기',
-  category: PROJECT_CATEGORY_CYCLE[index % PROJECT_CATEGORY_CYCLE.length],
-  selected: true,
-}));
+const DEFAULT_INTRODUCE_METRICS: LandingMetrics = { generationCount: '', graduateCount: '', projectCount: '' };
+const introduceToLocal = (introduce: IntroduceResponse): LandingMetrics => ({
+  generationCount: introduce.cumulativeGenerations,
+  graduateCount: introduce.cumulativeGraduates,
+  projectCount: introduce.cumulativeProjects,
+});
+const introduceToRequest = (item: LandingMetrics) => ({
+  cumulativeGenerations: item.generationCount,
+  cumulativeGraduates: item.graduateCount,
+  cumulativeProjects: item.projectCount,
+});
 
-const MOCK_FAQ_ITEMS: FaqItem[] = [
-  {
-    id: 'faq-1',
-    question: 'Q. 모집은 언제 이뤄지나요?',
-    answer: '보통 12월에 리크루팅 모집을 시작하고 2월에 최종 발표합니다.',
-  },
-  { id: 'faq-2', question: 'Q. 질문 내용 질문 내용 질문 내용', answer: '답변 내용 답변 내용 답변 내용 답변 내용' },
-];
+const projectToLocal = (project: AdminProjectListItem): FeaturedProject => ({
+  id: String(project.id),
+  name: project.title,
+  generation: `${project.generationNumber}기`,
+  category: PROJECT_CATEGORY_LABEL[project.category],
+  selected: project.isExposed,
+});
 
 const MyPageAdminLanding = () => {
   const tokenState = useTokenStore((state) => state.token);
   const hasHydrated = useTokenStore((state) => state.hasHydrated);
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const { data: userProfile } = useQuery<UserProfile, AxiosError>({
     queryKey: ['userProfile'],
@@ -99,13 +100,68 @@ const MyPageAdminLanding = () => {
     enabled: !!tokenState.access,
   });
 
-  const [metrics, setMetrics] = useState(MOCK_METRICS);
-  const [trackItems, setTrackItems] = useState(MOCK_TRACK_ITEMS);
-  const [activityItems, setActivityItems] = useState(MOCK_ACTIVITY_ITEMS);
-  const [projects, setProjects] = useState(MOCK_PROJECTS);
-  const [faqItems, setFaqItems] = useState(MOCK_FAQ_ITEMS);
+  // 편집 화면이라 창 포커스 시 백그라운드 재조회로 입력 중인 값이 덮어써지지 않도록 자동 재조회를 끔
+  const { data: introduce } = useQuery({
+    queryKey: ['adminIntroduce'],
+    queryFn: getIntroduce,
+    refetchOnWindowFocus: false,
+  });
+  const { data: tracks } = useQuery({
+    queryKey: ['adminTracks'],
+    queryFn: getTracks,
+    refetchOnWindowFocus: false,
+  });
+  const { data: activities } = useQuery({
+    queryKey: ['adminActivities'],
+    queryFn: getActivities,
+    refetchOnWindowFocus: false,
+  });
+  const { data: projects } = useQuery({
+    queryKey: ['adminProjects'],
+    queryFn: getAdminProjectList,
+    refetchOnWindowFocus: false,
+  });
+  const { data: faqs } = useQuery({
+    queryKey: ['adminFaqs'],
+    queryFn: getFaqs,
+    refetchOnWindowFocus: false,
+  });
+
+  const [introduceMetrics, setIntroduceMetrics] = useState(DEFAULT_INTRODUCE_METRICS);
+  const [trackItems, setTrackItems] = useState<TrackIntroItem[]>([]);
+  const [activityItems, setActivityItems] = useState<ActivityIntroItem[]>([]);
+  const [projectItems, setProjectItems] = useState<FeaturedProject[]>([]);
+  const [faqItems, setFaqItems] = useState<FaqItem[]>([]);
   const [toastMessage, setToastMessage] = useState<ReactNode>('');
   const [showErrors, setShowErrors] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // 조회된 데이터가 바뀌면(최초 로드, 저장 후 재조회) 화면 편집 상태를 다시 그 값으로 맞춤
+  const [syncedIntroduce, setSyncedIntroduce] = useState(introduce);
+  if (introduce !== syncedIntroduce) {
+    setSyncedIntroduce(introduce);
+    setIntroduceMetrics(introduce ? introduceToLocal(introduce) : DEFAULT_INTRODUCE_METRICS);
+  }
+  const [syncedTracks, setSyncedTracks] = useState(tracks);
+  if (tracks !== syncedTracks) {
+    setSyncedTracks(tracks);
+    setTrackItems((tracks ?? []).map(trackToLocal));
+  }
+  const [syncedActivities, setSyncedActivities] = useState(activities);
+  if (activities !== syncedActivities) {
+    setSyncedActivities(activities);
+    setActivityItems((activities ?? []).map(activityToLocal));
+  }
+  const [syncedProjects, setSyncedProjects] = useState(projects);
+  if (projects !== syncedProjects) {
+    setSyncedProjects(projects);
+    setProjectItems((projects ?? []).map(projectToLocal));
+  }
+  const [syncedFaqs, setSyncedFaqs] = useState(faqs);
+  if (faqs !== syncedFaqs) {
+    setSyncedFaqs(faqs);
+    setFaqItems((faqs ?? []).map(faqToLocal));
+  }
 
   useEffect(() => {
     if (hasHydrated && !tokenState.access) router.push('/login');
@@ -116,17 +172,17 @@ const MyPageAdminLanding = () => {
   }, [userProfile, router]);
 
   const handleCancel = () => {
-    setMetrics(MOCK_METRICS);
-    setTrackItems(MOCK_TRACK_ITEMS);
-    setActivityItems(MOCK_ACTIVITY_ITEMS);
-    setProjects(MOCK_PROJECTS);
-    setFaqItems(MOCK_FAQ_ITEMS);
+    setIntroduceMetrics(introduce ? introduceToLocal(introduce) : DEFAULT_INTRODUCE_METRICS);
+    setTrackItems((tracks ?? []).map(trackToLocal));
+    setActivityItems((activities ?? []).map(activityToLocal));
+    setProjectItems((projects ?? []).map(projectToLocal));
+    setFaqItems((faqs ?? []).map(faqToLocal));
     setShowErrors(false);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const hasError =
-      isMetricsInvalid(metrics) ||
+      isMetricsInvalid(introduceMetrics) ||
       trackItems.some(isTrackItemInvalid) ||
       activityItems.some(isActivityItemInvalid) ||
       faqItems.some(isFaqItemInvalid);
@@ -136,7 +192,55 @@ const MyPageAdminLanding = () => {
       return;
     }
     setShowErrors(false);
-    setToastMessage('변경사항이 저장되었습니다.');
+    setIsSaving(true);
+    try {
+      await Promise.all([
+        updateIntroduce(tokenState, introduceToRequest(introduceMetrics)),
+        syncListSection({
+          currentItems: trackItems,
+          originalItems: tracks ?? [],
+          toLocal: trackToLocal,
+          toRequest: trackToRequest,
+          create: (form) => createTrack(tokenState, form),
+          update: (id, form) => updateTrack(tokenState, id, form),
+          remove: (id) => deleteTrack(tokenState, id),
+        }),
+        syncListSection({
+          currentItems: activityItems,
+          originalItems: activities ?? [],
+          toLocal: activityToLocal,
+          toRequest: activityToRequest,
+          create: (form) => createActivity(tokenState, form),
+          update: (id, form) => updateActivity(tokenState, id, form),
+          remove: (id) => deleteActivity(tokenState, id),
+        }),
+        updateProjectExposure(
+          tokenState,
+          projectItems.filter((project) => project.selected).map((project) => Number(project.id)),
+        ),
+        syncListSection({
+          currentItems: faqItems,
+          originalItems: faqs ?? [],
+          toLocal: faqToLocal,
+          toRequest: faqToRequest,
+          create: (form) => createFaq(tokenState, form),
+          update: (id, form) => updateFaq(tokenState, id, form),
+          remove: (id) => deleteFaq(tokenState, id),
+        }),
+      ]);
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['adminIntroduce'] }),
+        queryClient.invalidateQueries({ queryKey: ['adminTracks'] }),
+        queryClient.invalidateQueries({ queryKey: ['adminActivities'] }),
+        queryClient.invalidateQueries({ queryKey: ['adminProjects'] }),
+        queryClient.invalidateQueries({ queryKey: ['adminFaqs'] }),
+      ]);
+      setToastMessage('변경사항이 저장되었습니다.');
+    } catch {
+      setToastMessage('저장 중 오류가 발생했습니다. 다시 시도해 주세요.');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   if (!userProfile || !isAdminRole(userProfile.role)) return null;
@@ -150,15 +254,15 @@ const MyPageAdminLanding = () => {
             <Button variant="outlined" color="assistive" size="small" onClick={handleCancel}>
               취소
             </Button>
-            <Button size="small" onClick={handleSave}>
+            <Button size="small" onClick={handleSave} loading={isSaving}>
               저장
             </Button>
           </ButtonRow>
         </TitleRow>
-        <IntroduceSection metrics={metrics} onChange={setMetrics} showErrors={showErrors} />
+        <IntroduceSection metrics={introduceMetrics} onChange={setIntroduceMetrics} showErrors={showErrors} />
         <TrackSection items={trackItems} onChange={setTrackItems} showErrors={showErrors} />
         <ActivitySection items={activityItems} onChange={setActivityItems} showErrors={showErrors} />
-        <ProjectSection projects={projects} onChange={setProjects} />
+        <ProjectSection projects={projectItems} onChange={setProjectItems} />
         <FAQSection items={faqItems} onChange={setFaqItems} showErrors={showErrors} />
       </MyPageShell>
       <ToastWrapper>
