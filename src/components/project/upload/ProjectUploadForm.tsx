@@ -497,7 +497,7 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
         <TitleTextarea
           placeholder="메시지를 입력해 주세요."
           value={title}
-          onChange={(event) => setTitle(event.target.value)}
+          onChange={(event) => setTitle(event.target.value.slice(0, 12))}
           resize="fixed"
           maxLength={12}
           bottomTrailingContent={<CharCount>{title.length}/12</CharCount>}
@@ -520,7 +520,7 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
         <TitleTextarea
           placeholder="메시지를 입력해 주세요."
           value={subtitle}
-          onChange={(event) => setSubtitle(event.target.value)}
+          onChange={(event) => setSubtitle(event.target.value.slice(0, 80))}
           resize="fixed"
           maxLength={80}
           bottomTrailingContent={<CharCount>{subtitle.length}/80</CharCount>}
@@ -543,7 +543,7 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
         <ContentTextarea
           placeholder={CONTENT_PLACEHOLDER}
           value={description}
-          onChange={(event) => setDescription(event.target.value)}
+          onChange={(event) => setDescription(event.target.value.slice(0, 300))}
           resize="fixed"
           maxLength={300}
           bottomTrailingContent={<CharCount>{description.length}/300</CharCount>}
