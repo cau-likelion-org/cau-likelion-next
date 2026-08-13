@@ -66,6 +66,14 @@ const MyPageAssignmentDetail = () => {
   const [deadlineOpen, setDeadlineOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
 
+  // 과제 수정 후 넘어오면 토스트 표시
+  useEffect(() => {
+    if (!sessionStorage.getItem('assignmentEdited')) return;
+    sessionStorage.removeItem('assignmentEdited');
+    const frame = requestAnimationFrame(() => setToastMessage('변경사항이 저장되었습니다.'));
+    return () => cancelAnimationFrame(frame);
+  }, []);
+
   const deadlineMutation = useMutation({
     mutationFn: ({ assignmentId, payload }: { assignmentId: number; payload: IndividualDeadlinePayload }) =>
       updateIndividualDeadlines(tokenState, assignmentId, payload),
@@ -116,7 +124,12 @@ const MyPageAssignmentDetail = () => {
 
       <WeekRow>
         <WeekTitle>{week}주차 세션 과제</WeekTitle>
-        <Button variant="solid" color="assistive" size="medium">
+        <Button
+          variant="solid"
+          color="assistive"
+          size="medium"
+          onClick={() => router.push(`/mypage/assignment/edit/${week}`)}
+        >
           과제 수정
         </Button>
       </WeekRow>
