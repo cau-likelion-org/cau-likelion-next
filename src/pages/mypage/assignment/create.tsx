@@ -28,8 +28,10 @@ const AssignmentCreatePage = () => {
 
   const createMutation = useMutation({
     mutationFn: (payload: AssignmentCreateRequest) => createAssignments(tokenState, payload),
-    onSuccess: () => {
+    onSuccess: (_data, payload) => {
       queryClient.invalidateQueries({ queryKey: ['staffAssignments'] });
+      // 목록 페이지에서 토스트로 안내 (N주차 과제가 생성되었습니다.)
+      sessionStorage.setItem('assignmentCreatedWeek', String(payload.week));
       router.push('/mypage/assignment');
     },
   });

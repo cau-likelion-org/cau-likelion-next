@@ -1,11 +1,12 @@
 import { UserProfile } from '@@types/request';
 import { AxiosError } from 'axios';
-import { ReactElement, useEffect } from 'react';
+import { ReactElement, useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
 
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
+import Toast from '@common/toast/Toast';
 import MyPageShell from '@mypage/component/MyPageShell';
 import StaffAssignmentCard from '@mypage/component/StaffAssignmentCard';
 import WeeklyAssignmentCard, { WeeklyAssignmentGroup } from '@mypage/component/WeeklyAssignmentCard';
@@ -91,6 +92,16 @@ const MyPageAssignment = () => {
     if (hasHydrated && !tokenState.access) router.push('/login');
   }, [hasHydrated, tokenState, router]);
 
+  // 과제 생성 완료 후 넘어오면 토스트 표시
+  const [toastMessage, setToastMessage] = useState('');
+  useEffect(() => {
+    const createdWeek = sessionStorage.getItem('assignmentCreatedWeek');
+    if (!createdWeek) return;
+    sessionStorage.removeItem('assignmentCreatedWeek');
+    const frame = requestAnimationFrame(() => setToastMessage(`${createdWeek}주차 과제가 생성되었습니다.`));
+    return () => cancelAnimationFrame(frame);
+  }, []);
+
   const isStaff = !!userProfile && isAdminRole(userProfile.role);
 
   // 운영진: 본인 파트에 생성한 과제 목록 (주차별)
@@ -114,39 +125,44 @@ const MyPageAssignment = () => {
   if (!userProfile) return null;
 
   return (
-    <MyPageShell active="assignment" isAdmin={isAdminRole(userProfile.role)}>
-      {isStaff ? (
-        <>
-          <Header>
+    <>
+      <MyPageShell active="assignment" isAdmin={isAdminRole(userProfile.role)}>
+        {isStaff ? (
+          <>
+            <Header>
+              <TitleRow>
+                <SectionTitle>주차별 과제 현황</SectionTitle>
+                <TrackName>{userProfile.partName} 파트</TrackName>
+              </TitleRow>
+              <CreateButton type="button" onClick={() => router.push('/mypage/assignment/create')}>
+                과제 생성
+                <IcPlus width={16} height={16} />
+              </CreateButton>
+            </Header>
+            <List>
+              {staffWeeks.map((group) => (
+                <StaffAssignmentCard key={group.week} week={group.week} assignments={group.assignments} />
+              ))}
+            </List>
+          </>
+        ) : (
+          <>
             <TitleRow>
               <SectionTitle>주차별 과제 현황</SectionTitle>
               <TrackName>{userProfile.partName} 파트</TrackName>
             </TitleRow>
-            <CreateButton type="button" onClick={() => router.push('/mypage/assignment/create')}>
-              과제 생성
-              <IcPlus width={16} height={16} />
-            </CreateButton>
-          </Header>
-          <List>
-            {staffWeeks.map((group) => (
-              <StaffAssignmentCard key={group.week} week={group.week} assignments={group.assignments} />
-            ))}
-          </List>
-        </>
-      ) : (
-        <>
-          <TitleRow>
-            <SectionTitle>주차별 과제 현황</SectionTitle>
-            <TrackName>{userProfile.partName} 파트</TrackName>
-          </TitleRow>
-          <List>
-            {MOCK_WEEKLY_ASSIGNMENTS.map((group) => (
-              <WeeklyAssignmentCard key={group.week} group={group} />
-            ))}
-          </List>
-        </>
-      )}
-    </MyPageShell>
+            <List>
+              {MOCK_WEEKLY_ASSIGNMENTS.map((group) => (
+                <WeeklyAssignmentCard key={group.week} group={group} />
+              ))}
+            </List>
+          </>
+        )}
+      </MyPageShell>
+      <ToastWrapper>
+        <Toast variant="positive" text={toastMessage} show={!!toastMessage} onHidden={() => setToastMessage('')} />
+      </ToastWrapper>
+    </>
   );
 };
 
@@ -155,6 +171,15 @@ MyPageAssignment.getLayout = function getLayout(page: ReactElement) {
 };
 
 export default MyPageAssignment;
+
+const ToastWrapper = styled.div`
+  position: fixed;
+  top: 110px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10001;
+  pointer-events: none;
+`;
 
 const Header = styled.div`
   display: flex;
