@@ -43,7 +43,12 @@ const AssignmentCreatePage = () => {
       partName={userProfile.partName}
       submitting={createMutation.isPending}
       onClose={() => router.push('/mypage/assignment')}
-      onSubmit={(payload) => createMutation.mutate(payload)}
+      onSubmit={(week, drafts) =>
+        createMutation.mutate({
+          week,
+          assignments: drafts.map(({ title, detail, endDate, type }) => ({ title, detail, endDate, type })),
+        })
+      }
     />
   );
 };

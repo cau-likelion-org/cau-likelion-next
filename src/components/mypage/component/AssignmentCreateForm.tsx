@@ -23,7 +23,8 @@ const SUBMIT_OPTIONS = ['파일첨부', '링크첨부'];
 const TYPE_TO_LABEL: Record<AssignmentSubmitType, string> = { FILE: '파일첨부', URL: '링크첨부' };
 const LABEL_TO_TYPE: Record<string, AssignmentSubmitType> = { 파일첨부: 'FILE', 링크첨부: 'URL' };
 
-interface AssignmentDraft {
+export interface AssignmentDraft {
+  assignmentId?: number; // 수정 모드에서 기존 과제 식별 (없으면 새로 추가한 과제)
   title: string;
   detail: string;
   endDate: string;
@@ -34,15 +35,30 @@ const emptyDraft = (): AssignmentDraft => ({ title: '', detail: '', endDate: '',
 
 interface AssignmentCreateFormProps {
   partName: string;
+  mode?: 'create' | 'edit';
+  initialWeek?: number; // 수정 모드: 주차 고정 (API상 주차는 변경 불가)
+  initialDrafts?: AssignmentDraft[];
   submitting?: boolean;
   onClose: () => void;
-  onSubmit: (payload: AssignmentCreateRequest) => void;
+  onSubmit: (week: number, drafts: AssignmentDraft[]) => void;
+  onDeleteAssignment?: (assignmentId: number) => void; // 수정 모드: 기존 과제 삭제
 }
 
-const AssignmentCreateForm = ({ partName, submitting, onClose, onSubmit }: AssignmentCreateFormProps) => {
+const AssignmentCreateForm = ({
+  partName,
+  mode = 'create',
+  initialWeek,
+  initialDrafts,
+  submitting,
+  onClose,
+  onSubmit,
+  onDeleteAssignment,
+}: AssignmentCreateFormProps) => {
+  const isEdit = mode === 'edit';
   const router = useRouter();
-  const [week, setWeek] = useState('');
-  const [drafts, setDrafts] = useState<AssignmentDraft[]>([emptyDraft()]);
+  const [week, setWeek] = useState(initialWeek != null ? String(initialWeek) : '');
+  const [drafts, setDrafts] = useState<AssignmentDraft[]>(initialDrafts ?? [emptyDraft()]);
+  const [deleteTarget, setDeleteTarget] = useState<number | null>(null);
   // 제출 시도 후에만 필수항목 에러 표시 (프로젝트 추가 admin 페이지와 동일)
   const [showErrors, setShowErrors] = useState(false);
   // 저장 전 이탈 방지 모달
@@ -60,8 +76,11 @@ const AssignmentCreateForm = ({ partName, submitting, onClose, onSubmit }: Assig
     !isUnfilled(week) &&
     drafts.every((draft) => !isUnfilled(draft.title) && !isUnfilled(draft.detail) && draft.endDate);
 
-  // 입력한 내용이 있으면 이탈 시 경고
-  const isDirty = !isUnfilled(week) || drafts.some((draft) => draft.title || draft.detail || draft.endDate);
+  // 이탈 시 경고: 생성은 입력한 내용이 있으면, 수정은 처음 값에서 바뀌었으면
+  const [initialSnapshot, setInitialSnapshot] = useState(() => JSON.stringify(initialDrafts ?? []));
+  const isDirty = isEdit
+    ? JSON.stringify(drafts) !== initialSnapshot
+    : !isUnfilled(week) || drafts.some((draft) => draft.title || draft.detail || draft.endDate);
 
   // 사이드바/뒤로가기 등 라우트 변경 가로채기
   useEffect(() => {
@@ -116,15 +135,29 @@ const AssignmentCreateForm = ({ partName, submitting, onClose, onSubmit }: Assig
       return;
     }
     bypassGuardRef.current = true;
-    onSubmit({
-      week: Number(week),
-      assignments: drafts.map((draft) => ({
-        title: draft.title.trim(),
-        detail: draft.detail.trim(),
-        endDate: draft.endDate,
-        type: draft.type,
-      })),
-    });
+    onSubmit(
+      Number(week),
+      drafts.map((draft) => ({ ...draft, title: draft.title.trim(), detail: draft.detail.trim() })),
+    );
+  };
+
+  // 수정 모드: 기존 과제는 확인 후 API 삭제, 새로 추가한 카드는 그냥 제거
+  const handleRemoveCard = (index: number) => {
+    const target = drafts[index];
+    if (isEdit && target.assignmentId != null) {
+      setDeleteTarget(target.assignmentId);
+      return;
+    }
+    removeDraft(index);
+  };
+
+  const confirmDelete = () => {
+    if (deleteTarget == null) return;
+    const next = drafts.filter((draft) => draft.assignmentId !== deleteTarget);
+    setDrafts(next);
+    setInitialSnapshot(JSON.stringify(next)); // 삭제는 이미 저장된 변경이므로 이탈 경고 대상이 아님
+    onDeleteAssignment?.(deleteTarget);
+    setDeleteTarget(null);
   };
 
   return (
@@ -134,7 +167,7 @@ const AssignmentCreateForm = ({ partName, submitting, onClose, onSubmit }: Assig
           <IcChevronLeft width={16} height={16} />
           닫기
         </CloseButton>
-        <PageTitle>과제 생성하기</PageTitle>
+        <PageTitle>{isEdit ? '과제 수정하기' : '과제 생성하기'}</PageTitle>
       </TopBar>
 
       <TopFields>
@@ -147,16 +180,25 @@ const AssignmentCreateForm = ({ partName, submitting, onClose, onSubmit }: Assig
           </StaticField>
         </TopField>
         <TopField>
-          <TextField
-            heading="주차 구분"
-            required
-            placeholder="숫자 입력"
-            inputMode="numeric"
-            value={week}
-            onChange={(event) => setWeek(event.target.value.replace(/[^0-9]/g, ''))}
-            status={showErrors && isUnfilled(week) ? 'negative' : 'normal'}
-            description={showErrors && isUnfilled(week) ? '주차를 입력해 주세요.' : undefined}
-          />
+          {isEdit ? (
+            <StaticField>
+              <FieldHeadingSmall>
+                주차 구분<Required>*</Required>
+              </FieldHeadingSmall>
+              <ReadonlyBox>{week}</ReadonlyBox>
+            </StaticField>
+          ) : (
+            <TextField
+              heading="주차 구분"
+              required
+              placeholder="숫자 입력"
+              inputMode="numeric"
+              value={week}
+              onChange={(event) => setWeek(event.target.value.replace(/[^0-9]/g, ''))}
+              status={showErrors && isUnfilled(week) ? 'negative' : 'normal'}
+              description={showErrors && isUnfilled(week) ? '주차를 입력해 주세요.' : undefined}
+            />
+          )}
         </TopField>
       </TopFields>
 
@@ -212,7 +254,7 @@ const AssignmentCreateForm = ({ partName, submitting, onClose, onSubmit }: Assig
                 />
                 <SubmitTypeSelect value={draft.type} onChange={(type) => updateDraft(index, { type })} />
               </BottomLeft>
-              {drafts.length > 1 && <RemoveCardButton onClick={() => removeDraft(index)} />}
+              {(isEdit || drafts.length > 1) && <RemoveCardButton onClick={() => handleRemoveCard(index)} />}
             </CardBottom>
           </Card>
         ))}
@@ -222,7 +264,7 @@ const AssignmentCreateForm = ({ partName, submitting, onClose, onSubmit }: Assig
 
       <SubmitRow>
         <SubmitButton type="button" disabled={submitting} onClick={handleSubmit}>
-          생성하기
+          {isEdit ? '저장하기' : '생성하기'}
         </SubmitButton>
       </SubmitRow>
 
@@ -232,7 +274,7 @@ const AssignmentCreateForm = ({ partName, submitting, onClose, onSubmit }: Assig
           <LeaveModal>
             <LeaveInfo>
               <LeaveMessage>
-                과제 생성 전 이탈 시
+                {isEdit ? '수정 완료 전 이탈 시' : '과제 생성 전 이탈 시'}
                 <br />
                 작업 내용이 저장되지 않습니다.
               </LeaveMessage>
@@ -243,6 +285,25 @@ const AssignmentCreateForm = ({ partName, submitting, onClose, onSubmit }: Assig
               </LeaveButton>
               <LeaveButton type="button" $primary onClick={confirmLeave}>
                 확인
+              </LeaveButton>
+            </LeaveActions>
+          </LeaveModal>
+        </LeaveOverlay>
+      )}
+
+      {deleteTarget != null && (
+        <LeaveOverlay role="dialog" aria-modal="true">
+          <LeaveDimmer onClick={() => setDeleteTarget(null)} />
+          <LeaveModal>
+            <LeaveInfo>
+              <LeaveMessage>과제를 정말 삭제하시겠습니까?</LeaveMessage>
+            </LeaveInfo>
+            <LeaveActions>
+              <LeaveButton type="button" onClick={() => setDeleteTarget(null)}>
+                취소
+              </LeaveButton>
+              <LeaveButton type="button" $primary onClick={confirmDelete}>
+                삭제
               </LeaveButton>
             </LeaveActions>
           </LeaveModal>
