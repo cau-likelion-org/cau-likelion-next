@@ -22,3 +22,23 @@ export function getStaffAssignments(token: IToken) {
   const authAxios = getAuthAxios(token);
   return authAxios.get<AssignmentWeekGroup[]>('/api/assignments/staff').then((res) => res.data);
 }
+
+export type AssignmentSubmitType = 'FILE' | 'URL';
+
+export interface AssignmentCreateItem {
+  title: string;
+  detail: string;
+  endDate: string;
+  type: AssignmentSubmitType;
+}
+
+export interface AssignmentCreateRequest {
+  week: number;
+  assignments: AssignmentCreateItem[];
+}
+
+// 운영진: 본인 파트에 과제 생성 + 파트는 토큰의 소속 파트로 자동 지정
+export function createAssignments(token: IToken, payload: AssignmentCreateRequest) {
+  const authAxios = getAuthAxios(token);
+  return authAxios.post('/api/assignments', payload).then((res) => res.data);
+}

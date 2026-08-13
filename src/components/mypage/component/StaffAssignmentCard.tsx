@@ -40,6 +40,7 @@ const StaffAssignmentCard = ({ week, assignments, onDetail }: StaffAssignmentCar
       </CardHeader>
 
       <Rows>
+        {assignments.length === 0 && <EmptyRow>아직 생성된 과제가 없어요</EmptyRow>}
         {assignments.map((assignment) => {
           // 마감 전이면 '제출 전', 마감+유예가 지났으면 '미제출'
           const isPastDeadline = new Date(assignment.endDate).getTime() < now;
@@ -125,6 +126,12 @@ const Row = styled.div`
   align-items: center;
   justify-content: space-between;
   width: 100%;
+`;
+
+const EmptyRow = styled.p`
+  margin: 0;
+  color: ${TEXT_MUTED};
+  ${typographyCss(Typography.body1Normal.medium)}
 `;
 
 const AssignmentTitle = styled.p`

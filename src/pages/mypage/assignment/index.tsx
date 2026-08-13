@@ -100,6 +100,17 @@ const MyPageAssignment = () => {
     enabled: isStaff,
   });
 
+  // 최신 주차가 18이면 18 → 1주차까지 연속으로 표시 (과제 없는 주차는 빈 카드)
+  const staffWeeks = (() => {
+    const groups = staffWeekGroups ?? [];
+    const maxWeek = groups.reduce((max, group) => Math.max(max, group.week), 0);
+    const byWeek = new Map(groups.map((group) => [group.week, group.assignments]));
+    return Array.from({ length: maxWeek }, (_, index) => {
+      const week = maxWeek - index;
+      return { week, assignments: byWeek.get(week) ?? [] };
+    });
+  })();
+
   if (!userProfile) return null;
 
   return (
@@ -111,13 +122,13 @@ const MyPageAssignment = () => {
               <SectionTitle>주차별 과제 현황</SectionTitle>
               <TrackName>{userProfile.partName} 파트</TrackName>
             </TitleRow>
-            <CreateButton type="button">
+            <CreateButton type="button" onClick={() => router.push('/mypage/assignment/create')}>
               과제 생성
               <IcPlus width={16} height={16} />
             </CreateButton>
           </Header>
           <List>
-            {(staffWeekGroups ?? []).map((group) => (
+            {staffWeeks.map((group) => (
               <StaffAssignmentCard key={group.week} week={group.week} assignments={group.assignments} />
             ))}
           </List>
