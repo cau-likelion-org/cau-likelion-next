@@ -7,6 +7,7 @@ import IcCircleCheck from './icon/ic-circle-check.svg';
 import IcCircleClose from './icon/ic-circle-close.svg';
 import IcCircleExclamation from './icon/ic-circle-exclamation.svg';
 import IcDocument from './icon/ic-document.svg';
+import IcDownload from './icon/ic-download.svg';
 import IcEmail from './icon/ic-email.svg';
 import IcInstagram from './icon/ic-instagram.svg';
 import IcKakaotalk from './icon/ic-kakaotalk.svg';
@@ -29,6 +30,7 @@ export {
   IcCircleClose,
   IcCircleExclamation,
   IcDocument,
+  IcDownload,
   IcEmail,
   IcInstagram,
   IcKakaotalk,
