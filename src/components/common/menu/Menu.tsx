@@ -59,9 +59,7 @@ const Menu = ({ className, variant = 'normal', cellPadding = 8, items, actionAre
             )}
             {item.icon && <ItemIcon>{item.icon}</ItemIcon>}
             <TextGroup>
-              <ItemLabel active={variant === 'normal' && !!item.selected} disabled={item.disabled}>
-                {item.label}
-              </ItemLabel>
+              <ItemLabel disabled={item.disabled}>{item.label}</ItemLabel>
               {item.caption && <ItemCaption>{item.caption}</ItemCaption>}
             </TextGroup>
           </Cell>
@@ -166,11 +164,11 @@ const TextGroup = styled.div`
   min-width: 0;
 `;
 
-const ItemLabel = styled.p<{ active?: boolean; disabled?: boolean }>`
+const ItemLabel = styled.p<{ disabled?: boolean }>`
   margin: 0;
   min-height: 24px;
-  color: ${(props) => (props.disabled ? Label.alternative : props.active ? Orange.o500 : Label.normal)};
-  ${(props) => typographyCss(props.active ? Typography.body1Normal.medium : Typography.body1Normal.regular)}
+  color: ${(props) => (props.disabled ? Label.alternative : Label.normal)};
+  ${typographyCss(Typography.body1Normal.regular)}
 `;
 
 const ItemCaption = styled.p`
