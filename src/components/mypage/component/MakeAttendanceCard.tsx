@@ -34,12 +34,20 @@ const MakeAttendanceCard = () => {
   });
 
   const isCreated = createMutation.isSuccess;
-  const canSubmit = !!date && !!weekNumber && !!password && !createMutation.isPending && !isCreated;
+  const hasPassword = !!password;
+  const canSave = !!date && !!weekNumber && hasPassword && !createMutation.isPending && !isCreated;
+  const buttonDisabled = isCreated ? true : hasPassword ? !canSave : false;
 
   const handleWeekChange = (value: string) => setWeekNumber(value.replace(/\D/g, '').slice(0, 2));
 
-  const handleCreate = () => {
-    if (!canSubmit) return;
+  // 1단계: 비밀번호 생성 → 2단계: 저장(출석부 생성)
+  const handleButtonClick = () => {
+    if (isCreated) return;
+    if (!hasPassword) {
+      setPassword(generatePassword());
+      return;
+    }
+    if (!canSave) return;
     setSubmitError('');
     createMutation.mutate({ date, password, weekNumber: Number(weekNumber) });
   };
@@ -87,17 +95,19 @@ const MakeAttendanceCard = () => {
                 <TextInput as="span" $placeholder={!password}>
                   {password || '랜덤 생성'}
                 </TextInput>
-                <RefreshButton
-                  type="button"
-                  aria-label="비밀번호 생성"
-                  disabled={isCreated}
-                  onClick={() => setPassword(generatePassword())}
-                >
-                  <IcRefresh width={22} height={22} />
-                </RefreshButton>
+                {hasPassword && (
+                  <RefreshButton
+                    type="button"
+                    aria-label="비밀번호 재생성"
+                    disabled={isCreated}
+                    onClick={() => setPassword(generatePassword())}
+                  >
+                    <IcRefresh width={22} height={22} />
+                  </RefreshButton>
+                )}
               </PasswordInputBox>
-              <GenerateButton type="button" disabled={!canSubmit} onClick={handleCreate}>
-                생성
+              <GenerateButton type="button" disabled={buttonDisabled} onClick={handleButtonClick}>
+                {hasPassword ? '저장' : '생성'}
               </GenerateButton>
             </PasswordRow>
           </Field>
