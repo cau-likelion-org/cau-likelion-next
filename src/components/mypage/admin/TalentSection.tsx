@@ -18,6 +18,8 @@ export interface TalentItem {
 
 export const isTalentItemInvalid = (item: TalentItem) => isUnfilled(item.partName) || isUnfilled(item.content);
 
+export const isTalentItemsInvalid = (items: TalentItem[]) => items.length === 0 || items.some(isTalentItemInvalid);
+
 const createEmptyItem = (): TalentItem => ({ id: createId(), partName: '', content: '' });
 
 const TalentSection = ({

@@ -29,7 +29,7 @@ export interface CurriculumTrackItems {
 const isCurriculumWeekInvalid = (week: CurriculumWeekItem) => isUnfilled(week.week) || isUnfilled(week.title);
 
 export const isCurriculumTracksInvalid = (tracks: CurriculumTrackItems[]) =>
-  tracks.some((track) => track.weeks.some(isCurriculumWeekInvalid));
+  tracks.some((track) => track.weeks.length === 0 || track.weeks.some(isCurriculumWeekInvalid));
 
 const createEmptyWeek = (): CurriculumWeekItem => ({ id: createId(), week: '', title: '', description: '' });
 
