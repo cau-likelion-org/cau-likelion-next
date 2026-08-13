@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/router';
 import styled from 'styled-components';
 
 import Select from '@common/select/Select';
@@ -10,8 +11,9 @@ import AddCardButton from '@mypage/admin/component/AddCardButton';
 import RemoveCardButton from '@mypage/admin/component/RemoveCardButton';
 import useListboxSelect from 'src/hooks/useListboxSelect';
 import { AssignmentCreateRequest, AssignmentSubmitType } from 'src/apis/assignment';
-import { IcCalendar, IcChevronLeft } from '@assets/svg';
-import { BackgroundWhite, Label, Line, Orange, State } from '@utils/constant/color';
+import { isUnfilled } from '@utils/index';
+import { IcCalendar, IcChevronLeft, IcCircleExclamation } from '@assets/svg';
+import { BackgroundWhite, Fill, Label, Line, Material, Orange, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 const TITLE_MAX = 12;
@@ -38,8 +40,15 @@ interface AssignmentCreateFormProps {
 }
 
 const AssignmentCreateForm = ({ partName, submitting, onClose, onSubmit }: AssignmentCreateFormProps) => {
+  const router = useRouter();
   const [week, setWeek] = useState('');
   const [drafts, setDrafts] = useState<AssignmentDraft[]>([emptyDraft()]);
+  // 제출 시도 후에만 필수항목 에러 표시 (프로젝트 추가 admin 페이지와 동일)
+  const [showErrors, setShowErrors] = useState(false);
+  // 저장 전 이탈 방지 모달
+  const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
+  const bypassGuardRef = useRef(false); // 제출 성공/이탈 확인 시 가드 우회
+  const pendingUrlRef = useRef<string | null>(null); // 라우트 변경으로 막힌 목적지
 
   const updateDraft = (index: number, patch: Partial<AssignmentDraft>) => {
     setDrafts((prev) => prev.map((draft, i) => (i === index ? { ...draft, ...patch } : draft)));
@@ -48,10 +57,65 @@ const AssignmentCreateForm = ({ partName, submitting, onClose, onSubmit }: Assig
   const removeDraft = (index: number) => setDrafts((prev) => prev.filter((_, i) => i !== index));
 
   const canSubmit =
-    week.trim() !== '' && drafts.every((draft) => draft.title.trim() && draft.detail.trim() && draft.endDate);
+    !isUnfilled(week) &&
+    drafts.every((draft) => !isUnfilled(draft.title) && !isUnfilled(draft.detail) && draft.endDate);
+
+  // 입력한 내용이 있으면 이탈 시 경고
+  const isDirty = !isUnfilled(week) || drafts.some((draft) => draft.title || draft.detail || draft.endDate);
+
+  // 사이드바/뒤로가기 등 라우트 변경 가로채기
+  useEffect(() => {
+    const handleRouteChangeStart = (url: string) => {
+      if (bypassGuardRef.current || !isDirty) return;
+      pendingUrlRef.current = url;
+      setShowLeaveConfirm(true);
+      router.events.emit('routeChangeError');
+      throw '과제 생성 이탈 취소 (저장되지 않은 작업)';
+    };
+    router.events.on('routeChangeStart', handleRouteChangeStart);
+    return () => router.events.off('routeChangeStart', handleRouteChangeStart);
+  }, [isDirty, router.events]);
+
+  // 새로고침/탭 닫기
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      if (!isDirty || bypassGuardRef.current) return;
+      event.preventDefault();
+      event.returnValue = '';
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [isDirty]);
+
+  const handleClose = () => {
+    if (isDirty) {
+      pendingUrlRef.current = null;
+      setShowLeaveConfirm(true);
+    } else {
+      onClose();
+    }
+  };
+
+  const confirmLeave = () => {
+    bypassGuardRef.current = true;
+    setShowLeaveConfirm(false);
+    const url = pendingUrlRef.current;
+    if (url) router.push(url);
+    else onClose();
+  };
+
+  const cancelLeave = () => {
+    pendingUrlRef.current = null;
+    setShowLeaveConfirm(false);
+  };
 
   const handleSubmit = () => {
-    if (!canSubmit || submitting) return;
+    if (submitting) return;
+    if (!canSubmit) {
+      setShowErrors(true);
+      return;
+    }
+    bypassGuardRef.current = true;
     onSubmit({
       week: Number(week),
       assignments: drafts.map((draft) => ({
@@ -66,7 +130,7 @@ const AssignmentCreateForm = ({ partName, submitting, onClose, onSubmit }: Assig
   return (
     <Page>
       <TopBar>
-        <CloseButton type="button" onClick={onClose}>
+        <CloseButton type="button" onClick={handleClose}>
           <IcChevronLeft width={16} height={16} />
           닫기
         </CloseButton>
@@ -75,7 +139,12 @@ const AssignmentCreateForm = ({ partName, submitting, onClose, onSubmit }: Assig
 
       <TopFields>
         <TopField>
-          <Select heading="파트 구분" required value={partName} disabled />
+          <StaticField>
+            <FieldHeadingSmall>
+              파트 구분<Required>*</Required>
+            </FieldHeadingSmall>
+            <ReadonlyBox>{partName}</ReadonlyBox>
+          </StaticField>
         </TopField>
         <TopField>
           <TextField
@@ -85,6 +154,8 @@ const AssignmentCreateForm = ({ partName, submitting, onClose, onSubmit }: Assig
             inputMode="numeric"
             value={week}
             onChange={(event) => setWeek(event.target.value.replace(/[^0-9]/g, ''))}
+            status={showErrors && isUnfilled(week) ? 'negative' : 'normal'}
+            description={showErrors && isUnfilled(week) ? '주차를 입력해 주세요.' : undefined}
           />
         </TopField>
       </TopFields>
@@ -96,12 +167,14 @@ const AssignmentCreateForm = ({ partName, submitting, onClose, onSubmit }: Assig
               <FieldHeadingLarge>
                 과제 이름<Required $large>*</Required>
               </FieldHeadingLarge>
-              <Textarea
+              <CompactTextarea
                 resize="fixed"
                 placeholder="메시지를 입력해 주세요."
                 maxLength={TITLE_MAX}
                 value={draft.title}
                 onChange={(event) => updateDraft(index, { title: event.target.value })}
+                status={showErrors && isUnfilled(draft.title) ? 'negative' : 'normal'}
+                description={showErrors && isUnfilled(draft.title) ? '과제 이름을 입력해 주세요.' : undefined}
                 bottomTrailingContent={
                   <CharCount>
                     {draft.title.length}/{TITLE_MAX}
@@ -114,12 +187,14 @@ const AssignmentCreateForm = ({ partName, submitting, onClose, onSubmit }: Assig
               <FieldHeadingLarge>
                 과제 설명<Required $large>*</Required>
               </FieldHeadingLarge>
-              <Textarea
+              <CompactTextarea
                 resize="fixed"
                 placeholder="과제에 대한 설명을 작성해주세요."
                 maxLength={DETAIL_MAX}
                 value={draft.detail}
                 onChange={(event) => updateDraft(index, { detail: event.target.value })}
+                status={showErrors && isUnfilled(draft.detail) ? 'negative' : 'normal'}
+                description={showErrors && isUnfilled(draft.detail) ? '과제 설명을 입력해 주세요.' : undefined}
                 bottomTrailingContent={
                   <CharCount>
                     {draft.detail.length}/{DETAIL_MAX}
@@ -130,7 +205,11 @@ const AssignmentCreateForm = ({ partName, submitting, onClose, onSubmit }: Assig
 
             <CardBottom>
               <BottomLeft>
-                <DateField value={draft.endDate} onChange={(value) => updateDraft(index, { endDate: value })} />
+                <DateField
+                  value={draft.endDate}
+                  onChange={(value) => updateDraft(index, { endDate: value })}
+                  invalid={showErrors && !draft.endDate}
+                />
                 <SubmitTypeSelect value={draft.type} onChange={(type) => updateDraft(index, { type })} />
               </BottomLeft>
               {drafts.length > 1 && <RemoveCardButton onClick={() => removeDraft(index)} />}
@@ -142,10 +221,33 @@ const AssignmentCreateForm = ({ partName, submitting, onClose, onSubmit }: Assig
       <AddCardButton onClick={addDraft} ariaLabel="과제 추가" />
 
       <SubmitRow>
-        <SubmitButton type="button" disabled={!canSubmit || submitting} onClick={handleSubmit}>
+        <SubmitButton type="button" disabled={submitting} onClick={handleSubmit}>
           생성하기
         </SubmitButton>
       </SubmitRow>
+
+      {showLeaveConfirm && (
+        <LeaveOverlay role="dialog" aria-modal="true">
+          <LeaveDimmer onClick={cancelLeave} />
+          <LeaveModal>
+            <LeaveInfo>
+              <LeaveMessage>
+                과제 생성 전 이탈 시
+                <br />
+                작업 내용이 저장되지 않습니다.
+              </LeaveMessage>
+            </LeaveInfo>
+            <LeaveActions>
+              <LeaveButton type="button" onClick={cancelLeave}>
+                취소
+              </LeaveButton>
+              <LeaveButton type="button" $primary onClick={confirmLeave}>
+                확인
+              </LeaveButton>
+            </LeaveActions>
+          </LeaveModal>
+        </LeaveOverlay>
+      )}
     </Page>
   );
 };
@@ -197,17 +299,30 @@ const SubmitTypeSelect = ({
 };
 
 // 마감일: 달력 아이콘 + 네이티브 date input(오버레이) 조합
-const DateField = ({ value, onChange }: { value: string; onChange: (value: string) => void }) => {
+const DateField = ({
+  value,
+  onChange,
+  invalid,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  invalid?: boolean;
+}) => {
   return (
     <DateColumn>
       <FieldHeadingSmall>
         마감일<Required>*</Required>
       </FieldHeadingSmall>
-      <DateBox>
+      <DateBox $invalid={!!invalid}>
         <DateIcon>
           <IcCalendar width={22} height={22} />
         </DateIcon>
         <DateText $filled={!!value}>{value ? value.replace(/-/g, '/') : '캘린더 선택'}</DateText>
+        {invalid && (
+          <ErrorIcon>
+            <IcCircleExclamation width={22} height={22} />
+          </ErrorIcon>
+        )}
         <HiddenDateInput
           type="date"
           value={value}
@@ -215,6 +330,7 @@ const DateField = ({ value, onChange }: { value: string; onChange: (value: strin
           onClick={(event) => event.currentTarget.showPicker?.()}
         />
       </DateBox>
+      {invalid && <DateError>마감일을 선택해 주세요.</DateError>}
     </DateColumn>
   );
 };
@@ -265,6 +381,29 @@ const TopField = styled.div`
   width: 160px;
 `;
 
+const StaticField = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+`;
+
+// 파트 구분: 자동 지정된 읽기전용 값 (Figma: Fill.subtle 배경 + Label.alternative 글씨)
+const ReadonlyBox = styled.div`
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 24px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background-color: ${Fill.subtle};
+  box-shadow:
+    inset 0 0 0 1px ${Line.subtle},
+    0 1px 2px rgba(0, 0, 0, 0.03);
+  color: ${Label.alternative};
+  ${typographyCss(Typography.body1Normal.regular)}
+`;
+
 const Cards = styled.div`
   display: flex;
   flex-direction: column;
@@ -288,6 +427,13 @@ const Field = styled.div`
   flex-direction: column;
   gap: 8px;
   width: 100%;
+`;
+
+// 공용 Textarea의 min-height(78px)가 디자인보다 커서 입력 박스를 컴팩트하게 축소 (Figma 입력 박스 ≈ 80px)
+const CompactTextarea = styled(Textarea)`
+  textarea {
+    min-height: 24px;
+  }
 `;
 
 const FieldHeadingLarge = styled.div`
@@ -333,13 +479,14 @@ const SelectColumn = styled.div`
 `;
 
 const DateColumn = styled.div`
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 8px;
   width: 236px;
 `;
 
-const DateBox = styled.div`
+const DateBox = styled.div<{ $invalid: boolean }>`
   position: relative;
   display: flex;
   align-items: center;
@@ -349,19 +496,37 @@ const DateBox = styled.div`
   padding: 12px;
   border-radius: 12px;
   background-color: rgba(255, 255, 255, 0.08);
-  box-shadow:
-    inset 0 0 0 1px ${Line.normal},
-    0 1px 2px -1px rgba(23, 23, 23, 0.1);
+  box-shadow: ${(props) =>
+    props.$invalid
+      ? 'inset 0 0 0 1px rgba(255, 0, 0, 0.28), 0 1px 2px -1px rgba(23, 23, 23, 0.1)'
+      : `inset 0 0 0 1px ${Line.normal}, 0 1px 2px -1px rgba(23, 23, 23, 0.1)`};
 
   &:focus-within {
     box-shadow: inset 0 0 0 2px rgba(71, 172, 255, 0.43);
   }
 `;
 
+// 에러 문구가 컬럼 높이를 늘려 마감일/제출형식 한 줄 정렬이 깨지지 않도록 absolute로 띄움
+const DateError = styled.p`
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin: 4px 0 0;
+  white-space: nowrap;
+  color: ${State.error};
+  ${typographyCss(Typography.caption1.regular)}
+`;
+
 const DateIcon = styled.span`
   display: flex;
   flex-shrink: 0;
   color: ${Label.alternative};
+`;
+
+const ErrorIcon = styled.span`
+  display: flex;
+  flex-shrink: 0;
+  color: ${State.error};
 `;
 
 const DateText = styled.span<{ $filled: boolean }>`
@@ -407,4 +572,65 @@ const SubmitButton = styled.button`
     color: ${Label.assistive};
     cursor: not-allowed;
   }
+`;
+
+// 저장 전 이탈 방지 모달 (Figma Alert/Resource/Dialog)
+const LeaveOverlay = styled.div`
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20px;
+  z-index: 1000;
+`;
+
+const LeaveDimmer = styled.div`
+  position: absolute;
+  inset: 0;
+  background-color: ${Material.dimmer};
+  opacity: 0.43;
+`;
+
+const LeaveModal = styled.div`
+  position: relative;
+  width: 100%;
+  min-width: 320px;
+  max-width: 400px;
+  border-radius: 16px;
+  background-color: ${BackgroundWhite.primary};
+  overflow: hidden;
+`;
+
+const LeaveInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 28px;
+`;
+
+const LeaveMessage = styled.p`
+  margin: 0;
+  width: 100%;
+  color: ${Label.normal};
+  ${typographyCss(Typography.heading2.bold)}
+`;
+
+const LeaveActions = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 24px;
+  padding: 0 28px 20px;
+`;
+
+const LeaveButton = styled.button<{ $primary?: boolean }>`
+  width: 60px;
+  padding: 4px 0;
+  border: none;
+  background: none;
+  text-align: center;
+  cursor: pointer;
+  color: ${(props) => (props.$primary ? Orange.o500 : Label.alternative)};
+  ${typographyCss(Typography.body1Normal.bold)}
 `;
