@@ -12,7 +12,7 @@ import AttendanceReasonModal from '@mypage/component/AttendanceReasonModal';
 import ListboxOptions from '@common/select/ListboxOptions';
 import useListboxSelect from 'src/hooks/useListboxSelect';
 import { IcCaretDown, IcCaretUp } from '@assets/svg';
-import { BackgroundColor, Fill, Label, Line, Orange } from '@utils/constant/color';
+import { BackgroundColor, Fill, Inverse, Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 // 컴팩트 caret 드롭다운 (헤더 파트 필터용). useListboxSelect + ListboxOptions 재사용.
@@ -209,6 +209,33 @@ const StatusDropdown = ({
   );
 };
 
+const ReasonCell = ({ label, reason }: { label: string; reason: string }) => {
+  const ref = useRef<HTMLSpanElement>(null);
+  const [position, setPosition] = useState<{ top: number; left: number } | null>(null);
+
+  const show = () => {
+    const rect = ref.current?.getBoundingClientRect();
+    if (rect) setPosition({ top: rect.bottom + 6, left: rect.left + rect.width / 2 });
+  };
+  const hide = () => setPosition(null);
+
+  return (
+    <>
+      <ReasonText ref={ref} tabIndex={0} onMouseEnter={show} onMouseLeave={hide} onFocus={show} onBlur={hide}>
+        {label}
+      </ReasonText>
+      {position &&
+        createPortal(
+          <TooltipRoot style={{ top: position.top, left: position.left }} role="tooltip">
+            <TooltipArrow />
+            <TooltipBubble>{reason}</TooltipBubble>
+          </TooltipRoot>,
+          document.body,
+        )}
+    </>
+  );
+};
+
 interface PartFilterConfig {
   value: string;
   options: string[];
@@ -356,6 +383,8 @@ const PartAttendanceTable = ({ members, partName, partFilter, onSave, isSaving }
                             value={status}
                             onChange={(next) => changeStatus(record, next)}
                           />
+                        ) : status && record?.reason ? (
+                          <ReasonCell label={STATUS_LABEL[status]} reason={record.reason} />
                         ) : (
                           <span>{status ? STATUS_LABEL[status] : '-'}</span>
                         )}
@@ -550,6 +579,45 @@ const StatusOption = styled.button<{ $active: boolean }>`
   color: ${Label.normal};
   cursor: pointer;
   ${typographyCss(Typography.body1Normal.regular)}
+`;
+
+// Inverse/Background(#1B1C1E) 88% — Figma 툴팁 배경
+const TOOLTIP_BG = 'rgba(27, 28, 30, 0.88)';
+
+const ReasonText = styled.span`
+  color: ${Orange.o500};
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: default;
+  outline: none;
+`;
+
+const TooltipRoot = styled.div`
+  position: fixed;
+  z-index: 10000;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+`;
+
+const TooltipArrow = styled.div`
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 8px solid ${TOOLTIP_BG};
+`;
+
+const TooltipBubble = styled.div`
+  max-width: 256px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background-color: ${TOOLTIP_BG};
+  color: ${Inverse.label};
+  word-break: keep-all;
+  ${typographyCss(Typography.label1Normal.medium)}
 `;
 
 const TableRow = styled.div`
