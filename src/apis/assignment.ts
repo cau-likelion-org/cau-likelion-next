@@ -108,3 +108,22 @@ export function evaluateSubmission(
     .patch<AssignmentSubmission>(`/api/assignments/${assignmentId}/submissions/staff/${submitId}`, payload)
     .then((res) => res.data);
 }
+
+export interface IndividualDeadlinePayload {
+  memberIds: number[]; // 선택한 아기사자 전원에게 동일한 마감일 적용
+  deadline: string;
+}
+
+export interface IndividualDeadline {
+  memberId: number;
+  memberName: string;
+  deadline: string;
+}
+
+// 운영진: 개별 마감일 변경
+export function updateIndividualDeadlines(token: IToken, assignmentId: number, payload: IndividualDeadlinePayload) {
+  const authAxios = getAuthAxios(token);
+  return authAxios
+    .patch<IndividualDeadline[]>(`/api/assignments/${assignmentId}/deadline`, payload)
+    .then((res) => res.data);
+}
