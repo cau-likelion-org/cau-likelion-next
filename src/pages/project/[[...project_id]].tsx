@@ -7,7 +7,7 @@ import { getPaths } from '@utils/index';
 import { GetStaticPaths, InferGetStaticPropsType } from 'next';
 import { useRouter } from 'next/router';
 import { ReactElement } from 'react';
-import { getProjectDetail, getProjects } from 'src/apis/project';
+import { getProjectDetail, getProjectThumbnail, getProjects } from 'src/apis/project';
 import DetailPageHead from 'src/components/meta/DetailPageHead';
 import ListPageHead from 'src/components/meta/ListPageHead';
 
@@ -33,9 +33,9 @@ const ProjectList = ({
         <DetailPageHead
           title={projectDetailStaticData.title}
           canoUrl={`https://cau-likelion.org/project/${projectDetailStaticData.id}`}
-          img={projectDetailStaticData.thumbnail}
+          img={getProjectThumbnail(projectDetailStaticData.images)}
           category={ARCHIVING.PROJECT}
-          description={projectDetailStaticData.subtitle}
+          description={projectDetailStaticData.tagline}
         />
       ) : (
         <ListPageHead category={ARCHIVING.PROJECT} canoUrl={'https://cau-likelion.org/project'} />

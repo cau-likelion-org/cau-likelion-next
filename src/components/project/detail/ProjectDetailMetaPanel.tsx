@@ -1,22 +1,24 @@
-import { IProjectDetail } from '@@types/request';
 import { IcLineHorizontal } from '@assets/svg';
 import Chip from '@common/chip/Chip';
-import { DEV_STACK } from '@utils/constant';
+import { ProjectLinkDto } from 'src/apis/project';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { FiLink } from 'react-icons/fi';
 import styled from 'styled-components';
 
-const LINK_TYPES = ['web', 'github', 'youtube'] as const;
-
 interface ProjectDetailMetaPanelProps {
-  date: string;
-  devStack: IProjectDetail['dev_stack'];
-  link: IProjectDetail['link'];
+  startDate: string;
+  endDate: string;
+  stack: string;
+  links: ProjectLinkDto[];
 }
 
-const ProjectDetailMetaPanel = ({ date, devStack, link }: ProjectDetailMetaPanelProps) => {
-  const [startDate, endDate] = date.split('~');
+const ProjectDetailMetaPanel = ({ startDate, endDate, stack, links }: ProjectDetailMetaPanelProps) => {
+  const stackItems = stack
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean);
+  const validLinks = links.filter((link) => link.url.trim());
 
   return (
     <Panel>
@@ -35,22 +37,19 @@ const ProjectDetailMetaPanel = ({ date, devStack, link }: ProjectDetailMetaPanel
       <Column>
         <RowLabel>기술스택</RowLabel>
         <ChipRow>
-          {devStack.map((stack) => (
-            <Chip key={stack} size="small">
-              {DEV_STACK[stack]}
+          {stackItems.map((item) => (
+            <Chip key={item} size="small">
+              {item}
             </Chip>
           ))}
         </ChipRow>
       </Column>
       <LinkRow>
-        {LINK_TYPES.map(
-          (type) =>
-            link[type] && (
-              <LinkButton key={type} href={link[type]} target="_blank" rel="noreferrer" aria-label={type}>
-                <FiLink size={20} color="#fff" />
-              </LinkButton>
-            ),
-        )}
+        {validLinks.map((link) => (
+          <LinkButton key={link.id} href={link.url} target="_blank" rel="noreferrer" aria-label={link.platform}>
+            <FiLink size={20} color="#fff" />
+          </LinkButton>
+        ))}
       </LinkRow>
     </Panel>
   );

@@ -1,11 +1,11 @@
-import { IProjectDetail, UserProfile } from '@@types/request';
+import { UserProfile } from '@@types/request';
 import { useQuery } from '@tanstack/react-query';
 import { AccentTint, Label, Material, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import { getUserProfile } from 'src/apis/account';
-import { getProjectDetail } from 'src/apis/project';
+import { PROJECT_CATEGORY_LABEL, ProjectResponseDto, getProjectDetail, getSortedProjectImages } from 'src/apis/project';
 import useTokenStore from 'src/store/useTokenStore';
 import { isAdminRole } from '@utils/index';
 import styled from 'styled-components';
@@ -15,7 +15,7 @@ import ProjectDetailTeamPanel from './ProjectDetailTeamPanel';
 
 interface ProjectDetailModalProps {
   projectId: string;
-  staticData?: IProjectDetail | null;
+  staticData?: ProjectResponseDto | null;
   onClose: () => void;
 }
 
@@ -29,7 +29,7 @@ const ProjectDetailModal = ({ projectId, staticData, onClose }: ProjectDetailMod
     enabled: !!tokenState.access,
   });
 
-  const { data } = useQuery<IProjectDetail>({
+  const { data } = useQuery<ProjectResponseDto>({
     queryKey: ['projectDetail', projectId],
     queryFn: () => getProjectDetail(projectId),
     initialData: staticData && String(staticData.id) === projectId ? staticData : undefined,
@@ -62,19 +62,24 @@ const ProjectDetailModal = ({ projectId, staticData, onClose }: ProjectDetailMod
         ) : (
           <>
             <Contents>
-              <ProjectDetailCarousel images={project.image} />
+              <ProjectDetailCarousel images={getSortedProjectImages(project.images)} />
               <TextBlock>
                 <Title>{project.title}</Title>
-                {project.subtitle && <Description>{project.subtitle}</Description>}
+                {project.tagline && <Description>{project.tagline}</Description>}
                 <BadgeRow>
-                  <Badge>{project.generation}기</Badge>
-                  <Badge>{project.category}</Badge>
+                  <Badge>{project.generationNumber}기</Badge>
+                  <Badge>{PROJECT_CATEGORY_LABEL[project.category]}</Badge>
                 </BadgeRow>
-                {project.description && <Description>{project.description.replace(/\\n/g, '\n')}</Description>}
+                {project.summary && <Description>{project.summary.replace(/\\n/g, '\n')}</Description>}
               </TextBlock>
               <PanelRow>
-                <ProjectDetailTeamPanel teamName={project.team_name} teamMember={project.team_member} />
-                <ProjectDetailMetaPanel date={project.date} devStack={project.dev_stack} link={project.link} />
+                <ProjectDetailTeamPanel teamName={project.teamName} members={project.members} />
+                <ProjectDetailMetaPanel
+                  startDate={project.startDate}
+                  endDate={project.endDate}
+                  stack={project.stack}
+                  links={project.links}
+                />
               </PanelRow>
             </Contents>
             <Actions>

@@ -1,43 +1,39 @@
-import { IProjectDetail, ProjectMemberRole } from '@@types/request';
 import Chip from '@common/chip/Chip';
+import { ProjectMemberDto } from 'src/apis/project';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import styled from 'styled-components';
 
-const MEMBER_ROLE_LABEL: Record<ProjectMemberRole, string> = {
-  pm: '기획',
-  design: '디자인',
-  frontend: '프론트',
-  backend: '백엔드',
-};
-
 interface ProjectDetailTeamPanelProps {
   teamName: string;
-  teamMember: IProjectDetail['team_member'];
+  members: ProjectMemberDto[];
 }
 
-const ProjectDetailTeamPanel = ({ teamName, teamMember }: ProjectDetailTeamPanelProps) => {
+const ProjectDetailTeamPanel = ({ teamName, members }: ProjectDetailTeamPanelProps) => {
+  const membersByPart = members.reduce<Array<[string, string[]]>>((acc, member) => {
+    const group = acc.find(([part]) => part === member.part);
+    if (group) group[1].push(member.name);
+    else acc.push([member.part, [member.name]]);
+    return acc;
+  }, []);
+
   return (
     <Panel>
       <Row>
         <RowLabel>팀명</RowLabel>
         <TeamName>{teamName}</TeamName>
       </Row>
-      {(Object.keys(MEMBER_ROLE_LABEL) as ProjectMemberRole[]).map((role) => {
-        const members = teamMember[role];
-        if (!members || members.length === 0) return null;
-        return (
-          <Row key={role}>
-            <RowLabel>{MEMBER_ROLE_LABEL[role]}</RowLabel>
-            <ChipRow>
-              {members.map((member) => (
-                <Chip key={member} size="small">
-                  {member}
-                </Chip>
-              ))}
-            </ChipRow>
-          </Row>
-        );
-      })}
+      {membersByPart.map(([part, names]) => (
+        <Row key={part}>
+          <RowLabel>{part}</RowLabel>
+          <ChipRow>
+            {names.map((name) => (
+              <Chip key={name} size="small">
+                {name}
+              </Chip>
+            ))}
+          </ChipRow>
+        </Row>
+      ))}
     </Panel>
   );
 };
