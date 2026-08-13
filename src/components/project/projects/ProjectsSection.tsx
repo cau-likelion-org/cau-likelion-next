@@ -113,6 +113,8 @@ const ProjectsSection = ({ staticData }: { staticData: ArchivingArrayType<IProje
     return 0;
   });
 
+  const hasProjects = sortedProjects.length > 0;
+
   return (
     <Wrapper>
       <ToastWrapper>
@@ -166,7 +168,7 @@ const ProjectsSection = ({ staticData }: { staticData: ArchivingArrayType<IProje
         <LoadingWrapper>
           <CircularLoading size={32} />
         </LoadingWrapper>
-      ) : isError ? (
+      ) : isError && !hasProjects ? (
         <ProjectEmptyState icon={<IcFailure width={64} height={64} />} message="정보 불러오기를 실패했어요." />
       ) : sortedProjects.length === 0 ? (
         <ProjectEmptyState />
