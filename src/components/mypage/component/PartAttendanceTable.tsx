@@ -246,7 +246,7 @@ interface PartAttendanceTableProps {
   members: MemberAttendanceResponse[];
   partName?: string; // 운영진: 본인 파트 고정 라벨
   partFilter?: PartFilterConfig; // 회장/관리자: 파트 필터 드롭다운
-  onSave?: (updates: AttendanceStatusUpdate[]) => void; // 수정 저장 (batch)
+  onSave?: (updates: AttendanceStatusUpdate[]) => void | Promise<unknown>; // 수정 저장 (batch)
   isSaving?: boolean;
 }
 
@@ -309,20 +309,26 @@ const PartAttendanceTable = ({ members, partName, partFilter, onSave, isSaving }
     const { record, status } = reasonTarget;
     setEdits((prev) => {
       const next = new Map(prev);
-      next.set(record.detailAttendanceId, { status, reason });
+      if (status === record.status && reason === (record.reason ?? '')) next.delete(record.detailAttendanceId);
+      else next.set(record.detailAttendanceId, { status, reason });
       return next;
     });
     setReasonTarget(null);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const updates: AttendanceStatusUpdate[] = Array.from(edits, ([detailAttendanceId, { status, reason }]) => ({
       detailAttendanceId,
       status,
       ...(reason ? { reason } : {}),
     }));
-    onSave?.(updates);
     setIsEditing(false);
+    try {
+      await onSave?.(updates);
+    } catch {
+    } finally {
+      setEdits(new Map());
+    }
   };
 
   return (
@@ -374,7 +380,10 @@ const PartAttendanceTable = ({ members, partName, partFilter, onSave, isSaving }
                   <HeadCell>{week}주차</HeadCell>
                   {members.map((member, index) => {
                     const record = recordMaps[index].get(week);
-                    const status = record ? (edits.get(record.detailAttendanceId)?.status ?? record.status) : undefined;
+                    // 방금 수정한 값이 있으면 서버 응답이 갱신되기 전까지 그 값을 그대로 보여준다
+                    const edit = record ? edits.get(record.detailAttendanceId) : undefined;
+                    const status = edit?.status ?? record?.status;
+                    const reason = edit?.reason ?? record?.reason;
                     return (
                       <StatusCell key={member.memberId}>
                         {isEditing && record && status ? (
@@ -383,8 +392,8 @@ const PartAttendanceTable = ({ members, partName, partFilter, onSave, isSaving }
                             value={status}
                             onChange={(next) => changeStatus(record, next)}
                           />
-                        ) : status && record?.reason ? (
-                          <ReasonCell label={STATUS_LABEL[status]} reason={record.reason} />
+                        ) : status && reason ? (
+                          <ReasonCell label={STATUS_LABEL[status]} reason={reason} />
                         ) : (
                           <span>{status ? STATUS_LABEL[status] : '-'}</span>
                         )}
