@@ -1,10 +1,16 @@
-import { IcLineHorizontal } from '@assets/svg';
+import { ReactNode } from 'react';
+import { IcBehance, IcGithub, IcLineHorizontal, IcLink } from '@assets/svg';
 import Chip from '@common/chip/Chip';
-import { ProjectLinkDto } from 'src/apis/project';
+import { LinkPlatform, ProjectLinkDto } from 'src/apis/project';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
-import { FiLink } from 'react-icons/fi';
 import styled from 'styled-components';
+
+const LINK_PLATFORM_ICON: Record<LinkPlatform, ReactNode> = {
+  WEB: <IcLink width={20} height={20} />,
+  GITHUB: <IcGithub width={20} height={20} />,
+  BEHANCE: <IcBehance width={20} height={14} />,
+};
 
 interface ProjectDetailMetaPanelProps {
   startDate: string;
@@ -47,7 +53,7 @@ const ProjectDetailMetaPanel = ({ startDate, endDate, stack, links }: ProjectDet
       <LinkRow>
         {validLinks.map((link) => (
           <LinkButton key={link.id} href={link.url} target="_blank" rel="noreferrer" aria-label={link.platform}>
-            <FiLink size={20} color="#fff" />
+            {LINK_PLATFORM_ICON[link.platform]}
           </LinkButton>
         ))}
       </LinkRow>
@@ -117,4 +123,5 @@ const LinkButton = styled.a`
   padding: 10px;
   border-radius: 10px;
   background-color: #ff6000;
+  color: #fff;
 `;
