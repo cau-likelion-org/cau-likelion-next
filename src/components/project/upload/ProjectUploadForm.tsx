@@ -260,10 +260,16 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
 
   const isDateInvalid = isUnfilled(dateRange[0]) || isUnfilled(dateRange[1]);
   const isGenerationInvalid = !isUnfilled(generation) && !matchedGeneration;
+  const isTitleOverflow = title.length > 12;
+  const isSubtitleOverflow = subtitle.length > 80;
+  const isDescriptionOverflow = description.length > 300;
   const hasError =
     isUnfilled(title) ||
+    isTitleOverflow ||
     isUnfilled(subtitle) ||
+    isSubtitleOverflow ||
     isUnfilled(description) ||
+    isDescriptionOverflow ||
     isUnfilled(generation) ||
     isGenerationInvalid ||
     isUnfilled(category) ||
@@ -491,9 +497,16 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
           value={title}
           onChange={(event) => setTitle(event.target.value)}
           resize="fixed"
+          maxLength={12}
           bottomTrailingContent={<CharCount>{title.length}/12</CharCount>}
-          status={showErrors && isUnfilled(title) ? 'negative' : 'normal'}
-          description={showErrors && isUnfilled(title) ? '서비스명을 입력해 주세요.' : undefined}
+          status={showErrors && (isUnfilled(title) || isTitleOverflow) ? 'negative' : 'normal'}
+          description={
+            showErrors && isUnfilled(title)
+              ? '서비스명을 입력해 주세요.'
+              : showErrors && isTitleOverflow
+                ? '12자 이내로 입력해 주세요.'
+                : undefined
+          }
         />
       </FieldGroup>
 
@@ -507,9 +520,16 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
           value={subtitle}
           onChange={(event) => setSubtitle(event.target.value)}
           resize="fixed"
+          maxLength={80}
           bottomTrailingContent={<CharCount>{subtitle.length}/80</CharCount>}
-          status={showErrors && isUnfilled(subtitle) ? 'negative' : 'normal'}
-          description={showErrors && isUnfilled(subtitle) ? '서비스 한줄소개를 입력해 주세요.' : undefined}
+          status={showErrors && (isUnfilled(subtitle) || isSubtitleOverflow) ? 'negative' : 'normal'}
+          description={
+            showErrors && isUnfilled(subtitle)
+              ? '서비스 한줄소개를 입력해 주세요.'
+              : showErrors && isSubtitleOverflow
+                ? '80자 이내로 입력해 주세요.'
+                : undefined
+          }
         />
       </FieldGroup>
 
@@ -523,9 +543,16 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
           value={description}
           onChange={(event) => setDescription(event.target.value)}
           resize="fixed"
+          maxLength={300}
           bottomTrailingContent={<CharCount>{description.length}/300</CharCount>}
-          status={showErrors && isUnfilled(description) ? 'negative' : 'normal'}
-          description={showErrors && isUnfilled(description) ? '서비스 설명을 입력해 주세요.' : undefined}
+          status={showErrors && (isUnfilled(description) || isDescriptionOverflow) ? 'negative' : 'normal'}
+          description={
+            showErrors && isUnfilled(description)
+              ? '서비스 설명을 입력해 주세요.'
+              : showErrors && isDescriptionOverflow
+                ? '300자 이내로 입력해 주세요.'
+                : undefined
+          }
         />
       </FieldGroup>
 
