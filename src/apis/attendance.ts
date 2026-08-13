@@ -34,3 +34,22 @@ export function getAttendanceList(token: IToken) {
     })
     .then((res) => res.data.data as TodayAttendanceListData);
 }
+
+export interface WeeklyAttendanceCreatePayload {
+  date: string;
+  password: string;
+  weekNumber: number;
+}
+
+export interface WeeklyAttendanceResponse {
+  id: number;
+  weekNumber: number;
+  date: string;
+  password: string;
+}
+
+// 출석부 생성(회장 전용) — 주차별 출석 비밀번호 생성
+export function createWeeklyAttendance(token: IToken, payload: WeeklyAttendanceCreatePayload) {
+  const authAxios = getAuthAxios(token);
+  return authAxios.post<WeeklyAttendanceResponse>('/api/attendances/password', payload).then((res) => res.data);
+}
