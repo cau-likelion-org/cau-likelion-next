@@ -15,6 +15,9 @@ const ProjectEdit = () => {
   const projectIdParam = router.query.project_id;
   const projectId = Array.isArray(projectIdParam) ? projectIdParam[0] : projectIdParam;
 
+  const numericProjectId = Number(projectId);
+  const isProjectIdValid = !!projectId && Number.isInteger(numericProjectId);
+
   const tokenState = useTokenStore((state) => state.token);
   const hasHydrated = useTokenStore((state) => state.hasHydrated);
 
@@ -26,9 +29,9 @@ const ProjectEdit = () => {
   });
 
   const { data: project } = useQuery<ProjectResponseDto>({
-    queryKey: ['projectDetail', projectId],
-    queryFn: () => getProjectById(tokenState, Number(projectId)),
-    enabled: !!projectId && !!tokenState.access,
+    queryKey: ['adminProject', numericProjectId],
+    queryFn: () => getProjectById(tokenState, numericProjectId),
+    enabled: isProjectIdValid && !!tokenState.access,
   });
 
   useEffect(() => {
