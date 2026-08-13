@@ -50,3 +50,61 @@ export function createAssignments(token: IToken, payload: AssignmentCreateReques
   const authAxios = getAuthAxios(token);
   return authAxios.post('/api/assignments', payload).then((res) => res.data);
 }
+
+// 제출/화면 표시 상태
+export type SubmissionStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
+export type AssignmentDisplayStatus =
+  'BEFORE_SUBMISSION' | 'MISSED' | 'PENDING_REVIEW' | 'LATE_SUBMITTED' | 'APPROVED' | 'REJECTED';
+
+export interface AssignmentFile {
+  id: number;
+  fileUrl: string;
+  originalFilename: string;
+}
+
+export interface AssignmentSubmission {
+  id: number; // 제출 ID (submitId)
+  assignmentId: number;
+  content: string;
+  url: string;
+  files: AssignmentFile[];
+  status: SubmissionStatus;
+  submittedAt: string;
+  displayStatus: AssignmentDisplayStatus;
+  reviewerName: string | null;
+  approvalDate: string | null;
+  rejectionReason: string | null;
+}
+
+export interface AssignmentMemberSubmission {
+  memberId: number;
+  memberName: string;
+  displayStatus: AssignmentDisplayStatus;
+  latestSubmission: AssignmentSubmission | null;
+}
+
+// 운영진: 특정 과제의 파트원 전체 제출 현황
+export function getAssignmentSubmissions(token: IToken, assignmentId: number) {
+  const authAxios = getAuthAxios(token);
+  return authAxios
+    .get<AssignmentMemberSubmission[]>(`/api/assignments/${assignmentId}/submissions/staff`)
+    .then((res) => res.data);
+}
+
+export interface SubmissionEvaluatePayload {
+  status: 'APPROVED' | 'REJECTED';
+  rejectionReason?: string; // REJECTED일 때 필수
+}
+
+// 운영진: 제출 승인/반려 평가
+export function evaluateSubmission(
+  token: IToken,
+  assignmentId: number,
+  submitId: number,
+  payload: SubmissionEvaluatePayload,
+) {
+  const authAxios = getAuthAxios(token);
+  return authAxios
+    .patch<AssignmentSubmission>(`/api/assignments/${assignmentId}/submissions/staff/${submitId}`, payload)
+    .then((res) => res.data);
+}

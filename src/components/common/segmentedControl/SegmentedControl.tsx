@@ -22,6 +22,7 @@ export interface SegmentedControlProps {
   options: SegmentedControlOption[];
   value: string;
   onChange: (value: string) => void;
+  disabled?: boolean;
   'aria-label'?: string;
 }
 
@@ -47,6 +48,7 @@ const SegmentedControl = ({
   options,
   value,
   onChange,
+  disabled = false,
   ...rest
 }: SegmentedControlProps) => {
   const config = sizeConfig[size];
@@ -80,6 +82,7 @@ const SegmentedControl = ({
             role="tab"
             aria-selected={active}
             tabIndex={active ? 0 : -1}
+            disabled={disabled}
             onClick={() => onChange(option.value)}
             onKeyDown={(event) => {
               if (event.key === 'ArrowRight') {
@@ -98,7 +101,7 @@ const SegmentedControl = ({
             $showDivider={variant === 'outlined' && !active && index < options.length - 1}
           >
             {option.icon}
-            <Label_ $variant={variant} $active={active} $font={config.font}>
+            <Label_ $variant={variant} $active={active} $disabled={disabled} $font={config.font}>
               {option.label}
             </Label_>
           </Segment>
@@ -158,6 +161,10 @@ const Segment = styled.button<{
   background: none;
   cursor: pointer;
 
+  &:disabled {
+    cursor: not-allowed;
+  }
+
   ${(props) =>
     props.$variant === 'filled' &&
     props.$active &&
@@ -191,7 +198,12 @@ const Segment = styled.button<{
     `}
 `;
 
-const Label_ = styled.span<{ $variant: SegmentedControlVariant; $active: boolean; $font: TypographyToken }>`
+const Label_ = styled.span<{
+  $variant: SegmentedControlVariant;
+  $active: boolean;
+  $disabled: boolean;
+  $font: TypographyToken;
+}>`
   flex: 1 0 0;
   min-width: 0;
   overflow: hidden;
@@ -199,6 +211,7 @@ const Label_ = styled.span<{ $variant: SegmentedControlVariant; $active: boolean
   white-space: nowrap;
   text-align: center;
   color: ${(props) => {
+    if (props.$disabled) return Label.disable;
     if (!props.$active) return Label.alternative;
     return props.$variant === 'outlined' ? Orange.o500 : Label.normal;
   }};
