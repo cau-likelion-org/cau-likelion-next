@@ -1,6 +1,8 @@
 import { ArchivingArrayType, IProjectData, IProjectDetail, ResponseData } from '@@types/request';
 import axios from 'axios';
+import { IToken } from 'src/store/useTokenStore';
 import { url } from '.';
+import { getAuthAxios } from './authAxios';
 
 export async function getProjects() {
   const data = await axios
@@ -69,8 +71,8 @@ export const getAdminProjectList = () => {
   return axios.get<AdminProjectListItem[]>(`${url}/api/projects`).then((res) => res.data);
 };
 
-export const updateProjectExposure = (exposedProjectIds: number[]) => {
-  return axios
-    .put<AdminProjectListItem[]>(`${url}/api/admin/landing/projects/exposure`, { exposedProjectIds })
+export const updateProjectExposure = (token: IToken, exposedProjectIds: number[]) => {
+  return getAuthAxios(token)
+    .put<AdminProjectListItem[]>('/api/admin/landing/projects/exposure', { exposedProjectIds })
     .then((res) => res.data);
 };

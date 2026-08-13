@@ -100,11 +100,32 @@ const MyPageAdminLanding = () => {
     enabled: !!tokenState.access,
   });
 
-  const { data: introduce } = useQuery({ queryKey: ['adminIntroduce'], queryFn: getIntroduce });
-  const { data: tracks } = useQuery({ queryKey: ['adminTracks'], queryFn: getTracks });
-  const { data: activities } = useQuery({ queryKey: ['adminActivities'], queryFn: getActivities });
-  const { data: projects } = useQuery({ queryKey: ['adminProjects'], queryFn: getAdminProjectList });
-  const { data: faqs } = useQuery({ queryKey: ['adminFaqs'], queryFn: getFaqs });
+  // 편집 화면이라 창 포커스 시 백그라운드 재조회로 입력 중인 값이 덮어써지지 않도록 자동 재조회를 끔
+  const { data: introduce } = useQuery({
+    queryKey: ['adminIntroduce'],
+    queryFn: getIntroduce,
+    refetchOnWindowFocus: false,
+  });
+  const { data: tracks } = useQuery({
+    queryKey: ['adminTracks'],
+    queryFn: getTracks,
+    refetchOnWindowFocus: false,
+  });
+  const { data: activities } = useQuery({
+    queryKey: ['adminActivities'],
+    queryFn: getActivities,
+    refetchOnWindowFocus: false,
+  });
+  const { data: projects } = useQuery({
+    queryKey: ['adminProjects'],
+    queryFn: getAdminProjectList,
+    refetchOnWindowFocus: false,
+  });
+  const { data: faqs } = useQuery({
+    queryKey: ['adminFaqs'],
+    queryFn: getFaqs,
+    refetchOnWindowFocus: false,
+  });
 
   const [introduceMetrics, setIntroduceMetrics] = useState(DEFAULT_INTRODUCE_METRICS);
   const [trackItems, setTrackItems] = useState<TrackIntroItem[]>([]);
@@ -174,31 +195,37 @@ const MyPageAdminLanding = () => {
     setIsSaving(true);
     try {
       await Promise.all([
-        updateIntroduce(introduceToRequest(introduceMetrics)),
+        updateIntroduce(tokenState, introduceToRequest(introduceMetrics)),
         syncListSection({
           currentItems: trackItems,
           originalItems: tracks ?? [],
+          toLocal: trackToLocal,
           toRequest: trackToRequest,
-          create: createTrack,
-          update: updateTrack,
-          remove: deleteTrack,
+          create: (form) => createTrack(tokenState, form),
+          update: (id, form) => updateTrack(tokenState, id, form),
+          remove: (id) => deleteTrack(tokenState, id),
         }),
         syncListSection({
           currentItems: activityItems,
           originalItems: activities ?? [],
+          toLocal: activityToLocal,
           toRequest: activityToRequest,
-          create: createActivity,
-          update: updateActivity,
-          remove: deleteActivity,
+          create: (form) => createActivity(tokenState, form),
+          update: (id, form) => updateActivity(tokenState, id, form),
+          remove: (id) => deleteActivity(tokenState, id),
         }),
-        updateProjectExposure(projectItems.filter((project) => project.selected).map((project) => Number(project.id))),
+        updateProjectExposure(
+          tokenState,
+          projectItems.filter((project) => project.selected).map((project) => Number(project.id)),
+        ),
         syncListSection({
           currentItems: faqItems,
           originalItems: faqs ?? [],
+          toLocal: faqToLocal,
           toRequest: faqToRequest,
-          create: createFaq,
-          update: updateFaq,
-          remove: deleteFaq,
+          create: (form) => createFaq(tokenState, form),
+          update: (id, form) => updateFaq(tokenState, id, form),
+          remove: (id) => deleteFaq(tokenState, id),
         }),
       ]);
       await Promise.all([
