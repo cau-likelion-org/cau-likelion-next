@@ -51,6 +51,25 @@ export function createAssignments(token: IToken, payload: AssignmentCreateReques
   return authAxios.post('/api/assignments', payload).then((res) => res.data);
 }
 
+export interface AssignmentUpdateRequest {
+  title: string;
+  detail: string;
+  endDate: string;
+  type: AssignmentSubmitType;
+}
+
+// 운영진: 과제 수정 (파트/주차는 변경 불가)
+export function updateAssignment(token: IToken, assignmentId: number, payload: AssignmentUpdateRequest) {
+  const authAxios = getAuthAxios(token);
+  return authAxios.put(`/api/assignments/${assignmentId}`, payload).then((res) => res.data);
+}
+
+// 운영진: 과제 삭제 (제출 이력도 함께 삭제됨)
+export function deleteAssignment(token: IToken, assignmentId: number) {
+  const authAxios = getAuthAxios(token);
+  return authAxios.delete(`/api/assignments/${assignmentId}`).then((res) => res.data);
+}
+
 // 제출/화면 표시 상태
 export type SubmissionStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
 export type AssignmentDisplayStatus =
