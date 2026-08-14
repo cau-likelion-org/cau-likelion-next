@@ -31,6 +31,10 @@ const Wrapper = styled.div`
   border: 1px solid ${Line.subtle};
   border-radius: 14px;
   background-color: ${BackgroundWhite.secondary};
+
+  @media (max-width: 900px) {
+    width: 100%;
+  }
 `;
 
 const Name = styled.p`

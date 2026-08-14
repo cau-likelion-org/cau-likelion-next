@@ -110,6 +110,11 @@ const CardRow = styled.div`
   align-items: center;
   gap: 20px;
   width: 100%;
+
+  @media (max-width: 900px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
 `;
 
 const EmptyCard = styled.div`
@@ -131,6 +136,10 @@ const StatCardWrapper = styled.div`
   align-items: center;
   flex-shrink: 0;
   width: 340px;
+
+  @media (max-width: 900px) {
+    width: 100%;
+  }
 `;
 
 const StatCardHeader = styled.div`
@@ -191,6 +200,10 @@ const TotalCardWrapper = styled.div`
   flex-shrink: 0;
   width: 160px;
   height: 164px;
+
+  @media (max-width: 900px) {
+    width: 100%;
+  }
 `;
 
 const TotalCardHeader = styled.div`

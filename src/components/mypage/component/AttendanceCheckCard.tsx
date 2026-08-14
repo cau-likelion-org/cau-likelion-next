@@ -95,6 +95,10 @@ const Wrapper = styled.div<{ $active: boolean }>`
   border-radius: 14px;
   border: 1px solid ${(props) => (props.$active ? Orange.o500 : Line.subtle)};
   background-color: ${(props) => (props.$active ? Orange.o50 : BackgroundWhite.secondary)};
+
+  @media (max-width: 900px) {
+    width: 100%;
+  }
 `;
 
 const Title = styled.p`
