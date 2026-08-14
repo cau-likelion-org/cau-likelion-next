@@ -8,6 +8,7 @@ import styled from 'styled-components';
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import Toast from '@common/toast/Toast';
 import MyPageShell from '@mypage/component/MyPageShell';
+import MobileUnsupportedModal from '@common/modal/MobileUnsupportedModal';
 import AssignmentPartSelect from '@mypage/component/AssignmentPartSelect';
 import StaffAssignmentCard from '@mypage/component/StaffAssignmentCard';
 import WeeklyAssignmentCard, { WeeklyAssignmentGroup } from '@mypage/component/WeeklyAssignmentCard';
@@ -17,7 +18,7 @@ import useTokenStore from 'src/store/useTokenStore';
 import { INACTIVE_MEMBER_NOTICE_KEY } from '@utils/constant';
 import { isAdminRole, isFullAdminRole, canManageSitePages } from '@utils/index';
 import { IcPlus } from '@assets/svg';
-import { Label, Line } from '@utils/constant/color';
+import { Fill, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 // 백엔드 API 준비 전까지 사용하는 목 데이터
@@ -128,6 +129,29 @@ const MyPageAssignment = () => {
   const currentPartName = selectedPartName || partOptions[0] || '';
   const selectedPartId = parts.find((part) => part.name === currentPartName)?.id;
 
+  // 과제 생성·상세보기는 데스크톱 전용이라 모바일에서는 안내 모달을 띄운다
+  const [isUnsupportedOpen, setIsUnsupportedOpen] = useState(false);
+  const isMobileViewport = () => typeof window !== 'undefined' && window.matchMedia('(max-width: 900px)').matches;
+
+  const handleCreate = () => {
+    if (isMobileViewport()) {
+      setIsUnsupportedOpen(true);
+      return;
+    }
+    router.push('/mypage/assignment/create');
+  };
+
+  const handleDetail = (week: number) => {
+    if (isMobileViewport()) {
+      setIsUnsupportedOpen(true);
+      return;
+    }
+    router.push({
+      pathname: `/mypage/assignment/status/${week}`,
+      query: isPresident && selectedPartId != null ? { partId: selectedPartId } : undefined,
+    });
+  };
+
   // 회장: partId로 파트별 조회 / 운영진: 본인 파트 조회
   const { data: weekGroups } = useQuery<AssignmentWeekGroup[]>({
     queryKey: isPresident ? ['presidentAssignments', selectedPartId ?? null] : ['staffAssignments'],
@@ -163,7 +187,7 @@ const MyPageAssignment = () => {
                   <TrackName>{userProfile.partName} 파트</TrackName>
                 )}
               </TitleRow>
-              <CreateButton type="button" onClick={() => router.push('/mypage/assignment/create')}>
+              <CreateButton type="button" onClick={handleCreate}>
                 과제 생성
                 <IcPlus width={16} height={16} />
               </CreateButton>
@@ -174,12 +198,7 @@ const MyPageAssignment = () => {
                   key={group.week}
                   week={group.week}
                   assignments={group.assignments}
-                  onDetail={() =>
-                    router.push({
-                      pathname: `/mypage/assignment/status/${group.week}`,
-                      query: isPresident && selectedPartId != null ? { partId: selectedPartId } : undefined,
-                    })
-                  }
+                  onDetail={() => handleDetail(group.week)}
                 />
               ))}
             </List>
@@ -201,6 +220,7 @@ const MyPageAssignment = () => {
       <ToastWrapper>
         <Toast variant="positive" text={toastMessage} show={!!toastMessage} onHidden={() => setToastMessage('')} />
       </ToastWrapper>
+      {isUnsupportedOpen && <MobileUnsupportedModal onClose={() => setIsUnsupportedOpen(false)} />}
     </>
   );
 };
@@ -225,6 +245,10 @@ const Header = styled.div`
   align-items: center;
   justify-content: space-between;
   width: 100%;
+
+  @media (max-width: 900px) {
+    align-items: flex-start;
+  }
 `;
 
 const CreateButton = styled.button`
@@ -239,6 +263,15 @@ const CreateButton = styled.button`
   color: ${Label.normal};
   cursor: pointer;
   ${typographyCss(Typography.body2Normal.medium)}
+
+  /* Figma 모바일: solid/assistive 버튼 (공용 Button의 small+assistive와 동일한 값) */
+  @media (max-width: 900px) {
+    padding: 7px 14px;
+    border: none;
+    background-color: ${Fill.normal};
+    color: ${Label.neutral};
+    ${typographyCss({ ...Typography.label2.bold, fontWeight: 500 })}
+  }
 `;
 
 const TitleRow = styled.div`
@@ -246,6 +279,13 @@ const TitleRow = styled.div`
   align-items: center;
   gap: 18px;
   width: 100%;
+
+  /* Figma 모바일: 제목 아래 파트명 */
+  @media (max-width: 900px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
 `;
 
 const SectionTitle = styled.p`

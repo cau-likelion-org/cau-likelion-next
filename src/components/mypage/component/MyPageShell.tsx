@@ -122,4 +122,8 @@ const Main = styled.div`
   gap: 40px;
   flex: 1;
   min-width: 0;
+
+  @media (max-width: 900px) {
+    gap: 32px;
+  }
 `;
