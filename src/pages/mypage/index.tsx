@@ -5,12 +5,13 @@ import { useQuery } from '@tanstack/react-query';
 import useTokenStore from 'src/store/useTokenStore';
 import useProfileChangedStore from 'src/store/useProfileChangedStore';
 import { getUserProfile } from 'src/apis/account';
-import { isAdminRole } from '@utils/index';
+import { canCreateAttendance, isAdminRole } from '@utils/index';
 import styled from 'styled-components';
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import MyPageShell from '@mypage/component/MyPageShell';
 import ProfileCard from '@mypage/component/ProfileCard';
 import AttendanceCheckCard from '@mypage/component/AttendanceCheckCard';
+import MakeAttendanceCard from '@mypage/component/MakeAttendanceCard';
 import MyScoreSection from '@mypage/MyScoreSection';
 import TotalScoreSection from '@mypage/TotalScoreSection';
 import { useRouter } from 'next/router';
@@ -38,7 +39,7 @@ const MyPage = () => {
     <MyPageShell active="home" isAdmin={isAdminRole(userProfile.role)}>
       <CardRow>
         <ProfileCard user={userProfile} />
-        <AttendanceCheckCard />
+        {canCreateAttendance(userProfile.role) ? <MakeAttendanceCard /> : <AttendanceCheckCard />}
       </CardRow>
       {isAdminRole(userProfile.role) ? (
         <TotalScoreSection myName={userProfile.name} />
