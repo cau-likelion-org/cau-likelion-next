@@ -51,7 +51,7 @@ const TalentSection = ({
               heading="파트명"
               value={item.partName}
               placeholder="텍스트 입력"
-              disabled={disabled}
+              readOnly={disabled}
               onChange={(event) => updateItem(item.id, { partName: event.target.value })}
               status={showErrors && isUnfilled(item.partName) ? 'negative' : 'normal'}
               description={showErrors && isUnfilled(item.partName) ? '파트명을 입력해 주세요.' : undefined}
@@ -62,7 +62,7 @@ const TalentSection = ({
             value={item.content}
             placeholder="텍스트 입력"
             maxLength={1000}
-            disabled={disabled}
+            readOnly={disabled}
             bottomTrailingContent={<CharCount>{item.content.length}/1000</CharCount>}
             onChange={(event) => updateItem(item.id, { content: event.target.value })}
             status={showErrors && isUnfilled(item.content) ? 'negative' : 'normal'}

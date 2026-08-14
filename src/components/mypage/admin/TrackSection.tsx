@@ -60,7 +60,7 @@ const TrackSection = ({
                 heading="파트명"
                 value={item.nameKo}
                 placeholder="텍스트 입력"
-                disabled={disabled}
+                readOnly={disabled}
                 onChange={(event) => updateItem(item.id, { nameKo: event.target.value })}
                 status={showErrors && isUnfilled(item.nameKo) ? 'negative' : 'normal'}
                 description={showErrors && isUnfilled(item.nameKo) ? '파트명을 입력해 주세요.' : undefined}
@@ -71,7 +71,7 @@ const TrackSection = ({
                 heading="파트 영문명"
                 value={item.nameEn}
                 placeholder="텍스트 입력"
-                disabled={disabled}
+                readOnly={disabled}
                 onChange={(event) => updateItem(item.id, { nameEn: event.target.value })}
                 status={showErrors && isUnfilled(item.nameEn) ? 'negative' : 'normal'}
                 description={showErrors && isUnfilled(item.nameEn) ? '파트 영문명을 입력해 주세요.' : undefined}
@@ -83,7 +83,7 @@ const TrackSection = ({
             value={item.description}
             placeholder="리스트 입력"
             maxLength={1000}
-            disabled={disabled}
+            readOnly={disabled}
             bottomTrailingContent={<CharCount>{item.description.length}/1000</CharCount>}
             onChange={(event) => updateItem(item.id, { description: event.target.value })}
             status={showErrors && isUnfilled(item.description) ? 'negative' : 'normal'}

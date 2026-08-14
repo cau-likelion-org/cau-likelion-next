@@ -42,6 +42,7 @@ const Textarea = ({
   bottomLeadingContent,
   bottomTrailingContent,
   disabled = false,
+  readOnly = false,
   id,
   ...textareaProps
 }: TextareaProps) => {
@@ -69,12 +70,14 @@ const Textarea = ({
           {required && <Required>*</Required>}
         </Heading>
       )}
-      <InputWrapper $status={status} $disabled={disabled}>
+      <InputWrapper $status={status} $disabled={disabled} $readOnly={readOnly}>
         <StyledTextarea
           id={textareaId}
           disabled={disabled}
+          readOnly={readOnly}
           $resize={resize}
           $hasStatusIcon={hasStatusIcon}
+          $readOnly={readOnly}
           style={maxHeight ? { maxHeight } : undefined}
           aria-invalid={status === 'negative'}
           aria-describedby={descriptionId}
@@ -123,7 +126,7 @@ const Required = styled.span`
   ${typographyCss(Typography.label1Normal.medium)}
 `;
 
-const InputWrapper = styled.div<{ $status: TextareaStatus; $disabled: boolean }>`
+const InputWrapper = styled.div<{ $status: TextareaStatus; $disabled: boolean; $readOnly: boolean }>`
   position: relative;
   display: flex;
   flex-direction: column;
@@ -134,12 +137,16 @@ const InputWrapper = styled.div<{ $status: TextareaStatus; $disabled: boolean }>
   background-color: ${(props) => (props.$disabled ? '#F4F4F5' : 'rgba(255, 255, 255, 0.08)')};
   box-shadow: ${(props) => getBoxShadow(props.$status, props.$disabled)};
 
-  &:focus-within {
-    box-shadow: inset 0 0 0 2px rgba(71, 172, 255, 0.43);
-  }
+  ${(props) =>
+    !props.$readOnly &&
+    `
+    &:focus-within {
+      box-shadow: inset 0 0 0 2px rgba(71, 172, 255, 0.43);
+    }
+  `}
 `;
 
-const StyledTextarea = styled.textarea<{ $resize: TextareaResize; $hasStatusIcon: boolean }>`
+const StyledTextarea = styled.textarea<{ $resize: TextareaResize; $hasStatusIcon: boolean; $readOnly: boolean }>`
   width: 100%;
   min-height: 78px;
   padding: ${(props) => (props.$hasStatusIcon ? '0 36px 0 4px' : '0 4px')};
@@ -148,6 +155,8 @@ const StyledTextarea = styled.textarea<{ $resize: TextareaResize; $hasStatusIcon
   background: none;
   resize: ${(props) => getResizeCss(props.$resize)};
   color: ${Label.normal};
+  pointer-events: ${(props) => (props.$readOnly ? 'none' : 'auto')};
+  cursor: ${(props) => (props.$readOnly ? 'default' : 'text')};
   ${typographyCss(Typography.body1Reading.regular)}
 
   &::placeholder {

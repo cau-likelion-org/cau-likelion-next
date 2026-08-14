@@ -39,7 +39,7 @@ const IntroduceSection = ({
           <TextField
             heading="누적 활동 기수"
             value={metrics.generationCount}
-            disabled={disabled}
+            readOnly={disabled}
             onChange={(event) => {
               if (NUMERIC_ONLY_REGEX.test(event.target.value)) {
                 onChange({ ...metrics, generationCount: event.target.value });
@@ -53,7 +53,7 @@ const IntroduceSection = ({
           <TextField
             heading="누적 수료자 수"
             value={metrics.graduateCount}
-            disabled={disabled}
+            readOnly={disabled}
             onChange={(event) => onChange({ ...metrics, graduateCount: event.target.value })}
             status={showErrors && isCountInvalid(metrics.graduateCount) ? 'negative' : 'normal'}
             description={
@@ -65,7 +65,7 @@ const IntroduceSection = ({
           <TextField
             heading="누적 프로젝트 개수"
             value={metrics.projectCount}
-            disabled={disabled}
+            readOnly={disabled}
             onChange={(event) => onChange({ ...metrics, projectCount: event.target.value })}
             status={showErrors && isCountInvalid(metrics.projectCount) ? 'negative' : 'normal'}
             description={

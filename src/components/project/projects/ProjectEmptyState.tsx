@@ -1,14 +1,21 @@
+import { ReactNode } from 'react';
 import { IcCircleExclamation } from '@assets/svg';
 import { CoolNeutral, Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import styled from 'styled-components';
 
-const ProjectEmptyState = ({ message = '조건에 맞는 프로젝트가 없습니다.' }: { message?: string }) => {
+interface ProjectEmptyStateProps {
+  icon?: ReactNode;
+  message?: string;
+}
+
+const ProjectEmptyState = ({
+  icon = <IcCircleExclamation width={64} height={64} />,
+  message = '조건에 맞는 프로젝트가 없습니다.',
+}: ProjectEmptyStateProps) => {
   return (
     <Wrapper>
-      <IconWrapper>
-        <IcCircleExclamation width={64} height={64} />
-      </IconWrapper>
+      <IconWrapper>{icon}</IconWrapper>
       <Message>{message}</Message>
     </Wrapper>
   );

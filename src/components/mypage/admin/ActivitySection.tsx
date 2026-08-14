@@ -133,7 +133,7 @@ const ActivityCard = ({
             heading="활동명"
             value={item.title}
             placeholder="텍스트 입력"
-            disabled={disabled}
+            readOnly={disabled}
             onChange={(event) => onChange({ title: event.target.value })}
             status={showErrors && isUnfilled(item.title) ? 'negative' : 'normal'}
             description={showErrors && isUnfilled(item.title) ? '활동명을 입력해 주세요.' : undefined}
@@ -144,7 +144,7 @@ const ActivityCard = ({
             heading="이미지 첨부"
             value={item.imageName}
             placeholder="이미지 파일을 선택해 주세요."
-            disabled={disabled}
+            readOnly={disabled}
             onChange={(event) => onChange({ imageName: event.target.value })}
           />
         </FieldWrapper>
@@ -153,7 +153,7 @@ const ActivityCard = ({
         heading="한줄 소개"
         value={item.subtitle}
         placeholder="텍스트 입력"
-        disabled={disabled}
+        readOnly={disabled}
         onChange={(event) => onChange({ subtitle: event.target.value })}
         status={showErrors && isUnfilled(item.subtitle) ? 'negative' : 'normal'}
         description={showErrors && isUnfilled(item.subtitle) ? '한줄 소개를 입력해 주세요.' : undefined}
@@ -163,7 +163,7 @@ const ActivityCard = ({
         value={item.description}
         placeholder="텍스트 입력"
         maxLength={1000}
-        disabled={disabled}
+        readOnly={disabled}
         bottomTrailingContent={<CharCount>{item.description.length}/1000</CharCount>}
         onChange={(event) => onChange({ description: event.target.value })}
         status={showErrors && isUnfilled(item.description) ? 'negative' : 'normal'}
@@ -175,7 +175,7 @@ const ActivityCard = ({
             heading="버튼명"
             value={item.buttonText}
             placeholder="텍스트 입력"
-            disabled={disabled}
+            readOnly={disabled}
             onChange={(event) => onChange({ buttonText: event.target.value })}
             status={showErrors && isUnfilled(item.buttonText) ? 'negative' : 'normal'}
             description={showErrors && isUnfilled(item.buttonText) ? '버튼명을 입력해 주세요.' : undefined}
@@ -187,7 +187,7 @@ const ActivityCard = ({
             heading="페이지 이동"
             placeholder="선택"
             value={item.href}
-            disabled={disabled}
+            readOnly={disabled}
             onClick={() => setIsPageLinkOpen((prev) => !prev)}
             aria-expanded={isPageLinkOpen}
             aria-activedescendant={isPageLinkOpen ? `${pageLinkListId}-${pageLinkActiveIndex}` : undefined}

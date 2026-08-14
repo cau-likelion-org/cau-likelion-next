@@ -93,7 +93,7 @@ const ProjectSection = ({
                   checked={project.selected}
                   onChange={() => toggleProject(project.id)}
                   ariaLabel={`${project.name} 노출 여부`}
-                  disabled={disabled}
+                  readOnly={disabled}
                 />
               </CardFooter>
             }
