@@ -9,10 +9,12 @@ const TechStackInput = ({
   value,
   onChange,
   placeholder = '이름을 입력해 주세요.',
+  disabled = false,
 }: {
   value: string[];
   onChange: (next: string[]) => void;
   placeholder?: string;
+  disabled?: boolean;
 }) => {
   const [draft, setDraft] = useState('');
 
@@ -36,17 +38,25 @@ const TechStackInput = ({
 
   return (
     <Wrapper>
-      {value.map((tag) => (
-        <Chip key={tag} size="xsmall" trailingIcon={<RemoveIcon>×</RemoveIcon>} onClick={() => removeTag(tag)}>
-          {tag}
-        </Chip>
-      ))}
-      <Input
-        value={draft}
-        onChange={(event) => setDraft(event.target.value)}
-        onKeyDown={handleKeyDown}
-        placeholder={value.length === 0 ? placeholder : ''}
-      />
+      {value.map((tag) =>
+        disabled ? (
+          <Chip key={tag} size="xsmall">
+            {tag}
+          </Chip>
+        ) : (
+          <Chip key={tag} size="xsmall" trailingIcon={<RemoveIcon>×</RemoveIcon>} onClick={() => removeTag(tag)}>
+            {tag}
+          </Chip>
+        ),
+      )}
+      {!disabled && (
+        <Input
+          value={draft}
+          onChange={(event) => setDraft(event.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder={value.length === 0 ? placeholder : ''}
+        />
+      )}
     </Wrapper>
   );
 };

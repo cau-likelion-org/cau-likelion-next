@@ -19,6 +19,7 @@ import ActivitySection, {
 } from '@mypage/admin/ActivitySection';
 import ProjectSection, { FeaturedProject } from '@mypage/admin/ProjectSection';
 import FAQSection, { FaqItem, isFaqItemInvalid } from '@mypage/admin/FAQSection';
+import EditButton from '@mypage/admin/component/EditButton';
 import { syncListSection } from '@mypage/admin/utils';
 import { getUserProfile } from 'src/apis/account';
 import { getTracks, createTrack, updateTrack, deleteTrack, TrackResponse } from 'src/apis/track';
@@ -135,6 +136,7 @@ const MyPageAdminLanding = () => {
   const [toastMessage, setToastMessage] = useState<ReactNode>('');
   const [showErrors, setShowErrors] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   // 조회된 데이터가 바뀌면(최초 로드, 저장 후 재조회) 화면 편집 상태를 다시 그 값으로 맞춤
   const [syncedIntroduce, setSyncedIntroduce] = useState(introduce);
@@ -178,6 +180,7 @@ const MyPageAdminLanding = () => {
     setProjectItems((projects ?? []).map(projectToLocal));
     setFaqItems((faqs ?? []).map(faqToLocal));
     setShowErrors(false);
+    setIsEditing(false);
   };
 
   const handleSave = async () => {
@@ -236,6 +239,7 @@ const MyPageAdminLanding = () => {
         queryClient.invalidateQueries({ queryKey: ['adminFaqs'] }),
       ]);
       setToastMessage('변경사항이 저장되었습니다.');
+      setIsEditing(false);
     } catch {
       setToastMessage('저장 중 오류가 발생했습니다. 다시 시도해 주세요.');
     } finally {
@@ -251,19 +255,35 @@ const MyPageAdminLanding = () => {
         <TitleRow>
           <PageTitle>랜딩페이지 관리</PageTitle>
           <ButtonRow>
-            <Button variant="outlined" color="assistive" size="small" onClick={handleCancel}>
-              취소
-            </Button>
-            <Button size="small" onClick={handleSave} loading={isSaving}>
-              저장
-            </Button>
+            {isEditing ? (
+              <>
+                <Button variant="outlined" color="assistive" size="small" onClick={handleCancel}>
+                  취소
+                </Button>
+                <Button size="small" onClick={handleSave} loading={isSaving}>
+                  저장
+                </Button>
+              </>
+            ) : (
+              <EditButton onClick={() => setIsEditing(true)} />
+            )}
           </ButtonRow>
         </TitleRow>
-        <IntroduceSection metrics={introduceMetrics} onChange={setIntroduceMetrics} showErrors={showErrors} />
-        <TrackSection items={trackItems} onChange={setTrackItems} showErrors={showErrors} />
-        <ActivitySection items={activityItems} onChange={setActivityItems} showErrors={showErrors} />
-        <ProjectSection projects={projectItems} onChange={setProjectItems} />
-        <FAQSection items={faqItems} onChange={setFaqItems} showErrors={showErrors} />
+        <IntroduceSection
+          metrics={introduceMetrics}
+          onChange={setIntroduceMetrics}
+          showErrors={showErrors}
+          disabled={!isEditing}
+        />
+        <TrackSection items={trackItems} onChange={setTrackItems} showErrors={showErrors} disabled={!isEditing} />
+        <ActivitySection
+          items={activityItems}
+          onChange={setActivityItems}
+          showErrors={showErrors}
+          disabled={!isEditing}
+        />
+        <ProjectSection projects={projectItems} onChange={setProjectItems} disabled={!isEditing} />
+        <FAQSection items={faqItems} onChange={setFaqItems} showErrors={showErrors} disabled={!isEditing} />
       </MyPageShell>
       <ToastWrapper>
         <Toast variant="positive" text={toastMessage} show={!!toastMessage} onHidden={() => setToastMessage('')} />

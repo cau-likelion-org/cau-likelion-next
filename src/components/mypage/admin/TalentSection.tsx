@@ -18,16 +18,20 @@ export interface TalentItem {
 
 export const isTalentItemInvalid = (item: TalentItem) => isUnfilled(item.partName) || isUnfilled(item.content);
 
+export const isTalentItemsInvalid = (items: TalentItem[]) => items.length === 0 || items.some(isTalentItemInvalid);
+
 const createEmptyItem = (): TalentItem => ({ id: createId(), partName: '', content: '' });
 
 const TalentSection = ({
   items,
   onChange,
   showErrors,
+  disabled = false,
 }: {
   items: TalentItem[];
   onChange: (items: TalentItem[]) => void;
   showErrors: boolean;
+  disabled?: boolean;
 }) => {
   const updateItem = (id: string, patch: Partial<TalentItem>) => {
     onChange(items.map((item) => (item.id === id ? { ...item, ...patch } : item)));
@@ -47,6 +51,7 @@ const TalentSection = ({
               heading="파트명"
               value={item.partName}
               placeholder="텍스트 입력"
+              readOnly={disabled}
               onChange={(event) => updateItem(item.id, { partName: event.target.value })}
               status={showErrors && isUnfilled(item.partName) ? 'negative' : 'normal'}
               description={showErrors && isUnfilled(item.partName) ? '파트명을 입력해 주세요.' : undefined}
@@ -57,17 +62,20 @@ const TalentSection = ({
             value={item.content}
             placeholder="텍스트 입력"
             maxLength={1000}
+            readOnly={disabled}
             bottomTrailingContent={<CharCount>{item.content.length}/1000</CharCount>}
             onChange={(event) => updateItem(item.id, { content: event.target.value })}
             status={showErrors && isUnfilled(item.content) ? 'negative' : 'normal'}
             description={showErrors && isUnfilled(item.content) ? '인재상을 입력해 주세요.' : undefined}
           />
-          <ButtonRow>
-            <RemoveCardButton onClick={() => removeItem(item.id)} />
-          </ButtonRow>
+          {!disabled && (
+            <ButtonRow>
+              <RemoveCardButton onClick={() => removeItem(item.id)} />
+            </ButtonRow>
+          )}
         </Card>
       ))}
-      <AddCardButton onClick={addItem} ariaLabel="인재상 추가" />
+      {!disabled && <AddCardButton onClick={addItem} ariaLabel="인재상 추가" />}
     </Section>
   );
 };

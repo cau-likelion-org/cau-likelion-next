@@ -59,10 +59,12 @@ const ActivitySection = ({
   items,
   onChange,
   showErrors,
+  disabled = false,
 }: {
   items: ActivityIntroItem[];
   onChange: (items: ActivityIntroItem[]) => void;
   showErrors: boolean;
+  disabled?: boolean;
 }) => {
   const updateItem = (id: string, patch: Partial<ActivityIntroItem>) => {
     onChange(items.map((item) => (item.id === id ? { ...item, ...patch } : item)));
@@ -80,11 +82,12 @@ const ActivitySection = ({
           key={item.id}
           item={item}
           showErrors={showErrors}
+          disabled={disabled}
           onChange={(patch) => updateItem(item.id, patch)}
           onRemove={() => removeItem(item.id)}
         />
       ))}
-      <AddCardButton onClick={addItem} ariaLabel="활동 소개 추가" />
+      {!disabled && <AddCardButton onClick={addItem} ariaLabel="활동 소개 추가" />}
     </Section>
   );
 };
@@ -94,11 +97,13 @@ export default ActivitySection;
 const ActivityCard = ({
   item,
   showErrors,
+  disabled,
   onChange,
   onRemove,
 }: {
   item: ActivityIntroItem;
   showErrors: boolean;
+  disabled: boolean;
   onChange: (patch: Partial<ActivityIntroItem>) => void;
   onRemove: () => void;
 }) => {
@@ -128,6 +133,7 @@ const ActivityCard = ({
             heading="활동명"
             value={item.title}
             placeholder="텍스트 입력"
+            readOnly={disabled}
             onChange={(event) => onChange({ title: event.target.value })}
             status={showErrors && isUnfilled(item.title) ? 'negative' : 'normal'}
             description={showErrors && isUnfilled(item.title) ? '활동명을 입력해 주세요.' : undefined}
@@ -138,6 +144,7 @@ const ActivityCard = ({
             heading="이미지 첨부"
             value={item.imageName}
             placeholder="이미지 파일을 선택해 주세요."
+            readOnly={disabled}
             onChange={(event) => onChange({ imageName: event.target.value })}
           />
         </FieldWrapper>
@@ -146,6 +153,7 @@ const ActivityCard = ({
         heading="한줄 소개"
         value={item.subtitle}
         placeholder="텍스트 입력"
+        readOnly={disabled}
         onChange={(event) => onChange({ subtitle: event.target.value })}
         status={showErrors && isUnfilled(item.subtitle) ? 'negative' : 'normal'}
         description={showErrors && isUnfilled(item.subtitle) ? '한줄 소개를 입력해 주세요.' : undefined}
@@ -155,6 +163,7 @@ const ActivityCard = ({
         value={item.description}
         placeholder="텍스트 입력"
         maxLength={1000}
+        readOnly={disabled}
         bottomTrailingContent={<CharCount>{item.description.length}/1000</CharCount>}
         onChange={(event) => onChange({ description: event.target.value })}
         status={showErrors && isUnfilled(item.description) ? 'negative' : 'normal'}
@@ -166,6 +175,7 @@ const ActivityCard = ({
             heading="버튼명"
             value={item.buttonText}
             placeholder="텍스트 입력"
+            readOnly={disabled}
             onChange={(event) => onChange({ buttonText: event.target.value })}
             status={showErrors && isUnfilled(item.buttonText) ? 'negative' : 'normal'}
             description={showErrors && isUnfilled(item.buttonText) ? '버튼명을 입력해 주세요.' : undefined}
@@ -177,6 +187,7 @@ const ActivityCard = ({
             heading="페이지 이동"
             placeholder="선택"
             value={item.href}
+            readOnly={disabled}
             onClick={() => setIsPageLinkOpen((prev) => !prev)}
             aria-expanded={isPageLinkOpen}
             aria-activedescendant={isPageLinkOpen ? `${pageLinkListId}-${pageLinkActiveIndex}` : undefined}
@@ -195,9 +206,11 @@ const ActivityCard = ({
           )}
         </SelectWrapper>
       </Row>
-      <ButtonRow>
-        <RemoveCardButton onClick={onRemove} />
-      </ButtonRow>
+      {!disabled && (
+        <ButtonRow>
+          <RemoveCardButton onClick={onRemove} />
+        </ButtonRow>
+      )}
     </Card>
   );
 };

@@ -24,6 +24,7 @@ export interface SelectProps {
   required?: boolean;
   description?: string;
   disabled?: boolean;
+  readOnly?: boolean;
   hideValue?: boolean;
   onClick?: () => void;
   'aria-expanded'?: boolean;
@@ -50,6 +51,7 @@ const Select = forwardRef<HTMLDivElement, SelectProps & { id?: string }>(functio
     required = false,
     description,
     disabled = false,
+    readOnly = false,
     hideValue = false,
     onClick,
     id,
@@ -60,6 +62,7 @@ const Select = forwardRef<HTMLDivElement, SelectProps & { id?: string }>(functio
   const generatedId = useId();
   const selectId = id ?? generatedId;
   const descriptionId = description ? `${selectId}-description` : undefined;
+  const isInteractive = !disabled && !readOnly;
 
   const statusIcon =
     status === 'negative' ? (
@@ -84,20 +87,21 @@ const Select = forwardRef<HTMLDivElement, SelectProps & { id?: string }>(functio
         ref={ref}
         id={selectId}
         role="combobox"
-        tabIndex={disabled ? -1 : 0}
-        onClick={disabled ? undefined : onClick}
+        tabIndex={isInteractive ? 0 : -1}
+        onClick={isInteractive ? onClick : undefined}
         onKeyDown={(event) => {
-          if (disabled) return;
+          if (!isInteractive) return;
           if (event.key === 'Enter' || event.key === ' ') {
             event.preventDefault();
             onClick?.();
           }
         }}
-        aria-disabled={disabled}
+        aria-disabled={disabled || readOnly}
         aria-haspopup="listbox"
         aria-describedby={descriptionId}
         $status={status}
         $disabled={disabled}
+        $readOnly={readOnly}
         {...rest}
       >
         {leadingIcon && <IconSlot $color={Label.normal}>{leadingIcon}</IconSlot>}
@@ -157,7 +161,7 @@ const Required = styled.span`
   ${typographyCss(Typography.label1Normal.medium)}
 `;
 
-const Trigger = styled.div<{ $status: SelectStatus; $disabled: boolean }>`
+const Trigger = styled.div<{ $status: SelectStatus; $disabled: boolean; $readOnly: boolean }>`
   position: relative;
   display: flex;
   align-items: center;
@@ -168,12 +172,17 @@ const Trigger = styled.div<{ $status: SelectStatus; $disabled: boolean }>`
   border-radius: 12px;
   background-color: ${(props) => (props.$disabled ? '#F4F4F5' : 'rgba(255, 255, 255, 0.08)')};
   box-shadow: ${(props) => getBoxShadow(props.$status, props.$disabled)};
-  cursor: ${(props) => (props.$disabled ? 'not-allowed' : 'pointer')};
+  cursor: ${(props) => (props.$disabled ? 'not-allowed' : props.$readOnly ? 'default' : 'pointer')};
+  pointer-events: ${(props) => (props.$readOnly ? 'none' : 'auto')};
   text-align: left;
 
-  &:focus-within {
-    box-shadow: inset 0 0 0 2px rgba(71, 172, 255, 0.43);
-  }
+  ${(props) =>
+    !props.$readOnly &&
+    `
+    &:focus-within {
+      box-shadow: inset 0 0 0 2px rgba(71, 172, 255, 0.43);
+    }
+  `}
 `;
 
 const Text = styled.span<{ $placeholder: boolean }>`
