@@ -6,7 +6,7 @@ import CharCount from '@common/charCount/CharCount';
 import AddCardButton from '@mypage/admin/component/AddCardButton';
 import RemoveCardButton from '@mypage/admin/component/RemoveCardButton';
 import { isUnfilled } from '@utils/index';
-import { BackgroundWhite, Label, Line } from '@utils/constant/color';
+import { BackgroundWhite, Black, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { createId } from './utils';
 
@@ -43,7 +43,7 @@ const TalentSection = ({
 
   return (
     <Section>
-      <Title>중앙대학교 멋쟁이사자처럼 인재상</Title>
+      <Title>인재상 관리</Title>
       {items.map((item) => (
         <Card key={item.id}>
           <FieldWrapper>
@@ -91,8 +91,8 @@ const Section = styled.div`
 
 const Title = styled.p`
   margin: 0;
-  color: ${Label.normal};
-  ${typographyCss(Typography.heading2.bold)}
+  color: ${Black.b900};
+  ${typographyCss(Typography.title3.bold)}
 `;
 
 const Card = styled.div`

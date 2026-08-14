@@ -8,7 +8,7 @@ import CharCount from '@common/charCount/CharCount';
 import AddCardButton from '@mypage/admin/component/AddCardButton';
 import RemoveCardButton from '@mypage/admin/component/RemoveCardButton';
 import { isUnfilled } from '@utils/index';
-import { BackgroundWhite, Label, Line, State } from '@utils/constant/color';
+import { BackgroundWhite, Black, Line, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { createId } from './utils';
 
@@ -127,8 +127,8 @@ const Section = styled.div`
 
 const Title = styled.p`
   margin: 0;
-  color: ${Label.normal};
-  ${typographyCss(Typography.heading2.bold)}
+  color: ${Black.b900};
+  ${typographyCss(Typography.title3.bold)}
 `;
 
 const Card = styled.div`
