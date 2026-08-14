@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import Link from 'next/link';
+import { useRouter } from 'next/router';
 import styled from 'styled-components';
 
 import Button from '@common/button/Button';
 import ContentBadge from '@common/badge/ContentBadge';
+import MobileUnsupportedModal from '@common/modal/MobileUnsupportedModal';
 import { IcChevronDown } from '@assets/svg';
 import { BackgroundWhite, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -46,8 +47,19 @@ const ITEM_BADGE_CONFIG: Record<AssignmentItemStatus, { label: string; color: 'n
 };
 
 const WeeklyAssignmentCard = ({ group }: { group: WeeklyAssignmentGroup }) => {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(true);
+  const [isUnsupportedOpen, setIsUnsupportedOpen] = useState(false);
   const weekBadge = WEEK_BADGE_CONFIG[group.status];
+
+  // 제출·수정은 데스크톱 전용이라 모바일에서는 안내 모달을 띄운다
+  const handleAction = (card: AssignmentCard) => {
+    if (typeof window !== 'undefined' && window.matchMedia('(max-width: 900px)').matches) {
+      setIsUnsupportedOpen(true);
+      return;
+    }
+    if (card.id) router.push(`/mypage/assignment/${card.id}`);
+  };
 
   return (
     <Wrapper>
@@ -79,17 +91,24 @@ const WeeklyAssignmentCard = ({ group }: { group: WeeklyAssignmentGroup }) => {
               <DueDate>
                 마감일 <span>ㅣ</span> {card.dueDate}
               </DueDate>
-              {card.actionLabel &&
-                (card.id ? (
-                  <Link href={`/mypage/assignment/${card.id}`}>
-                    <Button size="large">{card.actionLabel}</Button>
-                  </Link>
-                ) : (
-                  <Button size="large">{card.actionLabel}</Button>
-                ))}
+              {card.actionLabel && (
+                <>
+                  <DesktopAction>
+                    <Button size="large" onClick={() => handleAction(card)}>
+                      {card.actionLabel}
+                    </Button>
+                  </DesktopAction>
+                  <MobileAction>
+                    <Button size="small" onClick={() => handleAction(card)}>
+                      {card.actionLabel}
+                    </Button>
+                  </MobileAction>
+                </>
+              )}
             </FooterRow>
           </GroupCard>
         ))}
+      {isUnsupportedOpen && <MobileUnsupportedModal onClose={() => setIsUnsupportedOpen(false)} />}
     </Wrapper>
   );
 };
@@ -114,6 +133,10 @@ const Header = styled.button`
   border-radius: 14px;
   background-color: ${BackgroundWhite.secondary};
   cursor: pointer;
+
+  @media (max-width: 900px) {
+    padding: 20px 26px;
+  }
 `;
 
 const WeekTitle = styled.p`
@@ -126,6 +149,10 @@ const HeaderRight = styled.div`
   display: flex;
   align-items: center;
   gap: 18px;
+
+  @media (max-width: 900px) {
+    gap: 8px;
+  }
 `;
 
 const Chevron = styled.span<{ $open: boolean }>`
@@ -135,6 +162,14 @@ const Chevron = styled.span<{ $open: boolean }>`
   color: ${Label.strong};
   transform: rotate(${(props) => (props.$open ? '180deg' : '0deg')});
   transition: transform 0.15s ease;
+
+  /* Figma 모바일: 꺾쇠 24px */
+  @media (max-width: 900px) {
+    svg {
+      width: 24px;
+      height: 24px;
+    }
+  }
 `;
 
 const GroupCard = styled.div`
@@ -146,6 +181,10 @@ const GroupCard = styled.div`
   border: 1px solid ${Line.subtle};
   border-radius: 14px;
   background-color: ${BackgroundWhite.tertiary};
+
+  @media (max-width: 900px) {
+    padding: 20px 26px;
+  }
 `;
 
 const ItemRow = styled.div`
@@ -153,18 +192,48 @@ const ItemRow = styled.div`
   align-items: center;
   justify-content: space-between;
   width: 100%;
+
+  /* Figma 모바일: 과제 사이 구분선 (위아래 16px) */
+  @media (max-width: 900px) {
+    align-items: flex-start;
+  }
+
+  & + & {
+    @media (max-width: 900px) {
+      padding-top: 16px;
+      border-top: 1px solid ${Line.subtle};
+    }
+  }
 `;
 
 const ItemName = styled.p`
   margin: 0;
   color: ${Label.normal};
   ${typographyCss(Typography.heading2.bold)}
+
+  @media (max-width: 900px) {
+    flex: 1 0 0;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: #121212;
+  }
 `;
 
 const ItemRight = styled.div`
   display: flex;
   align-items: center;
   gap: 20px;
+
+  /* Figma 모바일: 뱃지가 위, 제출 시각이 아래 (데스크톱 가로 순서와 반대라 column-reverse) */
+  @media (max-width: 900px) {
+    flex-direction: column-reverse;
+    align-items: flex-end;
+    justify-content: center;
+    flex-shrink: 0;
+    gap: 10px;
+  }
 `;
 
 const SubmittedAt = styled.p`
@@ -172,6 +241,11 @@ const SubmittedAt = styled.p`
   white-space: nowrap;
   color: ${Label.assistive};
   ${typographyCss(Typography.body1Reading.regular)}
+
+  @media (max-width: 900px) {
+    text-align: right;
+    ${typographyCss(Typography.label1Normal.regular)}
+  }
 `;
 
 const FooterRow = styled.div`
@@ -179,6 +253,25 @@ const FooterRow = styled.div`
   align-items: center;
   justify-content: space-between;
   width: 100%;
+
+  /* Figma 모바일: 과제 목록과 22px 간격 (컨테이너 gap 16 + 6) */
+  @media (max-width: 900px) {
+    margin-top: 6px;
+  }
+`;
+
+const DesktopAction = styled.div`
+  @media (max-width: 900px) {
+    display: none;
+  }
+`;
+
+const MobileAction = styled.div`
+  display: none;
+
+  @media (max-width: 900px) {
+    display: block;
+  }
 `;
 
 const DueDate = styled.p`
