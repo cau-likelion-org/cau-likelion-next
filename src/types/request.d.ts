@@ -123,6 +123,7 @@ export interface UserProfile {
   role: MemberRole;
   partId: number;
   partName: string;
+  generationNumber: number | null; // 소속 파트가 없으면 null
 }
 
 export interface UserAttendance {

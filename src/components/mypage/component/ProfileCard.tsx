@@ -10,6 +10,9 @@ const ProfileCard = ({ user }: { user: UserProfile }) => {
     <Wrapper>
       <Name>{user.name}</Name>
       <BadgeRow>
+        {user.generationNumber != null && (
+          <ContentBadge color="accent" size="medium" text={`${user.generationNumber}기`} />
+        )}
         <ContentBadge color="accent" size="medium" text={user.partName} />
         <ContentBadge color="accent" size="medium" text={ROLE_LABEL[user.role]} />
       </BadgeRow>
