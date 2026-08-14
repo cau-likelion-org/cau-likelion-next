@@ -8,7 +8,7 @@ import useListboxSelect from 'src/hooks/useListboxSelect';
 import { UserProfile } from '@@types/request';
 import { MemberScore, getMemberScores } from 'src/apis/mypage';
 import useTokenStore from 'src/store/useTokenStore';
-import { Black, Label, Line, Orange } from '@utils/constant/color';
+import { BackgroundColor, Black, Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 const ALL_PART = '전체';
@@ -88,7 +88,9 @@ const MemberScoreSection = ({ userProfile }: { userProfile: UserProfile }) => {
           <HeadCell $width={63}>무단결석</HeadCell>
           <HeadCell $width={63}>지각제출</HeadCell>
           <HeadCell $width={50}>미제출</HeadCell>
-          <HeadCell $width={80}>총점</HeadCell>
+          <HeadCell $width={80} $sticky>
+            총점
+          </HeadCell>
         </HeaderRow>
 
         <Body>
@@ -178,6 +180,8 @@ const Section = styled.div`
   flex-direction: column;
   align-items: flex-start;
   width: 100%;
+  /* 표(min-width 880px)가 페이지 폭을 밀어내지 않도록 */
+  min-width: 0;
 `;
 
 const SectionTitle = styled.p`
@@ -191,18 +195,38 @@ const FilterRow = styled.div`
   display: flex;
   gap: 20px;
   margin-top: 24px;
+
+  @media (max-width: 900px) {
+    width: 100%;
+  }
 `;
 
 const SelectColumn = styled.div`
   position: relative;
   width: 160px;
+
+  @media (max-width: 900px) {
+    flex: 1;
+    min-width: 0;
+    width: auto;
+  }
 `;
+
+const TABLE_MIN_WIDTH = 880;
 
 const Table = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
+  min-width: 0;
   margin-top: 40px;
+
+  /* 좁은 화면에서는 컬럼을 줄이지 않고 표 전체를 가로로 스크롤한다 */
+  @media (max-width: 900px) {
+    overflow-x: auto;
+    /* 스크롤바가 마지막 행에 겹치지 않도록 아래 여백 확보 */
+    padding-bottom: 16px;
+  }
 `;
 
 const rowLayout = `
@@ -210,17 +234,41 @@ const rowLayout = `
   align-items: center;
   justify-content: space-between;
   width: 100%;
+  min-width: ${TABLE_MIN_WIDTH}px;
 `;
 
 const HeaderRow = styled.div`
   ${rowLayout}
 `;
 
-const HeadCell = styled.span<{ $width: number }>`
+// 가로 스크롤 시 총점은 오른쪽에 고정하고, 왼쪽에 흰색 페이드를 둔다 (Figma)
+const stickyRightCss = `
+  @media (max-width: 900px) {
+    position: sticky;
+    right: 0;
+    z-index: 1;
+    background-color: ${BackgroundColor};
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: -40px;
+      width: 40px;
+      background: linear-gradient(to right, rgba(255, 255, 255, 0), ${BackgroundColor});
+      pointer-events: none;
+    }
+  }
+`;
+
+const HeadCell = styled.span<{ $width: number; $sticky?: boolean }>`
   width: ${(props) => props.$width}px;
   text-align: ${(props) => (props.$width === 90 || props.$width === 92 ? 'left' : 'center')};
   color: ${Label.assistive};
   ${typographyCss(Typography.body1Reading.regular)}
+
+  ${(props) => props.$sticky && stickyRightCss}
 `;
 
 const Body = styled.div`
@@ -246,6 +294,7 @@ const Row = styled.div`
 
 const Name = styled.span`
   width: 90px;
+
   color: ${Black.b900};
   ${typographyCss(Typography.title3.bold)}
 `;
@@ -262,4 +311,6 @@ const Total = styled.span`
   text-align: center;
   color: ${Black.b900};
   ${typographyCss(Typography.title3.bold)}
+
+  ${stickyRightCss}
 `;
