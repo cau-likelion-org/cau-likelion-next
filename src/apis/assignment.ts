@@ -33,6 +33,8 @@ export function getPresidentAssignments(token: IToken, partId: number) {
 
 export type AssignmentSubmitType = 'FILE' | 'URL';
 
+const toDeadlineDateTime = (value: string) => (value.length === 10 ? `${value}T23:59:59` : value);
+
 export interface AssignmentCreateItem {
   title: string;
   detail: string;
@@ -48,7 +50,11 @@ export interface AssignmentCreateRequest {
 // 운영진: 본인 파트에 과제 생성 + 파트는 토큰의 소속 파트로 자동 지정
 export function createAssignments(token: IToken, payload: AssignmentCreateRequest) {
   const authAxios = getAuthAxios(token);
-  return authAxios.post('/api/assignments', payload).then((res) => res.data);
+  const body: AssignmentCreateRequest = {
+    ...payload,
+    assignments: payload.assignments.map((item) => ({ ...item, endDate: toDeadlineDateTime(item.endDate) })),
+  };
+  return authAxios.post('/api/assignments', body).then((res) => res.data);
 }
 
 export interface AssignmentDetail {
@@ -79,7 +85,8 @@ export interface AssignmentUpdateRequest {
 // 운영진: 과제 수정 (파트/주차는 변경 불가)
 export function updateAssignment(token: IToken, assignmentId: number, payload: AssignmentUpdateRequest) {
   const authAxios = getAuthAxios(token);
-  return authAxios.put(`/api/assignments/${assignmentId}`, payload).then((res) => res.data);
+  const body: AssignmentUpdateRequest = { ...payload, endDate: toDeadlineDateTime(payload.endDate) };
+  return authAxios.put(`/api/assignments/${assignmentId}`, body).then((res) => res.data);
 }
 
 // 운영진: 과제 삭제 (제출 이력도 함께 삭제됨)
@@ -169,7 +176,8 @@ export interface IndividualDeadline {
 // 운영진: 개별 마감일 변경
 export function updateIndividualDeadlines(token: IToken, assignmentId: number, payload: IndividualDeadlinePayload) {
   const authAxios = getAuthAxios(token);
+  const body: IndividualDeadlinePayload = { ...payload, deadline: toDeadlineDateTime(payload.deadline) };
   return authAxios
-    .patch<IndividualDeadline[]>(`/api/assignments/${assignmentId}/deadline`, payload)
+    .patch<IndividualDeadline[]>(`/api/assignments/${assignmentId}/deadline`, body)
     .then((res) => res.data);
 }
