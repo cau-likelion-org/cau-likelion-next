@@ -10,7 +10,8 @@ import { TodayAttendanceData } from '@@types/request';
 import { BackgroundWhite, Black, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
-const AttendanceCheckCard = () => {
+// 출석체크 대상이 아닌 역할(운영진·회장·관리자·어른사자)은 조회 결과와 무관하게 비활성으로 보여준다
+const AttendanceCheckCard = ({ isTarget = true }: { isTarget?: boolean }) => {
   const tokenState = useTokenStore((state) => state.token);
   const queryClient = useQueryClient();
   const [password, setPassword] = useState('');
@@ -20,7 +21,7 @@ const AttendanceCheckCard = () => {
     queryKey: ['attendance'],
     queryFn: () => getAttendance(tokenState),
     retry: false,
-    enabled: !!tokenState.access,
+    enabled: !!tokenState.access && isTarget,
   });
 
   const checkIn = useMutation({
@@ -37,16 +38,19 @@ const AttendanceCheckCard = () => {
   });
 
   const isCompleted =
-    (data && (data.attendance_result === 1 || data.attendance_result === 2)) || error?.response?.status === 405;
-  const isAvailable = !isLoading && !error && !!data && !isCompleted;
+    isTarget &&
+    ((data && (data.attendance_result === 1 || data.attendance_result === 2)) || error?.response?.status === 405);
+  const isAvailable = isTarget && !isLoading && !error && !!data && !isCompleted;
 
-  const placeholder = isLoading
-    ? ''
-    : isAvailable
-      ? '비밀번호를 입력해 주세요.'
-      : error?.response?.status === 406
-        ? '출석체크 대상이 아니에요'
-        : '아직 출석체크 시간이 아니에요';
+  const placeholder = !isTarget
+    ? '출석체크 대상이 아니에요'
+    : isLoading
+      ? ''
+      : isAvailable
+        ? '비밀번호를 입력해 주세요.'
+        : error?.response?.status === 406
+          ? '출석체크 대상이 아니에요'
+          : '아직 출석체크 시간이 아니에요';
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);

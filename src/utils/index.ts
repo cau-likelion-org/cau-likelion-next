@@ -47,6 +47,9 @@ const FULL_ADMIN_ROLES: MemberRole[] = ['PRESIDENT', 'ADMIN'];
 export const isAdminRole = (role: MemberRole) => ADMIN_ROLES.includes(role);
 export const isFullAdminRole = (role: MemberRole) => FULL_ADMIN_ROLES.includes(role);
 
+// 출석체크는 활동 중인 아기사자만 대상
+export const isAttendanceTarget = (role: MemberRole) => role === 'BABY_LION';
+
 // 출석부 생성은 회장 전용 권한
 export const canCreateAttendance = (role: MemberRole) => role === 'PRESIDENT';
 

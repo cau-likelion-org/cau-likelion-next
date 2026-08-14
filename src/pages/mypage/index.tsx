@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import useTokenStore from 'src/store/useTokenStore';
 import useProfileChangedStore from 'src/store/useProfileChangedStore';
 import { getUserProfile } from 'src/apis/account';
-import { canCreateAttendance, isAdminRole, canManageSitePages } from '@utils/index';
+import { canCreateAttendance, isAdminRole, isAttendanceTarget, canManageSitePages } from '@utils/index';
 import styled from 'styled-components';
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import Toast from '@common/toast/Toast';
@@ -52,9 +52,17 @@ const MyPage = () => {
       <MyPageShell active="home" isAdmin={canManageSitePages(userProfile.role)}>
         <CardRow>
           <ProfileCard user={userProfile} />
-          {canCreateAttendance(userProfile.role) ? <MakeAttendanceCard /> : <AttendanceCheckCard />}
+          {canCreateAttendance(userProfile.role) ? (
+            <MakeAttendanceCard />
+          ) : (
+            <AttendanceCheckCard isTarget={isAttendanceTarget(userProfile.role)} />
+          )}
         </CardRow>
-        {isAdminRole(userProfile.role) ? <MemberScoreSection /> : <MyScoreSection userProfile={userProfile} />}
+        {isAdminRole(userProfile.role) ? (
+          <MemberScoreSection userProfile={userProfile} />
+        ) : (
+          <MyScoreSection userProfile={userProfile} />
+        )}
       </MyPageShell>
     </>
   );
