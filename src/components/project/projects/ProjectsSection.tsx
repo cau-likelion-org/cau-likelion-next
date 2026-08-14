@@ -1,15 +1,30 @@
-import { ArchivingArrayType, IProjectData } from '@@types/request';
+import { ArchivingArrayType, IProjectData, UserProfile } from '@@types/request';
+import Button from '@common/button/Button';
 import CircularLoading from '@common/loading/CircularLoading';
+import Toast from '@common/toast/Toast';
+import IcAdd from '@assets/svg/ic-add.svg';
+import { IcFailure } from '@assets/svg';
 import { useQuery } from '@tanstack/react-query';
-import { useMemo, useState } from 'react';
-import { getProjects } from 'src/apis/project';
-import { sortArchivingListDesc } from '@utils/index';
+import { useEffect, useMemo, useState } from 'react';
+import { useRouter } from 'next/router';
+import { getUserProfile } from 'src/apis/account';
+import {
+  PROJECT_CATEGORY_LABEL,
+  PROJECT_CREATED_FLAG_KEY,
+  PROJECT_DELETED_FLAG_KEY,
+  PROJECT_UPDATED_FLAG_KEY,
+  getProjects,
+} from 'src/apis/project';
+import useTokenStore from 'src/store/useTokenStore';
+import { isAdminRole, sortArchivingListDesc } from '@utils/index';
 import styled from 'styled-components';
 import ProjectCard from './ProjectCard';
 import ProjectEmptyState from './ProjectEmptyState';
 import ProjectFilterSelect from './ProjectFilterSelect';
 
 const ALL_OPTION = '전체';
+
+const CATEGORY_OPTIONS = [ALL_OPTION, ...Object.values(PROJECT_CATEGORY_LABEL)];
 
 const CATEGORY_PRIORITY: Record<string, number> = {
   중커톤: 0,
@@ -23,14 +38,47 @@ interface FlatProject extends IProjectData {
 }
 
 const ProjectsSection = ({ staticData }: { staticData: ArchivingArrayType<IProjectData> | null }) => {
-  const { data, isLoading } = useQuery<ArchivingArrayType<IProjectData>>({
+  const { data, isLoading, isError } = useQuery<ArchivingArrayType<IProjectData>>({
     queryKey: ['projects'],
     queryFn: getProjects,
     initialData: staticData ?? undefined,
   });
 
+  const router = useRouter();
+  const tokenState = useTokenStore((state) => state.token);
+  const { data: userProfile } = useQuery<UserProfile>({
+    queryKey: ['userProfile'],
+    queryFn: () => getUserProfile(tokenState),
+    retry: false,
+    enabled: !!tokenState.access,
+  });
+
   const [selectedGeneration, setSelectedGeneration] = useState(ALL_OPTION);
   const [selectedCategory, setSelectedCategory] = useState(ALL_OPTION);
+
+  const [isDeletedToastOpen, setIsDeletedToastOpen] = useState(
+    () => typeof window !== 'undefined' && sessionStorage.getItem(PROJECT_DELETED_FLAG_KEY) === 'true',
+  );
+  useEffect(() => {
+    if (!isDeletedToastOpen) return;
+    sessionStorage.removeItem(PROJECT_DELETED_FLAG_KEY);
+  }, [isDeletedToastOpen]);
+
+  const [isCreatedToastOpen, setIsCreatedToastOpen] = useState(
+    () => typeof window !== 'undefined' && sessionStorage.getItem(PROJECT_CREATED_FLAG_KEY) === 'true',
+  );
+  useEffect(() => {
+    if (!isCreatedToastOpen) return;
+    sessionStorage.removeItem(PROJECT_CREATED_FLAG_KEY);
+  }, [isCreatedToastOpen]);
+
+  const [isUpdatedToastOpen, setIsUpdatedToastOpen] = useState(
+    () => typeof window !== 'undefined' && sessionStorage.getItem(PROJECT_UPDATED_FLAG_KEY) === 'true',
+  );
+  useEffect(() => {
+    if (!isUpdatedToastOpen) return;
+    sessionStorage.removeItem(PROJECT_UPDATED_FLAG_KEY);
+  }, [isUpdatedToastOpen]);
 
   const sortedGroups = useMemo(() => (data ? sortArchivingListDesc(data) : []), [data]);
 
@@ -42,11 +90,6 @@ const ProjectsSection = ({ staticData }: { staticData: ArchivingArrayType<IProje
   const generationOptions = useMemo(
     () => [ALL_OPTION, ...sortedGroups.map(([generation]) => `${generation}기`)],
     [sortedGroups],
-  );
-
-  const categoryOptions = useMemo(
-    () => [ALL_OPTION, ...Array.from(new Set(flatProjects.map((project) => project.category).filter(Boolean)))],
-    [flatProjects],
   );
 
   const filteredProjects = flatProjects.filter((project) => {
@@ -68,26 +111,63 @@ const ProjectsSection = ({ staticData }: { staticData: ArchivingArrayType<IProje
     return 0;
   });
 
+  const hasProjects = sortedProjects.length > 0;
+
   return (
     <Wrapper>
+      <ToastWrapper>
+        <Toast
+          variant="positive"
+          text="삭제가 완료되었습니다."
+          show={isDeletedToastOpen}
+          onHidden={() => setIsDeletedToastOpen(false)}
+        />
+        <Toast
+          variant="positive"
+          text="등록이 완료되었습니다."
+          show={isCreatedToastOpen}
+          onHidden={() => setIsCreatedToastOpen(false)}
+        />
+        <Toast
+          variant="positive"
+          text="변경사항이 저장되었습니다."
+          show={isUpdatedToastOpen}
+          onHidden={() => setIsUpdatedToastOpen(false)}
+        />
+      </ToastWrapper>
       <FilterRow>
-        <ProjectFilterSelect
-          heading="기수 구분"
-          options={generationOptions}
-          value={selectedGeneration}
-          onChange={setSelectedGeneration}
-        />
-        <ProjectFilterSelect
-          heading="프로젝트 구분"
-          options={categoryOptions}
-          value={selectedCategory}
-          onChange={setSelectedCategory}
-        />
+        <FilterGroup>
+          <ProjectFilterSelect
+            heading="기수 구분"
+            options={generationOptions}
+            value={selectedGeneration}
+            onChange={setSelectedGeneration}
+          />
+          <ProjectFilterSelect
+            heading="프로젝트 구분"
+            options={CATEGORY_OPTIONS}
+            value={selectedCategory}
+            onChange={setSelectedCategory}
+          />
+        </FilterGroup>
+        {userProfile && isAdminRole(userProfile.role) && (
+          <Button
+            variant="solid"
+            color="primary"
+            size="large"
+            trailingIcon={<IcAdd width={20} height={20} />}
+            onClick={() => router.push('/project/upload')}
+          >
+            프로젝트 추가
+          </Button>
+        )}
       </FilterRow>
       {isLoading ? (
         <LoadingWrapper>
           <CircularLoading size={32} />
         </LoadingWrapper>
+      ) : isError && !hasProjects ? (
+        <ProjectEmptyState icon={<IcFailure width={64} height={64} />} message="정보 불러오기를 실패했어요." />
       ) : sortedProjects.length === 0 ? (
         <ProjectEmptyState />
       ) : (
@@ -111,8 +191,30 @@ const Wrapper = styled.div`
   max-width: 100%;
 `;
 
+const ToastWrapper = styled.div`
+  position: fixed;
+  top: 110px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10001;
+  pointer-events: none;
+`;
+
 const FilterRow = styled.div`
   display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  width: 100%;
+
+  @media (max-width: 500px) {
+    flex-wrap: wrap;
+  }
+`;
+
+const FilterGroup = styled.div`
+  display: flex;
+  align-items: center;
   gap: 20px;
 
   @media (max-width: 500px) {
