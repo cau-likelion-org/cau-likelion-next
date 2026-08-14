@@ -125,18 +125,6 @@ export interface UserProfile {
   partName: string;
 }
 
-export interface UserScore {
-  user_id: number;
-  name: string;
-  track: number;
-  absence: number; // 결석
-  truancy: number; // 무단결석
-  tardiness: number; // 지각
-  notSubmitted: number;
-  lateSubmitted: number;
-  totalScore: number;
-}
-
 export interface UserAttendance {
   user_id: number;
   name: string; // 이름
@@ -159,11 +147,4 @@ export interface TotalScoreParams {
   absence: number;
   truancy: number;
   tardiness: number;
-}
-
-export interface RequestEditUserScore {
-  user_id: number;
-  truancy: number;
-  tardiness: number;
-  absence: number;
 }

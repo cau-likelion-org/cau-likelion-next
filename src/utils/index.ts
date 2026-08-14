@@ -5,9 +5,7 @@ import {
   ISessionData,
   MemberRole,
   TotalScoreParams,
-  UserScore,
 } from '@@types/request';
-import { TRACK_INDEX } from './constant';
 
 export const toDateString = (date?: Date, formatter = '-') => {
   if (!date) return '';
@@ -54,24 +52,6 @@ export const canCreateAttendance = (role: MemberRole) => role === 'PRESIDENT';
 
 // 전체 구성원 권한 설정은 중하하 관리자 전용 권한
 export const canManageMemberRoles = (role: MemberRole) => role === 'ADMIN';
-
-export const getTotalNameObject = (data: any): Record<string, UserScore> => {
-  let totalNameObject: Record<string, UserScore> = {};
-  data.forEach((user: any, i: number) => {
-    totalNameObject[user['이름']] = {
-      user_id: 0,
-      name: user['이름'],
-      track: TRACK_INDEX[user['트랙']],
-      lateSubmitted: user['과제 지각제출'],
-      notSubmitted: user['과제 미제출'],
-      absence: 0,
-      truancy: 0,
-      tardiness: 0,
-      totalScore: 0,
-    };
-  });
-  return totalNameObject;
-};
 
 export const sortArchivingListDesc = <T extends IGalleryData | IProjectData>(
   data: ArchivingArrayType<T>,
