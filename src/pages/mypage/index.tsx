@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import useTokenStore from 'src/store/useTokenStore';
 import useProfileChangedStore from 'src/store/useProfileChangedStore';
 import { getUserProfile } from 'src/apis/account';
+import { INACTIVE_MEMBER_NOTICE_KEY } from '@utils/constant';
 import { canCreateAttendance, isAdminRole, isAttendanceTarget, canManageSitePages } from '@utils/index';
 import styled from 'styled-components';
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
@@ -34,13 +35,16 @@ const MyPage = () => {
     if (hasHydrated && !tokenState.access) router.push('/login');
   }, [hasHydrated, tokenState, router]);
 
-  // 어른사자는 활동 기수가 아니므로 마이페이지에 들어올 때마다 안내
+  // 활동 전용 메뉴에서 돌려보내진 경우에만 안내 (홈 자체 진입에는 띄우지 않는다)
   const [toastMessage, setToastMessage] = useState('');
   useEffect(() => {
-    if (userProfile?.role !== 'ADULT_LION') return;
-    const frame = requestAnimationFrame(() => setToastMessage('현재 활동 중인 구성원이 아닙니다.'));
+    const frame = requestAnimationFrame(() => {
+      if (!sessionStorage.getItem(INACTIVE_MEMBER_NOTICE_KEY)) return;
+      sessionStorage.removeItem(INACTIVE_MEMBER_NOTICE_KEY);
+      setToastMessage('현재 활동 중인 구성원이 아닙니다.');
+    });
     return () => cancelAnimationFrame(frame);
-  }, [userProfile?.role]);
+  }, []);
 
   if (!userProfile) return null;
 

@@ -18,6 +18,7 @@ import {
   updateAttendanceBatch,
 } from 'src/apis/attendance';
 import useTokenStore from 'src/store/useTokenStore';
+import { INACTIVE_MEMBER_NOTICE_KEY } from '@utils/constant';
 import { isAdminRole, isFullAdminRole, canManageSitePages } from '@utils/index';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -50,6 +51,13 @@ const MyPageAttendance = () => {
     retry: false,
     enabled: !!tokenState.access,
   });
+
+  // 어른사자는 활동 중인 구성원이 아니므로 홈으로 돌려보내고, 홈에서 사유를 토스트로 안내한다
+  useEffect(() => {
+    if (userProfile?.role !== 'ADULT_LION') return;
+    sessionStorage.setItem(INACTIVE_MEMBER_NOTICE_KEY, '1');
+    router.replace('/mypage');
+  }, [userProfile?.role, router]);
 
   const isStaff = !!userProfile && isAdminRole(userProfile.role);
   const isPresident = !!userProfile && isFullAdminRole(userProfile.role);

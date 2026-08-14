@@ -14,6 +14,7 @@ import WeeklyAssignmentCard, { WeeklyAssignmentGroup } from '@mypage/component/W
 import { getGenerations, getUserProfile } from 'src/apis/account';
 import { AssignmentWeekGroup, getPresidentAssignments, getStaffAssignments } from 'src/apis/assignment';
 import useTokenStore from 'src/store/useTokenStore';
+import { INACTIVE_MEMBER_NOTICE_KEY } from '@utils/constant';
 import { isAdminRole, isFullAdminRole, canManageSitePages } from '@utils/index';
 import { IcPlus } from '@assets/svg';
 import { Label, Line } from '@utils/constant/color';
@@ -92,6 +93,13 @@ const MyPageAssignment = () => {
   useEffect(() => {
     if (hasHydrated && !tokenState.access) router.push('/login');
   }, [hasHydrated, tokenState, router]);
+
+  // 어른사자는 활동 중인 구성원이 아니므로 홈으로 돌려보내고, 홈에서 사유를 토스트로 안내한다
+  useEffect(() => {
+    if (userProfile?.role !== 'ADULT_LION') return;
+    sessionStorage.setItem(INACTIVE_MEMBER_NOTICE_KEY, '1');
+    router.replace('/mypage');
+  }, [userProfile?.role, router]);
 
   // 과제 생성 완료 후 넘어오면 토스트 표시
   const [toastMessage, setToastMessage] = useState('');
