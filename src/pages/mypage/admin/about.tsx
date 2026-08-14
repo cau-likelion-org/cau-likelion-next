@@ -117,12 +117,17 @@ const MyPageAdminAbout = () => {
     refetchOnWindowFocus: false,
   });
   const { data: roadmap } = useQuery({ queryKey: ['adminRoadmap'], queryFn: getRoadmap, refetchOnWindowFocus: false });
+  // 조회가 끝나기 전에 편집을 시작하면, 뒤늦게 도착한 최초 조회 결과가 입력 중인 값을 덮어쓸 수 있어
+  // 조회가 모두 끝나기 전까지는 수정 버튼을 눌러 편집을 시작할 수 없도록 막음
+  const isDataLoaded =
+    talents !== undefined && tracks !== undefined && curriculums !== undefined && roadmap !== undefined;
 
   const [talentItems, setTalentItems] = useState<TalentItem[]>([]);
   const [curriculumTracks, setCurriculumTracks] = useState<CurriculumTrackItems[]>([]);
   const [roadmapFile, setRoadmapFile] = useState<RoadmapFile>(DEFAULT_ROADMAP_FILE);
   const [isUploadingRoadmap, setIsUploadingRoadmap] = useState(false);
   const [toastMessage, setToastMessage] = useState<ReactNode>('');
+  const [toastVariant, setToastVariant] = useState<'positive' | 'negative'>('positive');
   const [showErrors, setShowErrors] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -172,6 +177,7 @@ const MyPageAdminAbout = () => {
       const { url } = await uploadFile(tokenState, 'ROADMAP', file);
       setRoadmapFile({ url, name: file.name });
     } catch {
+      setToastVariant('negative');
       setToastMessage('이미지 업로드 중 오류가 발생했습니다.');
     } finally {
       setIsUploadingRoadmap(false);
@@ -221,9 +227,11 @@ const MyPageAdminAbout = () => {
         queryClient.invalidateQueries({ queryKey: ['adminCurriculums'] }),
         queryClient.invalidateQueries({ queryKey: ['adminRoadmap'] }),
       ]);
+      setToastVariant('positive');
       setToastMessage('변경사항이 저장되었습니다.');
       setIsEditing(false);
     } catch {
+      setToastVariant('negative');
       setToastMessage('저장 중 오류가 발생했습니다. 다시 시도해 주세요.');
     } finally {
       setIsSaving(false);
@@ -248,7 +256,7 @@ const MyPageAdminAbout = () => {
                 </Button>
               </>
             ) : (
-              <EditButton onClick={() => setIsEditing(true)} />
+              <EditButton onClick={() => setIsEditing(true)} disabled={!isDataLoaded} />
             )}
           </ButtonRow>
         </TitleRow>
@@ -271,7 +279,7 @@ const MyPageAdminAbout = () => {
         />
       </MyPageShell>
       <ToastWrapper>
-        <Toast variant="positive" text={toastMessage} show={!!toastMessage} onHidden={() => setToastMessage('')} />
+        <Toast variant={toastVariant} text={toastMessage} show={!!toastMessage} onHidden={() => setToastMessage('')} />
       </ToastWrapper>
     </>
   );
