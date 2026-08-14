@@ -65,6 +65,12 @@ const Card = styled.div`
   width: 100%;
   padding: 20px;
   border: 1px solid ${Line.subtle};
+
+  /* 모바일은 좌(주차/날짜)·우(상태/체크인) 2열을 각각 세로로 쌓는다 (Figma) */
+  @media (max-width: 900px) {
+    align-items: flex-start;
+    padding: 14px;
+  }
   border-radius: 14px;
   background-color: ${BackgroundWhite.secondary};
 `;
@@ -73,11 +79,22 @@ const Left = styled.div`
   display: flex;
   align-items: center;
   gap: 12px;
+
+  @media (max-width: 900px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
 `;
 
 const Week = styled.p`
   margin: 0;
   width: 120px;
+
+  @media (max-width: 900px) {
+    width: auto;
+  }
+
   color: ${Label.normal};
   ${typographyCss(Typography.heading1.bold)}
 `;
@@ -95,6 +112,12 @@ const Right = styled.div`
   justify-content: flex-end;
   gap: 12px;
   width: 312px;
+
+  @media (max-width: 900px) {
+    flex-direction: column;
+    align-items: flex-end;
+    width: auto;
+  }
 `;
 
 const CheckInTime = styled.p`

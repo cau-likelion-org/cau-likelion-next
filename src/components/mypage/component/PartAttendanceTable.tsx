@@ -347,21 +347,25 @@ const PartAttendanceTable = ({ members, partName, partFilter, onSave, isSaving }
             partName && <PartName>{partName} 파트</PartName>
           )}
         </TitleRow>
-        {onSave &&
-          (isEditing ? (
-            <ButtonGroup>
-              <EditButton type="button" onClick={cancelEdit} disabled={isSaving}>
-                취소
+        {/* 출결 수정은 웹에서만 제공한다 */}
+        {onSave && (
+          <EditActions>
+            {isEditing ? (
+              <ButtonGroup>
+                <EditButton type="button" onClick={cancelEdit} disabled={isSaving}>
+                  취소
+                </EditButton>
+                <SaveButton type="button" onClick={handleSave} disabled={isSaving}>
+                  저장
+                </SaveButton>
+              </ButtonGroup>
+            ) : (
+              <EditButton type="button" onClick={startEdit}>
+                수정
               </EditButton>
-              <SaveButton type="button" onClick={handleSave} disabled={isSaving}>
-                저장
-              </SaveButton>
-            </ButtonGroup>
-          ) : (
-            <EditButton type="button" onClick={startEdit}>
-              수정
-            </EditButton>
-          ))}
+            )}
+          </EditActions>
+        )}
       </Header>
 
       <TableRow>
@@ -433,6 +437,7 @@ export default PartAttendanceTable;
 
 const HEAD_HEIGHT = 52;
 const ROW_HEIGHT = 70;
+const MOBILE_ROW_HEIGHT = 52;
 const GRID_BORDER = Line.subtle;
 const HEADER_BG = '#F5F7F9';
 const CELL_BG = '#FCFDFD';
@@ -508,6 +513,14 @@ const EditButton = styled.button`
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+  }
+`;
+
+const EditActions = styled.div`
+  display: flex;
+
+  @media (max-width: 900px) {
+    display: none;
   }
 `;
 
@@ -634,6 +647,10 @@ const TableRow = styled.div`
   align-items: stretch;
   gap: 20px;
   width: 100%;
+
+  @media (max-width: 900px) {
+    gap: 12px;
+  }
 `;
 
 const FixedColumn = styled.div`
@@ -641,6 +658,11 @@ const FixedColumn = styled.div`
   flex-direction: column;
   flex-shrink: 0;
   width: 160px;
+
+  @media (max-width: 900px) {
+    width: 100px;
+  }
+
   border: 1px solid ${GRID_BORDER};
   border-radius: 14px;
   overflow: hidden;
@@ -651,6 +673,8 @@ const WeeksScroll = styled.div`
   min-width: 0;
   overflow-x: auto;
   scrollbar-width: thin;
+  /* 스크롤로 잘리는 주차 표의 끝이 각지지 않도록 뷰포트에도 라운드를 준다 */
+  border-radius: 14px;
 `;
 
 const WeeksInner = styled.div`
@@ -673,6 +697,10 @@ const WeekColumn = styled.div`
   flex-shrink: 0;
   width: 120px;
 
+  @media (max-width: 900px) {
+    width: 100px;
+  }
+
   & + & {
     border-left: 1px solid ${GRID_BORDER};
   }
@@ -685,15 +713,20 @@ const PenaltyColumn = styled.div`
   flex-shrink: 0;
   width: 160px;
 
-  /* 주차 열이 감점 밑으로 스크롤될 때 흰색 페이드로 자연스럽게 사라지게 (Figma Rectangle 667) */
+  @media (max-width: 900px) {
+    width: 100px;
+  }
+
+  /* 주차 열이 감점 밑으로 스크롤될 때 흰색 페이드로 자연스럽게 사라지게 (Figma Rectangle 667)
+     감점 카드에 닿기 전에 주차 표의 각진 모서리가 완전히 지워지도록 카드 위로 살짝 겹친다 */
   &::before {
     content: '';
     position: absolute;
     top: 0;
     bottom: 0;
     left: -40px;
-    width: 40px;
-    background: linear-gradient(to right, rgba(255, 255, 255, 0), #ffffff);
+    width: 44px;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, #ffffff 90%, #ffffff 100%);
     pointer-events: none;
   }
 `;
@@ -721,11 +754,19 @@ const HeadCell = styled.div<{ $penalty?: boolean }>`
   background-color: ${(props) => (props.$penalty ? PENALTY_HEADER_BG : HEADER_BG)};
   border-bottom: 1px solid ${(props) => (props.$penalty ? PENALTY_BORDER : GRID_BORDER)};
   ${typographyCss(Typography.heading2.bold)}
+
+  @media (max-width: 900px) {
+    ${typographyCss(Typography.headline1.bold)}
+  }
 `;
 
 const ValueCell = styled.div<{ $penalty?: boolean }>`
   ${cellBase}
   height: ${ROW_HEIGHT}px;
+
+  @media (max-width: 900px) {
+    height: ${MOBILE_ROW_HEIGHT}px;
+  }
   color: #121212;
   background-color: ${(props) => (props.$penalty ? PENALTY_CELL_BG : CELL_BG)};
 
@@ -734,11 +775,19 @@ const ValueCell = styled.div<{ $penalty?: boolean }>`
   }
 
   ${typographyCss(Typography.heading1.bold)}
+
+  @media (max-width: 900px) {
+    ${typographyCss(Typography.headline1.bold)}
+  }
 `;
 
 const StatusCell = styled.div`
   ${cellBase}
   height: ${ROW_HEIGHT}px;
+
+  @media (max-width: 900px) {
+    height: ${MOBILE_ROW_HEIGHT}px;
+  }
   color: ${Label.strong};
   background-color: ${CELL_BG};
 
