@@ -1,15 +1,31 @@
-import { ReactElement, useEffect } from 'react';
+import { ReactElement, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import styled from 'styled-components';
 
+import { UserProfile } from '@@types/request';
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import MyPageShell from '@mypage/component/MyPageShell';
+import Toast from '@common/toast/Toast';
+import PartAttendanceTable from '@mypage/component/PartAttendanceTable';
 import WeeklyAttendanceCard, { WeeklyAttendanceRecord } from '@mypage/component/WeeklyAttendanceCard';
+import { getGenerations, getUserProfile } from 'src/apis/account';
+import {
+  AttendanceStatusUpdate,
+  MemberAttendanceResponse,
+  getAllAttendances,
+  getPartAttendance,
+  updateAttendanceBatch,
+} from 'src/apis/attendance';
 import useTokenStore from 'src/store/useTokenStore';
+import { isAdminRole, isFullAdminRole } from '@utils/index';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
-// 백엔드 API 준비 전까지 사용하는 목 데이터
+// 회장/관리자 파트 필터의 '전체' 옵션 (나머지는 현재 활동 기수의 파트 목록에서 가져옴)
+const ALL_PART = '전체';
+
+// 백엔드 API 준비 전까지 사용하는 목 데이터 (아기사자 본인 뷰)
 const MOCK_WEEKLY_ATTENDANCE: WeeklyAttendanceRecord[] = [
   { week: 19, date: '2026/12/13', status: 'before' },
   { week: 18, date: '2026/12/12', status: 'present', checkInTime: '18:55:42' },
@@ -28,15 +44,87 @@ const MyPageAttendance = () => {
     if (hasHydrated && !tokenState.access) router.push('/login');
   }, [hasHydrated, tokenState, router]);
 
+  const { data: userProfile } = useQuery<UserProfile>({
+    queryKey: ['userProfile'],
+    queryFn: () => getUserProfile(tokenState),
+    retry: false,
+    enabled: !!tokenState.access,
+  });
+
+  const isStaff = !!userProfile && isAdminRole(userProfile.role);
+  const isPresident = !!userProfile && isFullAdminRole(userProfile.role);
+
+  const { data: generations } = useQuery({
+    queryKey: ['generations'],
+    queryFn: getGenerations,
+    enabled: isPresident,
+  });
+  const activeGeneration =
+    generations?.find((generation) => generation.status === 'IN_ACTIVITY') ?? generations?.[generations.length - 1];
+  const partOptions = [
+    ALL_PART,
+    ...(activeGeneration?.parts ?? []).map((part) => part.name).filter((name) => name !== '기타'),
+  ];
+
+  // 회장은 전체 파트를 한 번에 받아 파트명으로 필터링, 운영진은 본인 파트만 조회
+  const [selectedPart, setSelectedPart] = useState(ALL_PART);
+
+  const attendanceQueryKey = isPresident ? ['allAttendance'] : ['partAttendance'];
+  const { data: attendance } = useQuery<MemberAttendanceResponse[]>({
+    queryKey: attendanceQueryKey,
+    queryFn: () => (isPresident ? getAllAttendances(tokenState) : getPartAttendance(tokenState)),
+    enabled: isStaff,
+  });
+
+  const members =
+    isPresident && selectedPart !== ALL_PART
+      ? (attendance ?? []).filter((member) => member.partName === selectedPart)
+      : (attendance ?? []);
+
+  const queryClient = useQueryClient();
+  const [errorMessage, setErrorMessage] = useState('');
+  const saveMutation = useMutation({
+    mutationFn: (updates: AttendanceStatusUpdate[]) => updateAttendanceBatch(tokenState, updates),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: attendanceQueryKey }),
+    onError: () => setErrorMessage('출결 저장에 실패했습니다. 다시 시도해 주세요.'),
+  });
+
+  const handleSave = (updates: AttendanceStatusUpdate[]) => {
+    if (updates.length === 0) return;
+    setErrorMessage('');
+    return saveMutation.mutateAsync(updates);
+  };
+
+  if (!userProfile) return null;
+
   return (
-    <MyPageShell active="attendance">
-      <SectionTitle>주차별 출결 현황</SectionTitle>
-      <List>
-        {MOCK_WEEKLY_ATTENDANCE.map((record) => (
-          <WeeklyAttendanceCard key={record.week} record={record} />
-        ))}
-      </List>
-    </MyPageShell>
+    <>
+      <ToastWrapper>
+        <Toast variant="negative" text={errorMessage} show={!!errorMessage} onHidden={() => setErrorMessage('')} />
+      </ToastWrapper>
+      <MyPageShell active="attendance" isAdmin={isAdminRole(userProfile.role)}>
+        {isStaff ? (
+          <PartAttendanceTable
+            members={members}
+            partName={isPresident ? undefined : userProfile.partName}
+            partFilter={
+              isPresident ? { value: selectedPart, options: partOptions, onChange: setSelectedPart } : undefined
+            }
+            onSave={handleSave}
+            isSaving={saveMutation.isPending}
+          />
+        ) : (
+          <>
+            <SectionTitle>주차별 출결 현황</SectionTitle>
+            <List>
+              {MOCK_WEEKLY_ATTENDANCE.map((record) => (
+                <WeeklyAttendanceCard key={record.week} record={record} />
+              ))}
+            </List>
+          </>
+        )}
+      </MyPageShell>
+    </>
   );
 };
 
@@ -45,6 +133,15 @@ MyPageAttendance.getLayout = function getLayout(page: ReactElement) {
 };
 
 export default MyPageAttendance;
+
+const ToastWrapper = styled.div`
+  position: fixed;
+  top: 110px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10001;
+  pointer-events: none;
+`;
 
 const SectionTitle = styled.p`
   margin: 0;

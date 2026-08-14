@@ -15,7 +15,7 @@ import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { getSessionList, getSession } from 'src/apis/session';
 import { getHistoryList, getHistory } from 'src/apis/history';
-import { getGalleryProjectList, GalleryProjectCategory } from 'src/apis/project';
+import { getGalleryProjectList, GalleryProjectCategory } from 'src/apis/gallery';
 
 import HistoryDetailModal from './component/HistoryDetailModal';
 import HistoryEditModal from './component/HistoryEditModal';

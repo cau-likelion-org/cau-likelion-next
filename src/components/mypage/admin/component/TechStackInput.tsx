@@ -37,7 +37,7 @@ const TechStackInput = ({
   return (
     <Wrapper>
       {value.map((tag) => (
-        <Chip key={tag} size="medium" trailingIcon={<RemoveIcon>×</RemoveIcon>} onClick={() => removeTag(tag)}>
+        <Chip key={tag} size="xsmall" trailingIcon={<RemoveIcon>×</RemoveIcon>} onClick={() => removeTag(tag)}>
           {tag}
         </Chip>
       ))}

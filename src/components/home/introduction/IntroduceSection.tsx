@@ -1,5 +1,7 @@
+import { useQuery } from '@tanstack/react-query';
 import styled from 'styled-components';
 
+import { getIntroduce } from 'src/apis/introduce';
 import { Black, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
@@ -8,13 +10,15 @@ interface IStat {
   label: string;
 }
 
-const STATS: IStat[] = [
-  { number: '14기', label: '누적 활동 기수' },
-  { number: '230+', label: '누적 수료자 수' },
-  { number: '60+', label: '누적 프로젝트 개수' },
-];
-
 const IntroduceSection = () => {
+  const { data: indicator } = useQuery({ queryKey: ['indicator'], queryFn: getIntroduce });
+
+  const stats: IStat[] = [
+    { number: indicator ? `${indicator.cumulativeGenerations}기` : '', label: '누적 활동 기수' },
+    { number: indicator?.cumulativeGraduates ?? '', label: '누적 수료자 수' },
+    { number: indicator?.cumulativeProjects ?? '', label: '누적 프로젝트 개수' },
+  ];
+
   return (
     <Wrapper>
       <Content>
@@ -28,7 +32,7 @@ const IntroduceSection = () => {
         </TextGroup>
         <StatsGroup>
           <StatRow>
-            {STATS.map(({ number, label }) => (
+            {stats.map(({ number, label }) => (
               <StatCard key={label}>
                 <StatNumber>{number}</StatNumber>
                 <StatLabel>{label}</StatLabel>

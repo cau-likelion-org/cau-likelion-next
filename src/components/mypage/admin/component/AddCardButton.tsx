@@ -18,10 +18,10 @@ const Wrapper = styled.button`
   align-items: center;
   justify-content: center;
   width: 100%;
-  padding: 12px 0;
+  padding: 12px;
   border: none;
   border-radius: 12px;
   background-color: ${Fill.normal};
-  color: ${Label.alternative};
+  color: ${Label.neutral};
   cursor: pointer;
 `;

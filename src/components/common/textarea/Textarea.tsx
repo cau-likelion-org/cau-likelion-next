@@ -34,7 +34,7 @@ const getResizeCss = (resize: TextareaResize) => {
 const Textarea = ({
   className,
   status = 'normal',
-  resize = 'normal',
+  resize = 'fixed',
   maxHeight,
   heading,
   required = false,

@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
-export type SidebarActive = 'home' | 'attendance' | 'assignment' | 'admin-landing';
+export type SidebarActive = 'home' | 'attendance' | 'assignment' | 'admin-landing' | 'admin-about';
 
 const Sidebar = ({ active, isAdmin = false }: { active: SidebarActive; isAdmin?: boolean }) => {
   return (
@@ -23,6 +23,9 @@ const Sidebar = ({ active, isAdmin = false }: { active: SidebarActive; isAdmin?:
           <GroupTitle>관리자</GroupTitle>
           <StyledLink href="/mypage/admin/landing">
             <Item $active={active === 'admin-landing'}>랜딩페이지 관리</Item>
+          </StyledLink>
+          <StyledLink href="/mypage/admin/about">
+            <Item $active={active === 'admin-about'}>소개 페이지 관리</Item>
           </StyledLink>
         </AdminGroup>
       )}
