@@ -9,9 +9,11 @@ import Toast from '@common/toast/Toast';
 import AssignmentCreateForm, { AssignmentDraft } from '@mypage/component/AssignmentCreateForm';
 import { getUserProfile } from 'src/apis/account';
 import {
+  AssignmentDetail,
   AssignmentWeekGroup,
   createAssignments,
   deleteAssignment,
+  getAssignment,
   getStaffAssignments,
   updateAssignment,
 } from 'src/apis/assignment';
@@ -42,6 +44,14 @@ const AssignmentEditPage = () => {
     enabled: !!tokenState.access,
   });
   const assignments = weekGroups?.find((group) => group.week === week)?.assignments;
+
+  // 목록 API에는 설명/제출형식이 없어 주차의 과제를 단건 조회로 함께 불러온다
+  const assignmentIds = (assignments ?? []).map((assignment) => assignment.assignmentId);
+  const { data: details } = useQuery<AssignmentDetail[]>({
+    queryKey: ['assignmentDetails', assignmentIds],
+    queryFn: () => Promise.all(assignmentIds.map((id) => getAssignment(tokenState, id))),
+    enabled: assignmentIds.length > 0,
+  });
 
   const [toastMessage, setToastMessage] = useState('');
 
@@ -80,11 +90,11 @@ const AssignmentEditPage = () => {
       queryClient.invalidateQueries({ queryKey: ['staffAssignments'] });
       // 제출 현황 페이지에서 토스트로 안내
       sessionStorage.setItem('assignmentEdited', '1');
-      router.push(`/mypage/assignment/${week}`);
+      router.push(`/mypage/assignment/status/${week}`);
     },
   });
 
-  if (!userProfile || !assignments) return null;
+  if (!userProfile || !assignments || !details) return null;
 
   return (
     <>
@@ -92,17 +102,15 @@ const AssignmentEditPage = () => {
         mode="edit"
         partName={userProfile.partName}
         initialWeek={week}
-        initialDrafts={assignments.map((assignment) => ({
-          assignmentId: assignment.assignmentId,
-          title: assignment.title,
-          endDate: assignment.endDate.slice(0, 10),
-          // ⚠️ 과제 목록 API(GET /api/assignments/staff)가 detail/type을 내려주지 않아 기존 값을 채울 수 없음.
-          // 단건 조회 API도 없어서, 응답에 두 필드가 추가되기 전까지 수정 화면은 사용할 수 없습니다.
-          detail: '',
-          type: 'FILE' as const,
+        initialDrafts={details.map((detail) => ({
+          assignmentId: detail.id,
+          title: detail.title,
+          detail: detail.detail,
+          endDate: detail.endDate.slice(0, 10),
+          type: detail.type,
         }))}
         submitting={saveMutation.isPending}
-        onClose={() => router.push(`/mypage/assignment/${week}`)}
+        onClose={() => router.push(`/mypage/assignment/status/${week}`)}
         onSubmit={(_week, drafts) => saveMutation.mutate(drafts)}
         onDeleteAssignment={(assignmentId) => deleteMutation.mutate(assignmentId)}
       />
