@@ -14,7 +14,7 @@ import WeeklyAssignmentCard, { WeeklyAssignmentGroup } from '@mypage/component/W
 import { getGenerations, getUserProfile } from 'src/apis/account';
 import { AssignmentWeekGroup, getPresidentAssignments, getStaffAssignments } from 'src/apis/assignment';
 import useTokenStore from 'src/store/useTokenStore';
-import { isAdminRole, isFullAdminRole } from '@utils/index';
+import { isAdminRole, isFullAdminRole, canManageSitePages } from '@utils/index';
 import { IcPlus } from '@assets/svg';
 import { Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -143,7 +143,7 @@ const MyPageAssignment = () => {
 
   return (
     <>
-      <MyPageShell active="assignment" isAdmin={isAdminRole(userProfile.role)}>
+      <MyPageShell active="assignment" isAdmin={canManageSitePages(userProfile.role)}>
         {isStaffOrAdmin ? (
           <>
             <Header>

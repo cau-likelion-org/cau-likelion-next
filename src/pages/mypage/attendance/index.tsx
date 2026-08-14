@@ -18,7 +18,7 @@ import {
   updateAttendanceBatch,
 } from 'src/apis/attendance';
 import useTokenStore from 'src/store/useTokenStore';
-import { isAdminRole, isFullAdminRole } from '@utils/index';
+import { isAdminRole, isFullAdminRole, canManageSitePages } from '@utils/index';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
@@ -102,7 +102,7 @@ const MyPageAttendance = () => {
       <ToastWrapper>
         <Toast variant="negative" text={errorMessage} show={!!errorMessage} onHidden={() => setErrorMessage('')} />
       </ToastWrapper>
-      <MyPageShell active="attendance" isAdmin={isAdminRole(userProfile.role)}>
+      <MyPageShell active="attendance" isAdmin={canManageSitePages(userProfile.role)}>
         {isStaff ? (
           <PartAttendanceTable
             members={members}
