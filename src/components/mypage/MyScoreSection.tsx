@@ -1,12 +1,10 @@
-import { ReactNode, useMemo } from 'react';
-import { AxiosError } from 'axios';
+import { ReactNode } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import styled from 'styled-components';
 
 import { UserProfile } from '@@types/request';
-import { getAssignments, getUserAttendance } from 'src/apis/mypage';
+import { getMyScore } from 'src/apis/mypage';
 import useTokenStore from 'src/store/useTokenStore';
-import { getTotalScore } from '@utils/index';
 import { BackgroundWhite, Black, Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
@@ -16,30 +14,11 @@ const MyScoreSection = ({ userProfile }: { userProfile: UserProfile }) => {
   const tokenValue = useTokenStore((state) => state.token);
   const isActiveGeneration = userProfile.role === 'BABY_LION';
 
-  const { data: userAttendance } = useQuery({
-    queryKey: ['userAttendance'],
-    queryFn: () => getUserAttendance(tokenValue),
+  const { data: score } = useQuery({
+    queryKey: ['myScore'],
+    queryFn: () => getMyScore(tokenValue),
     enabled: !!tokenValue.access && isActiveGeneration,
   });
-
-  const { data: userAssignment } = useQuery({
-    queryKey: ['userAssignment'],
-    queryFn: () => getAssignments().then((data) => data.filter((user: any) => user['이름'] === userProfile.name)),
-    enabled: isActiveGeneration,
-  });
-
-  const totalScore = useMemo(() => {
-    if (!userAttendance || !userAssignment || userAssignment.length === 0) return 0;
-    return getTotalScore({
-      absence: userAttendance.absence,
-      truancy: userAttendance.truancy,
-      tardiness: userAttendance.tardiness,
-      notSubmitted: userAssignment[0]['과제 미제출'],
-      lateSubmitted: userAssignment[0]['과제 지각제출'],
-    });
-  }, [userAssignment, userAttendance]);
-
-  const hasAssignment = !!userAssignment && userAssignment.length > 0;
 
   return (
     <Section>
@@ -47,15 +26,15 @@ const MyScoreSection = ({ userProfile }: { userProfile: UserProfile }) => {
       {isActiveGeneration ? (
         <CardRow>
           <StatCard title="출결">
-            <StatItem label="지각" value={userAttendance?.tardiness ?? 0} />
-            <StatItem label="결석" value={userAttendance?.absence ?? 0} />
-            <StatItem label="무단결석" value={userAttendance?.truancy ?? 0} />
+            <StatItem label="지각" value={score?.lateCount ?? 0} />
+            <StatItem label="결석" value={score?.absentCount ?? 0} />
+            <StatItem label="무단결석" value={score?.unauthorizedAbsentCount ?? 0} />
           </StatCard>
           <StatCard title="과제">
-            <StatItem label="지각제출" value={hasAssignment ? userAssignment[0]['과제 지각제출'] : 0} />
-            <StatItem label="미제출" value={hasAssignment ? userAssignment[0]['과제 미제출'] : 0} />
+            <StatItem label="지각제출" value={score?.lateSubmitCount ?? 0} />
+            <StatItem label="미제출" value={score?.missedCount ?? 0} />
           </StatCard>
-          <TotalScoreCard score={totalScore} />
+          <TotalScoreCard score={score?.total ?? 0} />
         </CardRow>
       ) : (
         <EmptyCard>올해 활동 내역이 없습니다</EmptyCard>
