@@ -9,10 +9,11 @@ import Tab from '@common/tab/Tab';
 import Toast from '@common/toast/Toast';
 import AssignmentDeadlineModal from '@mypage/component/AssignmentDeadlineModal';
 import AssignmentInfoCard from '@mypage/component/AssignmentInfoCard';
+import AssignmentRejectModal from '@mypage/component/AssignmentRejectModal';
 import AssignmentSubmissionModal from '@mypage/component/AssignmentSubmissionModal';
 import AssignmentSubmissionTable from '@mypage/component/AssignmentSubmissionTable';
 import {
-  AssignmentMemberSubmission,
+  AssignmentSubmissionHistory,
   AssignmentSubmission,
   AssignmentWeekGroup,
   IndividualDeadlinePayload,
@@ -24,7 +25,7 @@ import {
 } from 'src/apis/assignment';
 import useTokenStore from 'src/store/useTokenStore';
 import { IcChevronLeft } from '@assets/svg';
-import { BackgroundWhite, Label, Line, Orange } from '@utils/constant/color';
+import { Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 const MyPageAssignmentDetail = () => {
@@ -51,11 +52,12 @@ const MyPageAssignmentDetail = () => {
   const activeAssignmentId = activeId ?? assignments[0]?.assignmentId ?? null;
   const activeAssignment = assignments.find((assignment) => assignment.assignmentId === activeAssignmentId);
 
-  const { data: members } = useQuery<AssignmentMemberSubmission[]>({
+  const { data: submissionHistory } = useQuery<AssignmentSubmissionHistory>({
     queryKey: ['assignmentSubmissions', activeAssignmentId],
     queryFn: () => getAssignmentSubmissions(tokenState, activeAssignmentId as number),
     enabled: activeAssignmentId != null,
   });
+  const members = submissionHistory?.submissions ?? [];
 
   const evaluateMutation = useMutation({
     mutationFn: ({ submitId, payload }: { submitId: number; payload: SubmissionEvaluatePayload }) =>
@@ -86,19 +88,11 @@ const MyPageAssignmentDetail = () => {
 
   const [viewTarget, setViewTarget] = useState<AssignmentSubmission | null>(null);
   const [rejectTarget, setRejectTarget] = useState<number | null>(null);
-  const [rejectReason, setRejectReason] = useState('');
 
   const handleApprove = (submitId: number) => evaluateMutation.mutate({ submitId, payload: { status: 'APPROVED' } });
-  const handleReject = (submitId: number) => {
-    setRejectReason('');
-    setRejectTarget(submitId);
-  };
-  const confirmReject = () => {
-    if (rejectTarget == null || !rejectReason.trim()) return;
-    evaluateMutation.mutate({
-      submitId: rejectTarget,
-      payload: { status: 'REJECTED', rejectionReason: rejectReason.trim() },
-    });
+  const confirmReject = (reason: string) => {
+    if (rejectTarget == null) return;
+    evaluateMutation.mutate({ submitId: rejectTarget, payload: { status: 'REJECTED', rejectionReason: reason } });
     setRejectTarget(null);
   };
 
@@ -150,14 +144,19 @@ const MyPageAssignmentDetail = () => {
 
       {activeAssignment && (
         <InfoCardSlot>
-          <AssignmentInfoCard title={activeAssignment.title} endDate={activeAssignment.endDate} />
+          {/* 설명은 목록 API에 없어 제출 이력 응답(단건 기준)에서 가져온다 */}
+          <AssignmentInfoCard
+            title={submissionHistory?.title ?? activeAssignment.title}
+            detail={submissionHistory?.detail}
+            endDate={submissionHistory?.endDate ?? activeAssignment.endDate}
+          />
         </InfoCardSlot>
       )}
 
       <AssignmentSubmissionTable
-        members={members ?? []}
+        members={members}
         onApprove={handleApprove}
-        onReject={handleReject}
+        onReject={setRejectTarget}
         onViewSubmission={setViewTarget}
       />
 
@@ -167,7 +166,7 @@ const MyPageAssignmentDetail = () => {
         <AssignmentDeadlineModal
           assignments={assignments}
           initialAssignmentId={activeAssignmentId}
-          members={members ?? []}
+          members={members}
           submitting={deadlineMutation.isPending}
           onClose={() => setDeadlineOpen(false)}
           onSubmit={(assignmentId, memberIds, deadline) =>
@@ -180,29 +179,7 @@ const MyPageAssignmentDetail = () => {
         <Toast variant="positive" text={toastMessage} show={!!toastMessage} onHidden={() => setToastMessage('')} />
       </ToastWrapper>
 
-      {rejectTarget != null && (
-        <Overlay role="dialog" aria-modal="true">
-          <Dimmer onClick={() => setRejectTarget(null)} />
-          <Modal>
-            <ModalTitle>반려 사유</ModalTitle>
-            <ModalDescription>반려 사유를 입력해 주세요.</ModalDescription>
-            <ReasonInput
-              autoFocus
-              value={rejectReason}
-              placeholder="텍스트를 입력해 주세요."
-              onChange={(event) => setRejectReason(event.target.value)}
-            />
-            <ModalActions>
-              <ModalButton type="button" onClick={() => setRejectTarget(null)}>
-                취소
-              </ModalButton>
-              <ModalButton type="button" $primary disabled={!rejectReason.trim()} onClick={confirmReject}>
-                반려
-              </ModalButton>
-            </ModalActions>
-          </Modal>
-        </Overlay>
-      )}
+      {rejectTarget != null && <AssignmentRejectModal onClose={() => setRejectTarget(null)} onSubmit={confirmReject} />}
     </Page>
   );
 };
@@ -271,85 +248,4 @@ const TabRow = styled.div`
 const InfoCardSlot = styled.div`
   width: 100%;
   margin-bottom: 83px;
-`;
-
-const Overlay = styled.div`
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 20px;
-  z-index: 1000;
-`;
-
-const Dimmer = styled.div`
-  position: absolute;
-  inset: 0;
-  background-color: rgba(23, 23, 25, 0.52);
-  opacity: 0.43;
-`;
-
-const Modal = styled.div`
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  width: 100%;
-  max-width: 400px;
-  padding: 28px;
-  border-radius: 16px;
-  background-color: ${BackgroundWhite.primary};
-`;
-
-const ModalTitle = styled.p`
-  margin: 0;
-  color: ${Label.normal};
-  ${typographyCss(Typography.heading2.bold)}
-`;
-
-const ModalDescription = styled.p`
-  margin: 0;
-  color: ${Label.alternative};
-  ${typographyCss(Typography.body2Normal.regular)}
-`;
-
-const ReasonInput = styled.textarea`
-  height: 80px;
-  padding: 12px;
-  border: 1px solid ${Line.normal};
-  border-radius: 12px;
-  resize: none;
-  color: ${Label.normal};
-  ${typographyCss(Typography.body1Normal.regular)}
-
-  &::placeholder {
-    color: ${Label.assistive};
-  }
-
-  &:focus {
-    outline: none;
-    border-color: ${Label.normal};
-  }
-`;
-
-const ModalActions = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 24px;
-`;
-
-const ModalButton = styled.button<{ $primary?: boolean }>`
-  padding: 4px;
-  border: none;
-  background: none;
-  cursor: pointer;
-  color: ${(props) => (props.$primary ? Orange.o500 : Label.alternative)};
-  ${typographyCss(Typography.body1Normal.bold)}
-
-  &:disabled {
-    color: ${Label.assistive};
-    cursor: not-allowed;
-  }
 `;

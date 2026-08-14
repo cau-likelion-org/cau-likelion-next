@@ -166,7 +166,7 @@ const MyPageAssignment = () => {
                   key={group.week}
                   week={group.week}
                   assignments={group.assignments}
-                  onDetail={() => router.push(`/mypage/assignment/${group.week}`)}
+                  onDetail={() => router.push(`/mypage/assignment/status/${group.week}`)}
                 />
               ))}
             </List>
