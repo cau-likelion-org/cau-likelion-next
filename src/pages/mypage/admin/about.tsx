@@ -29,6 +29,8 @@ import {
   CurriculumResponse,
   CurriculumRequest,
 } from 'src/apis/curriculum';
+import { getRoadmap, addRoadmap } from 'src/apis/roadmap';
+import { uploadFile } from 'src/apis/upload';
 import useTokenStore from 'src/store/useTokenStore';
 import { isAdminRole } from '@utils/index';
 import { Label } from '@utils/constant/color';
@@ -76,8 +78,22 @@ const curriculumWeekToRequest = (item: CurriculumWeekWithTrack): CurriculumReque
   description: item.description,
 });
 
-// 로드맵 이미지는 아직 백엔드 API가 없어 목 데이터 유지
-const MOCK_ROADMAP_IMAGE = 'IMG20260723.png';
+// 로드맵 응답엔 원본 파일명이 없어(S3 URL만 내려옴) URL에서 대신 추출 — 지금 세션에서 새로 선택한
+// 파일은 file.name을 그대로 쓰므로 이 fallback은 서버에 이미 저장된 이미지를 불러올 때만 쓰임
+const getFileNameFromUrl = (url: string) => {
+  try {
+    return decodeURIComponent(url.split('/').pop() ?? url);
+  } catch {
+    return url;
+  }
+};
+
+interface RoadmapFile {
+  url: string;
+  name: string;
+}
+
+const DEFAULT_ROADMAP_FILE: RoadmapFile = { url: '', name: '' };
 
 const MyPageAdminAbout = () => {
   const tokenState = useTokenStore((state) => state.token);
@@ -100,10 +116,12 @@ const MyPageAdminAbout = () => {
     queryFn: getCurriculums,
     refetchOnWindowFocus: false,
   });
+  const { data: roadmap } = useQuery({ queryKey: ['adminRoadmap'], queryFn: getRoadmap, refetchOnWindowFocus: false });
 
   const [talentItems, setTalentItems] = useState<TalentItem[]>([]);
   const [curriculumTracks, setCurriculumTracks] = useState<CurriculumTrackItems[]>([]);
-  const [roadmapImage, setRoadmapImage] = useState(MOCK_ROADMAP_IMAGE);
+  const [roadmapFile, setRoadmapFile] = useState<RoadmapFile>(DEFAULT_ROADMAP_FILE);
+  const [isUploadingRoadmap, setIsUploadingRoadmap] = useState(false);
   const [toastMessage, setToastMessage] = useState<ReactNode>('');
   const [showErrors, setShowErrors] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -122,6 +140,13 @@ const MyPageAdminAbout = () => {
     setSyncedCurriculums(curriculums);
     setCurriculumTracks(buildCurriculumTracks(tracks ?? [], curriculums ?? []));
   }
+  const [syncedRoadmap, setSyncedRoadmap] = useState(roadmap);
+  if (roadmap !== syncedRoadmap) {
+    setSyncedRoadmap(roadmap);
+    setRoadmapFile(
+      roadmap ? { url: roadmap.imageUrl, name: getFileNameFromUrl(roadmap.imageUrl) } : DEFAULT_ROADMAP_FILE,
+    );
+  }
 
   useEffect(() => {
     if (hasHydrated && !tokenState.access) router.push('/login');
@@ -134,9 +159,27 @@ const MyPageAdminAbout = () => {
   const handleCancel = () => {
     setTalentItems((talents ?? []).map(talentToLocal));
     setCurriculumTracks(buildCurriculumTracks(tracks ?? [], curriculums ?? []));
-    setRoadmapImage(MOCK_ROADMAP_IMAGE);
+    setRoadmapFile(
+      roadmap ? { url: roadmap.imageUrl, name: getFileNameFromUrl(roadmap.imageUrl) } : DEFAULT_ROADMAP_FILE,
+    );
     setShowErrors(false);
     setIsEditing(false);
+  };
+
+  const handleRoadmapFileSelect = async (file: File) => {
+    setIsUploadingRoadmap(true);
+    try {
+      const { url } = await uploadFile(tokenState, 'ROADMAP', file);
+      setRoadmapFile({ url, name: file.name });
+    } catch {
+      setToastMessage('이미지 업로드 중 오류가 발생했습니다.');
+    } finally {
+      setIsUploadingRoadmap(false);
+    }
+  };
+
+  const handleRoadmapClear = () => {
+    setRoadmapFile(DEFAULT_ROADMAP_FILE);
   };
 
   const handleSave = async () => {
@@ -149,7 +192,7 @@ const MyPageAdminAbout = () => {
     setShowErrors(false);
     setIsSaving(true);
     try {
-      await Promise.all([
+      const savePromises: Promise<unknown>[] = [
         syncListSection({
           currentItems: talentItems,
           originalItems: talents ?? [],
@@ -168,10 +211,15 @@ const MyPageAdminAbout = () => {
           update: (id, form) => updateCurriculum(tokenState, id, form),
           remove: (id) => deleteCurriculum(tokenState, id),
         }),
-      ]);
+      ];
+      if (roadmapFile.url && roadmapFile.url !== (roadmap?.imageUrl ?? '')) {
+        savePromises.push(addRoadmap(tokenState, roadmapFile.url));
+      }
+      await Promise.all(savePromises);
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['adminTalents'] }),
         queryClient.invalidateQueries({ queryKey: ['adminCurriculums'] }),
+        queryClient.invalidateQueries({ queryKey: ['adminRoadmap'] }),
       ]);
       setToastMessage('변경사항이 저장되었습니다.');
       setIsEditing(false);
@@ -213,7 +261,14 @@ const MyPageAdminAbout = () => {
             disabled={!isEditing}
           />
         )}
-        <RoadmapSection imageName={roadmapImage} onChange={setRoadmapImage} disabled={!isEditing} />
+        <RoadmapSection
+          imageUrl={roadmapFile.url}
+          fileName={roadmapFile.name}
+          onSelectFile={handleRoadmapFileSelect}
+          onClear={handleRoadmapClear}
+          disabled={!isEditing}
+          isUploading={isUploadingRoadmap}
+        />
       </MyPageShell>
       <ToastWrapper>
         <Toast variant="positive" text={toastMessage} show={!!toastMessage} onHidden={() => setToastMessage('')} />

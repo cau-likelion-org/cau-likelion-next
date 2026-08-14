@@ -4,9 +4,11 @@ import IcChevronDown from './icon/ic-chevron-down.svg';
 import IcChevronLeft from './icon/ic-chevron-left.svg';
 import IcCircleCheck from './icon/ic-circle-check.svg';
 import IcCircleClose from './icon/ic-circle-close.svg';
+import IcCircleCloseOutline from './icon/ic-circle-close-outline.svg';
 import IcCircleExclamation from './icon/ic-circle-exclamation.svg';
 import IcDocument from './icon/ic-document.svg';
 import IcEmail from './icon/ic-email.svg';
+import IcImage from './icon/ic-image.svg';
 import IcInstagram from './icon/ic-instagram.svg';
 import IcKakaotalk from './icon/ic-kakaotalk.svg';
 import IcLineHorizontal from './icon/ic-line-horizontal.svg';
@@ -25,9 +27,11 @@ export {
   IcChevronLeft,
   IcCircleCheck,
   IcCircleClose,
+  IcCircleCloseOutline,
   IcCircleExclamation,
   IcDocument,
   IcEmail,
+  IcImage,
   IcInstagram,
   IcKakaotalk,
   IcLineHorizontal,
