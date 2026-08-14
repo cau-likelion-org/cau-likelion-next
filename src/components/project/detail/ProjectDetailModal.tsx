@@ -1,9 +1,13 @@
-import { IProjectDetail } from '@@types/request';
+import { UserProfile } from '@@types/request';
 import { useQuery } from '@tanstack/react-query';
 import { AccentTint, Label, Material, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
+import { useRouter } from 'next/router';
 import { useEffect } from 'react';
-import { getProjectDetail } from 'src/apis/project';
+import { getUserProfile } from 'src/apis/account';
+import { PROJECT_CATEGORY_LABEL, ProjectResponseDto, getProjectDetail, getSortedProjectImages } from 'src/apis/project';
+import useTokenStore from 'src/store/useTokenStore';
+import { isAdminRole } from '@utils/index';
 import styled from 'styled-components';
 import ProjectDetailCarousel from './ProjectDetailCarousel';
 import ProjectDetailMetaPanel from './ProjectDetailMetaPanel';
@@ -11,12 +15,21 @@ import ProjectDetailTeamPanel from './ProjectDetailTeamPanel';
 
 interface ProjectDetailModalProps {
   projectId: string;
-  staticData?: IProjectDetail | null;
+  staticData?: ProjectResponseDto | null;
   onClose: () => void;
 }
 
 const ProjectDetailModal = ({ projectId, staticData, onClose }: ProjectDetailModalProps) => {
-  const { data } = useQuery<IProjectDetail>({
+  const router = useRouter();
+  const tokenState = useTokenStore((state) => state.token);
+  const { data: userProfile } = useQuery<UserProfile>({
+    queryKey: ['userProfile'],
+    queryFn: () => getUserProfile(tokenState),
+    retry: false,
+    enabled: !!tokenState.access,
+  });
+
+  const { data } = useQuery<ProjectResponseDto>({
     queryKey: ['projectDetail', projectId],
     queryFn: () => getProjectDetail(projectId),
     initialData: staticData && String(staticData.id) === projectId ? staticData : undefined,
@@ -49,22 +62,32 @@ const ProjectDetailModal = ({ projectId, staticData, onClose }: ProjectDetailMod
         ) : (
           <>
             <Contents>
-              <ProjectDetailCarousel images={project.image} />
+              <ProjectDetailCarousel images={getSortedProjectImages(project.images)} />
               <TextBlock>
                 <Title>{project.title}</Title>
-                {project.subtitle && <Description>{project.subtitle}</Description>}
+                {project.tagline && <Description>{project.tagline}</Description>}
                 <BadgeRow>
-                  <Badge>{project.generation}기</Badge>
-                  <Badge>{project.category}</Badge>
+                  <Badge>{project.generationNumber}기</Badge>
+                  <Badge>{PROJECT_CATEGORY_LABEL[project.category]}</Badge>
                 </BadgeRow>
-                {project.description && <Description>{project.description.replace(/\\n/g, '\n')}</Description>}
+                {project.summary && <Description>{project.summary.replace(/\\n/g, '\n')}</Description>}
               </TextBlock>
               <PanelRow>
-                <ProjectDetailTeamPanel teamName={project.team_name} teamMember={project.team_member} />
-                <ProjectDetailMetaPanel date={project.date} devStack={project.dev_stack} link={project.link} />
+                <ProjectDetailTeamPanel teamName={project.teamName} members={project.members} />
+                <ProjectDetailMetaPanel
+                  startDate={project.startDate}
+                  endDate={project.endDate}
+                  stack={project.stack}
+                  links={project.links}
+                />
               </PanelRow>
             </Contents>
             <Actions>
+              {userProfile && isAdminRole(userProfile.role) && (
+                <EditButton type="button" onClick={() => router.push(`/project/edit/${projectId}`)}>
+                  수정
+                </EditButton>
+              )}
               <CloseButton type="button" onClick={onClose}>
                 닫기
               </CloseButton>
@@ -167,6 +190,7 @@ const PanelRow = styled.div`
 const Actions = styled.div`
   display: flex;
   justify-content: flex-end;
+  gap: 24px;
   padding: 0 28px 20px;
 `;
 
@@ -176,5 +200,14 @@ const CloseButton = styled.button`
   padding: 4px 0;
   cursor: pointer;
   color: ${Orange.o500};
+  ${typographyCss(Typography.body1Normal.bold)}
+`;
+
+const EditButton = styled.button`
+  border: none;
+  background: none;
+  padding: 4px 0;
+  cursor: pointer;
+  color: ${Label.alternative};
   ${typographyCss(Typography.body1Normal.bold)}
 `;

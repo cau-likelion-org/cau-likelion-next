@@ -7,7 +7,7 @@ import { getPaths } from '@utils/index';
 import { GetStaticPaths, InferGetStaticPropsType } from 'next';
 import { useRouter } from 'next/router';
 import { ReactElement } from 'react';
-import { getProjectDetail, getProjects } from 'src/apis/project';
+import { getProjectDetail, getProjectThumbnail, getProjects } from 'src/apis/project';
 import DetailPageHead from 'src/components/meta/DetailPageHead';
 import ListPageHead from 'src/components/meta/ListPageHead';
 
@@ -33,9 +33,9 @@ const ProjectList = ({
         <DetailPageHead
           title={projectDetailStaticData.title}
           canoUrl={`https://cau-likelion.org/project/${projectDetailStaticData.id}`}
-          img={projectDetailStaticData.thumbnail}
+          img={getProjectThumbnail(projectDetailStaticData.images)}
           category={ARCHIVING.PROJECT}
-          description={projectDetailStaticData.subtitle}
+          description={projectDetailStaticData.tagline}
         />
       ) : (
         <ListPageHead category={ARCHIVING.PROJECT} canoUrl={'https://cau-likelion.org/project'} />
@@ -59,25 +59,39 @@ ProjectList.getLayout = function getLayout(page: ReactElement) {
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const projectsGenerationArray = await getProjects();
-  const detailPaths = getPaths(projectsGenerationArray, 'project').map(({ params }) => ({
-    params: { project_id: [params.project_id] },
-  }));
-  return {
-    paths: [{ params: { project_id: [] } }, ...detailPaths],
-    fallback: true,
-  };
+  try {
+    const projectsGenerationArray = await getProjects();
+    const detailPaths = getPaths(projectsGenerationArray, 'project').map(({ params }) => ({
+      params: { project_id: [params.project_id] },
+    }));
+    return {
+      paths: [{ params: { project_id: [] } }, ...detailPaths],
+      fallback: true,
+    };
+  } catch {
+    return {
+      paths: [{ params: { project_id: [] } }],
+      fallback: true,
+    };
+  }
 };
 
 export async function getStaticProps({ params }: { params: { project_id: string[] } }) {
   const id = params.project_id?.[0];
 
   if (!id) {
-    const projectStaticData = await getProjects();
-    return {
-      props: { projectStaticData, projectDetailStaticData: null },
-      revalidate: 86400,
-    };
+    try {
+      const projectStaticData = await getProjects();
+      return {
+        props: { projectStaticData, projectDetailStaticData: null },
+        revalidate: 86400,
+      };
+    } catch {
+      return {
+        props: { projectStaticData: {}, projectDetailStaticData: null },
+        revalidate: 60,
+      };
+    }
   }
 
   try {

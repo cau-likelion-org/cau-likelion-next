@@ -411,7 +411,7 @@ const DateField = ({
     <DateRangeRow>
       <DateRangeItem>
         <SingleDateInput
-          placeholder="시작일 선택"
+          placeholder="캘린더 선택"
           ariaLabel="시작일"
           value={rangeValue?.[0] ?? ''}
           onChange={(next) => onRangeChange?.(0, next)}
@@ -421,7 +421,7 @@ const DateField = ({
       <DateRangeDivider width={16} height={16} />
       <DateRangeItem>
         <SingleDateInput
-          placeholder="종료일 선택"
+          placeholder="캘린더 선택"
           ariaLabel="종료일"
           value={rangeValue?.[1] ?? ''}
           onChange={(next) => onRangeChange?.(1, next)}

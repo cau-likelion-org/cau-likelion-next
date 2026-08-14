@@ -1,3 +1,4 @@
+import { ReactNode } from 'react';
 import styled, { css } from 'styled-components';
 import { HiCheck } from 'react-icons/hi2';
 
@@ -8,9 +9,12 @@ type MenuVariant = 'normal' | 'radio' | 'checkbox';
 type MenuCellPadding = 8 | 12;
 
 export interface MenuItemData {
+  id?: string;
   label: string;
   caption?: string;
+  icon?: ReactNode;
   selected?: boolean;
+  active?: boolean;
   disabled?: boolean;
   onClick?: () => void;
 }
@@ -37,10 +41,14 @@ const Menu = ({ className, variant = 'normal', cellPadding = 8, items, actionAre
       <Content>
         {items.map((item) => (
           <Cell
-            key={item.label}
+            key={item.id ?? item.label}
+            id={item.id}
             type="button"
+            role={item.id ? 'option' : undefined}
+            aria-selected={item.id ? !!item.selected : undefined}
             cellPadding={cellPadding}
             disabled={item.disabled}
+            $active={!!item.active}
             onClick={item.onClick}
           >
             {variant === 'radio' && <Radio selected={!!item.selected} />}
@@ -49,10 +57,9 @@ const Menu = ({ className, variant = 'normal', cellPadding = 8, items, actionAre
                 <HiCheck />
               </Checkbox>
             )}
+            {item.icon && <ItemIcon>{item.icon}</ItemIcon>}
             <TextGroup>
-              <ItemLabel active={variant === 'normal' && !!item.selected} disabled={item.disabled}>
-                {item.label}
-              </ItemLabel>
+              <ItemLabel disabled={item.disabled}>{item.label}</ItemLabel>
               {item.caption && <ItemCaption>{item.caption}</ItemCaption>}
             </TextGroup>
           </Cell>
@@ -116,13 +123,13 @@ const Content = styled.div`
   }
 `;
 
-const Cell = styled.button<{ cellPadding: MenuCellPadding }>`
+const Cell = styled.button<{ cellPadding: MenuCellPadding; $active: boolean }>`
   display: flex;
   align-items: center;
   gap: 8px;
   width: 100%;
   padding: ${(props) => props.cellPadding}px 12px;
-  background: none;
+  background-color: ${(props) => (props.$active ? 'rgba(23, 23, 23, 0.04)' : 'transparent')};
   border: none;
   border-radius: 12px;
   text-align: left;
@@ -139,6 +146,16 @@ const Cell = styled.button<{ cellPadding: MenuCellPadding }>`
   }
 `;
 
+const ItemIcon = styled.span`
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  color: ${Label.normal};
+`;
+
 const TextGroup = styled.div`
   display: flex;
   flex: 1 0 0;
@@ -147,11 +164,11 @@ const TextGroup = styled.div`
   min-width: 0;
 `;
 
-const ItemLabel = styled.p<{ active?: boolean; disabled?: boolean }>`
+const ItemLabel = styled.p<{ disabled?: boolean }>`
   margin: 0;
   min-height: 24px;
-  color: ${(props) => (props.disabled ? Label.alternative : props.active ? Orange.o500 : Label.normal)};
-  ${(props) => typographyCss(props.active ? Typography.body1Normal.medium : Typography.body1Normal.regular)}
+  color: ${(props) => (props.disabled ? Label.alternative : Label.normal)};
+  ${typographyCss(Typography.body1Normal.regular)}
 `;
 
 const ItemCaption = styled.p`
