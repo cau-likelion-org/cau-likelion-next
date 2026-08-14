@@ -35,7 +35,9 @@ const Footer = ({ isLandingLayout }: { isLandingLayout: boolean }) => {
           </List>
           <HorizontalDivider />
           <Content>
-            <Copyright>© 2026 CAU LIKELION. All rights reserved</Copyright>
+            <Copyright>
+              © 2026 CAU LIKELION<DesktopOnly>. All rights reserved</DesktopOnly>
+            </Copyright>
             <Action>
               {SOCIAL_LINKS.map(({ icon: Icon, href }, index) => (
                 <IconButton key={index} href={href} target="_blank" rel="noopener noreferrer">
@@ -77,6 +79,11 @@ const Container = styled.div`
   width: 100%;
   max-width: 1440px;
   padding: 40px 20px 24px;
+
+  /* 모바일은 홈 인디케이터(아이폰 세이프 에어리어)만큼 하단 여백을 더 준다 */
+  @media (max-width: 900px) {
+    padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  }
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -90,6 +97,10 @@ const Main = styled.div`
   flex-direction: column;
   align-items: flex-start;
   gap: 14px;
+
+  @media (max-width: 900px) {
+    padding: 0;
+  }
 `;
 
 const List = styled.div`
@@ -124,6 +135,12 @@ const Copyright = styled.p`
   ${typographyCss({ ...Typography.label2.bold, fontWeight: 500 })}
   color: ${Label.alternative};
   margin: 0;
+`;
+
+const DesktopOnly = styled.span`
+  @media (max-width: 900px) {
+    display: none;
+  }
 `;
 
 const Action = styled.div`
