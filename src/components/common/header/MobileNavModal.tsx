@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useQuery } from '@tanstack/react-query';
@@ -6,6 +7,7 @@ import styled from 'styled-components';
 import { UserProfile } from '@@types/request';
 import Button from '@common/button/Button';
 import LogoutButton from '@mypage/component/LogoutButton';
+import MobileUnsupportedModal from '@common/modal/MobileUnsupportedModal';
 import { getUserProfile } from 'src/apis/account';
 import useTokenStore from 'src/store/useTokenStore';
 import { canManageSitePages } from '@utils/index';
@@ -32,6 +34,8 @@ const MobileNavModal = ({ isModalOn, onClose }: { isModalOn: boolean; onClose?: 
   const hasHydrated = useTokenStore((state) => state.hasHydrated);
   const isLogin = hasHydrated && !!access;
 
+  const [isUnsupportedOpen, setIsUnsupportedOpen] = useState(false);
+
   const { data: userProfile } = useQuery<UserProfile>({
     queryKey: ['userProfile'],
     queryFn: () => getUserProfile({ access, refresh: null }),
@@ -42,6 +46,12 @@ const MobileNavModal = ({ isModalOn, onClose }: { isModalOn: boolean; onClose?: 
   const handleNavigate = (routing: string) => {
     onClose?.();
     if (routing !== '#') router.push(routing);
+  };
+
+  // 관리자 페이지는 데스크톱 전용이라 모바일에서는 이동 대신 안내 모달을 띄운다
+  const handleAdminClick = () => {
+    onClose?.();
+    setIsUnsupportedOpen(true);
   };
 
   return (
@@ -58,7 +68,7 @@ const MobileNavModal = ({ isModalOn, onClose }: { isModalOn: boolean; onClose?: 
               ))}
               {/* 관리자 메뉴는 중하하 관리자에게만 노출 */}
               {!!userProfile && canManageSitePages(userProfile.role) && (
-                <MenuItem type="button" onClick={() => handleNavigate('/mypage/admin/landing')}>
+                <MenuItem type="button" onClick={handleAdminClick}>
                   관리자
                 </MenuItem>
               )}
@@ -87,6 +97,8 @@ const MobileNavModal = ({ isModalOn, onClose }: { isModalOn: boolean; onClose?: 
           )}
         </MenuGroup>
       </Inner>
+
+      {isUnsupportedOpen && <MobileUnsupportedModal onClose={() => setIsUnsupportedOpen(false)} />}
     </Wrapper>
   );
 };
