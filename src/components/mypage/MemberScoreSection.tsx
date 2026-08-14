@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import Select from '@common/select/Select';
 import ListboxOptions from '@common/select/ListboxOptions';
 import useListboxSelect from 'src/hooks/useListboxSelect';
+import { UserProfile } from '@@types/request';
 import { MemberScore, getMemberScores } from 'src/apis/mypage';
 import useTokenStore from 'src/store/useTokenStore';
 import { Black, Label, Line, Orange } from '@utils/constant/color';
@@ -16,9 +17,11 @@ const ALL_PART = '전체';
  * 아기사자 출결/과제 현황 (운영진·회장·관리자 공용)
  * 조회 범위는 서버가 역할로 판단한다 — 운영진은 본인 파트, 회장/관리자는 전체.
  * 기수·파트 구분은 응답 목록을 프론트에서 필터링해 보여준다.
+ * 운영진은 현재 기수 + 본인 파트로 고정되어 필터를 바꿀 수 없다.
  */
-const MemberScoreSection = () => {
+const MemberScoreSection = ({ userProfile }: { userProfile: UserProfile }) => {
   const tokenState = useTokenStore((state) => state.token);
+  const isFixedScope = userProfile.role === 'STAFF';
 
   const { data } = useQuery({
     queryKey: ['memberScores'],
@@ -32,7 +35,9 @@ const MemberScoreSection = () => {
     [scores],
   );
   const [selectedGeneration, setSelectedGeneration] = useState('');
-  const currentGeneration = selectedGeneration || (generationOptions[0] != null ? String(generationOptions[0]) : '');
+  const latestGeneration = generationOptions[0] != null ? String(generationOptions[0]) : '';
+  // 운영진은 현재 기수 고정
+  const currentGeneration = isFixedScope ? latestGeneration : selectedGeneration || latestGeneration;
 
   const partOptions = useMemo(() => {
     const parts = scores
@@ -41,11 +46,13 @@ const MemberScoreSection = () => {
     return [ALL_PART, ...Array.from(new Set(parts))];
   }, [scores, currentGeneration]);
   const [selectedPart, setSelectedPart] = useState(ALL_PART);
+  // 운영진은 본인 파트 고정
+  const currentPart = isFixedScope ? userProfile.partName : selectedPart;
 
   const rows = scores.filter(
     (score) =>
       String(score.generationNumber) === currentGeneration &&
-      (selectedPart === ALL_PART || score.partName === selectedPart),
+      (currentPart === ALL_PART || score.partName === currentPart),
   );
 
   return (
@@ -59,13 +66,15 @@ const MemberScoreSection = () => {
           value={currentGeneration}
           options={generationOptions.map(String)}
           onChange={setSelectedGeneration}
+          disabled={isFixedScope}
         />
         <FilterSelect
           heading="파트 구분"
           ariaLabel="파트 선택"
-          value={selectedPart}
+          value={currentPart}
           options={partOptions}
           onChange={setSelectedPart}
+          disabled={isFixedScope}
         />
       </FilterRow>
 
@@ -119,12 +128,14 @@ const FilterSelect = ({
   value,
   options,
   onChange,
+  disabled = false,
 }: {
   heading: string;
   ariaLabel: string;
   value: string;
   options: string[];
   onChange: (value: string) => void;
+  disabled?: boolean;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const { listId, wrapperRef, triggerRef, activeIndex, handleKeyDown, handleBlur, selectOption } = useListboxSelect({
@@ -146,9 +157,10 @@ const FilterSelect = ({
         aria-controls={listId}
         aria-activedescendant={isOpen ? `${listId}-${activeIndex}` : undefined}
         value={value}
+        disabled={disabled}
         onClick={() => setIsOpen((prev) => !prev)}
       />
-      {isOpen && (
+      {!disabled && isOpen && (
         <ListboxOptions
           listId={listId}
           options={options}
