@@ -177,6 +177,7 @@ export interface ProjectListItem {
   title: string;
   category: ProjectCategory;
   banner: string;
+  isExposed: boolean;
 }
 
 // 랜딩페이지 프로젝트 캐러셀 전용 — GET /api/projects 응답 중 캐러셀에 필요한 필드만 사용
@@ -185,27 +186,20 @@ export async function getProjectList() {
   return data;
 }
 
-// 갤러리 페이지 프로젝트 탭 전용 — GET /api/projects 응답을 갤러리 뷰모델로 사용
-export type GalleryProjectCategory = 'IDEATHON' | 'HACKATHON' | 'CHUNGKATHON' | 'ETC';
-
-export interface GalleryProjectItem {
+export interface AdminProjectListItem {
   id: number;
-  generationId: number;
-  generationNumber: number;
   title: string;
-  category: GalleryProjectCategory;
-  stack: string;
-  tagline: string;
-  summary: string;
-  teamName: string;
-  startDate: string;
-  endDate: string;
-  banner: string;
-  images: { id: number; imageUrl: string; isMain: boolean; displayOrder: number }[];
-  links: { id: number; platform: 'GITHUB' | 'WEB' | 'BEHANCE'; url: string }[];
-  members: { id: number; name: string; part: string }[];
+  generationNumber: number;
+  category: ProjectCategory;
+  isExposed: boolean;
 }
 
-export const getGalleryProjectList = () => {
-  return axios.get<GalleryProjectItem[]>(`${url}/api/projects`).then((res) => res.data);
+export const getAdminProjectList = () => {
+  return axios.get<AdminProjectListItem[]>(`${url}/api/projects`).then((res) => res.data);
+};
+
+export const updateProjectExposure = (token: IToken, exposedProjectIds: number[]) => {
+  return getAuthAxios(token)
+    .put<AdminProjectListItem[]>('/api/admin/landing/projects/exposure', { exposedProjectIds })
+    .then((res) => res.data);
 };

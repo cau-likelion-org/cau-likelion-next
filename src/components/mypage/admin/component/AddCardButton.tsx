@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 import { IcPlus } from '@assets/svg';
-import { BackgroundWhite, Label } from '@utils/constant/color';
+import { Fill, Label } from '@utils/constant/color';
 
 const AddCardButton = ({ onClick, ariaLabel }: { onClick: () => void; ariaLabel: string }) => {
   return (
@@ -18,10 +18,10 @@ const Wrapper = styled.button`
   align-items: center;
   justify-content: center;
   width: 100%;
-  padding: 12px 0;
+  padding: 12px;
   border: none;
   border-radius: 12px;
-  background-color: ${BackgroundWhite.secondary};
-  color: ${Label.alternative};
+  background-color: ${Fill.normal};
+  color: ${Label.neutral};
   cursor: pointer;
 `;
