@@ -1,6 +1,6 @@
 import { UserProfile } from '@@types/request';
 import ContentBadge from '@common/badge/ContentBadge';
-import { BackgroundWhite, Black, Label, Line } from '@utils/constant/color';
+import { BackgroundWhite, Black, Label, Line, Orange } from '@utils/constant/color';
 import { ROLE_LABEL } from '@utils/constant';
 import styled from 'styled-components';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -10,11 +10,9 @@ const ProfileCard = ({ user }: { user: UserProfile }) => {
     <Wrapper>
       <Name>{user.name}</Name>
       <BadgeRow>
-        {user.generationNumber != null && (
-          <ContentBadge color="accent" size="medium" text={`${user.generationNumber}기`} />
-        )}
-        <ContentBadge color="accent" size="medium" text={user.partName} />
-        <ContentBadge color="accent" size="medium" text={ROLE_LABEL[user.role]} />
+        {user.generationNumber != null && <Badge color="accent" size="medium" text={`${user.generationNumber}기`} />}
+        <Badge color="accent" size="medium" text={user.partName} />
+        <Badge color="accent" size="medium" text={ROLE_LABEL[user.role]} />
       </BadgeRow>
       {user.email && <Email>{user.email}</Email>}
     </Wrapper>
@@ -38,6 +36,11 @@ const Wrapper = styled.div`
   @media (max-width: 900px) {
     width: 100%;
   }
+`;
+
+// Figma: 프로필 뱃지는 Orange/O75 솔리드 배경 (과제표의 8% 틴트 뱃지와 다름)
+const Badge = styled(ContentBadge)`
+  background-color: ${Orange.o75};
 `;
 
 const Name = styled.p`
