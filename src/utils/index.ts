@@ -50,6 +50,9 @@ export const isFullAdminRole = (role: MemberRole) => FULL_ADMIN_ROLES.includes(r
 // 출석부 생성은 회장 전용 권한
 export const canCreateAttendance = (role: MemberRole) => role === 'PRESIDENT';
 
+// 사이드바 '관리자' 메뉴(랜딩·소개 페이지 관리)는 중하하 관리자 전용 — 운영진·회장에게는 보이지 않는다
+export const canManageSitePages = (role: MemberRole) => role === 'ADMIN';
+
 // 전체 구성원 권한 설정은 중하하 관리자 전용 권한
 export const canManageMemberRoles = (role: MemberRole) => role === 'ADMIN';
 

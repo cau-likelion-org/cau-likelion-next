@@ -14,7 +14,7 @@ import CurriculumSection, { CurriculumTrackItems, isCurriculumTracksInvalid } fr
 import RoadmapSection from '@mypage/admin/RoadmapSection';
 import { getUserProfile } from 'src/apis/account';
 import useTokenStore from 'src/store/useTokenStore';
-import { isAdminRole } from '@utils/index';
+import { isAdminRole, canManageSitePages } from '@utils/index';
 import { CURRICULUM_TRACKS } from '@about/curriculum/data';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -89,7 +89,7 @@ const MyPageAdminAbout = () => {
 
   return (
     <>
-      <MyPageShell active="admin-about" isAdmin={isAdminRole(userProfile.role)}>
+      <MyPageShell active="admin-about" isAdmin={canManageSitePages(userProfile.role)}>
         <TitleRow>
           <PageTitle>소개 페이지 관리</PageTitle>
           <ButtonRow>

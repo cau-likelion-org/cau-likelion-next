@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import useTokenStore from 'src/store/useTokenStore';
 import useProfileChangedStore from 'src/store/useProfileChangedStore';
 import { getUserProfile } from 'src/apis/account';
-import { canCreateAttendance, isAdminRole } from '@utils/index';
+import { canCreateAttendance, isAdminRole, canManageSitePages } from '@utils/index';
 import styled from 'styled-components';
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import Toast from '@common/toast/Toast';
@@ -49,7 +49,7 @@ const MyPage = () => {
       <ToastWrapper>
         <Toast variant="negative" text={toastMessage} show={!!toastMessage} onHidden={() => setToastMessage('')} />
       </ToastWrapper>
-      <MyPageShell active="home" isAdmin={isAdminRole(userProfile.role)}>
+      <MyPageShell active="home" isAdmin={canManageSitePages(userProfile.role)}>
         <CardRow>
           <ProfileCard user={userProfile} />
           {canCreateAttendance(userProfile.role) ? <MakeAttendanceCard /> : <AttendanceCheckCard />}
