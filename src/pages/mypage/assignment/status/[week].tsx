@@ -20,6 +20,7 @@ import {
   SubmissionEvaluatePayload,
   evaluateSubmission,
   getAssignmentSubmissions,
+  getPresidentAssignments,
   getStaffAssignments,
   updateIndividualDeadlines,
 } from 'src/apis/assignment';
@@ -35,6 +36,8 @@ const MyPageAssignmentDetail = () => {
   const queryClient = useQueryClient();
 
   const week = Number(router.query.week);
+  // 회장이 목록에서 다른 파트를 보고 넘어온 경우 그 파트로 조회 (없으면 본인 파트)
+  const partId = router.query.partId ? Number(router.query.partId) : null;
 
   useEffect(() => {
     if (hasHydrated && !tokenState.access) router.push('/login');
@@ -42,8 +45,8 @@ const MyPageAssignmentDetail = () => {
 
   // 해당 주차의 과제 목록 (탭/카드용)
   const { data: staffWeekGroups } = useQuery<AssignmentWeekGroup[]>({
-    queryKey: ['staffAssignments'],
-    queryFn: () => getStaffAssignments(tokenState),
+    queryKey: partId != null ? ['presidentAssignments', partId] : ['staffAssignments'],
+    queryFn: () => (partId != null ? getPresidentAssignments(tokenState, partId) : getStaffAssignments(tokenState)),
     enabled: !!tokenState.access,
   });
   const assignments = staffWeekGroups?.find((group) => group.week === week)?.assignments ?? [];
@@ -122,7 +125,12 @@ const MyPageAssignmentDetail = () => {
           variant="solid"
           color="assistive"
           size="medium"
-          onClick={() => router.push(`/mypage/assignment/edit/${week}`)}
+          onClick={() =>
+            router.push({
+              pathname: `/mypage/assignment/edit/${week}`,
+              query: partId != null ? { partId } : undefined,
+            })
+          }
         >
           과제 수정
         </Button>

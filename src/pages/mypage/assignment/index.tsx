@@ -166,7 +166,12 @@ const MyPageAssignment = () => {
                   key={group.week}
                   week={group.week}
                   assignments={group.assignments}
-                  onDetail={() => router.push(`/mypage/assignment/status/${group.week}`)}
+                  onDetail={() =>
+                    router.push({
+                      pathname: `/mypage/assignment/status/${group.week}`,
+                      query: isPresident && selectedPartId != null ? { partId: selectedPartId } : undefined,
+                    })
+                  }
                 />
               ))}
             </List>
