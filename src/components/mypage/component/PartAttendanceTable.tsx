@@ -376,50 +376,52 @@ const PartAttendanceTable = ({ members, partName, partFilter, onSave, isSaving }
           ))}
         </FixedColumn>
 
-        <WeeksScroll>
-          <WeeksInner>
-            <WeeksGroup>
-              {weeks.map((week) => (
-                <WeekColumn key={week}>
-                  <HeadCell>{week}주차</HeadCell>
-                  {members.map((member, index) => {
-                    const record = recordMaps[index].get(week);
-                    // 방금 수정한 값이 있으면 서버 응답이 갱신되기 전까지 그 값을 그대로 보여준다
-                    const edit = record ? edits.get(record.detailAttendanceId) : undefined;
-                    const status = edit?.status ?? record?.status;
-                    const reason = edit?.reason ?? record?.reason;
-                    return (
-                      <StatusCell key={member.memberId}>
-                        {isEditing && record && status ? (
-                          <StatusDropdown
-                            ariaLabel={`${member.memberName} ${week}주차 출결`}
-                            value={status}
-                            onChange={(next) => changeStatus(record, next)}
-                          />
-                        ) : status && reason ? (
-                          <ReasonCell label={STATUS_LABEL[status]} reason={reason} />
-                        ) : (
-                          <span>{status ? STATUS_LABEL[status] : '-'}</span>
-                        )}
-                      </StatusCell>
-                    );
-                  })}
-                </WeekColumn>
-              ))}
-            </WeeksGroup>
-
-            <PenaltyColumn>
-              <PenaltyCard>
-                <HeadCell $penalty>감점</HeadCell>
-                {members.map((member) => (
-                  <ValueCell key={member.memberId} $penalty>
-                    {member.attendancePenalty}점
-                  </ValueCell>
+        <WeeksAndPenalty>
+          <WeeksScroll>
+            <WeeksInner>
+              <WeeksGroup>
+                {weeks.map((week) => (
+                  <WeekColumn key={week}>
+                    <HeadCell>{week}주차</HeadCell>
+                    {members.map((member, index) => {
+                      const record = recordMaps[index].get(week);
+                      // 방금 수정한 값이 있으면 서버 응답이 갱신되기 전까지 그 값을 그대로 보여준다
+                      const edit = record ? edits.get(record.detailAttendanceId) : undefined;
+                      const status = edit?.status ?? record?.status;
+                      const reason = edit?.reason ?? record?.reason;
+                      return (
+                        <StatusCell key={member.memberId}>
+                          {isEditing && record && status ? (
+                            <StatusDropdown
+                              ariaLabel={`${member.memberName} ${week}주차 출결`}
+                              value={status}
+                              onChange={(next) => changeStatus(record, next)}
+                            />
+                          ) : status && reason ? (
+                            <ReasonCell label={STATUS_LABEL[status]} reason={reason} />
+                          ) : (
+                            <span>{status ? STATUS_LABEL[status] : '-'}</span>
+                          )}
+                        </StatusCell>
+                      );
+                    })}
+                  </WeekColumn>
                 ))}
-              </PenaltyCard>
-            </PenaltyColumn>
-          </WeeksInner>
-        </WeeksScroll>
+              </WeeksGroup>
+            </WeeksInner>
+          </WeeksScroll>
+
+          <PenaltyColumn>
+            <PenaltyCard>
+              <HeadCell $penalty>감점</HeadCell>
+              {members.map((member) => (
+                <ValueCell key={member.memberId} $penalty>
+                  {member.attendancePenalty}점
+                </ValueCell>
+              ))}
+            </PenaltyCard>
+          </PenaltyColumn>
+        </WeeksAndPenalty>
       </TableRow>
 
       {reasonTarget && (
@@ -668,6 +670,14 @@ const FixedColumn = styled.div`
   overflow: hidden;
 `;
 
+// Figma: 주차 스크롤 뷰포트와 감점 열은 붙어 있는 형제다 (감점은 스크롤되지 않는다)
+const WeeksAndPenalty = styled.div`
+  display: flex;
+  align-items: stretch;
+  flex: 1 0 0;
+  min-width: 0;
+`;
+
 const WeeksScroll = styled.div`
   flex: 1 0 0;
   min-width: 0;
@@ -707,8 +717,7 @@ const WeekColumn = styled.div`
 `;
 
 const PenaltyColumn = styled.div`
-  position: sticky;
-  right: 0;
+  position: relative;
   z-index: 1;
   flex-shrink: 0;
   width: 160px;
@@ -717,16 +726,16 @@ const PenaltyColumn = styled.div`
     width: 100px;
   }
 
-  /* 주차 열이 감점 밑으로 스크롤될 때 흰색 페이드로 자연스럽게 사라지게 (Figma Rectangle 667)
-     감점 카드에 닿기 전에 주차 표의 각진 모서리가 완전히 지워지도록 카드 위로 살짝 겹친다 */
+  /* 주차 열이 스크롤로 잘리는 지점을 흰색 페이드로 덮는다 (Figma Rectangle 667: 뷰포트 오른쪽 끝 40px).
+     감점 카드 자체는 덮지 않도록 카드 왼쪽 바깥에만 둔다. */
   &::before {
     content: '';
     position: absolute;
     top: 0;
     bottom: 0;
-    left: -40px;
-    width: 44px;
-    background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, #ffffff 90%, #ffffff 100%);
+    right: 100%;
+    width: 40px;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0), #ffffff);
     pointer-events: none;
   }
 `;
