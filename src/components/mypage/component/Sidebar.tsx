@@ -52,12 +52,13 @@ const AdminGroup = styled.div`
   width: 100%;
 `;
 
+// 관리자는 그룹 제목일 뿐 선택된 메뉴가 아니므로 다른 미선택 항목과 같은 색을 쓴다
 const GroupTitle = styled.p`
   margin: 0;
   width: 100%;
   padding: 8px 0;
   text-align: left;
-  color: ${Label.strong};
+  color: ${Label.assistive};
   ${typographyCss(Typography.heading2.bold)}
 `;
 
