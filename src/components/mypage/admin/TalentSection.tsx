@@ -46,17 +46,19 @@ const TalentSection = ({
       <Title>인재상 관리</Title>
       {items.map((item) => (
         <Card key={item.id}>
-          <FieldWrapper>
-            <TextField
-              heading="파트명"
-              value={item.partName}
-              placeholder="텍스트 입력"
-              readOnly={disabled}
-              onChange={(event) => updateItem(item.id, { partName: event.target.value })}
-              status={showErrors && isUnfilled(item.partName) ? 'negative' : 'normal'}
-              description={showErrors && isUnfilled(item.partName) ? '파트명을 입력해 주세요.' : undefined}
-            />
-          </FieldWrapper>
+          <Row>
+            <FieldWrapper>
+              <TextField
+                heading="파트명"
+                value={item.partName}
+                placeholder="텍스트 입력"
+                readOnly={disabled}
+                onChange={(event) => updateItem(item.id, { partName: event.target.value })}
+                status={showErrors && isUnfilled(item.partName) ? 'negative' : 'normal'}
+                description={showErrors && isUnfilled(item.partName) ? '파트명을 입력해 주세요.' : undefined}
+              />
+            </FieldWrapper>
+          </Row>
           <Textarea
             heading="인재상"
             value={item.content}
@@ -109,6 +111,13 @@ const Card = styled.div`
 const ButtonRow = styled.div`
   display: flex;
   justify-content: flex-end;
+  width: 100%;
+`;
+
+const Row = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
   width: 100%;
 `;
 
