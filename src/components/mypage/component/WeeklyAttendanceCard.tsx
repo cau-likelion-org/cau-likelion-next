@@ -41,13 +41,19 @@ const WeeklyAttendanceCard = ({ record }: { record: WeeklyAttendanceRecord }) =>
       <Right>
         {record.checkInTime && <CheckInTime>{record.checkInTime}</CheckInTime>}
         <BadgeSlot
+          type="button"
+          $interactive={!!record.reason}
+          aria-label={record.reason ? `${badge.label} 사유 보기` : undefined}
+          aria-expanded={record.reason ? isTooltipVisible : undefined}
+          onClick={() => record.reason && setIsTooltipVisible((prev) => !prev)}
           onMouseEnter={() => record.reason && setIsTooltipVisible(true)}
           onMouseLeave={() => setIsTooltipVisible(false)}
+          onBlur={() => setIsTooltipVisible(false)}
         >
           <ContentBadge text={badge.label} color={badge.color} variant={badge.variant} size="medium" />
           {isTooltipVisible && record.reason && (
             <TooltipSlot>
-              <Tooltip size="small" position="bottom" align="center" text={record.reason} />
+              <Tooltip size="medium" position="bottom" align="end" text={record.reason} />
             </TooltipSlot>
           )}
         </BadgeSlot>
@@ -113,9 +119,12 @@ const Right = styled.div`
   gap: 12px;
   width: 312px;
 
+  /* Figma 모바일: 뱃지가 위, 체크인 시각이 아래 (데스크톱 가로 순서와 반대라 column-reverse) */
   @media (max-width: 900px) {
-    flex-direction: column;
+    flex-direction: column-reverse;
     align-items: flex-end;
+    justify-content: center;
+    gap: 12px;
     width: auto;
   }
 `;
@@ -127,16 +136,21 @@ const CheckInTime = styled.p`
   ${typographyCss(Typography.label1Normal.regular)}
 `;
 
-const BadgeSlot = styled.div`
+const BadgeSlot = styled.button<{ $interactive: boolean }>`
   position: relative;
   display: inline-flex;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: ${(props) => (props.$interactive ? 'pointer' : 'default')};
 `;
 
+/* Figma: 뱃지 아래 2px, 화살표(우측 8px 인셋 + 반폭 10px)가 뱃지 중앙을 가리키도록 오른쪽 정렬.
+   가운데 정렬하면 뱃지가 카드 오른쪽 끝에 있는 모바일에서 툴팁이 화면 밖으로 넘친다. */
 const TooltipSlot = styled.div`
   position: absolute;
-  top: calc(100% + 4px);
-  left: 50%;
-  transform: translateX(-50%);
+  top: calc(100% + 2px);
+  right: calc(50% - 18px);
   z-index: 10;
   width: max-content;
 `;

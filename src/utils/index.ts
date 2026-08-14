@@ -1,11 +1,4 @@
-import {
-  ArchivingArrayType,
-  IGalleryData,
-  IProjectData,
-  ISessionData,
-  MemberRole,
-  TotalScoreParams,
-} from '@@types/request';
+import { ArchivingArrayType, IGalleryData, IProjectData, ISessionData, MemberRole } from '@@types/request';
 
 export const toDateString = (date?: Date, formatter = '-') => {
   if (!date) return '';
@@ -24,19 +17,6 @@ export const concatDateString = (startDate: string, endDate: string) => {
 };
 
 export const isUnfilled = (value: string) => value.trim().length === 0;
-
-export const getTotalScore = (target: TotalScoreParams) => {
-  let defaultScore = 3;
-  const totalScore =
-    defaultScore -
-    (1 * target.absence +
-      0.2 * target.lateSubmitted +
-      1 * target.notSubmitted +
-      0.5 * target.tardiness +
-      1.5 * target.truancy);
-
-  return Number(totalScore.toFixed(1)) > 0 ? Number(totalScore.toFixed(1)) : 0;
-};
 
 // 운영진(STAFF) 이상 — 담당 파트에 한정된 관리 권한까지 포함해 "관리자 화면 접근 가능 여부" 판단에 사용
 const ADMIN_ROLES: MemberRole[] = ['STAFF', 'PRESIDENT', 'ADMIN'];

@@ -1,4 +1,3 @@
-export type MemberStack = 'pm_design' | 'frontend' | 'backend';
 export type MemberStackKor = '기획디자인' | '프론트엔드' | '백엔드';
 export type ProjectMemberRole = 'pm' | 'design' | 'frontend' | 'backend';
 export type ShareURL = 'github' | 'youtube' | 'web';
@@ -73,13 +72,6 @@ interface ResponseData<T> {
   data: T;
 }
 
-export interface TodayAttendanceData {
-  name: string;
-  track: number;
-  attendance_result: 1 | 2;
-}
-export type TodayAttendanceListData = Record<MemberStack, string[]>;
-
 export type MemberRole = 'BABY_LION' | 'ADULT_LION' | 'STAFF' | 'PRESIDENT' | 'ADMIN';
 
 export interface TokenResponse {
@@ -126,26 +118,9 @@ export interface UserProfile {
   generationNumber: number | null; // 소속 파트가 없으면 null
 }
 
-export interface UserAttendance {
-  user_id: number;
-  name: string; // 이름
-  track: number;
-  absence: number; // 결석
-  truancy: number; // 무단결석
-  tardiness: number; // 지각
-}
-
 export interface UserAssignment {
   name: string; // 이름
   track: number;
   notSubmitted: number;
   lateSubmitted: number;
-}
-
-export interface TotalScoreParams {
-  notSubmitted: number;
-  lateSubmitted: number;
-  absence: number;
-  truancy: number;
-  tardiness: number;
 }
