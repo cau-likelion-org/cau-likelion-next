@@ -51,6 +51,24 @@ export function createAssignments(token: IToken, payload: AssignmentCreateReques
   return authAxios.post('/api/assignments', payload).then((res) => res.data);
 }
 
+export interface AssignmentDetail {
+  id: number;
+  partId: number;
+  partName: string;
+  week: number;
+  title: string;
+  detail: string;
+  endDate: string;
+  type: AssignmentSubmitType;
+  createdAt: string;
+}
+
+// 운영진: 과제 단건 조회 (수정 화면 초기값용 — 목록 API에는 설명/제출형식이 없음)
+export function getAssignment(token: IToken, assignmentId: number) {
+  const authAxios = getAuthAxios(token);
+  return authAxios.get<AssignmentDetail>(`/api/assignments/${assignmentId}`).then((res) => res.data);
+}
+
 export interface AssignmentUpdateRequest {
   title: string;
   detail: string;
@@ -98,15 +116,24 @@ export interface AssignmentSubmission {
 export interface AssignmentMemberSubmission {
   memberId: number;
   memberName: string;
-  displayStatus: AssignmentDisplayStatus;
-  latestSubmission: AssignmentSubmission | null;
+  deadline: string; // 개별 마감일이 있으면 그 값, 없으면 과제 공통 마감일
+  displayStatus: AssignmentDisplayStatus; // 최신 제출 기준
+  submissions: AssignmentSubmission[]; // 최신순, 재제출 이력 포함 (없으면 빈 배열)
 }
 
-// 운영진: 특정 과제의 파트원 전체 제출 현황
+export interface AssignmentSubmissionHistory {
+  assignmentId: number;
+  title: string;
+  detail: string;
+  endDate: string;
+  submissions: AssignmentMemberSubmission[];
+}
+
+// 운영진: 특정 과제의 파트원 전체 제출 이력 (재제출 이력 모두 포함)
 export function getAssignmentSubmissions(token: IToken, assignmentId: number) {
   const authAxios = getAuthAxios(token);
   return authAxios
-    .get<AssignmentMemberSubmission[]>(`/api/assignments/${assignmentId}/submissions/staff`)
+    .get<AssignmentSubmissionHistory>(`/api/assignments/${assignmentId}/submissions/staff`)
     .then((res) => res.data);
 }
 
