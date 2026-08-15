@@ -149,7 +149,11 @@ const MyPageAssignment = () => {
   })();
 
   // 아기사자: 본인 과제 목록 (마감일이 같은 과제끼리 한 카드로 묶는다)
-  const { data: myWeekGroups } = useQuery<AssignmentSummaryWeekGroup[]>({
+  const {
+    data: myWeekGroups,
+    isLoading: isMyWeekGroupsLoading,
+    isError: isMyWeekGroupsError,
+  } = useQuery<AssignmentSummaryWeekGroup[]>({
     queryKey: ['myAssignments'],
     queryFn: () => getMyAssignments(tokenState),
     enabled: !!userProfile && !isStaffOrAdmin && userProfile.role !== 'ADULT_LION',
@@ -203,6 +207,8 @@ const MyPageAssignment = () => {
               </LoadingWrapper>
             ) : isWeekGroupsError ? (
               <EmptyState variant="error" />
+            ) : weeks.length === 0 ? (
+              <EmptyState message="등록된 과제가 없습니다." />
             ) : (
               <List>
                 {weeks.map((group) => (
@@ -222,11 +228,21 @@ const MyPageAssignment = () => {
               <SectionTitle>주차별 과제 현황</SectionTitle>
               <TrackName>{userProfile.partName} 파트</TrackName>
             </TitleRow>
-            <List>
-              {myGroups.map((group) => (
-                <WeeklyAssignmentCard key={group.week} group={group} />
-              ))}
-            </List>
+            {isMyWeekGroupsLoading ? (
+              <LoadingWrapper>
+                <CircularLoading size={32} />
+              </LoadingWrapper>
+            ) : isMyWeekGroupsError ? (
+              <EmptyState variant="error" />
+            ) : myGroups.length === 0 ? (
+              <EmptyState message="등록된 과제가 없습니다." />
+            ) : (
+              <List>
+                {myGroups.map((group) => (
+                  <WeeklyAssignmentCard key={group.week} group={group} />
+                ))}
+              </List>
+            )}
           </>
         )}
       </MyPageShell>
