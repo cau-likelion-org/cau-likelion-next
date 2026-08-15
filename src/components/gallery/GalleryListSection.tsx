@@ -18,7 +18,7 @@ import { Typography, typographyCss } from '@utils/constant/typography';
 import { isAdminRole } from '@utils/index';
 import { getSessionList, getSession } from 'src/apis/session';
 import { getHistoryList, getHistory } from 'src/apis/history';
-import { getGalleryProjectList, GalleryProjectCategory } from 'src/apis/gallery';
+import { getGalleryProjectList, getGalleryProject, GALLERY_PROJECT_CATEGORY_LABEL } from 'src/apis/gallery';
 
 import HistoryDetailModal from './component/HistoryDetailModal';
 import HistoryEditModal from './component/HistoryEditModal';
@@ -57,13 +57,7 @@ const LIST_QUERY_KEY_BY_TAB: Record<GalleryTabKey, string> = {
   gallery: 'galleryHistories',
 };
 
-const PROJECT_CATEGORY_LABEL: Record<GalleryProjectCategory, string> = {
-  IDEATHON: '아이디어톤',
-  HACKATHON: '해커톤',
-  CHUNGKATHON: '중커톤',
-  ETC: '기타',
-};
-const PROJECT_CATEGORY_FILTER_OPTIONS = ['전체', ...Object.values(PROJECT_CATEGORY_LABEL)];
+const PROJECT_CATEGORY_FILTER_OPTIONS = ['전체', ...Object.values(GALLERY_PROJECT_CATEGORY_LABEL)];
 const ALL_OPTION = '전체';
 // const WIKI_URL = 'https://wiki.cau-likelion.org';
 
@@ -107,7 +101,11 @@ const GalleryListSection = () => {
     queryFn: () => getHistory(selectedId as number),
     enabled: activeTab === 'gallery' && selectedId !== null,
   });
-  const projectDetail = useMemo(() => projects?.find((project) => project.id === selectedId), [projects, selectedId]);
+  const { data: projectDetail } = useQuery({
+    queryKey: ['galleryProjectDetail', selectedId],
+    queryFn: () => getGalleryProject(selectedId as number),
+    enabled: activeTab === 'project' && selectedId !== null,
+  });
 
   const showToast = (text: string) => {
     setToastText(text);
@@ -166,7 +164,7 @@ const GalleryListSection = () => {
   const projectCards = (projects ?? []).filter(
     (item) =>
       (generation === ALL_OPTION || `${item.generationNumber}기` === generation) &&
-      (projectCategory === ALL_OPTION || PROJECT_CATEGORY_LABEL[item.category] === projectCategory),
+      (projectCategory === ALL_OPTION || GALLERY_PROJECT_CATEGORY_LABEL[item.category] === projectCategory),
   );
   const historyCards = (histories ?? []).filter(
     (item) => generation === ALL_OPTION || `${item.generationNumber}기` === generation,
@@ -191,9 +189,12 @@ const GalleryListSection = () => {
       return (
         <ProjectDetailModal
           title={projectDetail.title}
-          badges={[`${projectDetail.generationNumber}기`, PROJECT_CATEGORY_LABEL[projectDetail.category]]}
-          description={projectDetail.summary}
-          date={[toDisplayDate(projectDetail.startDate), toDisplayDate(projectDetail.endDate)]}
+          badges={[`${projectDetail.generationNumber}기`, GALLERY_PROJECT_CATEGORY_LABEL[projectDetail.category]]}
+          description={projectDetail.description}
+          date={[
+            toDisplayDate(projectDetail.startDate),
+            toDisplayDate(projectDetail.endDate ?? projectDetail.startDate),
+          ]}
           onClose={closeDetailModal}
           onEdit={isStaff ? openEditModal : undefined}
         />
@@ -241,16 +242,19 @@ const GalleryListSection = () => {
     if (activeTab === 'project' && projectDetail) {
       return (
         <ProjectEditModal
+          id={projectDetail.id}
           initialValues={{
             title: projectDetail.title,
-            content: projectDetail.summary,
+            content: projectDetail.description,
             generation: String(projectDetail.generationNumber),
-            category: PROJECT_CATEGORY_LABEL[projectDetail.category],
-            dateRange: [projectDetail.startDate, projectDetail.endDate],
+            category: GALLERY_PROJECT_CATEGORY_LABEL[projectDetail.category],
+            dateRange: [projectDetail.startDate, projectDetail.endDate ?? projectDetail.startDate],
+            imageUrls: projectDetail.imageUrls,
+            thumbnailUrl: projectDetail.imageUrls[0],
           }}
           onClose={closeEditModal}
-          onDelete={handleDeleteSuccess}
-          onSubmit={handleEditSuccess}
+          onDeleteSuccess={handleDeleteSuccess}
+          onSubmitSuccess={handleEditSuccess}
         />
       );
     }
@@ -376,28 +380,25 @@ const GalleryListSection = () => {
       )}
       {activeTab === 'project' && (
         <CardGrid>
-          {projectCards.map((item) => {
-            const thumbnail = item.images.find((image) => image.isMain)?.imageUrl ?? item.images[0]?.imageUrl;
-            return (
-              <Card
-                key={item.id}
-                thumbnailRatio={16 / 9}
-                thumbnailSrc={thumbnail}
-                title={item.title}
-                onClick={() => setSelectedId(item.id)}
-                bottomContent={
-                  <BottomContent>
-                    <BadgeRow>
-                      {[`${item.generationNumber}기`, PROJECT_CATEGORY_LABEL[item.category]].map((badge) => (
-                        <ContentBadge key={badge} text={badge} color="accent" size="medium" />
-                      ))}
-                    </BadgeRow>
-                    <Period>{toPeriodDisplay(item.startDate, item.endDate)}</Period>
-                  </BottomContent>
-                }
-              />
-            );
-          })}
+          {projectCards.map((item) => (
+            <Card
+              key={item.id}
+              thumbnailRatio={16 / 9}
+              thumbnailSrc={item.thumbnailUrl}
+              title={item.title}
+              onClick={() => setSelectedId(item.id)}
+              bottomContent={
+                <BottomContent>
+                  <BadgeRow>
+                    {[`${item.generationNumber}기`, GALLERY_PROJECT_CATEGORY_LABEL[item.category]].map((badge) => (
+                      <ContentBadge key={badge} text={badge} color="accent" size="medium" />
+                    ))}
+                  </BadgeRow>
+                  <Period>{toPeriodDisplay(item.startDate, item.endDate)}</Period>
+                </BottomContent>
+              }
+            />
+          ))}
         </CardGrid>
       )}
       {activeTab === 'gallery' && (
