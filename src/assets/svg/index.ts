@@ -9,12 +9,14 @@ import IcChevronLeft from './icon/ic-chevron-left.svg';
 import IcChevronRight from './icon/ic-chevron-right.svg';
 import IcCircleCheck from './icon/ic-circle-check.svg';
 import IcCircleClose from './icon/ic-circle-close.svg';
+import IcCircleCloseOutline from './icon/ic-circle-close-outline.svg';
 import IcCircleExclamation from './icon/ic-circle-exclamation.svg';
 import IcDocument from './icon/ic-document.svg';
 import IcDownload from './icon/ic-download.svg';
 import IcEmail from './icon/ic-email.svg';
 import IcFailure from './icon/ic-failure.svg';
 import IcGithub from './icon/ic-github.svg';
+import IcImage from './icon/ic-image.svg';
 import IcInstagram from './icon/ic-instagram.svg';
 import IcKakaotalk from './icon/ic-kakaotalk.svg';
 import IcLineHorizontal from './icon/ic-line-horizontal.svg';
@@ -39,12 +41,14 @@ export {
   IcChevronRight,
   IcCircleCheck,
   IcCircleClose,
+  IcCircleCloseOutline,
   IcCircleExclamation,
   IcDocument,
   IcDownload,
   IcEmail,
   IcFailure,
   IcGithub,
+  IcImage,
   IcInstagram,
   IcKakaotalk,
   IcLineHorizontal,

@@ -26,9 +26,11 @@ const PAGE_SIZE = 9;
 const ProjectSection = ({
   projects,
   onChange,
+  disabled = false,
 }: {
   projects: FeaturedProject[];
   onChange: (projects: FeaturedProject[]) => void;
+  disabled?: boolean;
 }) => {
   const [generationFilter, setGenerationFilter] = useState(ALL_OPTION);
   const [categoryFilter, setCategoryFilter] = useState(ALL_OPTION);
@@ -91,6 +93,7 @@ const ProjectSection = ({
                   checked={project.selected}
                   onChange={() => toggleProject(project.id)}
                   ariaLabel={`${project.name} 노출 여부`}
+                  readOnly={disabled}
                 />
               </CardFooter>
             }

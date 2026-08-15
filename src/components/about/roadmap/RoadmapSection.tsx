@@ -1,17 +1,21 @@
-import Image from 'next/image';
+import { useQuery } from '@tanstack/react-query';
 import styled from 'styled-components';
 
+import { getRoadmap } from 'src/apis/roadmap';
 import { BackgroundWhite, Black, Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
-import { roadmap as roadmapImg } from '@assets/webp';
 
 const RoadmapSection = () => {
+  const { data: roadmap } = useQuery({ queryKey: ['roadmap'], queryFn: getRoadmap });
+
+  if (!roadmap) return null;
+
   return (
     <Wrapper>
       <Content>
         <SectionTitle>활동 로드맵</SectionTitle>
         <ChartImageWrapper>
-          <Image src={roadmapImg} alt="활동 로드맵" style={{ width: '100%', height: 'auto' }} />
+          <ChartImage src={roadmap.imageUrl} alt="활동 로드맵" />
         </ChartImageWrapper>
         <Caption>*일정 상 변경될 수 있습니다</Caption>
       </Content>
@@ -48,6 +52,12 @@ const SectionTitle = styled.p`
 
 const ChartImageWrapper = styled.div`
   width: 100%;
+`;
+
+const ChartImage = styled.img`
+  display: block;
+  width: 100%;
+  height: auto;
 `;
 
 const Caption = styled.p`

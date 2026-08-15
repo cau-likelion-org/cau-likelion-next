@@ -17,6 +17,7 @@ export interface CheckboxProps {
   bold?: boolean;
   tight?: boolean;
   disabled?: boolean;
+  readOnly?: boolean;
   label?: ReactNode;
   ariaLabel?: string;
   onChange?: (checked: boolean) => void;
@@ -43,6 +44,7 @@ const Checkbox = ({
   bold = false,
   tight = false,
   disabled = false,
+  readOnly = false,
   label,
   ariaLabel,
   onChange,
@@ -70,8 +72,11 @@ const Checkbox = ({
           checked={checked}
           disabled={disabled}
           aria-label={!label ? ariaLabel : undefined}
-          onChange={(event) => onChange?.(event.target.checked)}
+          aria-readonly={readOnly}
+          onClick={(event) => readOnly && event.preventDefault()}
+          onChange={(event) => !readOnly && onChange?.(event.target.checked)}
           $disabled={disabled}
+          $readOnly={readOnly}
         />
         <Indicator $box={box} $filled={isFilled} $disabled={disabled} aria-hidden>
           {indeterminate ? (
@@ -107,12 +112,12 @@ const ControlWrapper = styled.div<{ $tight: boolean }>`
   padding: 3px ${(props) => (props.$tight ? 1 : 3)}px;
 `;
 
-const Box = styled.input<{ $disabled: boolean }>`
+const Box = styled.input<{ $disabled: boolean; $readOnly: boolean }>`
   position: absolute;
   inset: 0;
   margin: 0;
   opacity: 0;
-  cursor: ${(props) => (props.$disabled ? 'not-allowed' : 'pointer')};
+  cursor: ${(props) => (props.$disabled ? 'not-allowed' : props.$readOnly ? 'default' : 'pointer')};
 `;
 
 const Indicator = styled.span<{ $box: number; $filled: boolean; $disabled: boolean }>`

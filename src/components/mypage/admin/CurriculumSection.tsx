@@ -8,7 +8,7 @@ import CharCount from '@common/charCount/CharCount';
 import AddCardButton from '@mypage/admin/component/AddCardButton';
 import RemoveCardButton from '@mypage/admin/component/RemoveCardButton';
 import { isUnfilled } from '@utils/index';
-import { BackgroundWhite, Label, Line } from '@utils/constant/color';
+import { BackgroundWhite, Black, Line, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { createId } from './utils';
 
@@ -29,7 +29,7 @@ export interface CurriculumTrackItems {
 const isCurriculumWeekInvalid = (week: CurriculumWeekItem) => isUnfilled(week.week) || isUnfilled(week.title);
 
 export const isCurriculumTracksInvalid = (tracks: CurriculumTrackItems[]) =>
-  tracks.some((track) => track.weeks.some(isCurriculumWeekInvalid));
+  tracks.some((track) => track.weeks.length === 0 || track.weeks.some(isCurriculumWeekInvalid));
 
 const createEmptyWeek = (): CurriculumWeekItem => ({ id: createId(), week: '', title: '', description: '' });
 
@@ -37,10 +37,12 @@ const CurriculumSection = ({
   tracks,
   onChange,
   showErrors,
+  disabled = false,
 }: {
   tracks: CurriculumTrackItems[];
   onChange: (tracks: CurriculumTrackItems[]) => void;
   showErrors: boolean;
+  disabled?: boolean;
 }) => {
   const [activeKey, setActiveKey] = useState(tracks[0].key);
   const activeTrack = tracks.find((track) => track.key === activeKey) ?? tracks[0];
@@ -74,6 +76,7 @@ const CurriculumSection = ({
                 heading="주차"
                 value={week.week}
                 placeholder="텍스트 입력"
+                readOnly={disabled}
                 onChange={(event) => updateWeek(week.id, { week: event.target.value })}
                 status={showErrors && isUnfilled(week.week) ? 'negative' : 'normal'}
                 description={showErrors && isUnfilled(week.week) ? '주차를 입력해 주세요.' : undefined}
@@ -84,6 +87,7 @@ const CurriculumSection = ({
                 heading="커리큘럼 제목"
                 value={week.title}
                 placeholder="텍스트 입력"
+                readOnly={disabled}
                 onChange={(event) => updateWeek(week.id, { title: event.target.value })}
                 status={showErrors && isUnfilled(week.title) ? 'negative' : 'normal'}
                 description={showErrors && isUnfilled(week.title) ? '커리큘럼 제목을 입력해 주세요.' : undefined}
@@ -95,15 +99,19 @@ const CurriculumSection = ({
             value={week.description}
             placeholder="텍스트 입력"
             maxLength={1000}
+            readOnly={disabled}
             bottomTrailingContent={<CharCount>{week.description.length}/1000</CharCount>}
             onChange={(event) => updateWeek(week.id, { description: event.target.value })}
           />
-          <ButtonRow>
-            <RemoveCardButton onClick={() => removeWeek(week.id)} />
-          </ButtonRow>
+          {!disabled && (
+            <ButtonRow>
+              <RemoveCardButton onClick={() => removeWeek(week.id)} />
+            </ButtonRow>
+          )}
         </Card>
       ))}
-      <AddCardButton onClick={addWeek} ariaLabel="커리큘럼 주차 추가" />
+      {showErrors && activeTrack.weeks.length === 0 && <ErrorText>이 트랙에 주차를 하나 이상 추가해 주세요.</ErrorText>}
+      {!disabled && <AddCardButton onClick={addWeek} ariaLabel="커리큘럼 주차 추가" />}
     </Section>
   );
 };
@@ -119,8 +127,8 @@ const Section = styled.div`
 
 const Title = styled.p`
   margin: 0;
-  color: ${Label.normal};
-  ${typographyCss(Typography.heading2.bold)}
+  color: ${Black.b900};
+  ${typographyCss(Typography.title3.bold)}
 `;
 
 const Card = styled.div`
@@ -154,4 +162,10 @@ const ButtonRow = styled.div`
   display: flex;
   justify-content: flex-end;
   width: 100%;
+`;
+
+const ErrorText = styled.p`
+  margin: 0;
+  color: ${State.error};
+  ${typographyCss(Typography.caption1.regular)}
 `;
