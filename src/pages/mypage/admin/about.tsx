@@ -122,9 +122,13 @@ const MyPageAdminAbout = () => {
   const isDataLoaded =
     talents !== undefined && tracks !== undefined && curriculums !== undefined && roadmap !== undefined;
 
-  const [talentItems, setTalentItems] = useState<TalentItem[]>([]);
-  const [curriculumTracks, setCurriculumTracks] = useState<CurriculumTrackItems[]>([]);
-  const [roadmapFile, setRoadmapFile] = useState<RoadmapFile>(DEFAULT_ROADMAP_FILE);
+  const [talentItems, setTalentItems] = useState<TalentItem[]>(() => (talents ?? []).map(talentToLocal));
+  const [curriculumTracks, setCurriculumTracks] = useState<CurriculumTrackItems[]>(() =>
+    buildCurriculumTracks(tracks ?? [], curriculums ?? []),
+  );
+  const [roadmapFile, setRoadmapFile] = useState<RoadmapFile>(() =>
+    roadmap ? { url: roadmap.imageUrl, name: getFileNameFromUrl(roadmap.imageUrl) } : DEFAULT_ROADMAP_FILE,
+  );
   const [isUploadingRoadmap, setIsUploadingRoadmap] = useState(false);
   const [toastMessage, setToastMessage] = useState<ReactNode>('');
   const [toastVariant, setToastVariant] = useState<'positive' | 'negative'>('positive');

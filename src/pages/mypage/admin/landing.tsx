@@ -128,11 +128,15 @@ const MyPageAdminLanding = () => {
     refetchOnWindowFocus: false,
   });
 
-  const [introduceMetrics, setIntroduceMetrics] = useState(DEFAULT_INTRODUCE_METRICS);
-  const [trackItems, setTrackItems] = useState<TrackIntroItem[]>([]);
-  const [activityItems, setActivityItems] = useState<ActivityIntroItem[]>([]);
-  const [projectItems, setProjectItems] = useState<FeaturedProject[]>([]);
-  const [faqItems, setFaqItems] = useState<FaqItem[]>([]);
+  const [introduceMetrics, setIntroduceMetrics] = useState(() =>
+    introduce ? introduceToLocal(introduce) : DEFAULT_INTRODUCE_METRICS,
+  );
+  const [trackItems, setTrackItems] = useState<TrackIntroItem[]>(() => (tracks ?? []).map(trackToLocal));
+  const [activityItems, setActivityItems] = useState<ActivityIntroItem[]>(() =>
+    (activities ?? []).map(activityToLocal),
+  );
+  const [projectItems, setProjectItems] = useState<FeaturedProject[]>(() => (projects ?? []).map(projectToLocal));
+  const [faqItems, setFaqItems] = useState<FaqItem[]>(() => (faqs ?? []).map(faqToLocal));
   const [toastMessage, setToastMessage] = useState<ReactNode>('');
   const [showErrors, setShowErrors] = useState(false);
   const [isSaving, setIsSaving] = useState(false);

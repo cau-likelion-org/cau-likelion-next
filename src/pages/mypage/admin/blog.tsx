@@ -68,7 +68,7 @@ const MyPageAdminBlog = () => {
     refetchOnWindowFocus: false,
   });
 
-  const [blogItems, setBlogItems] = useState<BlogItem[]>([]);
+  const [blogItems, setBlogItems] = useState<BlogItem[]>(() => (blogs ?? []).map(blogToLocal));
   const [toastMessage, setToastMessage] = useState<ReactNode>('');
   const [showErrors, setShowErrors] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
