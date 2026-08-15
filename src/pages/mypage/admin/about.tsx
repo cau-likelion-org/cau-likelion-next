@@ -299,14 +299,12 @@ const MyPageAdminAbout = () => {
                   showErrors={showErrors}
                   disabled={!isEditing}
                 />
-                {curriculumTracks.length > 0 && (
-                  <CurriculumSection
-                    tracks={curriculumTracks}
-                    onChange={setCurriculumTracks}
-                    showErrors={showErrors}
-                    disabled={!isEditing}
-                  />
-                )}
+                <CurriculumSection
+                  tracks={curriculumTracks}
+                  onChange={setCurriculumTracks}
+                  showErrors={showErrors}
+                  disabled={!isEditing}
+                />
                 <RoadmapSection
                   imageUrl={roadmapFile.url}
                   fileName={roadmapFile.name}
