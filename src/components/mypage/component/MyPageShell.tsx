@@ -15,6 +15,7 @@ const BREADCRUMB_LABEL: Record<SidebarActive, string> = {
   'admin-landing': '랜딩페이지 관리',
   'admin-about': '소개 페이지 관리',
   'admin-blog': '블로그 페이지 관리',
+  'admin-members': '전체 회원/파트 관리',
 };
 
 const MyPageShell = ({

@@ -1,6 +1,9 @@
 import {
+  AllowedUserEmailItem,
   Generation,
+  GenerationCreateRequestDto,
   GoogleLoginResponse,
+  MemberResponse,
   MemberRole,
   MemberUpdateRequest,
   TokenResponse,
@@ -55,8 +58,47 @@ export const putUserProfile = async (props: { id: number; form: MemberUpdateRequ
   return response.data;
 };
 
+export const deleteMember = (id: number, token: IToken) => {
+  const authAxios = getAuthAxios(token);
+  return authAxios.delete(`/api/members/${id}`);
+};
+
 export const getGenerations = () => {
   return axios.get<Generation[]>(`${url}/api/generations`).then((res) => res.data);
+};
+
+export interface MemberListFilter {
+  name?: string;
+  generationNumber?: number;
+  partId?: number;
+  role?: MemberRole;
+}
+
+export const getMembers = (filter: MemberListFilter, token: IToken) => {
+  const authAxios = getAuthAxios(token);
+  return authAxios.get<MemberResponse[]>('/api/members', { params: filter }).then((res) => res.data);
+};
+
+export const getAllowedEmails = (generationId: number, token: IToken) => {
+  const authAxios = getAuthAxios(token);
+  return authAxios
+    .get<AllowedUserEmailItem[]>('/api/allowed-emails', { params: { generationId } })
+    .then((res) => res.data);
+};
+
+export const putAllowedEmails = (generationId: number, items: AllowedUserEmailItem[], token: IToken) => {
+  const authAxios = getAuthAxios(token);
+  return authAxios.put('/api/allowed-emails', { items }, { params: { generationId } }).then((res) => res.data);
+};
+
+export const createGeneration = (form: GenerationCreateRequestDto, token: IToken) => {
+  const authAxios = getAuthAxios(token);
+  return authAxios.post<Generation>('/api/generations', form).then((res) => res.data);
+};
+
+export const setCurrentGeneration = (id: number, token: IToken) => {
+  const authAxios = getAuthAxios(token);
+  return authAxios.patch<Generation>(`/api/generations/${id}/current`).then((res) => res.data);
 };
 
 // 과제 승인/반려 알림을 받기 위해 이 기기의 FCM 토큰을 서버에 등록한다 (기기별로 여러 개 등록 가능)
