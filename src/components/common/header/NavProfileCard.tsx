@@ -8,7 +8,7 @@ import styled from 'styled-components';
 
 const NavProfileCard = () => {
   const tokenState = useTokenStore((state) => state.token);
-  const { data, isLoading, error } = useQuery({
+  const { data } = useQuery({
     queryKey: ['profile'],
     queryFn: () => getUserProfile(tokenState),
     enabled: !!tokenState.access,
