@@ -152,7 +152,9 @@ const FilterSelect = ({
 };
 
 const Wrapper = styled.div`
-  width: 1060px;
+  width: 100%;
+  max-width: 1100px;
+  padding: 0 20px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;

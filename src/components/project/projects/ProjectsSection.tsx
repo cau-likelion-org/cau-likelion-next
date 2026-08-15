@@ -191,12 +191,9 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 46px;
-  width: 1060px;
-  max-width: 100%;
-
-  @media (max-width: 600px) {
-    padding: 0 20px;
-  }
+  width: 100%;
+  max-width: 1100px;
+  padding: 0 20px;
 `;
 
 const ToastWrapper = styled.div`
