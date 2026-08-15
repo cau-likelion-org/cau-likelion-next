@@ -22,31 +22,43 @@ export interface AssignmentSubmitItem {
   format: SubmissionFormat;
 }
 
+// 제출에 필요한 입력값 — 파일은 업로드해야 하므로 File 객체 그대로 들고 있는다
+export interface AssignmentSubmitValue {
+  files: File[];
+  link: string;
+  description: string;
+}
+
 interface AssignmentSubmitCardProps {
   item: AssignmentSubmitItem;
   onValidityChange?: (itemId: string, isValid: boolean) => void;
+  onValueChange?: (itemId: string, value: AssignmentSubmitValue) => void;
 }
 
-const AssignmentSubmitCard = ({ item, onValidityChange }: AssignmentSubmitCardProps) => {
-  const [fileNames, setFileNames] = useState<string[]>([]);
+const AssignmentSubmitCard = ({ item, onValidityChange, onValueChange }: AssignmentSubmitCardProps) => {
+  const [files, setFiles] = useState<File[]>([]);
   const [link, setLink] = useState('');
   const [description, setDescription] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const isValid = item.format === 'file' ? fileNames.length > 0 : link.trim() !== '';
+  const isValid = item.format === 'file' ? files.length > 0 : link.trim() !== '';
 
   useEffect(() => {
     onValidityChange?.(item.id, isValid);
   }, [item.id, isValid, onValidityChange]);
 
+  useEffect(() => {
+    onValueChange?.(item.id, { files, link, description });
+  }, [item.id, files, link, description, onValueChange]);
+
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) setFileNames((prev) => [...prev, file.name]);
+    if (file) setFiles((prev) => [...prev, file]);
     event.target.value = '';
   };
 
   const handleFileRemove = (index: number) => {
-    setFileNames((prev) => prev.filter((_, i) => i !== index));
+    setFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
   return (
@@ -66,20 +78,20 @@ const AssignmentSubmitCard = ({ item, onValidityChange }: AssignmentSubmitCardPr
             <FieldHeading>
               파일 첨부 <Required>*</Required>
             </FieldHeading>
-            {fileNames.map((fileName, index) => (
-              <AttachmentRow key={`${fileName}-${index}`}>
+            {files.map((file, index) => (
+              <AttachmentRow key={`${file.name}-${index}`}>
                 <AttachmentField>
                   <AttachmentIcon>
                     <IcDocument width={22} height={22} />
                   </AttachmentIcon>
-                  <AttachmentText>{fileName}</AttachmentText>
+                  <AttachmentText>{file.name}</AttachmentText>
                 </AttachmentField>
                 <RemoveButton type="button" aria-label="파일 삭제" onClick={() => handleFileRemove(index)}>
                   <IcCircleClose width={24} height={24} />
                 </RemoveButton>
               </AttachmentRow>
             ))}
-            {fileNames.length === 0 ? (
+            {files.length === 0 ? (
               <FilePickerButton type="button" onClick={() => fileInputRef.current?.click()}>
                 파일을 선택해 주세요. (100MB)
               </FilePickerButton>
