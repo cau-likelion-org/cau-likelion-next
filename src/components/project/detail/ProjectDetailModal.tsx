@@ -59,22 +59,23 @@ const ProjectDetailModal = ({ projectId, staticData, onClose }: ProjectDetailMod
   return (
     <Backdrop onClick={onClose}>
       <ModalCard onClick={(event) => event.stopPropagation()}>
+        {/* 모바일은 모달이 화면을 덮어 배경 클릭으로 닫을 수 없으므로, 로딩 중에도 닫기 버튼을 노출한다 */}
+        <MobileHeader>
+          <Button
+            variant="outlined"
+            color="assistive"
+            size="small"
+            leadingIcon={<IcChevronLeft width={16} height={16} />}
+            onClick={onClose}
+          >
+            닫기
+          </Button>
+          <MobileTitle>프로젝트 상세보기</MobileTitle>
+        </MobileHeader>
         {!project ? (
           <LoadingWrapper>불러오는 중...</LoadingWrapper>
         ) : (
           <>
-            <MobileHeader>
-              <Button
-                variant="outlined"
-                color="assistive"
-                size="small"
-                leadingIcon={<IcChevronLeft width={16} height={16} />}
-                onClick={onClose}
-              >
-                닫기
-              </Button>
-              <MobileTitle>프로젝트 상세보기</MobileTitle>
-            </MobileHeader>
             <Contents>
               <ProjectDetailCarousel images={getSortedProjectImages(project.images)} />
               <TextBlock>
