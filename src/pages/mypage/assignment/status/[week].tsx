@@ -95,7 +95,11 @@ const MyPageAssignmentDetail = () => {
   const handleApprove = (submitId: number) => evaluateMutation.mutate({ submitId, payload: { status: 'APPROVED' } });
   const confirmReject = (reason: string) => {
     if (rejectTarget == null) return;
-    evaluateMutation.mutate({ submitId: rejectTarget, payload: { status: 'REJECTED', rejectionReason: reason } });
+    evaluateMutation.mutate(
+      { submitId: rejectTarget, payload: { status: 'REJECTED', rejectionReason: reason } },
+      // 알림 발송까지 끝난 뒤에만 완료 토스트를 띄운다
+      { onSuccess: () => setToastMessage('반려 처리가 완료되었습니다.') },
+    );
     setRejectTarget(null);
   };
 
