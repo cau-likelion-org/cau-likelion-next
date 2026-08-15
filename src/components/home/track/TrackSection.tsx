@@ -3,45 +3,55 @@ import styled from 'styled-components';
 
 import Chip from '@common/chip/Chip';
 import { getTracks } from 'src/apis/track';
+import LinearLoading from '@common/loading/LinearLoading';
+import EmptyState from '@common/emptyState/EmptyState';
 import { Black, BackgroundWhite, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 const TrackSection = () => {
-  const { data: tracks } = useQuery({ queryKey: ['tracks'], queryFn: getTracks });
+  const { data: tracks, isLoading, isError } = useQuery({ queryKey: ['tracks'], queryFn: getTracks });
 
   return (
     <Wrapper>
       <Title>14기 트랙 소개</Title>
-      <TrackListGroup>
-        <TrackList>
-          {tracks?.map(({ id, koName, enName, introduction, techStack }) => (
-            <TrackCard key={id}>
-              <TrackHeader>
-                <TrackName>{koName}</TrackName>
-                <TrackEnglishName>{enName}</TrackEnglishName>
-              </TrackHeader>
-              <TrackBody>
-                <BulletBox>
-                  {introduction
-                    .split('\n')
-                    .filter((line) => line.trim() !== '')
-                    .map((line, index) => (
-                      <li key={index}>{line}</li>
+      {isLoading ? (
+        <LoadingWrapper>
+          <LinearLoading />
+        </LoadingWrapper>
+      ) : isError ? (
+        <EmptyState variant="error" />
+      ) : (
+        <TrackListGroup>
+          <TrackList>
+            {tracks?.map(({ id, koName, enName, introduction, techStack }) => (
+              <TrackCard key={id}>
+                <TrackHeader>
+                  <TrackName>{koName}</TrackName>
+                  <TrackEnglishName>{enName}</TrackEnglishName>
+                </TrackHeader>
+                <TrackBody>
+                  <BulletBox>
+                    {introduction
+                      .split('\n')
+                      .filter((line) => line.trim() !== '')
+                      .map((line, index) => (
+                        <li key={index}>{line}</li>
+                      ))}
+                  </BulletBox>
+                  <ChipWrap>
+                    {techStack.map((chip) => (
+                      <Chip key={chip} variant="outlined" size="medium">
+                        {chip}
+                      </Chip>
                     ))}
-                </BulletBox>
-                <ChipWrap>
-                  {techStack.map((chip) => (
-                    <Chip key={chip} variant="outlined" size="medium">
-                      {chip}
-                    </Chip>
-                  ))}
-                </ChipWrap>
-              </TrackBody>
-            </TrackCard>
-          ))}
-        </TrackList>
-        <Footnote>*출처정보 (2026년 02월 기준)</Footnote>
-      </TrackListGroup>
+                  </ChipWrap>
+                </TrackBody>
+              </TrackCard>
+            ))}
+          </TrackList>
+          <Footnote>*출처정보 (2026년 02월 기준)</Footnote>
+        </TrackListGroup>
+      )}
     </Wrapper>
   );
 };
@@ -149,4 +159,12 @@ const Footnote = styled.p`
   color: ${Black.b50};
   align-self: flex-start;
   margin: 0;
+`;
+
+const LoadingWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 300px;
 `;
