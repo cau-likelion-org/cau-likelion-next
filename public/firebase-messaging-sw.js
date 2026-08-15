@@ -31,11 +31,20 @@ firebase.messaging().onBackgroundMessage((payload) => {
   });
 });
 
+// FCM이 notification 페이로드를 자동 표시한 경우, 우리 data는 FCM_MSG 안에 한 겹 감싸여 들어온다.
+// 직접 showNotification으로 띄운 경우엔 그대로 들어오므로 두 형태를 모두 처리한다.
+const unwrapData = (notificationData) => {
+  if (!notificationData) return {};
+  return notificationData.FCM_MSG?.data || notificationData;
+};
+
 // 알림을 누르면 이미 열려 있는 탭을 재사용하고, 없으면 새로 연다
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
 
-  const url = event.notification.data?.url || DEFAULT_URL;
+  const data = unwrapData(event.notification.data);
+  // 백엔드가 week를 실어주므로 해당 주차 과제 페이지로 보낸다
+  const url = data.week ? `/mypage/assignment/${data.week}` : DEFAULT_URL;
   event.waitUntil(
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
       const client = clientList.find((item) => 'focus' in item);
