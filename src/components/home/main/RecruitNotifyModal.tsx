@@ -1,5 +1,6 @@
-import { useId, useRef, useState } from 'react';
+import { useId, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
 import Button from '@common/button/Button';
 import Select from '@common/select/Select';
@@ -8,7 +9,8 @@ import TextField from '@common/textField/TextField';
 import { IcKakaotalk } from '@assets/svg';
 import useFocusTrap from 'src/hooks/useFocusTrap';
 import useListboxSelect from 'src/hooks/useListboxSelect';
-import { TRACK_OPTIONS } from '@utils/constant';
+import { getAvailableParts, subscribeRecruitment } from 'src/apis/recruitment';
+import useRecruitModalStore from 'src/store/useRecruitModalStore';
 import { isUnfilled } from '@utils/index';
 import { BackgroundColor, Fill, Label, Material } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -22,10 +24,21 @@ const RecruitNotifyModal = ({ onClose }: { onClose: () => void }) => {
   const [isDepartmentOpen, setIsDepartmentOpen] = useState(false);
   const [email, setEmail] = useState('');
   const [showEmailError, setShowEmailError] = useState(false);
+  const closeWithToast = useRecruitModalStore((state) => state.closeWithToast);
 
   const titleId = useId();
   const modalRef = useRef<HTMLDivElement>(null);
   useFocusTrap(modalRef, onClose);
+
+  const { data: availableParts } = useQuery({
+    queryKey: ['recruitment-available-parts'],
+    queryFn: getAvailableParts,
+  });
+  const departmentOptions = useMemo(() => availableParts?.map((part) => part.name) ?? [], [availableParts]);
+  const selectedPart = useMemo(
+    () => availableParts?.find((part) => part.name === department),
+    [availableParts, department],
+  );
 
   const {
     listId: departmentListId,
@@ -37,7 +50,7 @@ const RecruitNotifyModal = ({ onClose }: { onClose: () => void }) => {
     selectOption: selectDepartment,
   } = useListboxSelect({
     isOpen: isDepartmentOpen,
-    options: TRACK_OPTIONS,
+    options: departmentOptions,
     value: department,
     onOpen: () => setIsDepartmentOpen(true),
     onClose: () => setIsDepartmentOpen(false),
@@ -45,15 +58,25 @@ const RecruitNotifyModal = ({ onClose }: { onClose: () => void }) => {
   });
 
   const isEmailInvalid = showEmailError && !EMAIL_REGEX.test(email);
-  const isValid = !isUnfilled(name) && !isUnfilled(department) && !isUnfilled(email);
+  const isValid = !isUnfilled(name) && !!selectedPart && !isUnfilled(email);
+
+  const subscribeMutation = useMutation({
+    mutationFn: subscribeRecruitment,
+    onSuccess: () => {
+      closeWithToast('positive', '사전 알림 신청이 완료되었습니다.');
+    },
+    onError: () => {
+      closeWithToast('negative', '알림 신청에 실패했습니다. 잠시 후 다시 시도해주세요.');
+    },
+  });
 
   const handleSubmit = () => {
-    if (!isValid) return;
+    if (!isValid || !selectedPart) return;
     if (!EMAIL_REGEX.test(email)) {
       setShowEmailError(true);
       return;
     }
-    onClose();
+    subscribeMutation.mutate({ email, name, interestPartIds: [selectedPart.id] });
   };
 
   return (
@@ -98,7 +121,7 @@ const RecruitNotifyModal = ({ onClose }: { onClose: () => void }) => {
               {isDepartmentOpen && (
                 <ListboxOptions
                   listId={departmentListId}
-                  options={TRACK_OPTIONS}
+                  options={departmentOptions}
                   value={department}
                   activeIndex={activeDepartmentIndex}
                   onSelect={selectDepartment}
@@ -123,7 +146,14 @@ const RecruitNotifyModal = ({ onClose }: { onClose: () => void }) => {
             <Button variant="outlined" color="assistive" size="large" onClick={onClose}>
               취소
             </Button>
-            <Button variant="solid" color="primary" size="large" disabled={!isValid} onClick={handleSubmit}>
+            <Button
+              variant="solid"
+              color="primary"
+              size="large"
+              disabled={!isValid}
+              loading={subscribeMutation.isPending}
+              onClick={handleSubmit}
+            >
               알림 신청하기
             </Button>
           </ActionRow>

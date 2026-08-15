@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Button from '@common/button/Button';
-import RecruitClosedAlert from '@home/main/RecruitClosedAlert';
-import RecruitNotifyModal from '@home/main/RecruitNotifyModal';
 import { Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import useTokenStore from 'src/store/useTokenStore';
+import useRecruitModalStore from 'src/store/useRecruitModalStore';
+import RecruitModalRoot from '@home/main/RecruitModalRoot';
 import LikelionCAULogo from 'src/assets/svg/logo/logo-likelion-chungang.svg';
 
 export interface IMenu {
@@ -31,9 +31,16 @@ const NavBar = () => {
   const { access: tokenState } = useTokenStore((state) => state.token);
   const hasHydrated = useTokenStore((state) => state.hasHydrated);
   const isLogin = hasHydrated && !!tokenState;
-  const [isRecruitClosedAlertOpen, setIsRecruitClosedAlertOpen] = useState(false);
-  const [isRecruitModalOpen, setIsRecruitModalOpen] = useState(false);
+  const openRecruitClosedAlert = useRecruitModalStore((state) => state.openClosedAlert);
   const [isScrolled, setIsScrolled] = useState(false);
+
+  // 지원하기는 어느 페이지에서 눌러도 랜딩(홈) 화면을 배경으로 모달이 뜨도록 홈으로 이동 후 연다
+  const handleRecruitClick = () => {
+    if (router.pathname !== '/') {
+      router.push('/');
+    }
+    openRecruitClosedAlert();
+  };
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 0);
@@ -57,7 +64,7 @@ const NavBar = () => {
           <MenuList>
             {MENU_ITEMS.map(({ title, routing, target }) =>
               title === RECRUIT_MENU_TITLE ? (
-                <MenuLink key={title} as="button" type="button" onClick={() => setIsRecruitClosedAlertOpen(true)}>
+                <MenuLink key={title} as="button" type="button" onClick={handleRecruitClick}>
                   {title}
                 </MenuLink>
               ) : target ? (
@@ -76,17 +83,7 @@ const NavBar = () => {
           </Button>
         </RightSection>
       </Content>
-
-      {isRecruitClosedAlertOpen && (
-        <RecruitClosedAlert
-          onClose={() => setIsRecruitClosedAlertOpen(false)}
-          onConfirm={() => {
-            setIsRecruitClosedAlertOpen(false);
-            setIsRecruitModalOpen(true);
-          }}
-        />
-      )}
-      {isRecruitModalOpen && <RecruitNotifyModal onClose={() => setIsRecruitModalOpen(false)} />}
+      <RecruitModalRoot />
     </Wrapper>
   );
 };
