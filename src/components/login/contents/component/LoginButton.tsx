@@ -11,9 +11,10 @@ import { PENDING_SIGNUP_TOKEN_KEY } from 'src/apis/signUp';
 
 interface LoginButtonProps {
   onUnregistered: () => void;
+  onGoogleUnavailable: () => void;
 }
 
-const LoginButton = ({ onUnregistered }: LoginButtonProps) => {
+const LoginButton = ({ onUnregistered, onGoogleUnavailable }: LoginButtonProps) => {
   const router = useRouter();
   const setToken = useTokenStore((state) => state.setToken);
 
@@ -36,7 +37,7 @@ const LoginButton = ({ onUnregistered }: LoginButtonProps) => {
     },
   });
 
-  const { promptLogin } = useGoogleIdentity((idToken) => loginMutation.mutate(idToken));
+  const { promptLogin } = useGoogleIdentity((idToken) => loginMutation.mutate(idToken), onGoogleUnavailable);
 
   return (
     <Button
