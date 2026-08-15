@@ -6,7 +6,7 @@ interface ProjectDetailModalProps {
   description: string;
   date: [string, string];
   onClose: () => void;
-  onEdit: () => void;
+  onEdit?: () => void;
 }
 
 const ProjectDetailModal = ({ title, badges, description, date, onClose, onEdit }: ProjectDetailModalProps) => (

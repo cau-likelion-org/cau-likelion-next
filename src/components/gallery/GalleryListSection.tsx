@@ -11,8 +11,11 @@ import Toast from '@common/toast/Toast';
 import IcAdd from '@assets/svg/ic-add.svg';
 import PageHeader from '@common/pageHeader/PageHeader';
 import useListboxSelect from 'src/hooks/useListboxSelect';
+import useTokenStore from 'src/store/useTokenStore';
+import { getUserProfile } from 'src/apis/account';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
+import { isAdminRole } from '@utils/index';
 import { getSessionList, getSession } from 'src/apis/session';
 import { getHistoryList, getHistory } from 'src/apis/history';
 import { getGalleryProjectList, GalleryProjectCategory } from 'src/apis/gallery';
@@ -80,6 +83,15 @@ const GalleryListSection = () => {
   const [toastText, setToastText] = useState('');
   const [isToastOpen, setIsToastOpen] = useState(false);
   const queryClient = useQueryClient();
+
+  const tokenState = useTokenStore((state) => state.token);
+  const { data: userProfile } = useQuery({
+    queryKey: ['userProfile'],
+    queryFn: () => getUserProfile(tokenState),
+    enabled: !!tokenState.access,
+  });
+  // 프로젝트/갤러리 게시물 생성·수정·삭제는 운영진 이상만 가능 (역할 정의: 운영진/회장/admin)
+  const isStaff = !!userProfile && isAdminRole(userProfile.role);
 
   const { data: sessions } = useQuery({ queryKey: ['gallerySessions'], queryFn: getSessionList });
   const { data: projects } = useQuery({ queryKey: ['galleryProjects'], queryFn: getGalleryProjectList });
@@ -171,7 +183,7 @@ const GalleryListSection = () => {
           description={sessionDetail.description}
           date={toDisplayDate(sessionDetail.sessionDate)}
           onClose={closeDetailModal}
-          onEdit={openEditModal}
+          onEdit={isStaff ? openEditModal : undefined}
         />
       );
     }
@@ -183,7 +195,7 @@ const GalleryListSection = () => {
           description={projectDetail.summary}
           date={[toDisplayDate(projectDetail.startDate), toDisplayDate(projectDetail.endDate)]}
           onClose={closeDetailModal}
-          onEdit={openEditModal}
+          onEdit={isStaff ? openEditModal : undefined}
         />
       );
     }
@@ -198,7 +210,7 @@ const GalleryListSection = () => {
             toDisplayDate(historyDetail.endDate ?? historyDetail.startDate),
           ]}
           onClose={closeDetailModal}
-          onEdit={openEditModal}
+          onEdit={isStaff ? openEditModal : undefined}
         />
       );
     }
@@ -311,17 +323,19 @@ const GalleryListSection = () => {
               />
             )}
           </FilterGroup>
-          <AddButtonWrapper>
-            <Button
-              variant="solid"
-              color="primary"
-              size="large"
-              trailingIcon={<IcAdd width={20} height={20} />}
-              onClick={() => setIsUploadModalOpen(true)}
-            >
-              {ADD_BUTTON_LABEL[activeTab]}
-            </Button>
-          </AddButtonWrapper>
+          {isStaff && (
+            <AddButtonWrapper>
+              <Button
+                variant="solid"
+                color="primary"
+                size="large"
+                trailingIcon={<IcAdd width={20} height={20} />}
+                onClick={() => setIsUploadModalOpen(true)}
+              >
+                {ADD_BUTTON_LABEL[activeTab]}
+              </Button>
+            </AddButtonWrapper>
+          )}
         </FilterRow>
       </Header>
 

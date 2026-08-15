@@ -695,7 +695,6 @@ const ThumbnailSlot = styled.label<{ $featured: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
   border-radius: 4px;
   background-color: ${Fill.subtle};
   color: ${Label.neutral};
@@ -706,6 +705,7 @@ const ThumbnailSlot = styled.label<{ $featured: boolean }>`
 const ThumbnailImage = styled.img`
   width: 100%;
   height: 100%;
+  border-radius: 4px;
   object-fit: cover;
 `;
 
