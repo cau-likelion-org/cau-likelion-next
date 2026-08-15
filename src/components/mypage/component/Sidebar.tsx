@@ -28,7 +28,7 @@ const Sidebar = ({ active, isAdmin = false }: { active: SidebarActive; isAdmin?:
           <GroupToggle
             type="button"
             aria-expanded={isAdminOpen}
-            $active={isAdminOpen || isAdminSection}
+            $active={isAdminSection}
             onClick={() => setIsAdminOpen((prev) => !prev)}
           >
             관리자
