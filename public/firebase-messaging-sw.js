@@ -2,8 +2,8 @@
 // public/ 파일이라 번들러를 거치지 않아 환경변수를 못 읽는다.
 // 그래서 등록할 때(src/lib/pushNotification.ts) 쿼리스트링으로 config를 넘겨받는다.
 
-importScripts('https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/10.14.1/firebase-messaging-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/12.17.1/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/12.17.1/firebase-messaging-compat.js');
 
 const params = new URL(self.location).searchParams;
 

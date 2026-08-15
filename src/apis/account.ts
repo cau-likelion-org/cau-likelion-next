@@ -33,3 +33,9 @@ export const putUserProfile = async (props: { id: number; form: MemberUpdateRequ
 export const getGenerations = () => {
   return axios.get<Generation[]>(`${url}/api/generations`).then((res) => res.data);
 };
+
+// 과제 승인/반려 알림을 받기 위해 이 기기의 FCM 토큰을 서버에 등록한다
+export const updateFcmToken = async (token: IToken, fcmToken: string) => {
+  const authAxios = getAuthAxios(token);
+  await authAxios.patch(`/api/members/me/fcm-token`, { fcmToken });
+};
