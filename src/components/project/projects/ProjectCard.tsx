@@ -1,9 +1,10 @@
 import { IProjectData } from '@@types/request';
-import { AccentTint, Label, Line, Orange } from '@utils/constant/color';
+import { AccentTint, Black, Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
+import LogoTrophy from '@assets/svg/logo/logo-trophy.svg';
 import { track, getDeviceType, getPageEntryTime } from 'src/lib/amplitude';
 
 interface ProjectCardProps extends IProjectData {
@@ -19,6 +20,7 @@ const ProjectCard = ({
   category,
   subtitle,
   description,
+  banner,
   generation,
   cardPosition,
   totalImageCount,
@@ -59,6 +61,12 @@ const ProjectCard = ({
               target.src = '/image/likelion_thumbnail.png';
             }}
           />
+          {banner && (
+            <AwardBanner>
+              <LogoTrophy width={24} height={24} />
+              <AwardText>{banner}</AwardText>
+            </AwardBanner>
+          )}
           {introText && (
             <HoverOverlay>
               <HoverText>{introText.replace(/\\n/g, ' ')}</HoverText>
@@ -98,6 +106,29 @@ const HoverOverlay = styled.div`
   background-color: ${Orange.o500};
   opacity: 0;
   transition: opacity 0.2s ease;
+`;
+
+const AwardBanner = styled.div`
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  background-color: ${Black.b900};
+`;
+
+const AwardText = styled.p`
+  margin: 0;
+  flex: 1 0 0;
+  min-width: 0;
+  color: ${Orange.o500};
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  ${typographyCss(Typography.heading1.bold)}
 `;
 
 const Thumbnail = styled.div`
