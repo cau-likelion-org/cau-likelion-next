@@ -111,7 +111,9 @@ const ProjectsSection = ({ staticData }: { staticData: ArchivingArrayType<IProje
     return 0;
   });
 
-  const hasProjects = sortedProjects.length > 0;
+  // 불러오기 실패는 데이터 자체가 없을 때만 노출한다.
+  // 목록은 있는데 필터 결과만 비어 있는 경우는 '조건에 맞는 프로젝트가 없습니다'가 맞다
+  const hasLoadedProjects = flatProjects.length > 0;
 
   return (
     <Wrapper>
@@ -151,22 +153,24 @@ const ProjectsSection = ({ staticData }: { staticData: ArchivingArrayType<IProje
           />
         </FilterGroup>
         {userProfile && isAdminRole(userProfile.role) && (
-          <Button
-            variant="solid"
-            color="primary"
-            size="large"
-            trailingIcon={<IcAdd width={20} height={20} />}
-            onClick={() => router.push('/project/upload')}
-          >
-            프로젝트 추가
-          </Button>
+          <AddButtonWrapper>
+            <Button
+              variant="solid"
+              color="primary"
+              size="large"
+              trailingIcon={<IcAdd width={20} height={20} />}
+              onClick={() => router.push('/project/upload')}
+            >
+              프로젝트 추가
+            </Button>
+          </AddButtonWrapper>
         )}
       </FilterRow>
       {isLoading ? (
         <LoadingWrapper>
           <CircularLoading size={32} />
         </LoadingWrapper>
-      ) : isError && !hasProjects ? (
+      ) : isError && !hasLoadedProjects ? (
         <ProjectEmptyState icon={<IcFailure width={64} height={64} />} message="정보 불러오기를 실패했어요." />
       ) : sortedProjects.length === 0 ? (
         <ProjectEmptyState />
@@ -189,6 +193,10 @@ const Wrapper = styled.div`
   gap: 46px;
   width: 1060px;
   max-width: 100%;
+
+  @media (max-width: 600px) {
+    padding: 0 20px;
+  }
 `;
 
 const ToastWrapper = styled.div`
@@ -206,10 +214,6 @@ const FilterRow = styled.div`
   justify-content: space-between;
   gap: 20px;
   width: 100%;
-
-  @media (max-width: 500px) {
-    flex-wrap: wrap;
-  }
 `;
 
 const FilterGroup = styled.div`
@@ -217,8 +221,15 @@ const FilterGroup = styled.div`
   align-items: center;
   gap: 20px;
 
-  @media (max-width: 500px) {
-    flex-wrap: wrap;
+  @media (max-width: 600px) {
+    width: 100%;
+  }
+`;
+
+/* 모바일 시안에는 운영진용 추가 버튼이 없고, 업로드 폼도 데스크톱 전용이라 숨긴다 */
+const AddButtonWrapper = styled.div`
+  @media (max-width: 600px) {
+    display: none;
   }
 `;
 
