@@ -48,6 +48,10 @@ const Wrapper = styled.a`
   align-items: flex-start;
   gap: 20px;
   padding: 20px;
+
+  @media (max-width: 600px) {
+    flex-direction: column-reverse;
+  }
   border: 1px solid ${Line.subtle};
   border-radius: 14px;
   background-color: ${BackgroundWhite.secondary};
@@ -65,6 +69,12 @@ const Container = styled.div`
   justify-content: space-between;
   align-self: stretch;
   padding: 0 6px;
+
+  @media (max-width: 600px) {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 18px;
+  }
 `;
 
 const TextGroup = styled.div`
@@ -98,6 +108,12 @@ const BottomRow = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
 `;
 
 const BadgeRow = styled.div`
@@ -116,6 +132,12 @@ const ThumbnailSlot = styled.div`
   flex-shrink: 0;
   width: 213px;
   height: 213px;
+
+  @media (max-width: 600px) {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+  }
 `;
 
 const ThumbnailPlaceholder = styled.div`
