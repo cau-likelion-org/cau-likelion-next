@@ -1,28 +1,85 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import styled from 'styled-components';
+import { useQuery } from '@tanstack/react-query';
 
 import Tab from '@common/tab/Tab';
+import LinearLoading from '@common/loading/LinearLoading';
+import EmptyState from '@common/emptyState/EmptyState';
+import { getTracks } from 'src/apis/track';
+import { getCurriculums } from 'src/apis/curriculum';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
-import { CURRICULUM_TRACKS } from './data';
+import type { CurriculumTrack } from './data';
 import CurriculumInfoCard from './component/CurriculumInfoCard';
 import WeekAccordion from './component/WeekAccordion';
 
-const TAB_ITEMS = CURRICULUM_TRACKS.map((track) => ({ key: track.key, label: track.label }));
-
 const CurriculumSection = () => {
-  const [activeTrackKey, setActiveTrackKey] = useState(CURRICULUM_TRACKS[0].key);
-  const activeTrack = CURRICULUM_TRACKS.find((track) => track.key === activeTrackKey) ?? CURRICULUM_TRACKS[0];
+  const {
+    data: tracks,
+    isLoading: isTracksLoading,
+    isError: isTracksError,
+  } = useQuery({ queryKey: ['tracks'], queryFn: getTracks });
+  const {
+    data: curriculums,
+    isLoading: isCurriculumsLoading,
+    isError: isCurriculumsError,
+  } = useQuery({ queryKey: ['curriculums'], queryFn: getCurriculums });
+
+  const isLoading = isTracksLoading || isCurriculumsLoading;
+  const isError = isTracksError || isCurriculumsError;
+
+  const curriculumTracks: CurriculumTrack[] = useMemo(
+    () =>
+      (tracks ?? []).map((track) => ({
+        key: String(track.id),
+        label: track.koName,
+        title: track.koName,
+        subtitle: track.enName,
+        items: track.introduction.split('\n').filter((line) => line.trim() !== ''),
+        chips: track.techStack,
+        weeks: (curriculums ?? [])
+          .filter((curriculum) => curriculum.trackKoName === track.koName)
+          .map((curriculum) => ({
+            key: String(curriculum.id),
+            badge: curriculum.week,
+            title: curriculum.title,
+            content: curriculum.description,
+          })),
+      })),
+    [tracks, curriculums],
+  );
+
+  const [selectedTrackKey, setSelectedTrackKey] = useState('');
+  const activeTrack = curriculumTracks.find((track) => track.key === selectedTrackKey) ?? curriculumTracks[0];
+  const tabItems = curriculumTracks.map((track) => ({ key: track.key, label: track.label }));
 
   return (
     <Wrapper>
       <SectionTitle>14기 커리큘럼</SectionTitle>
-      <Tab items={TAB_ITEMS} activeKey={activeTrackKey} onChange={setActiveTrackKey} size="large" horizontalPadding />
-      <Content>
-        <CurriculumInfoCard track={activeTrack} />
-        <WeekAccordion key={activeTrack.key} weeks={activeTrack.weeks} />
-      </Content>
+      {isLoading ? (
+        <LoadingWrapper>
+          <LinearLoading />
+        </LoadingWrapper>
+      ) : isError ? (
+        <EmptyState variant="error" />
+      ) : (
+        activeTrack && (
+          <>
+            <Tab
+              items={tabItems}
+              activeKey={activeTrack.key}
+              onChange={setSelectedTrackKey}
+              size="large"
+              horizontalPadding
+            />
+            <Content>
+              <CurriculumInfoCard track={activeTrack} />
+              <WeekAccordion key={activeTrack.key} weeks={activeTrack.weeks} />
+            </Content>
+          </>
+        )
+      )}
     </Wrapper>
   );
 };
@@ -57,4 +114,12 @@ const Content = styled.div`
   @media (max-width: 900px) {
     flex-direction: column;
   }
+`;
+
+const LoadingWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 300px;
 `;
