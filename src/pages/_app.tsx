@@ -13,6 +13,12 @@ import Loading from '@common/loading/Loading';
 import ReactGA from 'react-ga4';
 import useTokenStore from 'src/store/useTokenStore';
 import { track, markPageEntry, setUserId, getUserIdFromToken } from 'src/lib/amplitude';
+import {
+  refreshFcmTokenIfGranted,
+  registerMessagingServiceWorker,
+  subscribeForegroundNotification,
+} from 'src/lib/pushNotification';
+import { updateFcmToken } from 'src/apis/account';
 
 type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -58,6 +64,28 @@ function AppContent({ Component, pageProps }: AppPropsWithLayout) {
   useEffect(() => {
     setUserId(getUserIdFromToken(tokenState.access ?? undefined));
   }, [tokenState.access]);
+
+  // 서비스 워커만 미리 등록해 둔다 (알림 권한 요청은 사용자가 직접 켤 때)
+  useEffect(() => {
+    registerMessagingServiceWorker();
+  }, []);
+
+  // 앱이 열려 있을 땐 브라우저가 알림을 자동 표시하지 않아 직접 띄워야 한다
+  useEffect(() => {
+    let unsubscribe: (() => void) | undefined;
+    subscribeForegroundNotification().then((fn) => {
+      unsubscribe = fn;
+    });
+    return () => unsubscribe?.();
+  }, []);
+
+  // FCM 토큰은 브라우저가 주기적으로 재발급하므로, 이미 알림을 켠 기기는 로그인할 때마다 갱신해준다
+  useEffect(() => {
+    if (!tokenState.access) return;
+    refreshFcmTokenIfGranted().then((fcmToken) => {
+      if (fcmToken) updateFcmToken(tokenState, fcmToken).catch(() => undefined);
+    });
+  }, [tokenState]);
 
   useEffect(() => {
     ReactGA.send({ hitType: 'pageview', page: router.asPath });
