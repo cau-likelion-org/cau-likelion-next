@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { ChangeEvent, useRef, useState } from 'react';
 import styled from 'styled-components';
 import Button from '@common/button/Button';
 import Radio from '@common/radio/Radio';
@@ -8,6 +8,7 @@ import TextButton from '@common/textButton/TextButton';
 import TextField from '@common/textField/TextField';
 import Textarea from '@common/textarea/Textarea';
 import CharCount from '@common/charCount/CharCount';
+import Toast from '@common/toast/Toast';
 import IcAdd from '@assets/svg/ic-add.svg';
 import IcCalender from '@assets/svg/ic-calender.svg';
 import IcCircleExclamation from '@assets/svg/icon/ic-circle-exclamation.svg';
@@ -16,6 +17,8 @@ import IcXButton from '@assets/svg/ic-XButton.svg';
 import useFocusTrap from 'src/hooks/useFocusTrap';
 import useInput from 'src/hooks/useInput';
 import useListboxSelect from 'src/hooks/useListboxSelect';
+import useTokenStore from 'src/store/useTokenStore';
+import { UploadDomain, uploadFile } from 'src/apis/upload';
 import { NUMERIC_ONLY_REGEX } from '@utils/constant';
 import { BackgroundColor, Fill, Label, Line, Material, Orange, State } from '@utils/constant/color';
 import { isUnfilled } from '@utils/index';
@@ -29,6 +32,12 @@ const POST_TYPE_LABEL: Record<PostType, string> = {
   gallery: '추억',
 };
 
+const POST_TYPE_TO_UPLOAD_DOMAIN: Record<PostType, UploadDomain> = {
+  session: 'SESSION',
+  project: 'PROJECT',
+  gallery: 'HISTORY',
+};
+
 export type PostType = 'session' | 'project' | 'gallery';
 
 export interface PostUploadModalInitialValues {
@@ -39,11 +48,25 @@ export interface PostUploadModalInitialValues {
   week?: string;
   date?: string;
   dateRange?: [string, string];
+  imageUrls?: string[];
+  thumbnailUrl?: string;
 }
 
 export interface PostUploadModalCategoryConfig {
   label: string;
   options: string[];
+}
+
+export interface PostUploadModalSubmitValues {
+  title: string;
+  content: string;
+  generation: string;
+  category?: string;
+  week?: string;
+  date?: string;
+  dateRange?: [string, string];
+  imageUrls: string[];
+  thumbnailUrl?: string;
 }
 
 export interface PostUploadModalProps {
@@ -55,8 +78,8 @@ export interface PostUploadModalProps {
   dateMode: 'single' | 'range';
   mode?: 'create' | 'edit';
   initialValues?: PostUploadModalInitialValues;
-  onDelete?: () => void;
-  onSubmit?: () => void;
+  onDelete?: () => Promise<void>;
+  onSubmit?: (values: PostUploadModalSubmitValues) => Promise<void>;
 }
 
 const PostUploadModal = ({
@@ -71,6 +94,9 @@ const PostUploadModal = ({
   onDelete,
   onSubmit,
 }: PostUploadModalProps) => {
+  const tokenState = useTokenStore((state) => state.token);
+  const uploadDomain = POST_TYPE_TO_UPLOAD_DOMAIN[postType];
+
   const [title, setTitle] = useState(initialValues?.title ?? '');
   const [content, setContent] = useState(initialValues?.content ?? '');
   const [generation, onChangeGeneration] = useInput(initialValues?.generation ?? '', NUMERIC_ONLY_REGEX);
@@ -80,10 +106,64 @@ const PostUploadModal = ({
   const [dateRange, setDateRange] = useState<[string, string]>(initialValues?.dateRange ?? ['', '']);
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
   const [showErrors, setShowErrors] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+
+  const initialImageUrls = initialValues?.imageUrls ?? [];
+  const initialImages =
+    initialImageUrls.length > 0
+      ? Array.from({ length: MAX_IMAGE_COUNT }, (_, index) => initialImageUrls[index] ?? null)
+      : Array(MAX_IMAGE_COUNT).fill(null);
+  const initialFeaturedIndex = Math.max(
+    initialValues?.thumbnailUrl ? initialImageUrls.indexOf(initialValues.thumbnailUrl) : 0,
+    0,
+  );
+  const [images, setImages] = useState<(string | null)[]>(initialImages);
+  const [imageFiles, setImageFiles] = useState<(File | null)[]>(Array(MAX_IMAGE_COUNT).fill(null));
+  const [featuredIndex, setFeaturedIndex] = useState(initialFeaturedIndex);
 
   const modalRef = useRef<HTMLDivElement>(null);
   useFocusTrap(modalRef, onClose);
   const modalAriaLabel = `${POST_TYPE_LABEL[postType]} ${mode === 'edit' ? '수정' : '추가'}`;
+
+  const handleFileChange = (index: number, event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+    if (!file) return;
+
+    const hadNoImages = images.every((image) => image === null);
+    const objectUrl = URL.createObjectURL(file);
+    setImages((prev) => {
+      if (prev[index]) URL.revokeObjectURL(prev[index] as string);
+      const next = [...prev];
+      next[index] = objectUrl;
+      return next;
+    });
+    setImageFiles((prev) => {
+      const next = [...prev];
+      next[index] = file;
+      return next;
+    });
+    if (hadNoImages) setFeaturedIndex(index);
+  };
+
+  const handleRemoveImage = (index: number) => {
+    setImages((prev) => {
+      if (prev[index]) URL.revokeObjectURL(prev[index] as string);
+      const next = [...prev];
+      next[index] = null;
+      if (featuredIndex === index) {
+        const fallback = next.findIndex((image) => image !== null);
+        setFeaturedIndex(fallback === -1 ? 0 : fallback);
+      }
+      return next;
+    });
+    setImageFiles((prev) => {
+      const next = [...prev];
+      next[index] = null;
+      return next;
+    });
+  };
 
   const isDateInvalid = dateMode === 'single' ? isUnfilled(date) : isUnfilled(dateRange[0]) || isUnfilled(dateRange[1]);
   const hasError =
@@ -94,13 +174,51 @@ const PostUploadModal = ({
     (showWeekField && isUnfilled(week)) ||
     isDateInvalid;
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (hasError) {
       setShowErrors(true);
       return;
     }
-    onSubmit?.();
-    onClose();
+    if (!onSubmit) {
+      onClose();
+      return;
+    }
+
+    setSubmitError('');
+    setIsSubmitting(true);
+    try {
+      const filledIndices = images.map((image, index) => (image ? index : -1)).filter((index) => index !== -1);
+      const imageUrls = await Promise.all(
+        filledIndices.map((index) => {
+          const file = imageFiles[index];
+          return file
+            ? uploadFile(tokenState, uploadDomain, file).then((res) => res.url)
+            : Promise.resolve(images[index] as string);
+        }),
+      );
+      const featuredPosition = filledIndices.indexOf(featuredIndex);
+      const thumbnailUrl = featuredPosition !== -1 ? imageUrls[featuredPosition] : undefined;
+
+      await onSubmit({ title, content, generation, category, week, date, dateRange, imageUrls, thumbnailUrl });
+      onClose();
+    } catch {
+      setSubmitError('저장에 실패했어요. 잠시 후 다시 시도해 주세요.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!onDelete) return;
+    setSubmitError('');
+    setIsSubmitting(true);
+    try {
+      await onDelete();
+      onClose();
+    } catch {
+      setSubmitError('삭제에 실패했어요. 잠시 후 다시 시도해 주세요.');
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -108,29 +226,68 @@ const PostUploadModal = ({
       <Modal ref={modalRef} role="dialog" aria-modal="true" aria-label={modalAriaLabel} tabIndex={-1}>
         <Information>
           <ImageUploadGroup>
-            <MainThumbnail $empty={mode === 'create'}>
+            <MainThumbnail as={images[featuredIndex] ? 'div' : 'label'} $empty={!images[featuredIndex]}>
               <FeaturedChip>대표</FeaturedChip>
-              {mode === 'create' && (
-                <UploadGuide>
-                  사진을 {MAX_IMAGE_COUNT}장까지 업로드하고
-                  <br />
-                  표지가 되는 대표사진을 선택해주세요
-                </UploadGuide>
+              {images[featuredIndex] ? (
+                <MainThumbnailImage src={images[featuredIndex] as string} alt="대표 이미지" />
+              ) : (
+                <>
+                  <UploadGuide>
+                    사진을 {MAX_IMAGE_COUNT}장까지 업로드하고
+                    <br />
+                    표지가 되는 대표사진을 선택해주세요
+                  </UploadGuide>
+                  <HiddenFileInput
+                    type="file"
+                    accept="image/*"
+                    aria-label="대표 이미지 선택"
+                    onChange={(event) => handleFileChange(featuredIndex, event)}
+                  />
+                </>
               )}
             </MainThumbnail>
             <ThumbnailRow>
-              <AddThumbnailButton type="button" aria-label="이미지 추가">
-                <IcAdd width={24} height={24} />
-              </AddThumbnailButton>
-              {/* TODO: 실제 업로드된 이미지 목록으로 교체 예정 (현재는 edit 모드에서 보여주는 고정 mock 슬롯) */}
-              {mode === 'edit' &&
-                Array.from({ length: MAX_IMAGE_COUNT - 1 }, (_, index) => (
-                  <ThumbnailSlot key={index} $featured={index === 0}>
-                    <RemoveThumbnailButton type="button" aria-label="이미지 삭제">
+              {images.map((image, index) =>
+                image ? (
+                  <ThumbnailSlot
+                    key={index}
+                    as="div"
+                    role="button"
+                    tabIndex={0}
+                    $featured={index === featuredIndex}
+                    aria-label={`${index + 1}번째 이미지를 대표사진으로 설정`}
+                    onClick={() => setFeaturedIndex(index)}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        setFeaturedIndex(index);
+                      }
+                    }}
+                  >
+                    <ThumbnailImage src={image} alt="" />
+                    <RemoveThumbnailButton
+                      type="button"
+                      aria-label={`${index + 1}번째 이미지 삭제`}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        handleRemoveImage(index);
+                      }}
+                    >
                       <IcXButton width={24} height={24} />
                     </RemoveThumbnailButton>
                   </ThumbnailSlot>
-                ))}
+                ) : (
+                  <ThumbnailSlot key={index} $featured={false}>
+                    <IcAdd width={24} height={24} />
+                    <HiddenFileInput
+                      type="file"
+                      accept="image/*"
+                      aria-label={`이미지 ${index + 1} 선택`}
+                      onChange={(event) => handleFileChange(index, event)}
+                    />
+                  </ThumbnailSlot>
+                ),
+              )}
             </ThumbnailRow>
           </ImageUploadGroup>
 
@@ -266,7 +423,7 @@ const PostUploadModal = ({
                   <TextButton size="small" color="assistive" onClick={() => setIsConfirmingDelete(false)}>
                     아니요
                   </TextButton>
-                  <TextButton size="small" color="primary" onClick={onDelete}>
+                  <TextButton size="small" color="primary" onClick={handleConfirmDelete} disabled={isSubmitting}>
                     삭제
                   </TextButton>
                 </DeleteConfirmActions>
@@ -280,12 +437,15 @@ const PostUploadModal = ({
             <Button variant="outlined" color="assistive" size="large" onClick={onClose}>
               취소
             </Button>
-            <Button variant="solid" color="primary" size="large" onClick={handleSubmit}>
+            <Button variant="solid" color="primary" size="large" onClick={handleSubmit} loading={isSubmitting}>
               {mode === 'edit' ? '저장하기' : '등록하기'}
             </Button>
           </ActionGroup>
         </Actions>
       </Modal>
+      <ToastWrapper>
+        <Toast variant="negative" text={submitError} show={!!submitError} onHidden={() => setSubmitError('')} />
+      </ToastWrapper>
     </Backdrop>
   );
 };
@@ -473,15 +633,23 @@ const ImageUploadGroup = styled.div`
   gap: 46px;
 `;
 
-const MainThumbnail = styled.div<{ $empty: boolean }>`
+const MainThumbnail = styled.label<{ $empty: boolean }>`
   position: relative;
   width: 100%;
   aspect-ratio: 16 / 9;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
   border-radius: 22px;
   background-color: ${(props) => (props.$empty ? '#F4F4F5' : Fill.subtle)};
+  cursor: ${(props) => (props.$empty ? 'pointer' : 'default')};
+`;
+
+const MainThumbnailImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 `;
 
 const UploadGuide = styled.p`
@@ -519,28 +687,30 @@ const ThumbnailRow = styled.div`
   }
 `;
 
-const AddThumbnailButton = styled.button`
+const ThumbnailSlot = styled.label<{ $featured: boolean }>`
+  position: relative;
   flex-shrink: 0;
   width: 160px;
   height: 90px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: none;
-  border-radius: 12px;
-  background-color: ${Fill.normal};
+  border-radius: 4px;
+  background-color: ${Fill.subtle};
   color: ${Label.neutral};
+  box-shadow: ${(props) => (props.$featured ? `inset 0 0 0 2px ${Orange.o500}` : 'none')};
   cursor: pointer;
 `;
 
-const ThumbnailSlot = styled.div<{ $featured: boolean }>`
-  position: relative;
-  flex-shrink: 0;
-  width: 160px;
-  height: 90px;
+const ThumbnailImage = styled.img`
+  width: 100%;
+  height: 100%;
   border-radius: 4px;
-  background-color: ${Fill.subtle};
-  box-shadow: ${(props) => (props.$featured ? `inset 0 0 0 2px ${Orange.o500}` : 'none')};
+  object-fit: cover;
+`;
+
+const HiddenFileInput = styled.input`
+  display: none;
 `;
 
 const RemoveThumbnailButton = styled.button`
@@ -752,4 +922,13 @@ const DeleteConfirmActions = styled.div`
   display: flex;
   align-items: center;
   gap: 18px;
+`;
+
+const ToastWrapper = styled.div`
+  position: fixed;
+  top: 110px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10001;
+  pointer-events: none;
 `;

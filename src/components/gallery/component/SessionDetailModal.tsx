@@ -6,7 +6,7 @@ interface SessionDetailModalProps {
   description: string;
   date: string;
   onClose: () => void;
-  onEdit: () => void;
+  onEdit?: () => void;
 }
 
 const SessionDetailModal = ({ title, badges, description, date, onClose, onEdit }: SessionDetailModalProps) => (

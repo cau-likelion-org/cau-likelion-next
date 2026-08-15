@@ -6,7 +6,7 @@ interface HistoryDetailModalProps {
   description: string;
   date: [string, string];
   onClose: () => void;
-  onEdit: () => void;
+  onEdit?: () => void;
 }
 
 const HistoryDetailModal = ({ title, badges, description, date, onClose, onEdit }: HistoryDetailModalProps) => (
