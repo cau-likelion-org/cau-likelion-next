@@ -23,6 +23,8 @@ const TOAST_MESSAGE_BY_FLAG: Record<string, ReactNode> = {
 };
 const TOAST_FLAG_KEYS = Object.keys(TOAST_MESSAGE_BY_FLAG);
 
+const GOOGLE_LOGIN_FAILED_MESSAGE = '로그인에 실패했어요. 새로고침 후 다시 시도해주세요.';
+
 const Login = () => {
   useAuthRedirect();
 
@@ -59,7 +61,10 @@ const Login = () => {
           </>
         }
       />
-      <LoginButton onUnregistered={() => setToastMessage(TOAST_MESSAGE_BY_FLAG[LOGIN_UNREGISTERED_FLAG_KEY])} />
+      <LoginButton
+        onUnregistered={() => setToastMessage(TOAST_MESSAGE_BY_FLAG[LOGIN_UNREGISTERED_FLAG_KEY])}
+        onGoogleUnavailable={() => setToastMessage(GOOGLE_LOGIN_FAILED_MESSAGE)}
+      />
       <GuideText>
         <p>처음 이용하는 아기사자의 경우</p>
         <p>‘구글로 로그인하기’를 눌러 회원가입을 진행해 주세요.</p>
