@@ -24,7 +24,7 @@ import {
   getStaffAssignments,
 } from 'src/apis/assignment';
 import useTokenStore from 'src/store/useTokenStore';
-import { INACTIVE_MEMBER_NOTICE_KEY } from '@utils/constant';
+import { INACTIVE_MEMBER_NOTICE_KEY, TRACK_OPTIONS } from '@utils/constant';
 import { isAdminRole, isFullAdminRole, canManageSitePages } from '@utils/index';
 import { IcPlus } from '@assets/svg';
 import { Fill, Label, Line } from '@utils/constant/color';
@@ -96,7 +96,10 @@ const MyPageAssignment = () => {
   });
   const activeGeneration =
     generations?.find((generation) => generation.status === 'IN_ACTIVITY') ?? generations?.[generations.length - 1];
-  const parts = (activeGeneration?.parts ?? []).filter((part) => part.name !== '기타');
+  // 파트 순서는 응답 순서가 아니라 기획디자인 → 프론트엔드 → 백엔드 고정
+  const parts = (activeGeneration?.parts ?? [])
+    .filter((part) => part.name !== '기타')
+    .sort((a, b) => TRACK_OPTIONS.indexOf(a.name) - TRACK_OPTIONS.indexOf(b.name));
   const partOptions = parts.map((part) => part.name);
   const [selectedPartName, setSelectedPartName] = useState('');
   const currentPartName = selectedPartName || partOptions[0] || '';

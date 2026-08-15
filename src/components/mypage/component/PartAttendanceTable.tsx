@@ -348,8 +348,8 @@ const PartAttendanceTable = ({ members, partName, partFilter, onSave, isSaving }
             partName && <PartName>{partName} 파트</PartName>
           )}
         </TitleRow>
-        {/* 출결 수정은 웹에서만 제공한다 (수정할 대상이 없으면 감춤) */}
-        {onSave && members.length > 0 && (
+        {/* 출결 수정은 웹에서만 제공한다 */}
+        {onSave && (
           <EditActions>
             {isEditing ? (
               <ButtonGroup>

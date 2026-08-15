@@ -3,8 +3,8 @@ import styled from 'styled-components';
 
 import ListboxOptions from '@common/select/ListboxOptions';
 import useListboxSelect from 'src/hooks/useListboxSelect';
-import { IcCaretDown, IcChevronDown } from '@assets/svg';
-import { BackgroundWhite, Label } from '@utils/constant/color';
+import { IcCaretDown } from '@assets/svg';
+import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 interface AssignmentPartSelectProps {
@@ -42,13 +42,10 @@ const AssignmentPartSelect = ({ value, options, onChange }: AssignmentPartSelect
           }
         }}
       >
-        <span>{value}</span>
-        <DesktopCaret>
-          <IcChevronDown width={16} height={16} />
-        </DesktopCaret>
-        <MobileCaret>
+        <TriggerText>{value}</TriggerText>
+        <Caret>
           <IcCaretDown width={20} height={20} />
-        </MobileCaret>
+        </Caret>
       </Trigger>
       {isOpen && (
         <ListboxOptions
@@ -70,43 +67,45 @@ const Wrapper = styled.div`
 `;
 
 const Trigger = styled.div`
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 6px 12px;
-  border-radius: 8px;
-  background-color: ${BackgroundWhite.tertiary};
-  color: ${Label.normal};
+  padding: 4px 0;
+  color: ${Label.strong};
   cursor: pointer;
   outline: none;
   white-space: nowrap;
-  ${typographyCss(Typography.body2Normal.medium)}
+  ${typographyCss(Typography.headline2.medium)}
 
-  /* Figma 모바일: 검정 4% 회색 배경 위 텍스트 버튼.
-     좌우 7px 패딩은 배경이 제목 왼쪽 끝(x=0)에 맞도록 하는 값 (텍스트는 7px 들여씀) */
-  @media (max-width: 900px) {
-    padding: 4px 7px;
+  /* Figma: 텍스트 좌우로 7px 넓은 6px 라운드 회색(검정 4%) 배경 */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: -7px;
+    right: -7px;
+    height: 32px;
+    transform: translateY(-50%);
     border-radius: 6px;
-    background-color: rgba(0, 0, 0, 0.04);
-    color: ${Label.strong};
-    ${typographyCss(Typography.headline2.medium)}
+    background-color: ${Label.strong};
+    opacity: 0.04;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+  }
+
+  &:hover::before {
+    opacity: 0.08;
   }
 `;
 
-const DesktopCaret = styled.span`
+const TriggerText = styled.span`
+  position: relative;
+`;
+
+// 텍스트는 Label/Strong(#000)이지만 캐럿만 Label/Alternative로 흐리다
+const Caret = styled.span`
+  position: relative;
   display: inline-flex;
-
-  @media (max-width: 900px) {
-    display: none;
-  }
-`;
-
-// Figma: 텍스트는 Label/Strong(#000)이지만 캐럿만 Label/Alternative로 흐리다
-const MobileCaret = styled.span`
-  display: none;
-
-  @media (max-width: 900px) {
-    display: inline-flex;
-    color: ${Label.alternative};
-  }
+  color: ${Label.alternative};
 `;
