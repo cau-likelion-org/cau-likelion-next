@@ -1,28 +1,48 @@
 import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import styled from 'styled-components';
 
 import Tab from '@common/tab/Tab';
+import { getTracks } from 'src/apis/track';
+import { getCurriculums } from 'src/apis/curriculum';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
-import { CURRICULUM_TRACKS } from './data';
 import CurriculumInfoCard from './component/CurriculumInfoCard';
 import WeekAccordion from './component/WeekAccordion';
 
-const TAB_ITEMS = CURRICULUM_TRACKS.map((track) => ({ key: track.key, label: track.label }));
-
 const CurriculumSection = () => {
-  const [activeTrackKey, setActiveTrackKey] = useState(CURRICULUM_TRACKS[0].key);
-  const activeTrack = CURRICULUM_TRACKS.find((track) => track.key === activeTrackKey) ?? CURRICULUM_TRACKS[0];
+  const { data: tracks } = useQuery({ queryKey: ['tracks'], queryFn: getTracks });
+  const { data: curriculums } = useQuery({ queryKey: ['curriculums'], queryFn: getCurriculums });
+  const [activeTrackKey, setActiveTrackKey] = useState('');
+
+  const activeTrack = tracks?.find((track) => String(track.id) === activeTrackKey) ?? tracks?.[0];
+
+  const weeks = (curriculums ?? [])
+    .filter((curriculum) => curriculum.trackId === activeTrack?.id)
+    .map((curriculum) => ({
+      key: String(curriculum.id),
+      badge: curriculum.week,
+      title: curriculum.title,
+      content: curriculum.description,
+    }));
 
   return (
     <Wrapper>
       <SectionTitle>14기 커리큘럼</SectionTitle>
-      <Tab items={TAB_ITEMS} activeKey={activeTrackKey} onChange={setActiveTrackKey} size="large" horizontalPadding />
-      <Content>
-        <CurriculumInfoCard track={activeTrack} />
-        <WeekAccordion key={activeTrack.key} weeks={activeTrack.weeks} />
-      </Content>
+      <Tab
+        items={(tracks ?? []).map((track) => ({ key: String(track.id), label: track.koName }))}
+        activeKey={activeTrack ? String(activeTrack.id) : ''}
+        onChange={setActiveTrackKey}
+        size="large"
+        horizontalPadding
+      />
+      {activeTrack && (
+        <Content>
+          <CurriculumInfoCard track={activeTrack} />
+          <WeekAccordion key={activeTrack.id} weeks={weeks} />
+        </Content>
+      )}
     </Wrapper>
   );
 };
@@ -56,5 +76,7 @@ const Content = styled.div`
 
   @media (max-width: 900px) {
     flex-direction: column;
+    /* 세로로 쌓일 때는 카드가 콘텐츠 폭으로 줄지 않고 전체 폭을 쓰도록 */
+    align-items: stretch;
   }
 `;

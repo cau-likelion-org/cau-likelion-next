@@ -1,29 +1,36 @@
+import { useQuery } from '@tanstack/react-query';
 import styled from 'styled-components';
 
+import { getTalents } from 'src/apis/talent';
 import { Black } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 import TalentListBlock from './component/TalentListBlock';
 
-const COMMON_TALENT = ['열정 있는 사람', '열정 있는 사람', '열정 있는 사람'];
-
-const PART_TALENTS = [
-  { title: '기획디자인', items: ['열정 있는 사람', '열정 있는 사람', '열정 있는 사람'] },
-  { title: '프론트엔드', items: ['열정 있는 사람', '열정 있는 사람', '열정 있는 사람'] },
-  { title: '백엔드', items: ['열정 있는 사람', '열정 있는 사람', '열정 있는 사람'] },
-];
+// 인재상 관리에서 한 파트당 한 건으로 저장하고, 줄바꿈으로 구분한 문장을 목록으로 노출
+const toItems = (content: string) =>
+  content
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((line) => line !== '');
 
 const TalentSection = () => {
+  const { data } = useQuery({ queryKey: ['talents'], queryFn: getTalents });
+
+  const talents = data ?? [];
+  const common = talents.find((talent) => talent.partName.startsWith('공통'));
+  const parts = talents.filter((talent) => talent !== common);
+
   return (
     <Wrapper>
       <Content>
         <SectionTitle>중앙대학교 멋쟁이사자처럼 인재상</SectionTitle>
         <Card>
-          <TalentListBlock title="공통 인재상" items={COMMON_TALENT} />
+          {common && <TalentListBlock title={common.partName} items={toItems(common.content)} />}
           <PartRow>
-            {PART_TALENTS.map((part) => (
-              <PartCard key={part.title}>
-                <TalentListBlock title={part.title} items={part.items} />
+            {parts.map((part) => (
+              <PartCard key={part.id}>
+                <TalentListBlock title={part.partName} items={toItems(part.content)} />
               </PartCard>
             ))}
           </PartRow>
