@@ -7,13 +7,15 @@ import { IcCaretDown } from '@assets/svg';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
-interface AssignmentPartSelectProps {
+interface PartSelectProps {
   value: string;
   options: string[];
   onChange: (value: string) => void;
+  ariaLabel?: string;
 }
 
-const AssignmentPartSelect = ({ value, options, onChange }: AssignmentPartSelectProps) => {
+/** 과제·출결 화면 헤더의 파트 선택 드롭다운 (Figma: Button/Text) */
+const PartSelect = ({ value, options, onChange, ariaLabel = '파트 선택' }: PartSelectProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const { listId, wrapperRef, triggerRef, activeIndex, handleKeyDown, handleBlur, selectOption } = useListboxSelect({
     isOpen,
@@ -30,7 +32,7 @@ const AssignmentPartSelect = ({ value, options, onChange }: AssignmentPartSelect
         ref={triggerRef}
         role="combobox"
         tabIndex={0}
-        aria-label="파트 선택"
+        aria-label={ariaLabel}
         aria-expanded={isOpen}
         aria-controls={listId}
         aria-activedescendant={isOpen ? `${listId}-${activeIndex}` : undefined}
@@ -60,7 +62,7 @@ const AssignmentPartSelect = ({ value, options, onChange }: AssignmentPartSelect
   );
 };
 
-export default AssignmentPartSelect;
+export default PartSelect;
 
 const Wrapper = styled.div`
   position: relative;

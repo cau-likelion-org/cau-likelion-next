@@ -10,68 +10,13 @@ import {
 } from 'src/apis/attendance';
 import AttendanceReasonModal from '@mypage/component/AttendanceReasonModal';
 import EmptyState from '@common/emptyState/EmptyState';
+import PartSelect from '@mypage/component/PartSelect';
 import CircularLoading from '@common/loading/CircularLoading';
 import ListboxOptions from '@common/select/ListboxOptions';
 import useListboxSelect from 'src/hooks/useListboxSelect';
 import { IcCaretDown, IcCaretUp } from '@assets/svg';
 import { BackgroundColor, Fill, Inverse, Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
-
-// 컴팩트 caret 드롭다운 (헤더 파트 필터용). useListboxSelect + ListboxOptions 재사용.
-const CaretSelect = ({
-  value,
-  options,
-  onChange,
-  ariaLabel,
-}: {
-  value: string;
-  options: string[];
-  onChange: (value: string) => void;
-  ariaLabel?: string;
-}) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const { listId, wrapperRef, triggerRef, activeIndex, handleKeyDown, handleBlur, selectOption } = useListboxSelect({
-    isOpen,
-    options,
-    value,
-    onOpen: () => setIsOpen(true),
-    onClose: () => setIsOpen(false),
-    onSelect: onChange,
-  });
-
-  return (
-    <CaretWrapper ref={wrapperRef} onKeyDownCapture={handleKeyDown} onBlur={handleBlur}>
-      <CaretTrigger
-        ref={triggerRef}
-        role="combobox"
-        tabIndex={0}
-        aria-label={ariaLabel}
-        aria-expanded={isOpen}
-        aria-controls={listId}
-        aria-activedescendant={isOpen ? `${listId}-${activeIndex}` : undefined}
-        onClick={() => setIsOpen((prev) => !prev)}
-        onKeyDown={(event) => {
-          if (event.key === 'Enter' || event.key === ' ') {
-            event.preventDefault();
-            setIsOpen((prev) => !prev);
-          }
-        }}
-      >
-        <CaretValue>{value}</CaretValue>
-        <IcCaretDown width={16} height={16} />
-      </CaretTrigger>
-      {isOpen && (
-        <ListboxOptions
-          listId={listId}
-          options={options}
-          value={value}
-          activeIndex={activeIndex}
-          onSelect={selectOption}
-        />
-      )}
-    </CaretWrapper>
-  );
-};
 
 const STATUS_LABEL: Record<AttendanceStatus, string> = {
   BEFORE: '출석 전',
@@ -350,12 +295,7 @@ const PartAttendanceTable = ({
         <TitleRow>
           <Title>주차별 출결 현황</Title>
           {partFilter ? (
-            <CaretSelect
-              ariaLabel="파트 선택"
-              value={partFilter.value}
-              options={partFilter.options}
-              onChange={partFilter.onChange}
-            />
+            <PartSelect value={partFilter.value} options={partFilter.options} onChange={partFilter.onChange} />
           ) : (
             partName && <PartName>{partName} 파트</PartName>
           )}
@@ -513,29 +453,6 @@ const PartName = styled.p`
   margin: 0;
   color: ${Label.alternative};
   ${typographyCss(Typography.body1Reading.regular)}
-`;
-
-const CaretWrapper = styled.div`
-  position: relative;
-  min-width: 120px;
-`;
-
-const CaretTrigger = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  padding: 6px 12px;
-  border-radius: 8px;
-  background-color: ${HEADER_BG};
-  color: ${Label.normal};
-  cursor: pointer;
-  outline: none;
-  ${typographyCss(Typography.body2Normal.medium)}
-`;
-
-const CaretValue = styled.span`
-  white-space: nowrap;
 `;
 
 const EditButton = styled.button`

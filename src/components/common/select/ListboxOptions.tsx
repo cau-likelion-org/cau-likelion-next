@@ -37,7 +37,9 @@ const OptionList = styled.div`
   position: absolute;
   top: calc(100% + 4px);
   left: 0;
-  width: 100%;
+  /* 트리거가 좁아도(예: '전체' 선택) 항목이 줄바꿈되지 않도록 내용에 맞춰 넓어진다 */
+  width: max-content;
+  min-width: 100%;
   display: flex;
   flex-direction: column;
   padding: 4px;
@@ -52,6 +54,7 @@ const OptionList = styled.div`
 const Option = styled.button<{ $active: boolean }>`
   width: 100%;
   padding: 8px;
+  white-space: nowrap;
   border: none;
   border-radius: 8px;
   background-color: ${(props) => (props.$active ? Fill.subtle : 'transparent')};

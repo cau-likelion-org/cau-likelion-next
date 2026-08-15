@@ -12,7 +12,7 @@ import EmptyState from '@common/emptyState/EmptyState';
 import PageLoadingGate from '@common/pageGate/PageLoadingGate';
 import MyPageShell from '@mypage/component/MyPageShell';
 import MobileUnsupportedModal from '@common/modal/MobileUnsupportedModal';
-import AssignmentPartSelect from '@mypage/component/AssignmentPartSelect';
+import PartSelect from '@mypage/component/PartSelect';
 import StaffAssignmentCard from '@mypage/component/StaffAssignmentCard';
 import WeeklyAssignmentCard, { WeeklyAssignmentGroup } from '@mypage/component/WeeklyAssignmentCard';
 import { getGenerations, getUserProfile } from 'src/apis/account';
@@ -194,7 +194,7 @@ const MyPageAssignment = () => {
               <TitleRow>
                 <SectionTitle>주차별 과제 현황</SectionTitle>
                 {isPresident ? (
-                  <AssignmentPartSelect value={currentPartName} options={partOptions} onChange={setSelectedPartName} />
+                  <PartSelect value={currentPartName} options={partOptions} onChange={setSelectedPartName} />
                 ) : (
                   <TrackName>{userProfile.partName} 파트</TrackName>
                 )}
