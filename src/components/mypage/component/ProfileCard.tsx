@@ -11,7 +11,8 @@ const ProfileCard = ({ user }: { user: UserProfile }) => {
       <Name>{user.name}</Name>
       <BadgeRow>
         {user.generationNumber != null && <Badge color="accent" size="medium" text={`${user.generationNumber}기`} />}
-        <Badge color="accent" size="medium" text={user.partName} />
+        {/* 관리자처럼 소속 파트가 없는 계정은 빈 뱃지가 남지 않도록 생략 */}
+        {user.partName && <Badge color="accent" size="medium" text={user.partName} />}
         <Badge color="accent" size="medium" text={ROLE_LABEL[user.role]} />
       </BadgeRow>
       {user.email && <Email>{user.email}</Email>}

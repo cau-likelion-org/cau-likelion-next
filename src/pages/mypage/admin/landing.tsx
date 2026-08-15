@@ -107,17 +107,17 @@ const MyPageAdminLanding = () => {
   // 편집 화면이라 창 포커스 시 백그라운드 재조회로 입력 중인 값이 덮어써지지 않도록 자동 재조회를 끔
   const { data: introduce, isError: isIntroduceError } = useQuery({
     queryKey: ['adminIntroduce'],
-    queryFn: getIntroduce,
+    queryFn: () => getIntroduce(tokenState),
     refetchOnWindowFocus: false,
   });
   const { data: tracks, isError: isTracksError } = useQuery({
     queryKey: ['adminTracks'],
-    queryFn: getTracks,
+    queryFn: () => getTracks(tokenState),
     refetchOnWindowFocus: false,
   });
   const { data: activities, isError: isActivitiesError } = useQuery({
     queryKey: ['adminActivities'],
-    queryFn: getActivities,
+    queryFn: () => getActivities(tokenState),
     refetchOnWindowFocus: false,
   });
   const { data: projects, isError: isProjectsError } = useQuery({
@@ -127,7 +127,7 @@ const MyPageAdminLanding = () => {
   });
   const { data: faqs, isError: isFaqsError } = useQuery({
     queryKey: ['adminFaqs'],
-    queryFn: getFaqs,
+    queryFn: () => getFaqs(tokenState),
     refetchOnWindowFocus: false,
   });
   const isDataLoaded =
@@ -140,11 +140,15 @@ const MyPageAdminLanding = () => {
   const dataLoadProgress =
     [introduce, tracks, activities, projects, faqs].filter((item) => item !== undefined).length / 5;
 
-  const [introduceMetrics, setIntroduceMetrics] = useState(DEFAULT_INTRODUCE_METRICS);
-  const [trackItems, setTrackItems] = useState<TrackIntroItem[]>([]);
-  const [activityItems, setActivityItems] = useState<ActivityIntroItem[]>([]);
-  const [projectItems, setProjectItems] = useState<FeaturedProject[]>([]);
-  const [faqItems, setFaqItems] = useState<FaqItem[]>([]);
+  const [introduceMetrics, setIntroduceMetrics] = useState(() =>
+    introduce ? introduceToLocal(introduce) : DEFAULT_INTRODUCE_METRICS,
+  );
+  const [trackItems, setTrackItems] = useState<TrackIntroItem[]>(() => (tracks ?? []).map(trackToLocal));
+  const [activityItems, setActivityItems] = useState<ActivityIntroItem[]>(() =>
+    (activities ?? []).map(activityToLocal),
+  );
+  const [projectItems, setProjectItems] = useState<FeaturedProject[]>(() => (projects ?? []).map(projectToLocal));
+  const [faqItems, setFaqItems] = useState<FaqItem[]>(() => (faqs ?? []).map(faqToLocal));
   const [toastMessage, setToastMessage] = useState<ReactNode>('');
   const [showErrors, setShowErrors] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -154,27 +158,37 @@ const MyPageAdminLanding = () => {
   const [syncedIntroduce, setSyncedIntroduce] = useState(introduce);
   if (introduce !== syncedIntroduce) {
     setSyncedIntroduce(introduce);
-    setIntroduceMetrics(introduce ? introduceToLocal(introduce) : DEFAULT_INTRODUCE_METRICS);
+    if (!isEditing) {
+      setIntroduceMetrics(introduce ? introduceToLocal(introduce) : DEFAULT_INTRODUCE_METRICS);
+    }
   }
   const [syncedTracks, setSyncedTracks] = useState(tracks);
   if (tracks !== syncedTracks) {
     setSyncedTracks(tracks);
-    setTrackItems((tracks ?? []).map(trackToLocal));
+    if (!isEditing) {
+      setTrackItems((tracks ?? []).map(trackToLocal));
+    }
   }
   const [syncedActivities, setSyncedActivities] = useState(activities);
   if (activities !== syncedActivities) {
     setSyncedActivities(activities);
-    setActivityItems((activities ?? []).map(activityToLocal));
+    if (!isEditing) {
+      setActivityItems((activities ?? []).map(activityToLocal));
+    }
   }
   const [syncedProjects, setSyncedProjects] = useState(projects);
   if (projects !== syncedProjects) {
     setSyncedProjects(projects);
-    setProjectItems((projects ?? []).map(projectToLocal));
+    if (!isEditing) {
+      setProjectItems((projects ?? []).map(projectToLocal));
+    }
   }
   const [syncedFaqs, setSyncedFaqs] = useState(faqs);
   if (faqs !== syncedFaqs) {
     setSyncedFaqs(faqs);
-    setFaqItems((faqs ?? []).map(faqToLocal));
+    if (!isEditing) {
+      setFaqItems((faqs ?? []).map(faqToLocal));
+    }
   }
 
   useEffect(() => {
@@ -281,7 +295,7 @@ const MyPageAdminLanding = () => {
                     </Button>
                   </>
                 ) : (
-                  <EditButton onClick={() => setIsEditing(true)} disabled={!isDataLoaded} />
+                  <EditButton onClick={() => setIsEditing(true)} />
                 )}
               </ButtonRow>
             </TitleRow>

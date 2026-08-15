@@ -114,22 +114,22 @@ const MyPageAdminAbout = () => {
   // 편집 화면이라 창 포커스 시 백그라운드 재조회로 입력 중인 값이 덮어써지지 않도록 자동 재조회를 끔
   const { data: talents, isError: isTalentsError } = useQuery({
     queryKey: ['adminTalents'],
-    queryFn: getTalents,
+    queryFn: () => getTalents(tokenState),
     refetchOnWindowFocus: false,
   });
   const { data: tracks, isError: isTracksError } = useQuery({
     queryKey: ['adminTracks'],
-    queryFn: getTracks,
+    queryFn: () => getTracks(tokenState),
     refetchOnWindowFocus: false,
   });
   const { data: curriculums, isError: isCurriculumsError } = useQuery({
     queryKey: ['adminCurriculums'],
-    queryFn: getCurriculums,
+    queryFn: () => getCurriculums(tokenState),
     refetchOnWindowFocus: false,
   });
   const { data: roadmap, isError: isRoadmapError } = useQuery({
     queryKey: ['adminRoadmap'],
-    queryFn: getRoadmap,
+    queryFn: () => getRoadmap(tokenState),
     refetchOnWindowFocus: false,
   });
   // 조회가 끝나기 전에 편집을 시작하면, 뒤늦게 도착한 최초 조회 결과가 입력 중인 값을 덮어쓸 수 있어
@@ -139,9 +139,13 @@ const MyPageAdminAbout = () => {
   const isDataError = isTalentsError || isTracksError || isCurriculumsError || isRoadmapError;
   const dataLoadProgress = [talents, tracks, curriculums, roadmap].filter((item) => item !== undefined).length / 4;
 
-  const [talentItems, setTalentItems] = useState<TalentItem[]>([]);
-  const [curriculumTracks, setCurriculumTracks] = useState<CurriculumTrackItems[]>([]);
-  const [roadmapFile, setRoadmapFile] = useState<RoadmapFile>(DEFAULT_ROADMAP_FILE);
+  const [talentItems, setTalentItems] = useState<TalentItem[]>(() => (talents ?? []).map(talentToLocal));
+  const [curriculumTracks, setCurriculumTracks] = useState<CurriculumTrackItems[]>(() =>
+    buildCurriculumTracks(tracks ?? [], curriculums ?? []),
+  );
+  const [roadmapFile, setRoadmapFile] = useState<RoadmapFile>(() =>
+    roadmap ? { url: roadmap.imageUrl, name: getFileNameFromUrl(roadmap.imageUrl) } : DEFAULT_ROADMAP_FILE,
+  );
   const [isUploadingRoadmap, setIsUploadingRoadmap] = useState(false);
   const [toastMessage, setToastMessage] = useState<ReactNode>('');
   const [toastVariant, setToastVariant] = useState<'positive' | 'negative'>('positive');
@@ -153,14 +157,18 @@ const MyPageAdminAbout = () => {
   const [syncedTalents, setSyncedTalents] = useState(talents);
   if (talents !== syncedTalents) {
     setSyncedTalents(talents);
-    setTalentItems((talents ?? []).map(talentToLocal));
+    if (!isEditing) {
+      setTalentItems((talents ?? []).map(talentToLocal));
+    }
   }
   const [syncedTracks, setSyncedTracks] = useState(tracks);
   const [syncedCurriculums, setSyncedCurriculums] = useState(curriculums);
   if (tracks !== syncedTracks || curriculums !== syncedCurriculums) {
     setSyncedTracks(tracks);
     setSyncedCurriculums(curriculums);
-    setCurriculumTracks(buildCurriculumTracks(tracks ?? [], curriculums ?? []));
+    if (!isEditing) {
+      setCurriculumTracks(buildCurriculumTracks(tracks ?? [], curriculums ?? []));
+    }
   }
   const [syncedRoadmap, setSyncedRoadmap] = useState(roadmap);
   if (roadmap !== syncedRoadmap) {
@@ -277,7 +285,7 @@ const MyPageAdminAbout = () => {
                     </Button>
                   </>
                 ) : (
-                  <EditButton onClick={() => setIsEditing(true)} disabled={!isDataLoaded} />
+                  <EditButton onClick={() => setIsEditing(true)} />
                 )}
               </ButtonRow>
             </TitleRow>
@@ -295,14 +303,12 @@ const MyPageAdminAbout = () => {
                   showErrors={showErrors}
                   disabled={!isEditing}
                 />
-                {curriculumTracks.length > 0 && (
-                  <CurriculumSection
-                    tracks={curriculumTracks}
-                    onChange={setCurriculumTracks}
-                    showErrors={showErrors}
-                    disabled={!isEditing}
-                  />
-                )}
+                <CurriculumSection
+                  tracks={curriculumTracks}
+                  onChange={setCurriculumTracks}
+                  showErrors={showErrors}
+                  disabled={!isEditing}
+                />
                 <RoadmapSection
                   imageUrl={roadmapFile.url}
                   fileName={roadmapFile.name}

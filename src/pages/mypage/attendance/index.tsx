@@ -7,8 +7,6 @@ import { UserProfile } from '@@types/request';
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import MyPageShell from '@mypage/component/MyPageShell';
 import Toast from '@common/toast/Toast';
-import CircularLoading from '@common/loading/CircularLoading';
-import EmptyState from '@common/emptyState/EmptyState';
 import PageLoadingGate from '@common/pageGate/PageLoadingGate';
 import PartAttendanceTable from '@mypage/component/PartAttendanceTable';
 import WeeklyAttendanceCard, {
@@ -27,7 +25,7 @@ import {
   updateAttendanceBatch,
 } from 'src/apis/attendance';
 import useTokenStore from 'src/store/useTokenStore';
-import { INACTIVE_MEMBER_NOTICE_KEY } from '@utils/constant';
+import { INACTIVE_MEMBER_NOTICE_KEY, TRACK_OPTIONS } from '@utils/constant';
 import { isAdminRole, isFullAdminRole, canManageSitePages } from '@utils/index';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -86,9 +84,13 @@ const MyPageAttendance = () => {
   });
   const activeGeneration =
     generations?.find((generation) => generation.status === 'IN_ACTIVITY') ?? generations?.[generations.length - 1];
+  // 파트 순서는 응답 순서가 아니라 전체 → 기획디자인 → 프론트엔드 → 백엔드 고정
   const partOptions = [
     ALL_PART,
-    ...(activeGeneration?.parts ?? []).map((part) => part.name).filter((name) => name !== '기타'),
+    ...(activeGeneration?.parts ?? [])
+      .map((part) => part.name)
+      .filter((name) => name !== '기타')
+      .sort((a, b) => TRACK_OPTIONS.indexOf(a) - TRACK_OPTIONS.indexOf(b)),
   ];
 
   // 회장은 전체 파트를 한 번에 받아 파트명으로 필터링, 운영진은 본인 파트만 조회
@@ -140,23 +142,17 @@ const MyPageAttendance = () => {
         {!userProfile ? (
           <PageLoadingGate isError={isUserProfileError} />
         ) : isStaff ? (
-          isAttendanceLoading ? (
-            <LoadingWrapper>
-              <CircularLoading size={32} />
-            </LoadingWrapper>
-          ) : isAttendanceError ? (
-            <EmptyState variant="error" />
-          ) : (
-            <PartAttendanceTable
-              members={members}
-              partName={isPresident ? undefined : userProfile.partName}
-              partFilter={
-                isPresident ? { value: selectedPart, options: partOptions, onChange: setSelectedPart } : undefined
-              }
-              onSave={handleSave}
-              isSaving={saveMutation.isPending}
-            />
-          )
+          <PartAttendanceTable
+            members={members}
+            partName={isPresident ? undefined : userProfile.partName}
+            partFilter={
+              isPresident ? { value: selectedPart, options: partOptions, onChange: setSelectedPart } : undefined
+            }
+            onSave={handleSave}
+            isSaving={saveMutation.isPending}
+            isLoading={isAttendanceLoading}
+            isError={isAttendanceError}
+          />
         ) : (
           <>
             <SectionTitle>주차별 출결 현황</SectionTitle>
@@ -200,12 +196,4 @@ const List = styled.div`
   align-items: flex-start;
   gap: 18px;
   width: 100%;
-`;
-
-const LoadingWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 300px;
 `;

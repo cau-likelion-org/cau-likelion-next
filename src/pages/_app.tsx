@@ -1,13 +1,14 @@
 import '@styles/global.css';
 import 'swiper/css';
 import Head from 'next/head';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import axios from 'axios';
 import type { AppProps } from 'next/app';
 import React, { ReactElement, ReactNode } from 'react';
 import { NextPage } from 'next';
 import LayoutDefault from '@common/layout/LayoutDefault';
 import { useState, useEffect, useRef } from 'react';
-import { Router, useRouter } from 'next/router';
+import NextRouter, { Router, useRouter } from 'next/router';
 import Loading from '@common/loading/Loading';
 import ReactGA from 'react-ga4';
 import useTokenStore from 'src/store/useTokenStore';
@@ -29,7 +30,22 @@ if (typeof window !== 'undefined' && GA_ID) {
 function AppContent({ Component, pageProps }: AppPropsWithLayout) {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const [queryClient] = useState(() => new QueryClient());
+  // 프로필 조회가 인증 문제로 실패하면 화면들이 아무것도 렌더링하지 않으므로(빈 화면),
+  // 세션을 정리하고 로그인으로 보낸다
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        queryCache: new QueryCache({
+          onError: (error, query) => {
+            if (query.queryKey[0] !== 'userProfile') return;
+            const status = axios.isAxiosError(error) ? error.response?.status : undefined;
+            if (status !== 401 && status !== 403) return;
+            useTokenStore.getState().setToken({ access: null, refresh: null });
+            if (NextRouter.pathname !== '/login') NextRouter.replace('/login');
+          },
+        }),
+      }),
+  );
   const tokenState = useTokenStore((state) => state.token);
   const hydrate = useTokenStore((state) => state.hydrate);
   const previousPathRef = useRef<string | undefined>(undefined);

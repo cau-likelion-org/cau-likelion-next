@@ -9,67 +9,14 @@ import {
   MemberAttendanceResponse,
 } from 'src/apis/attendance';
 import AttendanceReasonModal from '@mypage/component/AttendanceReasonModal';
+import EmptyState from '@common/emptyState/EmptyState';
+import PartSelect from '@mypage/component/PartSelect';
+import CircularLoading from '@common/loading/CircularLoading';
 import ListboxOptions from '@common/select/ListboxOptions';
 import useListboxSelect from 'src/hooks/useListboxSelect';
 import { IcCaretDown, IcCaretUp } from '@assets/svg';
 import { BackgroundColor, Fill, Inverse, Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
-
-// 컴팩트 caret 드롭다운 (헤더 파트 필터용). useListboxSelect + ListboxOptions 재사용.
-const CaretSelect = ({
-  value,
-  options,
-  onChange,
-  ariaLabel,
-}: {
-  value: string;
-  options: string[];
-  onChange: (value: string) => void;
-  ariaLabel?: string;
-}) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const { listId, wrapperRef, triggerRef, activeIndex, handleKeyDown, handleBlur, selectOption } = useListboxSelect({
-    isOpen,
-    options,
-    value,
-    onOpen: () => setIsOpen(true),
-    onClose: () => setIsOpen(false),
-    onSelect: onChange,
-  });
-
-  return (
-    <CaretWrapper ref={wrapperRef} onKeyDownCapture={handleKeyDown} onBlur={handleBlur}>
-      <CaretTrigger
-        ref={triggerRef}
-        role="combobox"
-        tabIndex={0}
-        aria-label={ariaLabel}
-        aria-expanded={isOpen}
-        aria-controls={listId}
-        aria-activedescendant={isOpen ? `${listId}-${activeIndex}` : undefined}
-        onClick={() => setIsOpen((prev) => !prev)}
-        onKeyDown={(event) => {
-          if (event.key === 'Enter' || event.key === ' ') {
-            event.preventDefault();
-            setIsOpen((prev) => !prev);
-          }
-        }}
-      >
-        <CaretValue>{value}</CaretValue>
-        <IcCaretDown width={16} height={16} />
-      </CaretTrigger>
-      {isOpen && (
-        <ListboxOptions
-          listId={listId}
-          options={options}
-          value={value}
-          activeIndex={activeIndex}
-          onSelect={selectOption}
-        />
-      )}
-    </CaretWrapper>
-  );
-};
 
 const STATUS_LABEL: Record<AttendanceStatus, string> = {
   BEFORE: '출석 전',
@@ -248,6 +195,9 @@ interface PartAttendanceTableProps {
   partFilter?: PartFilterConfig; // 회장/관리자: 파트 필터 드롭다운
   onSave?: (updates: AttendanceStatusUpdate[]) => void | Promise<unknown>; // 수정 저장 (batch)
   isSaving?: boolean;
+  // 조회 상태는 표 안에서 처리한다 — 로딩·에러여도 헤더(제목·파트·수정)는 그대로 두기 위함
+  isLoading?: boolean;
+  isError?: boolean;
 }
 
 // 결석·공결은 사유(reason)가 필수 → 선택 시 사유 모달을 띄운다.
@@ -258,7 +208,15 @@ interface EditValue {
   reason?: string;
 }
 
-const PartAttendanceTable = ({ members, partName, partFilter, onSave, isSaving }: PartAttendanceTableProps) => {
+const PartAttendanceTable = ({
+  members,
+  partName,
+  partFilter,
+  onSave,
+  isSaving,
+  isLoading = false,
+  isError = false,
+}: PartAttendanceTableProps) => {
   const [isEditing, setIsEditing] = useState(false);
   // 변경된 출결만 detailAttendanceId → {상태, 사유}로 추적
   const [edits, setEdits] = useState<Map<number, EditValue>>(new Map());
@@ -337,12 +295,7 @@ const PartAttendanceTable = ({ members, partName, partFilter, onSave, isSaving }
         <TitleRow>
           <Title>주차별 출결 현황</Title>
           {partFilter ? (
-            <CaretSelect
-              ariaLabel="파트 선택"
-              value={partFilter.value}
-              options={partFilter.options}
-              onChange={partFilter.onChange}
-            />
+            <PartSelect value={partFilter.value} options={partFilter.options} onChange={partFilter.onChange} />
           ) : (
             partName && <PartName>{partName} 파트</PartName>
           )}
@@ -368,61 +321,71 @@ const PartAttendanceTable = ({ members, partName, partFilter, onSave, isSaving }
         )}
       </Header>
 
-      <TableRow>
-        <FixedColumn>
-          <HeadCell>아기사자</HeadCell>
-          {members.map((member) => (
-            <ValueCell key={member.memberId}>{member.memberName}</ValueCell>
-          ))}
-        </FixedColumn>
+      {isLoading ? (
+        <LoadingWrapper>
+          <CircularLoading size={32} />
+        </LoadingWrapper>
+      ) : isError ? (
+        <AttendanceEmptyState variant="error" />
+      ) : members.length === 0 ? (
+        <AttendanceEmptyState message="출결 정보가 없습니다." />
+      ) : (
+        <TableRow>
+          <FixedColumn>
+            <HeadCell>아기사자</HeadCell>
+            {members.map((member) => (
+              <ValueCell key={member.memberId}>{member.memberName}</ValueCell>
+            ))}
+          </FixedColumn>
 
-        <WeeksAndPenalty>
-          <WeeksScroll>
-            <WeeksInner>
-              <WeeksGroup>
-                {weeks.map((week) => (
-                  <WeekColumn key={week}>
-                    <HeadCell>{week}주차</HeadCell>
-                    {members.map((member, index) => {
-                      const record = recordMaps[index].get(week);
-                      // 방금 수정한 값이 있으면 서버 응답이 갱신되기 전까지 그 값을 그대로 보여준다
-                      const edit = record ? edits.get(record.detailAttendanceId) : undefined;
-                      const status = edit?.status ?? record?.status;
-                      const reason = edit?.reason ?? record?.reason;
-                      return (
-                        <StatusCell key={member.memberId}>
-                          {isEditing && record && status ? (
-                            <StatusDropdown
-                              ariaLabel={`${member.memberName} ${week}주차 출결`}
-                              value={status}
-                              onChange={(next) => changeStatus(record, next)}
-                            />
-                          ) : status && reason ? (
-                            <ReasonCell label={STATUS_LABEL[status]} reason={reason} />
-                          ) : (
-                            <span>{status ? STATUS_LABEL[status] : '-'}</span>
-                          )}
-                        </StatusCell>
-                      );
-                    })}
-                  </WeekColumn>
+          <WeeksAndPenalty>
+            <WeeksScroll>
+              <WeeksInner>
+                <WeeksGroup>
+                  {weeks.map((week) => (
+                    <WeekColumn key={week}>
+                      <HeadCell>{week}주차</HeadCell>
+                      {members.map((member, index) => {
+                        const record = recordMaps[index].get(week);
+                        // 방금 수정한 값이 있으면 서버 응답이 갱신되기 전까지 그 값을 그대로 보여준다
+                        const edit = record ? edits.get(record.detailAttendanceId) : undefined;
+                        const status = edit?.status ?? record?.status;
+                        const reason = edit?.reason ?? record?.reason;
+                        return (
+                          <StatusCell key={member.memberId}>
+                            {isEditing && record && status ? (
+                              <StatusDropdown
+                                ariaLabel={`${member.memberName} ${week}주차 출결`}
+                                value={status}
+                                onChange={(next) => changeStatus(record, next)}
+                              />
+                            ) : status && reason ? (
+                              <ReasonCell label={STATUS_LABEL[status]} reason={reason} />
+                            ) : (
+                              <span>{status ? STATUS_LABEL[status] : '-'}</span>
+                            )}
+                          </StatusCell>
+                        );
+                      })}
+                    </WeekColumn>
+                  ))}
+                </WeeksGroup>
+              </WeeksInner>
+            </WeeksScroll>
+
+            <PenaltyColumn>
+              <PenaltyCard>
+                <HeadCell $penalty>감점</HeadCell>
+                {members.map((member) => (
+                  <ValueCell key={member.memberId} $penalty>
+                    {member.attendancePenalty}점
+                  </ValueCell>
                 ))}
-              </WeeksGroup>
-            </WeeksInner>
-          </WeeksScroll>
-
-          <PenaltyColumn>
-            <PenaltyCard>
-              <HeadCell $penalty>감점</HeadCell>
-              {members.map((member) => (
-                <ValueCell key={member.memberId} $penalty>
-                  {member.attendancePenalty}점
-                </ValueCell>
-              ))}
-            </PenaltyCard>
-          </PenaltyColumn>
-        </WeeksAndPenalty>
-      </TableRow>
+              </PenaltyCard>
+            </PenaltyColumn>
+          </WeeksAndPenalty>
+        </TableRow>
+      )}
 
       {reasonTarget && (
         <AttendanceReasonModal
@@ -436,6 +399,19 @@ const PartAttendanceTable = ({ members, partName, partFilter, onSave, isSaving }
 };
 
 export default PartAttendanceTable;
+
+// 표 안에 들어가는 자리라 프로젝트 목록(468px)보다 낮게 잡는다
+const LoadingWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 240px;
+`;
+
+const AttendanceEmptyState = styled(EmptyState)`
+  min-height: 240px;
+`;
 
 const HEAD_HEIGHT = 52;
 const ROW_HEIGHT = 70;
@@ -477,29 +453,6 @@ const PartName = styled.p`
   margin: 0;
   color: ${Label.alternative};
   ${typographyCss(Typography.body1Reading.regular)}
-`;
-
-const CaretWrapper = styled.div`
-  position: relative;
-  min-width: 120px;
-`;
-
-const CaretTrigger = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  padding: 6px 12px;
-  border-radius: 8px;
-  background-color: ${HEADER_BG};
-  color: ${Label.normal};
-  cursor: pointer;
-  outline: none;
-  ${typographyCss(Typography.body2Normal.medium)}
-`;
-
-const CaretValue = styled.span`
-  white-space: nowrap;
 `;
 
 const EditButton = styled.button`

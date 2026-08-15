@@ -14,7 +14,11 @@ export interface TalentRequest {
   content: string;
 }
 
-export const getTalents = () => {
+export const getTalents = (token?: IToken) => {
+  if (token)
+    return getAuthAxios(token)
+      .get<TalentResponse[]>('/api/admin/desired-talents')
+      .then((res) => res.data);
   return axios.get<TalentResponse[]>(`${url}/api/admin/desired-talents`).then((res) => res.data);
 };
 

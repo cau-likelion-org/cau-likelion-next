@@ -8,7 +8,7 @@ import CharCount from '@common/charCount/CharCount';
 import AddCardButton from '@mypage/admin/component/AddCardButton';
 import RemoveCardButton from '@mypage/admin/component/RemoveCardButton';
 import { isUnfilled } from '@utils/index';
-import { BackgroundWhite, Black, Line, State } from '@utils/constant/color';
+import { BackgroundWhite, Black, Label, Line, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { createId } from './utils';
 
@@ -44,7 +44,7 @@ const CurriculumSection = ({
   showErrors: boolean;
   disabled?: boolean;
 }) => {
-  const [activeKey, setActiveKey] = useState(tracks[0].key);
+  const [activeKey, setActiveKey] = useState(tracks[0]?.key ?? '');
   const activeTrack = tracks.find((track) => track.key === activeKey) ?? tracks[0];
 
   const updateWeeks = (updater: (weeks: CurriculumWeekItem[]) => CurriculumWeekItem[]) => {
@@ -58,6 +58,16 @@ const CurriculumSection = ({
   const removeWeek = (id: string) => updateWeeks((weeks) => weeks.filter((week) => week.id !== id));
 
   const addWeek = () => updateWeeks((weeks) => [...weeks, createEmptyWeek()]);
+
+  // 커리큘럼은 트랙에 속하므로, 트랙이 없으면 입력 자체가 불가능하다
+  if (!activeTrack) {
+    return (
+      <Section>
+        <Title>커리큘럼 관리</Title>
+        <EmptyText>등록된 트랙이 없습니다. 랜딩페이지 관리에서 트랙을 먼저 등록해 주세요.</EmptyText>
+      </Section>
+    );
+  }
 
   return (
     <Section>
@@ -117,6 +127,12 @@ const CurriculumSection = ({
 };
 
 export default CurriculumSection;
+
+const EmptyText = styled.p`
+  margin: 0;
+  color: ${Label.alternative};
+  ${typographyCss(Typography.body1Normal.medium)}
+`;
 
 const Section = styled.div`
   display: flex;

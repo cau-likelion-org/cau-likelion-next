@@ -16,8 +16,11 @@ export interface IntroduceRequest {
   cumulativeProjects: string;
 }
 
-// 퍼블릭 랜딩페이지 IntroduceSection에서도 그대로 재사용하는 조회용 API라 인증 없이 호출
-export const getIntroduce = () => {
+export const getIntroduce = (token?: IToken) => {
+  if (token)
+    return getAuthAxios(token)
+      .get<IntroduceResponse>('/api/admin/indicator')
+      .then((res) => res.data);
   return axios.get<IntroduceResponse>(`${url}/api/admin/indicator`).then((res) => res.data);
 };
 

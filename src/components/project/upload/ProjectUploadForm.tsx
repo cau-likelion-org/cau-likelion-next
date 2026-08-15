@@ -251,7 +251,7 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
   const [submitError, setSubmitError] = useState('');
 
-  const { data: generations } = useQuery<GenerationListItem[]>({
+  const { data: generations, isError: isGenerationsError } = useQuery<GenerationListItem[]>({
     queryKey: ['generations'],
     queryFn: () => getGenerations(tokenState),
     enabled: !!tokenState.access,
@@ -261,7 +261,9 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
   const isDateMissing = isUnfilled(dateRange[0]) || isUnfilled(dateRange[1]);
   const isDateOrderInvalid = !isDateMissing && dateRange[1] < dateRange[0];
   const isDateInvalid = isDateMissing || isDateOrderInvalid;
-  const isGenerationInvalid = !isUnfilled(generation) && !matchedGeneration;
+  // 저장에는 generationId가 필요하므로 목록을 못 받은 경우에도 제출은 막되, 원인은 구분해서 안내한다
+  const isGenerationUnresolved = !isUnfilled(generation) && !matchedGeneration;
+  const isGenerationInvalid = isGenerationUnresolved && !!generations;
   const isTitleOverflow = title.length > 12;
   const isSubtitleOverflow = subtitle.length > 80;
   const isDescriptionOverflow = description.length > 300;
@@ -273,7 +275,7 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
     isUnfilled(description) ||
     isDescriptionOverflow ||
     isUnfilled(generation) ||
-    isGenerationInvalid ||
+    isGenerationUnresolved ||
     isUnfilled(category) ||
     isUnfilled(teamName) ||
     isDateInvalid;
@@ -566,13 +568,15 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
             placeholder="숫자 입력"
             value={generation}
             onChange={onChangeGeneration}
-            status={showErrors && (isUnfilled(generation) || isGenerationInvalid) ? 'negative' : 'normal'}
+            status={showErrors && (isUnfilled(generation) || isGenerationUnresolved) ? 'negative' : 'normal'}
             description={
               showErrors && isUnfilled(generation)
                 ? '기수를 입력해 주세요.'
-                : showErrors && isGenerationInvalid
-                  ? '존재하지 않는 기수예요.'
-                  : undefined
+                : showErrors && isGenerationsError
+                  ? '기수 정보를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.'
+                  : showErrors && isGenerationInvalid
+                    ? '존재하지 않는 기수예요.'
+                    : undefined
             }
           />
         </NarrowField>

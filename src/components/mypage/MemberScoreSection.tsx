@@ -13,7 +13,7 @@ import useTokenStore from 'src/store/useTokenStore';
 import { BackgroundColor, Black, Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
-const ALL_PART = '전체';
+const ALL_OPTION = '전체';
 
 /**
  * 아기사자 출결/과제 현황 (운영진·회장·관리자 공용)
@@ -32,29 +32,32 @@ const MemberScoreSection = ({ userProfile }: { userProfile: UserProfile }) => {
   });
   const scores = useMemo(() => data ?? [], [data]);
 
-  const generationOptions = useMemo(
+  // 파트와 마찬가지로 '전체'를 항상 제공한다 — 목록이 비어도 드롭다운이 빈 값으로 보이지 않도록
+  const generationNumbers = useMemo(
     () => Array.from(new Set(scores.map((score) => score.generationNumber))).sort((a, b) => b - a),
     [scores],
   );
+  const generationOptions = useMemo(() => [ALL_OPTION, ...generationNumbers.map(String)], [generationNumbers]);
   const [selectedGeneration, setSelectedGeneration] = useState('');
-  const latestGeneration = generationOptions[0] != null ? String(generationOptions[0]) : '';
+  const latestGeneration = generationNumbers[0] != null ? String(generationNumbers[0]) : ALL_OPTION;
   // 운영진은 현재 기수 고정
   const currentGeneration = isFixedScope ? latestGeneration : selectedGeneration || latestGeneration;
 
+  const matchesGeneration = (generationNumber: number) =>
+    currentGeneration === ALL_OPTION || String(generationNumber) === currentGeneration;
+
   const partOptions = useMemo(() => {
-    const parts = scores
-      .filter((score) => String(score.generationNumber) === currentGeneration)
-      .map((score) => score.partName);
-    return [ALL_PART, ...Array.from(new Set(parts))];
+    const parts = scores.filter((score) => matchesGeneration(score.generationNumber)).map((score) => score.partName);
+    return [ALL_OPTION, ...Array.from(new Set(parts))];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scores, currentGeneration]);
-  const [selectedPart, setSelectedPart] = useState(ALL_PART);
+  const [selectedPart, setSelectedPart] = useState(ALL_OPTION);
   // 운영진은 본인 파트 고정
   const currentPart = isFixedScope ? userProfile.partName : selectedPart;
 
   const rows = scores.filter(
     (score) =>
-      String(score.generationNumber) === currentGeneration &&
-      (currentPart === ALL_PART || score.partName === currentPart),
+      matchesGeneration(score.generationNumber) && (currentPart === ALL_OPTION || score.partName === currentPart),
   );
 
   return (
@@ -74,7 +77,7 @@ const MemberScoreSection = ({ userProfile }: { userProfile: UserProfile }) => {
               heading="기수 구분"
               ariaLabel="기수 선택"
               value={currentGeneration}
-              options={generationOptions.map(String)}
+              options={generationOptions}
               onChange={setSelectedGeneration}
               disabled={isFixedScope}
             />

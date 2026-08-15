@@ -18,12 +18,12 @@ const CurriculumSection = () => {
     data: tracks,
     isLoading: isTracksLoading,
     isError: isTracksError,
-  } = useQuery({ queryKey: ['tracks'], queryFn: getTracks });
+  } = useQuery({ queryKey: ['tracks'], queryFn: () => getTracks() });
   const {
     data: curriculums,
     isLoading: isCurriculumsLoading,
     isError: isCurriculumsError,
-  } = useQuery({ queryKey: ['curriculums'], queryFn: getCurriculums });
+  } = useQuery({ queryKey: ['curriculums'], queryFn: () => getCurriculums() });
 
   const isLoading = isTracksLoading || isCurriculumsLoading;
   const isError = isTracksError || isCurriculumsError;

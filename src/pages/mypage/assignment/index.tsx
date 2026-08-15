@@ -12,7 +12,7 @@ import EmptyState from '@common/emptyState/EmptyState';
 import PageLoadingGate from '@common/pageGate/PageLoadingGate';
 import MyPageShell from '@mypage/component/MyPageShell';
 import MobileUnsupportedModal from '@common/modal/MobileUnsupportedModal';
-import AssignmentPartSelect from '@mypage/component/AssignmentPartSelect';
+import PartSelect from '@mypage/component/PartSelect';
 import StaffAssignmentCard from '@mypage/component/StaffAssignmentCard';
 import WeeklyAssignmentCard, { WeeklyAssignmentGroup } from '@mypage/component/WeeklyAssignmentCard';
 import { getGenerations, getUserProfile } from 'src/apis/account';
@@ -24,7 +24,7 @@ import {
   getStaffAssignments,
 } from 'src/apis/assignment';
 import useTokenStore from 'src/store/useTokenStore';
-import { INACTIVE_MEMBER_NOTICE_KEY } from '@utils/constant';
+import { INACTIVE_MEMBER_NOTICE_KEY, TRACK_OPTIONS } from '@utils/constant';
 import { isAdminRole, isFullAdminRole, canManageSitePages } from '@utils/index';
 import { IcPlus } from '@assets/svg';
 import { Fill, Label, Line } from '@utils/constant/color';
@@ -51,6 +51,8 @@ const resolveActionLabel = (endDate: string, assignments: { submittedAt: string 
   if (new Date(endDate).getTime() < Date.now()) return undefined;
   return assignments.every((assignment) => !assignment.submittedAt) ? '제출하기' : '수정하기';
 };
+
+const ALL_PART = '전체';
 
 const MyPageAssignment = () => {
   const tokenState = useTokenStore((state) => state.token);
@@ -96,10 +98,14 @@ const MyPageAssignment = () => {
   });
   const activeGeneration =
     generations?.find((generation) => generation.status === 'IN_ACTIVITY') ?? generations?.[generations.length - 1];
-  const parts = (activeGeneration?.parts ?? []).filter((part) => part.name !== '기타');
-  const partOptions = parts.map((part) => part.name);
-  const [selectedPartName, setSelectedPartName] = useState('');
-  const currentPartName = selectedPartName || partOptions[0] || '';
+  // 파트 순서는 응답 순서가 아니라 기획디자인 → 프론트엔드 → 백엔드 고정
+  const parts = (activeGeneration?.parts ?? [])
+    .filter((part) => part.name !== '기타')
+    .sort((a, b) => TRACK_OPTIONS.indexOf(a.name) - TRACK_OPTIONS.indexOf(b.name));
+  // 출결관리와 동일하게 '전체'를 맨 앞에 두고 기본 선택으로 쓴다
+  const partOptions = [ALL_PART, ...parts.map((part) => part.name)];
+  const [selectedPartName, setSelectedPartName] = useState(ALL_PART);
+  const currentPartName = selectedPartName;
   const selectedPartId = parts.find((part) => part.name === currentPartName)?.id;
 
   // 과제 생성·상세보기는 데스크톱 전용이라 모바일에서는 안내 모달을 띄운다
@@ -131,10 +137,10 @@ const MyPageAssignment = () => {
     isLoading: isWeekGroupsLoading,
     isError: isWeekGroupsError,
   } = useQuery<AssignmentWeekGroup[]>({
-    queryKey: isPresident ? ['presidentAssignments', selectedPartId ?? null] : ['staffAssignments'],
+    queryKey: isPresident ? ['presidentAssignments', selectedPartId ?? 'all'] : ['staffAssignments'],
     queryFn: () =>
-      isPresident ? getPresidentAssignments(tokenState, selectedPartId as number) : getStaffAssignments(tokenState),
-    enabled: isStaffOrAdmin && (!isPresident || selectedPartId != null),
+      isPresident ? getPresidentAssignments(tokenState, selectedPartId) : getStaffAssignments(tokenState),
+    enabled: isStaffOrAdmin,
   });
 
   // 최신 주차가 18이면 18 → 1주차까지 연속으로 표시 (과제 없는 주차는 빈 카드)
@@ -149,7 +155,11 @@ const MyPageAssignment = () => {
   })();
 
   // 아기사자: 본인 과제 목록 (마감일이 같은 과제끼리 한 카드로 묶는다)
-  const { data: myWeekGroups } = useQuery<AssignmentSummaryWeekGroup[]>({
+  const {
+    data: myWeekGroups,
+    isLoading: isMyWeekGroupsLoading,
+    isError: isMyWeekGroupsError,
+  } = useQuery<AssignmentSummaryWeekGroup[]>({
     queryKey: ['myAssignments'],
     queryFn: () => getMyAssignments(tokenState),
     enabled: !!userProfile && !isStaffOrAdmin && userProfile.role !== 'ADULT_LION',
@@ -187,7 +197,7 @@ const MyPageAssignment = () => {
               <TitleRow>
                 <SectionTitle>주차별 과제 현황</SectionTitle>
                 {isPresident ? (
-                  <AssignmentPartSelect value={currentPartName} options={partOptions} onChange={setSelectedPartName} />
+                  <PartSelect value={currentPartName} options={partOptions} onChange={setSelectedPartName} />
                 ) : (
                   <TrackName>{userProfile.partName} 파트</TrackName>
                 )}
@@ -203,6 +213,8 @@ const MyPageAssignment = () => {
               </LoadingWrapper>
             ) : isWeekGroupsError ? (
               <EmptyState variant="error" />
+            ) : weeks.length === 0 ? (
+              <EmptyState message="등록된 과제가 없습니다." />
             ) : (
               <List>
                 {weeks.map((group) => (
@@ -222,11 +234,21 @@ const MyPageAssignment = () => {
               <SectionTitle>주차별 과제 현황</SectionTitle>
               <TrackName>{userProfile.partName} 파트</TrackName>
             </TitleRow>
-            <List>
-              {myGroups.map((group) => (
-                <WeeklyAssignmentCard key={group.week} group={group} />
-              ))}
-            </List>
+            {isMyWeekGroupsLoading ? (
+              <LoadingWrapper>
+                <CircularLoading size={32} />
+              </LoadingWrapper>
+            ) : isMyWeekGroupsError ? (
+              <EmptyState variant="error" />
+            ) : myGroups.length === 0 ? (
+              <EmptyState message="등록된 과제가 없습니다." />
+            ) : (
+              <List>
+                {myGroups.map((group) => (
+                  <WeeklyAssignmentCard key={group.week} group={group} />
+                ))}
+              </List>
+            )}
           </>
         )}
       </MyPageShell>

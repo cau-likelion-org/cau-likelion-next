@@ -8,7 +8,7 @@ import { BackgroundWhite, Black, Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 const RoadmapSection = () => {
-  const { data: roadmap, isLoading, isError } = useQuery({ queryKey: ['roadmap'], queryFn: getRoadmap });
+  const { data: roadmap, isLoading, isError } = useQuery({ queryKey: ['roadmap'], queryFn: () => getRoadmap() });
 
   if (!isLoading && !isError && !roadmap) return null;
 

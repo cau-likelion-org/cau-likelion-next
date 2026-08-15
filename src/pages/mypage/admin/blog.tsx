@@ -77,7 +77,7 @@ const MyPageAdminBlog = () => {
   const isDataLoaded = blogs !== undefined && generations !== undefined;
   const isDataError = isBlogsError || isGenerationsError;
 
-  const [blogItems, setBlogItems] = useState<BlogItem[]>([]);
+  const [blogItems, setBlogItems] = useState<BlogItem[]>(() => (blogs ?? []).map(blogToLocal));
   const [toastMessage, setToastMessage] = useState<ReactNode>('');
   const [showErrors, setShowErrors] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -87,7 +87,9 @@ const MyPageAdminBlog = () => {
   const [syncedBlogs, setSyncedBlogs] = useState(blogs);
   if (blogs !== syncedBlogs) {
     setSyncedBlogs(blogs);
-    setBlogItems((blogs ?? []).map(blogToLocal));
+    if (!isEditing) {
+      setBlogItems((blogs ?? []).map(blogToLocal));
+    }
   }
 
   useEffect(() => {
@@ -156,7 +158,7 @@ const MyPageAdminBlog = () => {
                     </Button>
                   </>
                 ) : (
-                  <EditButton onClick={() => setIsEditing(true)} disabled={!isDataLoaded} />
+                  <EditButton onClick={() => setIsEditing(true)} />
                 )}
               </ButtonRow>
             </TitleRow>

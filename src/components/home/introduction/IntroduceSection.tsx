@@ -13,7 +13,7 @@ interface IStat {
 }
 
 const IntroduceSection = () => {
-  const { data: indicator, isLoading, isError } = useQuery({ queryKey: ['indicator'], queryFn: getIntroduce });
+  const { data: indicator, isLoading, isError } = useQuery({ queryKey: ['indicator'], queryFn: () => getIntroduce() });
 
   const stats: IStat[] = [
     { number: indicator ? `${indicator.cumulativeGenerations}기` : '', label: '누적 활동 기수' },
