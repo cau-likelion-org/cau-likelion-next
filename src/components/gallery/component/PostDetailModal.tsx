@@ -1,17 +1,20 @@
 import { useId, useRef } from 'react';
 import styled from 'styled-components';
 
+import Button from '@common/button/Button';
 import ContentBadge from '@common/badge/ContentBadge';
 import Chip from '@common/chip/Chip';
 import PaginationDots from '@common/pagination/PaginationDots';
 import TextButton from '@common/textButton/TextButton';
 import IcLineHorizontal from '@assets/svg/icon/ic-line-horizontal.svg';
+import { IcChevronLeft } from '@assets/svg';
 import useFocusTrap from 'src/hooks/useFocusTrap';
-import { BackgroundColor, Fill, Label, Material } from '@utils/constant/color';
+import { BackgroundColor, Fill, Label, Material, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 export interface PostDetailModalProps {
   title: string;
+  headerTitle: string;
   badges: string[];
   description: string;
   date: string | [string, string];
@@ -22,6 +25,7 @@ export interface PostDetailModalProps {
 
 const PostDetailModal = ({
   title,
+  headerTitle,
   badges,
   description,
   date,
@@ -43,10 +47,22 @@ const PostDetailModal = ({
         tabIndex={-1}
         onClick={(event) => event.stopPropagation()}
       >
+        <MobileHeader>
+          <Button
+            variant="outlined"
+            color="assistive"
+            size="small"
+            leadingIcon={<IcChevronLeft width={16} height={16} />}
+            onClick={onClose}
+          >
+            닫기
+          </Button>
+          <MobileTitle>{headerTitle}</MobileTitle>
+        </MobileHeader>
         <Information>
           <ImageGroup>
             <MainThumbnail />
-            <PaginationDots total={imageCount} current={0} size="medium" />
+            <Dots total={imageCount} current={0} size="medium" />
           </ImageGroup>
 
           <TextGroup>
@@ -112,6 +128,42 @@ const Modal = styled.div`
   background-color: ${BackgroundColor};
   outline: none;
   z-index: 10000;
+
+  @media (max-width: 700px) {
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    max-height: none;
+    border-radius: 0;
+  }
+`;
+
+const MobileHeader = styled.div`
+  display: none;
+
+  @media (max-width: 700px) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    width: 100%;
+    padding: 52px 20px;
+  }
+`;
+
+const MobileTitle = styled.p`
+  margin: 0;
+  color: ${Orange.o500};
+  ${typographyCss(Typography.title2.bold)}
+`;
+
+const Dots = styled(PaginationDots)`
+  @media (max-width: 700px) {
+    span {
+      width: 6px;
+      height: 6px;
+    }
+  }
 `;
 
 const Information = styled.div`
@@ -121,6 +173,10 @@ const Information = styled.div`
   flex-direction: column;
   align-items: flex-start;
   gap: 42px;
+
+  @media (max-width: 700px) {
+    padding: 0 20px 60px;
+  }
 `;
 
 const ImageGroup = styled.div`
@@ -181,4 +237,8 @@ const Actions = styled.div`
   display: flex;
   justify-content: flex-end;
   gap: 24px;
+
+  @media (max-width: 700px) {
+    display: none;
+  }
 `;
