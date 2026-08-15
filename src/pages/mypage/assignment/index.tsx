@@ -13,7 +13,13 @@ import AssignmentPartSelect from '@mypage/component/AssignmentPartSelect';
 import StaffAssignmentCard from '@mypage/component/StaffAssignmentCard';
 import WeeklyAssignmentCard, { WeeklyAssignmentGroup } from '@mypage/component/WeeklyAssignmentCard';
 import { getGenerations, getUserProfile } from 'src/apis/account';
-import { AssignmentWeekGroup, getPresidentAssignments, getStaffAssignments } from 'src/apis/assignment';
+import {
+  AssignmentSummaryWeekGroup,
+  AssignmentWeekGroup,
+  getMyAssignments,
+  getPresidentAssignments,
+  getStaffAssignments,
+} from 'src/apis/assignment';
 import useTokenStore from 'src/store/useTokenStore';
 import { INACTIVE_MEMBER_NOTICE_KEY } from '@utils/constant';
 import { isAdminRole, isFullAdminRole, canManageSitePages } from '@utils/index';
@@ -21,63 +27,27 @@ import { IcPlus } from '@assets/svg';
 import { Fill, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
-// 백엔드 API 준비 전까지 사용하는 목 데이터
-const MOCK_WEEKLY_ASSIGNMENTS: WeeklyAssignmentGroup[] = [
-  {
-    week: 18,
-    status: 'before',
-    cards: [
-      {
-        items: [
-          { name: '연구 프로젝트 1', status: 'approved', submittedAt: '2026/12/12 17:48' },
-          { name: '연구 프로젝트 2', status: 'pending', submittedAt: '2026/12/12 17:48' },
-          { name: '연구 프로젝트 3', status: 'rejected', submittedAt: '2026/12/12 17:48' },
-        ],
-        dueDate: '2026/09/30',
-        actionLabel: '수정하기',
-      },
-      {
-        items: [
-          { name: '연구 프로젝트 A', status: 'before' },
-          { name: '연구 프로젝트 3', status: 'rejected', submittedAt: '2026/12/12 17:48' },
-        ],
-        dueDate: '2026/09/34',
-        actionLabel: '수정하기',
-      },
-      {
-        id: '18',
-        items: [{ name: '연구 프로젝트 A', status: 'before' }],
-        dueDate: '2026/09/35',
-        actionLabel: '제출하기',
-      },
-    ],
-  },
-  {
-    week: 17,
-    status: 'late',
-    cards: [
-      {
-        items: [{ name: '연구 프로젝트 A', status: 'approved', submittedAt: '2026/12/12 17:48' }],
-        dueDate: '2026/09/30',
-      },
-    ],
-  },
-  {
-    week: 16,
-    status: 'missed',
-    cards: [
-      {
-        items: [{ name: '연구 프로젝트 A', status: 'missed' }],
-        dueDate: '2026/09/30',
-      },
-    ],
-  },
-  {
-    week: 15,
-    status: 'done',
-    cards: [],
-  },
-];
+// 마감 기한(ISO) → 2026/09/30
+const formatDueDate = (value: string) => {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${date.getFullYear()}/${pad(date.getMonth() + 1)}/${pad(date.getDate())}`;
+};
+
+// 제출 시각(ISO) → 2026/12/12 17:48
+const formatSubmittedAt = (value: string) => {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${formatDueDate(value)} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+};
+
+// 마감이 지났으면 버튼을 숨기고, 한 건도 제출하지 않았으면 제출하기로 보여준다
+const resolveActionLabel = (endDate: string, assignments: { submittedAt: string | null }[]) => {
+  if (new Date(endDate).getTime() < Date.now()) return undefined;
+  return assignments.every((assignment) => !assignment.submittedAt) ? '제출하기' : '수정하기';
+};
 
 const MyPageAssignment = () => {
   const tokenState = useTokenStore((state) => state.token);
@@ -171,6 +141,34 @@ const MyPageAssignment = () => {
     });
   })();
 
+  // 아기사자: 본인 과제 목록 (마감일이 같은 과제끼리 한 카드로 묶는다)
+  const { data: myWeekGroups } = useQuery<AssignmentSummaryWeekGroup[]>({
+    queryKey: ['myAssignments'],
+    queryFn: () => getMyAssignments(tokenState),
+    enabled: !!userProfile && !isStaffOrAdmin && userProfile.role !== 'ADULT_LION',
+  });
+
+  // 한 주차의 과제는 마감일이 모두 같으므로 주차당 카드 하나로 묶는다
+  const myGroups: WeeklyAssignmentGroup[] = (myWeekGroups ?? []).map((group) => ({
+    week: group.week,
+    status: group.weeklyStatus,
+    cards:
+      group.assignments.length === 0
+        ? []
+        : [
+            {
+              id: String(group.week),
+              items: group.assignments.map((assignment) => ({
+                name: assignment.title,
+                status: assignment.status,
+                submittedAt: assignment.submittedAt ? formatSubmittedAt(assignment.submittedAt) : undefined,
+              })),
+              dueDate: formatDueDate(group.assignments[0].endDate),
+              actionLabel: resolveActionLabel(group.assignments[0].endDate, group.assignments),
+            },
+          ],
+  }));
+
   if (!userProfile) return null;
 
   return (
@@ -210,7 +208,7 @@ const MyPageAssignment = () => {
               <TrackName>{userProfile.partName} 파트</TrackName>
             </TitleRow>
             <List>
-              {MOCK_WEEKLY_ASSIGNMENTS.map((group) => (
+              {myGroups.map((group) => (
                 <WeeklyAssignmentCard key={group.week} group={group} />
               ))}
             </List>

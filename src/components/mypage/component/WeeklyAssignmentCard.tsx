@@ -5,16 +5,14 @@ import styled from 'styled-components';
 import Button from '@common/button/Button';
 import ContentBadge from '@common/badge/ContentBadge';
 import MobileUnsupportedModal from '@common/modal/MobileUnsupportedModal';
+import { AssignmentDisplayStatus } from 'src/apis/assignment';
 import { IcChevronDown } from '@assets/svg';
 import { BackgroundWhite, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
-export type WeeklyAssignmentStatus = 'before' | 'late' | 'missed' | 'done';
-export type AssignmentItemStatus = 'before' | 'pending' | 'rejected' | 'approved' | 'missed';
-
 export interface AssignmentItem {
   name: string;
-  status: AssignmentItemStatus;
+  status: AssignmentDisplayStatus;
   submittedAt?: string;
 }
 
@@ -27,23 +25,27 @@ export interface AssignmentCard {
 
 export interface WeeklyAssignmentGroup {
   week: number;
-  status: WeeklyAssignmentStatus;
+  status: AssignmentDisplayStatus;
   cards: AssignmentCard[];
 }
 
-const WEEK_BADGE_CONFIG: Record<WeeklyAssignmentStatus, { label: string; color: 'neutral' | 'accent' }> = {
-  before: { label: '제출 전', color: 'neutral' },
-  late: { label: '지각 제출', color: 'neutral' },
-  missed: { label: '미제출', color: 'neutral' },
-  done: { label: '제출 완료', color: 'accent' },
+// 주차 종합 상태 뱃지 — 여러 과제를 합친 상태라 '제출 완료'로 표기한다
+const WEEK_BADGE_CONFIG: Record<AssignmentDisplayStatus, { label: string; color: 'neutral' | 'accent' }> = {
+  BEFORE_SUBMISSION: { label: '제출 전', color: 'neutral' },
+  MISSED: { label: '미제출', color: 'neutral' },
+  PENDING_REVIEW: { label: '승인 대기', color: 'neutral' },
+  LATE_SUBMITTED: { label: '지각 제출', color: 'neutral' },
+  APPROVED: { label: '제출 완료', color: 'accent' },
+  REJECTED: { label: '승인 반려', color: 'neutral' },
 };
 
-const ITEM_BADGE_CONFIG: Record<AssignmentItemStatus, { label: string; color: 'neutral' | 'accent' }> = {
-  before: { label: '제출 전', color: 'neutral' },
-  pending: { label: '승인 대기', color: 'neutral' },
-  rejected: { label: '승인 반려', color: 'neutral' },
-  approved: { label: '승인 완료', color: 'accent' },
-  missed: { label: '미제출', color: 'neutral' },
+const ITEM_BADGE_CONFIG: Record<AssignmentDisplayStatus, { label: string; color: 'neutral' | 'accent' }> = {
+  BEFORE_SUBMISSION: { label: '제출 전', color: 'neutral' },
+  MISSED: { label: '미제출', color: 'neutral' },
+  PENDING_REVIEW: { label: '승인 대기', color: 'neutral' },
+  LATE_SUBMITTED: { label: '지각 제출', color: 'neutral' },
+  APPROVED: { label: '승인 완료', color: 'accent' },
+  REJECTED: { label: '승인 반려', color: 'neutral' },
 };
 
 const WeeklyAssignmentCard = ({ group }: { group: WeeklyAssignmentGroup }) => {
