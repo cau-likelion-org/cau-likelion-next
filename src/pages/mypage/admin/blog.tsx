@@ -9,6 +9,8 @@ import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import Button from '@common/button/Button';
 import Toast from '@common/toast/Toast';
 import MyPageShell from '@mypage/component/MyPageShell';
+import CircularLoading from '@common/loading/CircularLoading';
+import EmptyState from '@common/emptyState/EmptyState';
 import BlogSection, {
   BlogItem,
   BLOG_CATEGORY_LABEL,
@@ -61,12 +63,18 @@ const MyPageAdminBlog = () => {
   });
 
   // 편집 화면이라 창 포커스 시 백그라운드 재조회로 입력 중인 값이 덮어써지지 않도록 자동 재조회를 끔
-  const { data: blogs } = useQuery({ queryKey: ['adminBlogs'], queryFn: getBlogs, refetchOnWindowFocus: false });
-  const { data: generations } = useQuery({
+  const { data: blogs, isError: isBlogsError } = useQuery({
+    queryKey: ['adminBlogs'],
+    queryFn: getBlogs,
+    refetchOnWindowFocus: false,
+  });
+  const { data: generations, isError: isGenerationsError } = useQuery({
     queryKey: ['generations'],
     queryFn: getGenerations,
     refetchOnWindowFocus: false,
   });
+  const isDataLoaded = blogs !== undefined && generations !== undefined;
+  const isDataError = isBlogsError || isGenerationsError;
 
   const [blogItems, setBlogItems] = useState<BlogItem[]>([]);
   const [toastMessage, setToastMessage] = useState<ReactNode>('');
@@ -143,11 +151,19 @@ const MyPageAdminBlog = () => {
                 </Button>
               </>
             ) : (
-              <EditButton onClick={() => setIsEditing(true)} />
+              <EditButton onClick={() => setIsEditing(true)} disabled={!isDataLoaded} />
             )}
           </ButtonRow>
         </TitleRow>
-        <BlogSection items={blogItems} onChange={setBlogItems} showErrors={showErrors} disabled={!isEditing} />
+        {isDataError ? (
+          <EmptyState variant="error" />
+        ) : !isDataLoaded ? (
+          <LoadingWrapper>
+            <CircularLoading size={32} />
+          </LoadingWrapper>
+        ) : (
+          <BlogSection items={blogItems} onChange={setBlogItems} showErrors={showErrors} disabled={!isEditing} />
+        )}
       </MyPageShell>
       <ToastWrapper>
         <Toast variant="positive" text={toastMessage} show={!!toastMessage} onHidden={() => setToastMessage('')} />
@@ -179,6 +195,14 @@ const ButtonRow = styled.div`
   display: flex;
   align-items: center;
   gap: 12px;
+`;
+
+const LoadingWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 300px;
 `;
 
 const ToastWrapper = styled.div`
