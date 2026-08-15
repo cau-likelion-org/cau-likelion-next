@@ -7,6 +7,8 @@ import styled from 'styled-components';
 export type EmptyStateVariant = 'empty' | 'error';
 
 export interface EmptyStateProps {
+  /** 쓰이는 자리에 맞춰 높이 등을 조정할 수 있도록 styled()로 감쌀 때 사용 */
+  className?: string;
   variant?: EmptyStateVariant;
   icon?: ReactNode;
   message?: string;
@@ -22,9 +24,9 @@ const DEFAULT_MESSAGE: Record<EmptyStateVariant, string> = {
   error: '정보 불러오기를 실패했어요.',
 };
 
-const EmptyState = ({ variant = 'empty', icon, message }: EmptyStateProps) => {
+const EmptyState = ({ className, variant = 'empty', icon, message }: EmptyStateProps) => {
   return (
-    <Wrapper>
+    <Wrapper className={className}>
       <IconWrapper>{icon ?? DEFAULT_ICON[variant]}</IconWrapper>
       <Message>{message ?? DEFAULT_MESSAGE[variant]}</Message>
     </Wrapper>

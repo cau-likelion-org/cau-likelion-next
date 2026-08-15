@@ -9,6 +9,7 @@ import {
   MemberAttendanceResponse,
 } from 'src/apis/attendance';
 import AttendanceReasonModal from '@mypage/component/AttendanceReasonModal';
+import EmptyState from '@common/emptyState/EmptyState';
 import ListboxOptions from '@common/select/ListboxOptions';
 import useListboxSelect from 'src/hooks/useListboxSelect';
 import { IcCaretDown, IcCaretUp } from '@assets/svg';
@@ -347,8 +348,8 @@ const PartAttendanceTable = ({ members, partName, partFilter, onSave, isSaving }
             partName && <PartName>{partName} 파트</PartName>
           )}
         </TitleRow>
-        {/* 출결 수정은 웹에서만 제공한다 */}
-        {onSave && (
+        {/* 출결 수정은 웹에서만 제공한다 (수정할 대상이 없으면 감춤) */}
+        {onSave && members.length > 0 && (
           <EditActions>
             {isEditing ? (
               <ButtonGroup>
@@ -368,61 +369,65 @@ const PartAttendanceTable = ({ members, partName, partFilter, onSave, isSaving }
         )}
       </Header>
 
-      <TableRow>
-        <FixedColumn>
-          <HeadCell>아기사자</HeadCell>
-          {members.map((member) => (
-            <ValueCell key={member.memberId}>{member.memberName}</ValueCell>
-          ))}
-        </FixedColumn>
+      {members.length === 0 ? (
+        <AttendanceEmptyState message="출결 정보가 없습니다." />
+      ) : (
+        <TableRow>
+          <FixedColumn>
+            <HeadCell>아기사자</HeadCell>
+            {members.map((member) => (
+              <ValueCell key={member.memberId}>{member.memberName}</ValueCell>
+            ))}
+          </FixedColumn>
 
-        <WeeksAndPenalty>
-          <WeeksScroll>
-            <WeeksInner>
-              <WeeksGroup>
-                {weeks.map((week) => (
-                  <WeekColumn key={week}>
-                    <HeadCell>{week}주차</HeadCell>
-                    {members.map((member, index) => {
-                      const record = recordMaps[index].get(week);
-                      // 방금 수정한 값이 있으면 서버 응답이 갱신되기 전까지 그 값을 그대로 보여준다
-                      const edit = record ? edits.get(record.detailAttendanceId) : undefined;
-                      const status = edit?.status ?? record?.status;
-                      const reason = edit?.reason ?? record?.reason;
-                      return (
-                        <StatusCell key={member.memberId}>
-                          {isEditing && record && status ? (
-                            <StatusDropdown
-                              ariaLabel={`${member.memberName} ${week}주차 출결`}
-                              value={status}
-                              onChange={(next) => changeStatus(record, next)}
-                            />
-                          ) : status && reason ? (
-                            <ReasonCell label={STATUS_LABEL[status]} reason={reason} />
-                          ) : (
-                            <span>{status ? STATUS_LABEL[status] : '-'}</span>
-                          )}
-                        </StatusCell>
-                      );
-                    })}
-                  </WeekColumn>
+          <WeeksAndPenalty>
+            <WeeksScroll>
+              <WeeksInner>
+                <WeeksGroup>
+                  {weeks.map((week) => (
+                    <WeekColumn key={week}>
+                      <HeadCell>{week}주차</HeadCell>
+                      {members.map((member, index) => {
+                        const record = recordMaps[index].get(week);
+                        // 방금 수정한 값이 있으면 서버 응답이 갱신되기 전까지 그 값을 그대로 보여준다
+                        const edit = record ? edits.get(record.detailAttendanceId) : undefined;
+                        const status = edit?.status ?? record?.status;
+                        const reason = edit?.reason ?? record?.reason;
+                        return (
+                          <StatusCell key={member.memberId}>
+                            {isEditing && record && status ? (
+                              <StatusDropdown
+                                ariaLabel={`${member.memberName} ${week}주차 출결`}
+                                value={status}
+                                onChange={(next) => changeStatus(record, next)}
+                              />
+                            ) : status && reason ? (
+                              <ReasonCell label={STATUS_LABEL[status]} reason={reason} />
+                            ) : (
+                              <span>{status ? STATUS_LABEL[status] : '-'}</span>
+                            )}
+                          </StatusCell>
+                        );
+                      })}
+                    </WeekColumn>
+                  ))}
+                </WeeksGroup>
+              </WeeksInner>
+            </WeeksScroll>
+
+            <PenaltyColumn>
+              <PenaltyCard>
+                <HeadCell $penalty>감점</HeadCell>
+                {members.map((member) => (
+                  <ValueCell key={member.memberId} $penalty>
+                    {member.attendancePenalty}점
+                  </ValueCell>
                 ))}
-              </WeeksGroup>
-            </WeeksInner>
-          </WeeksScroll>
-
-          <PenaltyColumn>
-            <PenaltyCard>
-              <HeadCell $penalty>감점</HeadCell>
-              {members.map((member) => (
-                <ValueCell key={member.memberId} $penalty>
-                  {member.attendancePenalty}점
-                </ValueCell>
-              ))}
-            </PenaltyCard>
-          </PenaltyColumn>
-        </WeeksAndPenalty>
-      </TableRow>
+              </PenaltyCard>
+            </PenaltyColumn>
+          </WeeksAndPenalty>
+        </TableRow>
+      )}
 
       {reasonTarget && (
         <AttendanceReasonModal
@@ -436,6 +441,11 @@ const PartAttendanceTable = ({ members, partName, partFilter, onSave, isSaving }
 };
 
 export default PartAttendanceTable;
+
+// 표 안에 들어가는 자리라 프로젝트 목록(468px)보다 낮게 잡는다
+const AttendanceEmptyState = styled(EmptyState)`
+  min-height: 240px;
+`;
 
 const HEAD_HEIGHT = 52;
 const ROW_HEIGHT = 70;
