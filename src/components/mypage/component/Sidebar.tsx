@@ -2,7 +2,6 @@ import { useState } from 'react';
 import Link from 'next/link';
 import styled from 'styled-components';
 
-import { IcChevronDown } from '@assets/svg';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
@@ -29,11 +28,10 @@ const Sidebar = ({ active, isAdmin = false }: { active: SidebarActive; isAdmin?:
           <GroupToggle
             type="button"
             aria-expanded={isAdminOpen}
-            $active={isAdminSection}
+            $active={isAdminOpen || isAdminSection}
             onClick={() => setIsAdminOpen((prev) => !prev)}
           >
             관리자
-            <ToggleIcon width={16} height={16} $open={isAdminOpen} aria-hidden />
           </GroupToggle>
           {isAdminOpen && (
             <>
@@ -82,10 +80,6 @@ const AdminGroup = styled.div`
 
 // 관리자 하위 메뉴에 들어와 있으면 상위 항목들과 동일하게 선택된 색으로 표시한다
 const GroupToggle = styled.button<{ $active?: boolean }>`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 4px;
   width: 100%;
   padding: 8px 0;
   border: none;
@@ -94,12 +88,6 @@ const GroupToggle = styled.button<{ $active?: boolean }>`
   cursor: pointer;
   color: ${(props) => (props.$active ? Label.strong : Label.assistive)};
   ${typographyCss(Typography.heading2.bold)}
-`;
-
-const ToggleIcon = styled(IcChevronDown)<{ $open: boolean }>`
-  flex-shrink: 0;
-  transition: transform 0.15s ease;
-  transform: rotate(${(props) => (props.$open ? '180deg' : '0deg')});
 `;
 
 const StyledLink = styled(Link)`
