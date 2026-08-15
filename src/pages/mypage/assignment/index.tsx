@@ -7,6 +7,8 @@ import styled from 'styled-components';
 
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import Toast from '@common/toast/Toast';
+import CircularLoading from '@common/loading/CircularLoading';
+import EmptyState from '@common/emptyState/EmptyState';
 import MyPageShell from '@mypage/component/MyPageShell';
 import AssignmentPartSelect from '@mypage/component/AssignmentPartSelect';
 import StaffAssignmentCard from '@mypage/component/StaffAssignmentCard';
@@ -121,7 +123,11 @@ const MyPageAssignment = () => {
   const selectedPartId = parts.find((part) => part.name === currentPartName)?.id;
 
   // 회장: partId로 파트별 조회 / 운영진: 본인 파트 조회
-  const { data: weekGroups } = useQuery<AssignmentWeekGroup[]>({
+  const {
+    data: weekGroups,
+    isLoading: isWeekGroupsLoading,
+    isError: isWeekGroupsError,
+  } = useQuery<AssignmentWeekGroup[]>({
     queryKey: isPresident ? ['presidentAssignments', selectedPartId ?? null] : ['staffAssignments'],
     queryFn: () =>
       isPresident ? getPresidentAssignments(tokenState, selectedPartId as number) : getStaffAssignments(tokenState),
@@ -160,21 +166,29 @@ const MyPageAssignment = () => {
                 <IcPlus width={16} height={16} />
               </CreateButton>
             </Header>
-            <List>
-              {weeks.map((group) => (
-                <StaffAssignmentCard
-                  key={group.week}
-                  week={group.week}
-                  assignments={group.assignments}
-                  onDetail={() =>
-                    router.push({
-                      pathname: `/mypage/assignment/status/${group.week}`,
-                      query: isPresident && selectedPartId != null ? { partId: selectedPartId } : undefined,
-                    })
-                  }
-                />
-              ))}
-            </List>
+            {isWeekGroupsLoading ? (
+              <LoadingWrapper>
+                <CircularLoading size={32} />
+              </LoadingWrapper>
+            ) : isWeekGroupsError ? (
+              <EmptyState variant="error" />
+            ) : (
+              <List>
+                {weeks.map((group) => (
+                  <StaffAssignmentCard
+                    key={group.week}
+                    week={group.week}
+                    assignments={group.assignments}
+                    onDetail={() =>
+                      router.push({
+                        pathname: `/mypage/assignment/status/${group.week}`,
+                        query: isPresident && selectedPartId != null ? { partId: selectedPartId } : undefined,
+                      })
+                    }
+                  />
+                ))}
+              </List>
+            )}
           </>
         ) : (
           <>
@@ -258,4 +272,12 @@ const List = styled.div`
   align-items: flex-start;
   gap: 18px;
   width: 100%;
+`;
+
+const LoadingWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 300px;
 `;
