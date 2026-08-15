@@ -1,9 +1,9 @@
 import { ArchivingArrayType, IProjectData, UserProfile } from '@@types/request';
 import Button from '@common/button/Button';
 import CircularLoading from '@common/loading/CircularLoading';
+import EmptyState from '@common/emptyState/EmptyState';
 import Toast from '@common/toast/Toast';
 import IcAdd from '@assets/svg/ic-add.svg';
-import { IcFailure } from '@assets/svg';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
@@ -19,7 +19,6 @@ import useTokenStore from 'src/store/useTokenStore';
 import { isAdminRole, sortArchivingListDesc } from '@utils/index';
 import styled from 'styled-components';
 import ProjectCard from './ProjectCard';
-import ProjectEmptyState from './ProjectEmptyState';
 import ProjectFilterSelect from './ProjectFilterSelect';
 
 const ALL_OPTION = '전체';
@@ -171,9 +170,9 @@ const ProjectsSection = ({ staticData }: { staticData: ArchivingArrayType<IProje
           <CircularLoading size={32} />
         </LoadingWrapper>
       ) : isError && !hasLoadedProjects ? (
-        <ProjectEmptyState icon={<IcFailure width={64} height={64} />} message="정보 불러오기를 실패했어요." />
+        <EmptyState variant="error" />
       ) : sortedProjects.length === 0 ? (
-        <ProjectEmptyState />
+        <EmptyState message="조건에 맞는 프로젝트가 없습니다." />
       ) : (
         <CardGrid>
           {sortedProjects.map((project, index) => (

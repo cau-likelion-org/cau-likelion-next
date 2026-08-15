@@ -2,6 +2,8 @@ import { useQuery } from '@tanstack/react-query';
 import styled from 'styled-components';
 
 import { getTalents } from 'src/apis/talent';
+import LinearLoading from '@common/loading/LinearLoading';
+import EmptyState from '@common/emptyState/EmptyState';
 import { Black } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
@@ -15,7 +17,7 @@ const toItems = (content: string) =>
     .filter((line) => line !== '');
 
 const TalentSection = () => {
-  const { data } = useQuery({ queryKey: ['talents'], queryFn: getTalents });
+  const { data, isLoading, isError } = useQuery({ queryKey: ['talents'], queryFn: getTalents });
 
   const talents = data ?? [];
   const common = talents.find((talent) => talent.partName.startsWith('공통'));
@@ -25,16 +27,24 @@ const TalentSection = () => {
     <Wrapper>
       <Content>
         <SectionTitle>중앙대학교 멋쟁이사자처럼 인재상</SectionTitle>
-        <Card>
-          {common && <TalentListBlock title={common.partName} items={toItems(common.content)} />}
-          <PartRow>
-            {parts.map((part) => (
-              <PartCard key={part.id}>
-                <TalentListBlock title={part.partName} items={toItems(part.content)} />
-              </PartCard>
-            ))}
-          </PartRow>
-        </Card>
+        {isLoading ? (
+          <LoadingWrapper>
+            <LinearLoading />
+          </LoadingWrapper>
+        ) : isError ? (
+          <EmptyState variant="error" />
+        ) : (
+          <Card>
+            {common && <TalentListBlock title={common.partName} items={toItems(common.content)} />}
+            <PartRow>
+              {parts.map((part) => (
+                <PartCard key={part.id}>
+                  <TalentListBlock title={part.partName} items={toItems(part.content)} />
+                </PartCard>
+              ))}
+            </PartRow>
+          </Card>
+        )}
       </Content>
     </Wrapper>
   );
@@ -104,4 +114,12 @@ const PartCard = styled.div`
   padding: 12px;
   border-radius: 12px;
   background-color: ${Black.b900};
+`;
+
+const LoadingWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 200px;
 `;

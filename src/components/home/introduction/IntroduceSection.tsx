@@ -2,6 +2,8 @@ import { useQuery } from '@tanstack/react-query';
 import styled from 'styled-components';
 
 import { getIntroduce } from 'src/apis/introduce';
+import LinearLoading from '@common/loading/LinearLoading';
+import EmptyState from '@common/emptyState/EmptyState';
 import { Black, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
@@ -11,7 +13,7 @@ interface IStat {
 }
 
 const IntroduceSection = () => {
-  const { data: indicator } = useQuery({ queryKey: ['indicator'], queryFn: getIntroduce });
+  const { data: indicator, isLoading, isError } = useQuery({ queryKey: ['indicator'], queryFn: getIntroduce });
 
   const stats: IStat[] = [
     { number: indicator ? `${indicator.cumulativeGenerations}기` : '', label: '누적 활동 기수' },
@@ -30,17 +32,25 @@ const IntroduceSection = () => {
             중앙대 멋사 간략한 소개글 두줄 정도 중앙대 멋사 간략한 소개글 두줄 정도
           </Description>
         </TextGroup>
-        <StatsGroup>
-          <StatRow>
-            {stats.map(({ number, label }) => (
-              <StatCard key={label}>
-                <StatNumber>{number}</StatNumber>
-                <StatLabel>{label}</StatLabel>
-              </StatCard>
-            ))}
-          </StatRow>
-          <Footnote>*출처정보 (2026년 02월 기준)</Footnote>
-        </StatsGroup>
+        {isLoading ? (
+          <LoadingWrapper>
+            <LinearLoading />
+          </LoadingWrapper>
+        ) : isError ? (
+          <EmptyState variant="error" />
+        ) : (
+          <StatsGroup>
+            <StatRow>
+              {stats.map(({ number, label }) => (
+                <StatCard key={label}>
+                  <StatNumber>{number}</StatNumber>
+                  <StatLabel>{label}</StatLabel>
+                </StatCard>
+              ))}
+            </StatRow>
+            <Footnote>*출처정보 (2026년 02월 기준)</Footnote>
+          </StatsGroup>
+        )}
       </Content>
     </Wrapper>
   );
@@ -136,4 +146,12 @@ const Footnote = styled.p`
   ${typographyCss(Typography.caption1.regular)}
   color: ${Orange.o100};
   margin: 0;
+`;
+
+const LoadingWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 200px;
 `;
