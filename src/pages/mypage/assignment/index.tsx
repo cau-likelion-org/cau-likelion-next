@@ -52,6 +52,8 @@ const resolveActionLabel = (endDate: string, assignments: { submittedAt: string 
   return assignments.every((assignment) => !assignment.submittedAt) ? '제출하기' : '수정하기';
 };
 
+const ALL_PART = '전체';
+
 const MyPageAssignment = () => {
   const tokenState = useTokenStore((state) => state.token);
   const hasHydrated = useTokenStore((state) => state.hasHydrated);
@@ -100,9 +102,10 @@ const MyPageAssignment = () => {
   const parts = (activeGeneration?.parts ?? [])
     .filter((part) => part.name !== '기타')
     .sort((a, b) => TRACK_OPTIONS.indexOf(a.name) - TRACK_OPTIONS.indexOf(b.name));
-  const partOptions = parts.map((part) => part.name);
-  const [selectedPartName, setSelectedPartName] = useState('');
-  const currentPartName = selectedPartName || partOptions[0] || '';
+  // 출결관리와 동일하게 '전체'를 맨 앞에 두고 기본 선택으로 쓴다
+  const partOptions = [ALL_PART, ...parts.map((part) => part.name)];
+  const [selectedPartName, setSelectedPartName] = useState(ALL_PART);
+  const currentPartName = selectedPartName;
   const selectedPartId = parts.find((part) => part.name === currentPartName)?.id;
 
   // 과제 생성·상세보기는 데스크톱 전용이라 모바일에서는 안내 모달을 띄운다
@@ -134,10 +137,10 @@ const MyPageAssignment = () => {
     isLoading: isWeekGroupsLoading,
     isError: isWeekGroupsError,
   } = useQuery<AssignmentWeekGroup[]>({
-    queryKey: isPresident ? ['presidentAssignments', selectedPartId ?? null] : ['staffAssignments'],
+    queryKey: isPresident ? ['presidentAssignments', selectedPartId ?? 'all'] : ['staffAssignments'],
     queryFn: () =>
-      isPresident ? getPresidentAssignments(tokenState, selectedPartId as number) : getStaffAssignments(tokenState),
-    enabled: isStaffOrAdmin && (!isPresident || selectedPartId != null),
+      isPresident ? getPresidentAssignments(tokenState, selectedPartId) : getStaffAssignments(tokenState),
+    enabled: isStaffOrAdmin,
   });
 
   // 최신 주차가 18이면 18 → 1주차까지 연속으로 표시 (과제 없는 주차는 빈 카드)
