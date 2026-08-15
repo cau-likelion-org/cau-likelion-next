@@ -81,6 +81,13 @@ const Row = styled.div`
   justify-content: space-between;
   gap: 16px;
   width: 100%;
+
+  /* 모바일 시안에서는 기술스택과 동일하게 라벨 아래로 값이 내려간다 */
+  @media (max-width: 700px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
 `;
 
 const Column = styled.div`

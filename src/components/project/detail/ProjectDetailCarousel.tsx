@@ -85,11 +85,20 @@ const Dots = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
+
+  @media (max-width: 700px) {
+    gap: 12px;
+  }
 `;
 
 const Dot = styled.button<{ $active: boolean }>`
   width: 10px;
   height: 10px;
+
+  @media (max-width: 700px) {
+    width: 6px;
+    height: 6px;
+  }
   padding: 0;
   border: none;
   border-radius: 999px;
