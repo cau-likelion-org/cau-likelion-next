@@ -158,27 +158,37 @@ const MyPageAdminLanding = () => {
   const [syncedIntroduce, setSyncedIntroduce] = useState(introduce);
   if (introduce !== syncedIntroduce) {
     setSyncedIntroduce(introduce);
-    setIntroduceMetrics(introduce ? introduceToLocal(introduce) : DEFAULT_INTRODUCE_METRICS);
+    if (!isEditing) {
+      setIntroduceMetrics(introduce ? introduceToLocal(introduce) : DEFAULT_INTRODUCE_METRICS);
+    }
   }
   const [syncedTracks, setSyncedTracks] = useState(tracks);
   if (tracks !== syncedTracks) {
     setSyncedTracks(tracks);
-    setTrackItems((tracks ?? []).map(trackToLocal));
+    if (!isEditing) {
+      setTrackItems((tracks ?? []).map(trackToLocal));
+    }
   }
   const [syncedActivities, setSyncedActivities] = useState(activities);
   if (activities !== syncedActivities) {
     setSyncedActivities(activities);
-    setActivityItems((activities ?? []).map(activityToLocal));
+    if (!isEditing) {
+      setActivityItems((activities ?? []).map(activityToLocal));
+    }
   }
   const [syncedProjects, setSyncedProjects] = useState(projects);
   if (projects !== syncedProjects) {
     setSyncedProjects(projects);
-    setProjectItems((projects ?? []).map(projectToLocal));
+    if (!isEditing) {
+      setProjectItems((projects ?? []).map(projectToLocal));
+    }
   }
   const [syncedFaqs, setSyncedFaqs] = useState(faqs);
   if (faqs !== syncedFaqs) {
     setSyncedFaqs(faqs);
-    setFaqItems((faqs ?? []).map(faqToLocal));
+    if (!isEditing) {
+      setFaqItems((faqs ?? []).map(faqToLocal));
+    }
   }
 
   useEffect(() => {
@@ -285,7 +295,7 @@ const MyPageAdminLanding = () => {
                     </Button>
                   </>
                 ) : (
-                  <EditButton onClick={() => setIsEditing(true)} disabled={!isDataLoaded} />
+                  <EditButton onClick={() => setIsEditing(true)} />
                 )}
               </ButtonRow>
             </TitleRow>

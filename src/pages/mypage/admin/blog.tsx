@@ -87,7 +87,9 @@ const MyPageAdminBlog = () => {
   const [syncedBlogs, setSyncedBlogs] = useState(blogs);
   if (blogs !== syncedBlogs) {
     setSyncedBlogs(blogs);
-    setBlogItems((blogs ?? []).map(blogToLocal));
+    if (!isEditing) {
+      setBlogItems((blogs ?? []).map(blogToLocal));
+    }
   }
 
   useEffect(() => {
@@ -156,7 +158,7 @@ const MyPageAdminBlog = () => {
                     </Button>
                   </>
                 ) : (
-                  <EditButton onClick={() => setIsEditing(true)} disabled={!isDataLoaded} />
+                  <EditButton onClick={() => setIsEditing(true)} />
                 )}
               </ButtonRow>
             </TitleRow>

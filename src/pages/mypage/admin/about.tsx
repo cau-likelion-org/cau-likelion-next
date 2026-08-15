@@ -157,14 +157,18 @@ const MyPageAdminAbout = () => {
   const [syncedTalents, setSyncedTalents] = useState(talents);
   if (talents !== syncedTalents) {
     setSyncedTalents(talents);
-    setTalentItems((talents ?? []).map(talentToLocal));
+    if (!isEditing) {
+      setTalentItems((talents ?? []).map(talentToLocal));
+    }
   }
   const [syncedTracks, setSyncedTracks] = useState(tracks);
   const [syncedCurriculums, setSyncedCurriculums] = useState(curriculums);
   if (tracks !== syncedTracks || curriculums !== syncedCurriculums) {
     setSyncedTracks(tracks);
     setSyncedCurriculums(curriculums);
-    setCurriculumTracks(buildCurriculumTracks(tracks ?? [], curriculums ?? []));
+    if (!isEditing) {
+      setCurriculumTracks(buildCurriculumTracks(tracks ?? [], curriculums ?? []));
+    }
   }
   const [syncedRoadmap, setSyncedRoadmap] = useState(roadmap);
   if (roadmap !== syncedRoadmap) {
@@ -281,7 +285,7 @@ const MyPageAdminAbout = () => {
                     </Button>
                   </>
                 ) : (
-                  <EditButton onClick={() => setIsEditing(true)} disabled={!isDataLoaded} />
+                  <EditButton onClick={() => setIsEditing(true)} />
                 )}
               </ButtonRow>
             </TitleRow>
