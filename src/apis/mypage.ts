@@ -1,44 +1,29 @@
-import { RequestEditUserScore, UserAttendance } from '@@types/request';
 import { IToken } from 'src/store/useTokenStore';
-import axios from 'axios';
 import { getAuthAxios } from './authAxios';
-import { ResponseData } from '@@types/request';
-import { url } from '.';
 
-export const getUserAttendance = async (token: IToken) => {
-  const authAxios = getAuthAxios(token);
-  const data = await authAxios.get<ResponseData<UserAttendance>>(`/api/mypage/attendance`).then((res) => res.data.data);
-  return data;
-};
-
-export const getTotalAttendance = async (token: IToken) => {
-  const authAxios = getAuthAxios(token);
-  const data = await authAxios
-    .get<ResponseData<UserAttendance[]>>(`/api/mypage/attendance`)
-    .then((res) => res.data.data);
-  return data;
-};
-
-export const getAssignments = () => {
-  return axios.get('/api/notion/assignments').then((res) => res.data);
-};
-
-export function editUserScore(userScore: RequestEditUserScore, token: IToken) {
-  const authAxios = getAuthAxios(token);
-  return authAxios.post(`/api/mypage/attendance`, {
-    user_id: userScore.user_id,
-    truancy: userScore.truancy,
-    absence: userScore.absence,
-    tardiness: userScore.tardiness,
-  });
+export interface MemberScore {
+  memberId: number;
+  name: string;
+  generationNumber: number;
+  partName: string;
+  lateCount: number; // 지각
+  absentCount: number; // 결석
+  unauthorizedAbsentCount: number; // 무단결석
+  lateSubmitCount: number; // 과제 지각제출
+  missedCount: number; // 과제 미제출
+  total: number; // 3점 만점 총점
 }
 
-export function makeAttendance(date: string, password: string, token: IToken) {
+// 아기사자: 본인 상벌점 내역
+export const getMyScore = async (token: IToken) => {
   const authAxios = getAuthAxios(token);
-  return authAxios
-    .post(`/api/attendance/secret`, {
-      date,
-      password,
-    })
-    .then((res) => res.data.data);
-}
+  const response = await authAxios.get<MemberScore>('/api/mypage/score');
+  return response.data;
+};
+
+// 아기사자 상벌점 목록 — 운영진은 본인 파트만, 회장/관리자는 전체 (범위는 서버가 역할로 판단)
+export const getMemberScores = async (token: IToken) => {
+  const authAxios = getAuthAxios(token);
+  const response = await authAxios.get<MemberScore[]>('/api/mypage/scores');
+  return response.data;
+};

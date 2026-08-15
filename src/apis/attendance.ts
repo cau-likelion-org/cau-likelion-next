@@ -1,38 +1,9 @@
-import { TodayAttendanceData, TodayAttendanceListData } from '@@types/request';
 import { IToken } from 'src/store/useTokenStore';
 import { getAuthAxios } from './authAxios';
-import { toDateString } from '@utils/index';
-import { url } from '.';
 
-export function getAttendance(token: IToken) {
+export function checkAttendance(token: IToken, password: string) {
   const authAxios = getAuthAxios(token);
-  const today = new Date();
-  return authAxios
-    .get(`/api/attendance`, {
-      params: {
-        date: toDateString(today),
-      },
-    })
-    .then((res) => {
-      return res.data.data as TodayAttendanceData;
-    });
-}
-export function postAttendance(password: string, token: IToken) {
-  const authAxios = getAuthAxios(token);
-  return authAxios.post(`/api/attendance`, {
-    password: password,
-  });
-}
-export function getAttendanceList(token: IToken) {
-  const authAxios = getAuthAxios(token);
-  const today = new Date();
-  return authAxios
-    .get(`/api/attendance/list`, {
-      params: {
-        date: toDateString(today),
-      },
-    })
-    .then((res) => res.data.data as TodayAttendanceListData);
+  return authAxios.post<AttendanceStatusResponse>('/api/attendances/check', { password }).then((res) => res.data);
 }
 
 export interface WeeklyAttendanceCreatePayload {
@@ -74,6 +45,12 @@ export interface MemberAttendanceResponse {
   partName: string;
   attendances: AttendanceStatusResponse[];
   attendancePenalty: number;
+}
+
+// 아기사자: 본인 주차별 출결 현황
+export function getMyAttendances(token: IToken) {
+  const authAxios = getAuthAxios(token);
+  return authAxios.get<AttendanceStatusResponse[]>('/api/attendances/me').then((res) => res.data);
 }
 
 // 운영진: 본인 파트 아기사자 출결 현황

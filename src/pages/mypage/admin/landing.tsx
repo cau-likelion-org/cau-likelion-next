@@ -29,7 +29,7 @@ import { getIntroduce, updateIntroduce, IntroduceResponse } from 'src/apis/intro
 import { getAdminProjectList, updateProjectExposure, AdminProjectListItem } from 'src/apis/project';
 import { PROJECT_CATEGORY_LABEL } from '@home/project/component/ProjectCard';
 import useTokenStore from 'src/store/useTokenStore';
-import { isAdminRole } from '@utils/index';
+import { isAdminRole, canManageSitePages } from '@utils/index';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
@@ -251,7 +251,7 @@ const MyPageAdminLanding = () => {
 
   return (
     <>
-      <MyPageShell active="admin-landing" isAdmin={isAdminRole(userProfile.role)}>
+      <MyPageShell active="admin-landing" isAdmin={canManageSitePages(userProfile.role)}>
         <TitleRow>
           <PageTitle>랜딩페이지 관리</PageTitle>
           <ButtonRow>

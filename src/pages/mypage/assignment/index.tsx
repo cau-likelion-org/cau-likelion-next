@@ -8,74 +8,46 @@ import styled from 'styled-components';
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import Toast from '@common/toast/Toast';
 import MyPageShell from '@mypage/component/MyPageShell';
+import MobileUnsupportedModal from '@common/modal/MobileUnsupportedModal';
 import AssignmentPartSelect from '@mypage/component/AssignmentPartSelect';
 import StaffAssignmentCard from '@mypage/component/StaffAssignmentCard';
 import WeeklyAssignmentCard, { WeeklyAssignmentGroup } from '@mypage/component/WeeklyAssignmentCard';
 import { getGenerations, getUserProfile } from 'src/apis/account';
-import { AssignmentWeekGroup, getPresidentAssignments, getStaffAssignments } from 'src/apis/assignment';
+import {
+  AssignmentSummaryWeekGroup,
+  AssignmentWeekGroup,
+  getMyAssignments,
+  getPresidentAssignments,
+  getStaffAssignments,
+} from 'src/apis/assignment';
 import useTokenStore from 'src/store/useTokenStore';
-import { isAdminRole, isFullAdminRole } from '@utils/index';
+import { INACTIVE_MEMBER_NOTICE_KEY } from '@utils/constant';
+import { isAdminRole, isFullAdminRole, canManageSitePages } from '@utils/index';
 import { IcPlus } from '@assets/svg';
-import { Label, Line } from '@utils/constant/color';
+import { Fill, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
-// 백엔드 API 준비 전까지 사용하는 목 데이터
-const MOCK_WEEKLY_ASSIGNMENTS: WeeklyAssignmentGroup[] = [
-  {
-    week: 18,
-    status: 'before',
-    cards: [
-      {
-        items: [
-          { name: '연구 프로젝트 1', status: 'approved', submittedAt: '2026/12/12 17:48' },
-          { name: '연구 프로젝트 2', status: 'pending', submittedAt: '2026/12/12 17:48' },
-          { name: '연구 프로젝트 3', status: 'rejected', submittedAt: '2026/12/12 17:48' },
-        ],
-        dueDate: '2026/09/30',
-        actionLabel: '수정하기',
-      },
-      {
-        items: [
-          { name: '연구 프로젝트 A', status: 'before' },
-          { name: '연구 프로젝트 3', status: 'rejected', submittedAt: '2026/12/12 17:48' },
-        ],
-        dueDate: '2026/09/34',
-        actionLabel: '수정하기',
-      },
-      {
-        id: '18',
-        items: [{ name: '연구 프로젝트 A', status: 'before' }],
-        dueDate: '2026/09/35',
-        actionLabel: '제출하기',
-      },
-    ],
-  },
-  {
-    week: 17,
-    status: 'late',
-    cards: [
-      {
-        items: [{ name: '연구 프로젝트 A', status: 'approved', submittedAt: '2026/12/12 17:48' }],
-        dueDate: '2026/09/30',
-      },
-    ],
-  },
-  {
-    week: 16,
-    status: 'missed',
-    cards: [
-      {
-        items: [{ name: '연구 프로젝트 A', status: 'missed' }],
-        dueDate: '2026/09/30',
-      },
-    ],
-  },
-  {
-    week: 15,
-    status: 'done',
-    cards: [],
-  },
-];
+// 마감 기한(ISO) → 2026/09/30
+const formatDueDate = (value: string) => {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${date.getFullYear()}/${pad(date.getMonth() + 1)}/${pad(date.getDate())}`;
+};
+
+// 제출 시각(ISO) → 2026/12/12 17:48
+const formatSubmittedAt = (value: string) => {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${formatDueDate(value)} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+};
+
+// 마감이 지났으면 버튼을 숨기고, 한 건도 제출하지 않았으면 제출하기로 보여준다
+const resolveActionLabel = (endDate: string, assignments: { submittedAt: string | null }[]) => {
+  if (new Date(endDate).getTime() < Date.now()) return undefined;
+  return assignments.every((assignment) => !assignment.submittedAt) ? '제출하기' : '수정하기';
+};
 
 const MyPageAssignment = () => {
   const tokenState = useTokenStore((state) => state.token);
@@ -92,6 +64,13 @@ const MyPageAssignment = () => {
   useEffect(() => {
     if (hasHydrated && !tokenState.access) router.push('/login');
   }, [hasHydrated, tokenState, router]);
+
+  // 어른사자는 활동 중인 구성원이 아니므로 홈으로 돌려보내고, 홈에서 사유를 토스트로 안내한다
+  useEffect(() => {
+    if (userProfile?.role !== 'ADULT_LION') return;
+    sessionStorage.setItem(INACTIVE_MEMBER_NOTICE_KEY, '1');
+    router.replace('/mypage');
+  }, [userProfile?.role, router]);
 
   // 과제 생성 완료 후 넘어오면 토스트 표시
   const [toastMessage, setToastMessage] = useState('');
@@ -120,6 +99,29 @@ const MyPageAssignment = () => {
   const currentPartName = selectedPartName || partOptions[0] || '';
   const selectedPartId = parts.find((part) => part.name === currentPartName)?.id;
 
+  // 과제 생성·상세보기는 데스크톱 전용이라 모바일에서는 안내 모달을 띄운다
+  const [isUnsupportedOpen, setIsUnsupportedOpen] = useState(false);
+  const isMobileViewport = () => typeof window !== 'undefined' && window.matchMedia('(max-width: 900px)').matches;
+
+  const handleCreate = () => {
+    if (isMobileViewport()) {
+      setIsUnsupportedOpen(true);
+      return;
+    }
+    router.push('/mypage/assignment/create');
+  };
+
+  const handleDetail = (week: number) => {
+    if (isMobileViewport()) {
+      setIsUnsupportedOpen(true);
+      return;
+    }
+    router.push({
+      pathname: `/mypage/assignment/status/${week}`,
+      query: isPresident && selectedPartId != null ? { partId: selectedPartId } : undefined,
+    });
+  };
+
   // 회장: partId로 파트별 조회 / 운영진: 본인 파트 조회
   const { data: weekGroups } = useQuery<AssignmentWeekGroup[]>({
     queryKey: isPresident ? ['presidentAssignments', selectedPartId ?? null] : ['staffAssignments'],
@@ -139,11 +141,39 @@ const MyPageAssignment = () => {
     });
   })();
 
+  // 아기사자: 본인 과제 목록 (마감일이 같은 과제끼리 한 카드로 묶는다)
+  const { data: myWeekGroups } = useQuery<AssignmentSummaryWeekGroup[]>({
+    queryKey: ['myAssignments'],
+    queryFn: () => getMyAssignments(tokenState),
+    enabled: !!userProfile && !isStaffOrAdmin && userProfile.role !== 'ADULT_LION',
+  });
+
+  // 한 주차의 과제는 마감일이 모두 같으므로 주차당 카드 하나로 묶는다
+  const myGroups: WeeklyAssignmentGroup[] = (myWeekGroups ?? []).map((group) => ({
+    week: group.week,
+    status: group.weeklyStatus,
+    cards:
+      group.assignments.length === 0
+        ? []
+        : [
+            {
+              id: String(group.week),
+              items: group.assignments.map((assignment) => ({
+                name: assignment.title,
+                status: assignment.status,
+                submittedAt: assignment.submittedAt ? formatSubmittedAt(assignment.submittedAt) : undefined,
+              })),
+              dueDate: formatDueDate(group.assignments[0].endDate),
+              actionLabel: resolveActionLabel(group.assignments[0].endDate, group.assignments),
+            },
+          ],
+  }));
+
   if (!userProfile) return null;
 
   return (
     <>
-      <MyPageShell active="assignment" isAdmin={isAdminRole(userProfile.role)}>
+      <MyPageShell active="assignment" isAdmin={canManageSitePages(userProfile.role)}>
         {isStaffOrAdmin ? (
           <>
             <Header>
@@ -155,7 +185,7 @@ const MyPageAssignment = () => {
                   <TrackName>{userProfile.partName} 파트</TrackName>
                 )}
               </TitleRow>
-              <CreateButton type="button" onClick={() => router.push('/mypage/assignment/create')}>
+              <CreateButton type="button" onClick={handleCreate}>
                 과제 생성
                 <IcPlus width={16} height={16} />
               </CreateButton>
@@ -166,12 +196,7 @@ const MyPageAssignment = () => {
                   key={group.week}
                   week={group.week}
                   assignments={group.assignments}
-                  onDetail={() =>
-                    router.push({
-                      pathname: `/mypage/assignment/status/${group.week}`,
-                      query: isPresident && selectedPartId != null ? { partId: selectedPartId } : undefined,
-                    })
-                  }
+                  onDetail={() => handleDetail(group.week)}
                 />
               ))}
             </List>
@@ -183,7 +208,7 @@ const MyPageAssignment = () => {
               <TrackName>{userProfile.partName} 파트</TrackName>
             </TitleRow>
             <List>
-              {MOCK_WEEKLY_ASSIGNMENTS.map((group) => (
+              {myGroups.map((group) => (
                 <WeeklyAssignmentCard key={group.week} group={group} />
               ))}
             </List>
@@ -193,6 +218,7 @@ const MyPageAssignment = () => {
       <ToastWrapper>
         <Toast variant="positive" text={toastMessage} show={!!toastMessage} onHidden={() => setToastMessage('')} />
       </ToastWrapper>
+      {isUnsupportedOpen && <MobileUnsupportedModal onClose={() => setIsUnsupportedOpen(false)} />}
     </>
   );
 };
@@ -217,6 +243,10 @@ const Header = styled.div`
   align-items: center;
   justify-content: space-between;
   width: 100%;
+
+  @media (max-width: 900px) {
+    align-items: flex-start;
+  }
 `;
 
 const CreateButton = styled.button`
@@ -231,6 +261,15 @@ const CreateButton = styled.button`
   color: ${Label.normal};
   cursor: pointer;
   ${typographyCss(Typography.body2Normal.medium)}
+
+  /* Figma 모바일: solid/assistive 버튼 (공용 Button의 small+assistive와 동일한 값) */
+  @media (max-width: 900px) {
+    padding: 7px 14px;
+    border: none;
+    background-color: ${Fill.normal};
+    color: ${Label.neutral};
+    ${typographyCss({ ...Typography.label2.bold, fontWeight: 500 })}
+  }
 `;
 
 const TitleRow = styled.div`
@@ -238,6 +277,13 @@ const TitleRow = styled.div`
   align-items: center;
   gap: 18px;
   width: 100%;
+
+  /* Figma 모바일: 제목 아래 파트명 */
+  @media (max-width: 900px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
 `;
 
 const SectionTitle = styled.p`

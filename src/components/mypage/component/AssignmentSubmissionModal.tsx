@@ -43,6 +43,14 @@ const AssignmentSubmissionModal = ({ submission, onClose }: AssignmentSubmission
               </ResourceRow>
             ))}
           </Resources>
+
+          {/* 반려된 제출물이면 운영진이 남긴 사유를 함께 보여준다 */}
+          {submission.rejectionReason && (
+            <Field>
+              <FieldLabel>이전 반려 사유</FieldLabel>
+              <ContentBox>{submission.rejectionReason}</ContentBox>
+            </Field>
+          )}
         </Information>
 
         <Actions>

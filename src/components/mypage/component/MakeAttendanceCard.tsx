@@ -57,7 +57,7 @@ const MakeAttendanceCard = () => {
       <Content>
         <Title>출석부 만들기</Title>
         <FieldRow>
-          <Field $width="158px">
+          <Field $width="158px" $mobileGrow>
             <FieldLabel>출석 일자 설정</FieldLabel>
             <DateInputWrapper $disabled={isCreated} onClick={() => dateInputRef.current?.showPicker?.()}>
               <IcCalender width={22} height={22} />
@@ -88,7 +88,7 @@ const MakeAttendanceCard = () => {
             </InputBox>
           </Field>
 
-          <Field $flex>
+          <Field $flex $mobileFull>
             <FieldLabel>비밀번호 생성</FieldLabel>
             <PasswordRow>
               <PasswordInputBox $disabled={isCreated}>
@@ -135,6 +135,10 @@ const Wrapper = styled.div`
   flex-shrink: 0;
   width: 520px;
   min-height: 152px;
+
+  @media (max-width: 900px) {
+    width: 100%;
+  }
   padding: 20px;
   border-radius: 14px;
   border: 1px solid ${Line.subtle};
@@ -161,13 +165,23 @@ const FieldRow = styled.div`
   align-items: flex-end;
   gap: 12px;
   width: 100%;
+
+  /* 모바일은 출석 일자·주차 구분이 한 줄, 비밀번호 생성이 다음 줄 (Figma) */
+  @media (max-width: 900px) {
+    flex-wrap: wrap;
+  }
 `;
 
-const Field = styled.div<{ $width?: string; $flex?: boolean }>`
+const Field = styled.div<{ $width?: string; $flex?: boolean; $mobileGrow?: boolean; $mobileFull?: boolean }>`
   display: flex;
   flex-direction: column;
   gap: 8px;
   ${(props) => (props.$flex ? 'flex: 1 0 0; min-width: 0;' : `width: ${props.$width};`)}
+
+  @media (max-width: 900px) {
+    ${(props) => props.$mobileGrow && 'flex: 1 0 0; min-width: 0; width: auto;'}
+    ${(props) => props.$mobileFull && 'flex: 0 0 100%; width: 100%;'}
+  }
 `;
 
 const FieldLabel = styled.span`

@@ -1,51 +1,53 @@
 import { useState } from 'react';
-import { AxiosError } from 'axios';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import styled from 'styled-components';
 
 import TextField from '@common/textField/TextField';
-import { getAttendance, postAttendance } from 'src/apis/attendance';
+import { AttendanceStatusResponse, checkAttendance, getMyAttendances } from 'src/apis/attendance';
 import useTokenStore from 'src/store/useTokenStore';
-import { TodayAttendanceData } from '@@types/request';
+import { toDateString } from '@utils/index';
 import { BackgroundWhite, Black, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
-const AttendanceCheckCard = () => {
+// 출석체크 대상이 아닌 역할(운영진·회장·관리자·어른사자)은 조회 결과와 무관하게 비활성으로 보여준다
+const AttendanceCheckCard = ({ isTarget = true }: { isTarget?: boolean }) => {
   const tokenState = useTokenStore((state) => state.token);
   const queryClient = useQueryClient();
   const [password, setPassword] = useState('');
   const [passwordError, setPasswordError] = useState(false);
 
-  const { data, isLoading, error } = useQuery<TodayAttendanceData, AxiosError>({
-    queryKey: ['attendance'],
-    queryFn: () => getAttendance(tokenState),
+  const { data: records, isLoading } = useQuery<AttendanceStatusResponse[]>({
+    queryKey: ['myAttendance'],
+    queryFn: () => getMyAttendances(tokenState),
     retry: false,
-    enabled: !!tokenState.access,
+    enabled: !!tokenState.access && isTarget,
   });
 
+  // 오늘 날짜의 세션만 출석체크 대상이다. 세션이 없으면 체크할 것도 없다.
+  const todayRecord = (records ?? []).find((record) => record.date === toDateString(new Date()));
+
   const checkIn = useMutation({
-    mutationFn: (password: string) => postAttendance(password, tokenState),
+    mutationFn: (password: string) => checkAttendance(tokenState, password),
     onSuccess: () => {
       setPassword('');
       setPasswordError(false);
-      queryClient.invalidateQueries({ queryKey: ['attendance'] });
-      queryClient.invalidateQueries({ queryKey: ['userAttendance'] });
+      queryClient.invalidateQueries({ queryKey: ['myAttendance'] });
+      queryClient.invalidateQueries({ queryKey: ['myScore'] });
     },
     onError: () => {
       setPasswordError(true);
     },
   });
 
-  const isCompleted =
-    (data && (data.attendance_result === 1 || data.attendance_result === 2)) || error?.response?.status === 405;
-  const isAvailable = !isLoading && !error && !!data && !isCompleted;
+  const isCompleted = isTarget && (todayRecord?.status === 'PRESENT' || todayRecord?.status === 'LATE');
+  const isAvailable = isTarget && !isLoading && todayRecord?.status === 'BEFORE';
 
-  const placeholder = isLoading
-    ? ''
-    : isAvailable
-      ? '비밀번호를 입력해 주세요.'
-      : error?.response?.status === 406
-        ? '출석체크 대상이 아니에요'
+  const placeholder = !isTarget
+    ? '출석체크 대상이 아니에요'
+    : isLoading
+      ? ''
+      : isAvailable
+        ? '비밀번호를 입력해 주세요.'
         : '아직 출석체크 시간이 아니에요';
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -95,6 +97,10 @@ const Wrapper = styled.div<{ $active: boolean }>`
   border-radius: 14px;
   border: 1px solid ${(props) => (props.$active ? Orange.o500 : Line.subtle)};
   background-color: ${(props) => (props.$active ? Orange.o50 : BackgroundWhite.secondary)};
+
+  @media (max-width: 900px) {
+    width: 100%;
+  }
 `;
 
 const Title = styled.p`
