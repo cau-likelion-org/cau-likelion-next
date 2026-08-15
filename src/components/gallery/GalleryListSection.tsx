@@ -247,7 +247,7 @@ const GalleryListSection = () => {
     <Wrapper>
       <Header>
         <Intro title="갤러리" subtitle="페이지 소개 글 페이지 소개 글 페이지 소개 글 페이지 소개 글" />
-        <Tab items={TABS} activeKey={activeTab} onChange={handleTabChange} size="medium" />
+        <GalleryTab items={TABS} activeKey={activeTab} onChange={handleTabChange} size="medium" />
         <FilterRow>
           <FilterGroup>
             <FilterSelect
@@ -291,15 +291,17 @@ const GalleryListSection = () => {
               />
             )}
           </FilterGroup>
-          <Button
-            variant="solid"
-            color="primary"
-            size="large"
-            trailingIcon={<IcAdd width={20} height={20} />}
-            onClick={() => setIsUploadModalOpen(true)}
-          >
-            {ADD_BUTTON_LABEL[activeTab]}
-          </Button>
+          <AddButtonWrapper>
+            <Button
+              variant="solid"
+              color="primary"
+              size="large"
+              trailingIcon={<IcAdd width={20} height={20} />}
+              onClick={() => setIsUploadModalOpen(true)}
+            >
+              {ADD_BUTTON_LABEL[activeTab]}
+            </Button>
+          </AddButtonWrapper>
         </FilterRow>
       </Header>
 
@@ -442,7 +444,9 @@ const FilterSelect = ({
 };
 
 const Wrapper = styled.div`
-  width: 1060px;
+  width: 100%;
+  max-width: 1100px;
+  padding: 0 20px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -460,6 +464,25 @@ const Header = styled.div`
 const Intro = styled(PageHeader)`
   gap: 24px;
   padding-bottom: 22px;
+
+  @media (max-width: 600px) {
+    padding-top: 52px;
+
+    /* PageHeader는 900px 이하에서 타이틀을 title2로 줄이지만, 모바일 시안은 display2를 유지한다 */
+    p:first-of-type {
+      ${typographyCss(Typography.display2.bold)}
+    }
+  }
+`;
+
+const GalleryTab = styled(Tab)`
+  @media (max-width: 600px) {
+    height: 56px;
+
+    button {
+      ${typographyCss(Typography.heading2.bold)}
+    }
+  }
 `;
 
 const FilterRow = styled.div`
@@ -473,6 +496,10 @@ const FilterGroup = styled.div`
   display: flex;
   align-items: center;
   gap: 20px;
+
+  @media (max-width: 600px) {
+    width: 100%;
+  }
 `;
 
 const SelectWrapper = styled.div`
@@ -481,6 +508,18 @@ const SelectWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
+
+  @media (max-width: 600px) {
+    flex: 1 0 0;
+    min-width: 0;
+    width: auto;
+  }
+`;
+
+const AddButtonWrapper = styled.div`
+  @media (max-width: 600px) {
+    display: none;
+  }
 `;
 
 const ToastWrapper = styled.div`
@@ -504,9 +543,17 @@ const ToastWrapper = styled.div`
 const CardGrid = styled.div`
   width: 100%;
   display: grid;
-  grid-template-columns: repeat(3, 340px);
+  grid-template-columns: repeat(3, 1fr);
   column-gap: 20px;
   row-gap: 40px;
+
+  @media (max-width: 900px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 const BottomContent = styled.div`
