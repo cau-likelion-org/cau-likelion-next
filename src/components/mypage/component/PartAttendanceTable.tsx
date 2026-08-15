@@ -10,6 +10,7 @@ import {
 } from 'src/apis/attendance';
 import AttendanceReasonModal from '@mypage/component/AttendanceReasonModal';
 import EmptyState from '@common/emptyState/EmptyState';
+import CircularLoading from '@common/loading/CircularLoading';
 import ListboxOptions from '@common/select/ListboxOptions';
 import useListboxSelect from 'src/hooks/useListboxSelect';
 import { IcCaretDown, IcCaretUp } from '@assets/svg';
@@ -249,6 +250,9 @@ interface PartAttendanceTableProps {
   partFilter?: PartFilterConfig; // 회장/관리자: 파트 필터 드롭다운
   onSave?: (updates: AttendanceStatusUpdate[]) => void | Promise<unknown>; // 수정 저장 (batch)
   isSaving?: boolean;
+  // 조회 상태는 표 안에서 처리한다 — 로딩·에러여도 헤더(제목·파트·수정)는 그대로 두기 위함
+  isLoading?: boolean;
+  isError?: boolean;
 }
 
 // 결석·공결은 사유(reason)가 필수 → 선택 시 사유 모달을 띄운다.
@@ -259,7 +263,15 @@ interface EditValue {
   reason?: string;
 }
 
-const PartAttendanceTable = ({ members, partName, partFilter, onSave, isSaving }: PartAttendanceTableProps) => {
+const PartAttendanceTable = ({
+  members,
+  partName,
+  partFilter,
+  onSave,
+  isSaving,
+  isLoading = false,
+  isError = false,
+}: PartAttendanceTableProps) => {
   const [isEditing, setIsEditing] = useState(false);
   // 변경된 출결만 detailAttendanceId → {상태, 사유}로 추적
   const [edits, setEdits] = useState<Map<number, EditValue>>(new Map());
@@ -369,7 +381,13 @@ const PartAttendanceTable = ({ members, partName, partFilter, onSave, isSaving }
         )}
       </Header>
 
-      {members.length === 0 ? (
+      {isLoading ? (
+        <LoadingWrapper>
+          <CircularLoading size={32} />
+        </LoadingWrapper>
+      ) : isError ? (
+        <AttendanceEmptyState variant="error" />
+      ) : members.length === 0 ? (
         <AttendanceEmptyState message="출결 정보가 없습니다." />
       ) : (
         <TableRow>
@@ -443,6 +461,14 @@ const PartAttendanceTable = ({ members, partName, partFilter, onSave, isSaving }
 export default PartAttendanceTable;
 
 // 표 안에 들어가는 자리라 프로젝트 목록(468px)보다 낮게 잡는다
+const LoadingWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 240px;
+`;
+
 const AttendanceEmptyState = styled(EmptyState)`
   min-height: 240px;
 `;
