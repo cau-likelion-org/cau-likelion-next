@@ -32,6 +32,11 @@ const Wrapper = styled.div`
   width: 100%;
   min-height: 468px;
   padding: 10px;
+
+  @media (max-width: 600px) {
+    min-height: auto;
+    padding: 100px 10px;
+  }
 `;
 
 const IconWrapper = styled.div`
