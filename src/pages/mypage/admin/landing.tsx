@@ -9,6 +9,8 @@ import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import Button from '@common/button/Button';
 import Toast from '@common/toast/Toast';
 import MyPageShell from '@mypage/component/MyPageShell';
+import LinearLoading from '@common/loading/LinearLoading';
+import EmptyState from '@common/emptyState/EmptyState';
 import IntroduceSection, { LandingMetrics, isMetricsInvalid } from '@mypage/admin/IntroduceSection';
 import TrackSection, { TrackIntroItem, isTrackItemInvalid } from '@mypage/admin/TrackSection';
 import ActivitySection, {
@@ -102,31 +104,38 @@ const MyPageAdminLanding = () => {
   });
 
   // 편집 화면이라 창 포커스 시 백그라운드 재조회로 입력 중인 값이 덮어써지지 않도록 자동 재조회를 끔
-  const { data: introduce } = useQuery({
+  const { data: introduce, isError: isIntroduceError } = useQuery({
     queryKey: ['adminIntroduce'],
     queryFn: getIntroduce,
     refetchOnWindowFocus: false,
   });
-  const { data: tracks } = useQuery({
+  const { data: tracks, isError: isTracksError } = useQuery({
     queryKey: ['adminTracks'],
     queryFn: getTracks,
     refetchOnWindowFocus: false,
   });
-  const { data: activities } = useQuery({
+  const { data: activities, isError: isActivitiesError } = useQuery({
     queryKey: ['adminActivities'],
     queryFn: getActivities,
     refetchOnWindowFocus: false,
   });
-  const { data: projects } = useQuery({
+  const { data: projects, isError: isProjectsError } = useQuery({
     queryKey: ['adminProjects'],
     queryFn: getAdminProjectList,
     refetchOnWindowFocus: false,
   });
-  const { data: faqs } = useQuery({
+  const { data: faqs, isError: isFaqsError } = useQuery({
     queryKey: ['adminFaqs'],
     queryFn: getFaqs,
     refetchOnWindowFocus: false,
   });
+  const isDataLoaded =
+    introduce !== undefined &&
+    tracks !== undefined &&
+    activities !== undefined &&
+    projects !== undefined &&
+    faqs !== undefined;
+  const isDataError = isIntroduceError || isTracksError || isActivitiesError || isProjectsError || isFaqsError;
 
   const [introduceMetrics, setIntroduceMetrics] = useState(DEFAULT_INTRODUCE_METRICS);
   const [trackItems, setTrackItems] = useState<TrackIntroItem[]>([]);
@@ -265,25 +274,35 @@ const MyPageAdminLanding = () => {
                 </Button>
               </>
             ) : (
-              <EditButton onClick={() => setIsEditing(true)} />
+              <EditButton onClick={() => setIsEditing(true)} disabled={!isDataLoaded} />
             )}
           </ButtonRow>
         </TitleRow>
-        <IntroduceSection
-          metrics={introduceMetrics}
-          onChange={setIntroduceMetrics}
-          showErrors={showErrors}
-          disabled={!isEditing}
-        />
-        <TrackSection items={trackItems} onChange={setTrackItems} showErrors={showErrors} disabled={!isEditing} />
-        <ActivitySection
-          items={activityItems}
-          onChange={setActivityItems}
-          showErrors={showErrors}
-          disabled={!isEditing}
-        />
-        <ProjectSection projects={projectItems} onChange={setProjectItems} disabled={!isEditing} />
-        <FAQSection items={faqItems} onChange={setFaqItems} showErrors={showErrors} disabled={!isEditing} />
+        {isDataError ? (
+          <EmptyState variant="error" />
+        ) : !isDataLoaded ? (
+          <LoadingWrapper>
+            <LinearLoading />
+          </LoadingWrapper>
+        ) : (
+          <>
+            <IntroduceSection
+              metrics={introduceMetrics}
+              onChange={setIntroduceMetrics}
+              showErrors={showErrors}
+              disabled={!isEditing}
+            />
+            <TrackSection items={trackItems} onChange={setTrackItems} showErrors={showErrors} disabled={!isEditing} />
+            <ActivitySection
+              items={activityItems}
+              onChange={setActivityItems}
+              showErrors={showErrors}
+              disabled={!isEditing}
+            />
+            <ProjectSection projects={projectItems} onChange={setProjectItems} disabled={!isEditing} />
+            <FAQSection items={faqItems} onChange={setFaqItems} showErrors={showErrors} disabled={!isEditing} />
+          </>
+        )}
       </MyPageShell>
       <ToastWrapper>
         <Toast variant="positive" text={toastMessage} show={!!toastMessage} onHidden={() => setToastMessage('')} />
@@ -315,6 +334,14 @@ const ButtonRow = styled.div`
   display: flex;
   align-items: center;
   gap: 12px;
+`;
+
+const LoadingWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 300px;
 `;
 
 const ToastWrapper = styled.div`
