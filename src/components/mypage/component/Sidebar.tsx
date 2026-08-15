@@ -5,7 +5,8 @@ import styled from 'styled-components';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
-export type SidebarActive = 'home' | 'attendance' | 'assignment' | 'admin-landing' | 'admin-about' | 'admin-blog';
+export type SidebarActive =
+  'home' | 'attendance' | 'assignment' | 'admin-landing' | 'admin-about' | 'admin-blog' | 'admin-members';
 
 const Sidebar = ({ active, isAdmin = false }: { active: SidebarActive; isAdmin?: boolean }) => {
   const isAdminSection = active.startsWith('admin-');
@@ -48,6 +49,11 @@ const Sidebar = ({ active, isAdmin = false }: { active: SidebarActive; isAdmin?:
               <StyledLink href="/mypage/admin/blog">
                 <SubItem $active={active === 'admin-blog'} $inSection={isAdminSection}>
                   블로그 페이지 관리
+                </SubItem>
+              </StyledLink>
+              <StyledLink href="/mypage/admin/members">
+                <SubItem $active={active === 'admin-members'} $inSection={isAdminSection}>
+                  전체 회원/파트 관리
                 </SubItem>
               </StyledLink>
             </>
