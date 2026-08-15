@@ -92,8 +92,19 @@ export interface JoinRequest {
 
 export interface MemberUpdateRequest {
   name: string;
+  email: string;
   role: MemberRole;
   partId: number | null;
+}
+
+export interface MemberResponse {
+  id: number;
+  name: string;
+  email: string;
+  role: MemberRole;
+  partId: number | null;
+  partName: string | null;
+  generationNumber: number | null; // 소속 파트가 없으면 null
 }
 
 export interface GenerationPart {
@@ -107,6 +118,18 @@ export interface Generation {
   year: number;
   status: 'BEFORE_ACTIVITY' | 'IN_ACTIVITY' | 'AFTER_ACTIVITY';
   parts: GenerationPart[];
+}
+
+export interface GenerationCreateRequestDto {
+  number: number;
+  year: number;
+  partNames: string[];
+}
+
+export interface AllowedUserEmailItem {
+  id: number | null; // 기존 항목의 id, 신규 추가된 행이면 null
+  name: string;
+  email: string;
 }
 
 export interface UserProfile {
