@@ -3,7 +3,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import Button from '@common/button/Button';
 import { IcLogout } from '@assets/svg';
 import useTokenStore from 'src/store/useTokenStore';
-import { logout } from 'src/apis/account';
+import { deleteFcmToken, logout } from 'src/apis/account';
+import { clearCachedFcmToken, getCachedFcmToken } from 'src/lib/pushNotification';
 
 const LogoutButton = () => {
   const tokenState = useTokenStore((state) => state.token);
@@ -11,7 +12,19 @@ const LogoutButton = () => {
   const queryClient = useQueryClient();
 
   const logoutMutation = useMutation({
-    mutationFn: () => logout(tokenState.refresh),
+    mutationFn: async () => {
+      // 이 기기 토큰만 지운다. 실패해도 로그아웃 자체는 진행되어야 한다.
+      const fcmToken = getCachedFcmToken();
+      if (fcmToken) {
+        try {
+          await deleteFcmToken(tokenState, fcmToken);
+        } catch (error) {
+          console.error('[push] FCM 토큰 삭제 실패', error);
+        }
+        clearCachedFcmToken();
+      }
+      await logout(tokenState.refresh);
+    },
     onSettled: () => {
       setToken({ access: null, refresh: null });
       queryClient.clear();

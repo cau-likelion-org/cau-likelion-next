@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import styled from 'styled-components';
 
+import NotificationSetting from '@mypage/component/NotificationSetting';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
@@ -24,6 +25,7 @@ const Sidebar = ({ active, isAdmin = false }: { active: SidebarActive; isAdmin?:
       <StyledLink href="/mypage/assignment">
         <Item $active={active === 'assignment'}>과제관리</Item>
       </StyledLink>
+      <NotificationSetting />
       {isAdmin && (
         <AdminGroup>
           <GroupToggle

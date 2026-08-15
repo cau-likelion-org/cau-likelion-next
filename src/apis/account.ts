@@ -100,3 +100,15 @@ export const setCurrentGeneration = (id: number, token: IToken) => {
   const authAxios = getAuthAxios(token);
   return authAxios.patch<Generation>(`/api/generations/${id}/current`).then((res) => res.data);
 };
+
+// 과제 승인/반려 알림을 받기 위해 이 기기의 FCM 토큰을 서버에 등록한다 (기기별로 여러 개 등록 가능)
+export const updateFcmToken = async (token: IToken, fcmToken: string) => {
+  const authAxios = getAuthAxios(token);
+  await authAxios.patch(`/api/members/me/fcm-token`, { fcmToken });
+};
+
+// 로그아웃 시 이 기기 토큰만 삭제 (다른 기기 알림은 유지)
+export const deleteFcmToken = async (token: IToken, fcmToken: string) => {
+  const authAxios = getAuthAxios(token);
+  await authAxios.delete(`/api/members/me/fcm-token`, { data: { fcmToken } });
+};
