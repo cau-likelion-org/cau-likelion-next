@@ -7,6 +7,9 @@ import { UserProfile } from '@@types/request';
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import MyPageShell from '@mypage/component/MyPageShell';
 import Toast from '@common/toast/Toast';
+import CircularLoading from '@common/loading/CircularLoading';
+import EmptyState from '@common/emptyState/EmptyState';
+import PageLoadingGate from '@common/pageGate/PageLoadingGate';
 import PartAttendanceTable from '@mypage/component/PartAttendanceTable';
 import WeeklyAttendanceCard, {
   WeeklyAttendanceRecord,
@@ -59,7 +62,7 @@ const MyPageAttendance = () => {
     if (hasHydrated && !tokenState.access) router.push('/login');
   }, [hasHydrated, tokenState, router]);
 
-  const { data: userProfile } = useQuery<UserProfile>({
+  const { data: userProfile, isError: isUserProfileError } = useQuery<UserProfile>({
     queryKey: ['userProfile'],
     queryFn: () => getUserProfile(tokenState),
     retry: false,
@@ -92,7 +95,11 @@ const MyPageAttendance = () => {
   const [selectedPart, setSelectedPart] = useState(ALL_PART);
 
   const attendanceQueryKey = isPresident ? ['allAttendance'] : ['partAttendance'];
-  const { data: attendance } = useQuery<MemberAttendanceResponse[]>({
+  const {
+    data: attendance,
+    isLoading: isAttendanceLoading,
+    isError: isAttendanceError,
+  } = useQuery<MemberAttendanceResponse[]>({
     queryKey: attendanceQueryKey,
     queryFn: () => (isPresident ? getAllAttendances(tokenState) : getPartAttendance(tokenState)),
     enabled: isStaff,
@@ -124,24 +131,32 @@ const MyPageAttendance = () => {
     return saveMutation.mutateAsync(updates);
   };
 
-  if (!userProfile) return null;
-
   return (
     <>
       <ToastWrapper>
         <Toast variant="negative" text={errorMessage} show={!!errorMessage} onHidden={() => setErrorMessage('')} />
       </ToastWrapper>
-      <MyPageShell active="attendance" isAdmin={canManageSitePages(userProfile.role)}>
-        {isStaff ? (
-          <PartAttendanceTable
-            members={members}
-            partName={isPresident ? undefined : userProfile.partName}
-            partFilter={
-              isPresident ? { value: selectedPart, options: partOptions, onChange: setSelectedPart } : undefined
-            }
-            onSave={handleSave}
-            isSaving={saveMutation.isPending}
-          />
+      <MyPageShell active="attendance" isAdmin={!!userProfile && canManageSitePages(userProfile.role)}>
+        {!userProfile ? (
+          <PageLoadingGate isError={isUserProfileError} />
+        ) : isStaff ? (
+          isAttendanceLoading ? (
+            <LoadingWrapper>
+              <CircularLoading size={32} />
+            </LoadingWrapper>
+          ) : isAttendanceError ? (
+            <EmptyState variant="error" />
+          ) : (
+            <PartAttendanceTable
+              members={members}
+              partName={isPresident ? undefined : userProfile.partName}
+              partFilter={
+                isPresident ? { value: selectedPart, options: partOptions, onChange: setSelectedPart } : undefined
+              }
+              onSave={handleSave}
+              isSaving={saveMutation.isPending}
+            />
+          )
         ) : (
           <>
             <SectionTitle>주차별 출결 현황</SectionTitle>
@@ -185,4 +200,12 @@ const List = styled.div`
   align-items: flex-start;
   gap: 18px;
   width: 100%;
+`;
+
+const LoadingWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 300px;
 `;

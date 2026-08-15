@@ -5,6 +5,8 @@ import styled from 'styled-components';
 import Select from '@common/select/Select';
 import ListboxOptions from '@common/select/ListboxOptions';
 import useListboxSelect from 'src/hooks/useListboxSelect';
+import LinearLoading from '@common/loading/LinearLoading';
+import EmptyState from '@common/emptyState/EmptyState';
 import { UserProfile } from '@@types/request';
 import { MemberScore, getMemberScores } from 'src/apis/mypage';
 import useTokenStore from 'src/store/useTokenStore';
@@ -23,7 +25,7 @@ const MemberScoreSection = ({ userProfile }: { userProfile: UserProfile }) => {
   const tokenState = useTokenStore((state) => state.token);
   const isFixedScope = userProfile.role === 'STAFF';
 
-  const { data } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ['memberScores'],
     queryFn: () => getMemberScores(tokenState),
     enabled: !!tokenState.access,
@@ -59,58 +61,68 @@ const MemberScoreSection = ({ userProfile }: { userProfile: UserProfile }) => {
     <Section>
       <SectionTitle>아기사자 출결/과제 현황</SectionTitle>
 
-      <FilterRow>
-        <FilterSelect
-          heading="기수 구분"
-          ariaLabel="기수 선택"
-          value={currentGeneration}
-          options={generationOptions.map(String)}
-          onChange={setSelectedGeneration}
-          disabled={isFixedScope}
-        />
-        <FilterSelect
-          heading="파트 구분"
-          ariaLabel="파트 선택"
-          value={currentPart}
-          options={partOptions}
-          onChange={setSelectedPart}
-          disabled={isFixedScope}
-        />
-      </FilterRow>
+      {isLoading ? (
+        <LoadingWrapper>
+          <LinearLoading />
+        </LoadingWrapper>
+      ) : isError ? (
+        <EmptyState variant="error" />
+      ) : (
+        <>
+          <FilterRow>
+            <FilterSelect
+              heading="기수 구분"
+              ariaLabel="기수 선택"
+              value={currentGeneration}
+              options={generationOptions.map(String)}
+              onChange={setSelectedGeneration}
+              disabled={isFixedScope}
+            />
+            <FilterSelect
+              heading="파트 구분"
+              ariaLabel="파트 선택"
+              value={currentPart}
+              options={partOptions}
+              onChange={setSelectedPart}
+              disabled={isFixedScope}
+            />
+          </FilterRow>
 
-      <Table>
-        <HeaderRow>
-          <HeadCell $width={90}>아기사자</HeadCell>
-          <HeadCell $width={50}>기수</HeadCell>
-          <HeadCell $width={92}>파트</HeadCell>
-          <HeadCell $width={50}>지각</HeadCell>
-          <HeadCell $width={50}>결석</HeadCell>
-          <HeadCell $width={63}>무단결석</HeadCell>
-          <HeadCell $width={63}>지각제출</HeadCell>
-          <HeadCell $width={50}>미제출</HeadCell>
-          <HeadCell $width={80} $sticky>
-            총점
-          </HeadCell>
-        </HeaderRow>
+          <Table>
+            <HeaderRow>
+              <HeadCell $width={90}>아기사자</HeadCell>
+              <HeadCell $width={50}>기수</HeadCell>
+              <HeadCell $width={92}>파트</HeadCell>
+              <HeadCell $width={50}>지각</HeadCell>
+              <HeadCell $width={50}>결석</HeadCell>
+              <HeadCell $width={63}>무단결석</HeadCell>
+              <HeadCell $width={63}>지각제출</HeadCell>
+              <HeadCell $width={50}>미제출</HeadCell>
+              <HeadCell $width={80} $sticky>
+                총점
+              </HeadCell>
+            </HeaderRow>
 
-        <Body>
-          {rows.map((score) => (
-            <Row key={score.memberId}>
-              <Name>{score.name}</Name>
-              <Value $width={50} $center>
-                {score.generationNumber}
-              </Value>
-              <Value $width={92}>{score.partName}</Value>
-              <CountCell width={50} value={score.lateCount} />
-              <CountCell width={50} value={score.absentCount} />
-              <CountCell width={63} value={score.unauthorizedAbsentCount} />
-              <CountCell width={63} value={score.lateSubmitCount} />
-              <CountCell width={50} value={score.missedCount} />
-              <Total>{score.total}점</Total>
-            </Row>
-          ))}
-        </Body>
-      </Table>
+            <Body>
+              {rows.map((score) => (
+                <Row key={score.memberId}>
+                  <Name>{score.name}</Name>
+                  <Value $width={50} $center>
+                    {score.generationNumber}
+                  </Value>
+                  <Value $width={92}>{score.partName}</Value>
+                  <CountCell width={50} value={score.lateCount} />
+                  <CountCell width={50} value={score.absentCount} />
+                  <CountCell width={63} value={score.unauthorizedAbsentCount} />
+                  <CountCell width={63} value={score.lateSubmitCount} />
+                  <CountCell width={50} value={score.missedCount} />
+                  <Total>{score.total}점</Total>
+                </Row>
+              ))}
+            </Body>
+          </Table>
+        </>
+      )}
     </Section>
   );
 };
@@ -189,6 +201,14 @@ const SectionTitle = styled.p`
   width: 100%;
   color: ${Label.normal};
   ${typographyCss(Typography.heading2.bold)}
+`;
+
+const LoadingWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 300px;
 `;
 
 const FilterRow = styled.div`

@@ -6,6 +6,8 @@ import { AccentTint, Label, Material, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
+import CircularLoading from '@common/loading/CircularLoading';
+import EmptyState from '@common/emptyState/EmptyState';
 import { getUserProfile } from 'src/apis/account';
 import { PROJECT_CATEGORY_LABEL, ProjectResponseDto, getProjectDetail, getSortedProjectImages } from 'src/apis/project';
 import useTokenStore from 'src/store/useTokenStore';
@@ -31,7 +33,7 @@ const ProjectDetailModal = ({ projectId, staticData, onClose }: ProjectDetailMod
     enabled: !!tokenState.access,
   });
 
-  const { data } = useQuery<ProjectResponseDto>({
+  const { data, isError } = useQuery<ProjectResponseDto>({
     queryKey: ['projectDetail', projectId],
     queryFn: () => getProjectDetail(projectId),
     initialData: staticData && String(staticData.id) === projectId ? staticData : undefined,
@@ -72,8 +74,14 @@ const ProjectDetailModal = ({ projectId, staticData, onClose }: ProjectDetailMod
           </Button>
           <MobileTitle>프로젝트 상세보기</MobileTitle>
         </MobileHeader>
-        {!project ? (
-          <LoadingWrapper>불러오는 중...</LoadingWrapper>
+        {isError ? (
+          <LoadingWrapper>
+            <EmptyState variant="error" />
+          </LoadingWrapper>
+        ) : !project ? (
+          <LoadingWrapper>
+            <CircularLoading size={32} />
+          </LoadingWrapper>
         ) : (
           <>
             <Contents>

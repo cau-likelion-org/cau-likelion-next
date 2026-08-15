@@ -7,6 +7,9 @@ import styled from 'styled-components';
 
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import Toast from '@common/toast/Toast';
+import CircularLoading from '@common/loading/CircularLoading';
+import EmptyState from '@common/emptyState/EmptyState';
+import PageLoadingGate from '@common/pageGate/PageLoadingGate';
 import MyPageShell from '@mypage/component/MyPageShell';
 import MobileUnsupportedModal from '@common/modal/MobileUnsupportedModal';
 import AssignmentPartSelect from '@mypage/component/AssignmentPartSelect';
@@ -54,7 +57,7 @@ const MyPageAssignment = () => {
   const hasHydrated = useTokenStore((state) => state.hasHydrated);
   const router = useRouter();
 
-  const { data: userProfile } = useQuery<UserProfile, AxiosError>({
+  const { data: userProfile, isError: isUserProfileError } = useQuery<UserProfile, AxiosError>({
     queryKey: ['userProfile'],
     queryFn: () => getUserProfile(tokenState),
     retry: false,
@@ -123,7 +126,11 @@ const MyPageAssignment = () => {
   };
 
   // 회장: partId로 파트별 조회 / 운영진: 본인 파트 조회
-  const { data: weekGroups } = useQuery<AssignmentWeekGroup[]>({
+  const {
+    data: weekGroups,
+    isLoading: isWeekGroupsLoading,
+    isError: isWeekGroupsError,
+  } = useQuery<AssignmentWeekGroup[]>({
     queryKey: isPresident ? ['presidentAssignments', selectedPartId ?? null] : ['staffAssignments'],
     queryFn: () =>
       isPresident ? getPresidentAssignments(tokenState, selectedPartId as number) : getStaffAssignments(tokenState),
@@ -169,12 +176,12 @@ const MyPageAssignment = () => {
           ],
   }));
 
-  if (!userProfile) return null;
-
   return (
     <>
-      <MyPageShell active="assignment" isAdmin={canManageSitePages(userProfile.role)}>
-        {isStaffOrAdmin ? (
+      <MyPageShell active="assignment" isAdmin={!!userProfile && canManageSitePages(userProfile.role)}>
+        {!userProfile ? (
+          <PageLoadingGate isError={isUserProfileError} />
+        ) : isStaffOrAdmin ? (
           <>
             <Header>
               <TitleRow>
@@ -190,16 +197,24 @@ const MyPageAssignment = () => {
                 <IcPlus width={16} height={16} />
               </CreateButton>
             </Header>
-            <List>
-              {weeks.map((group) => (
-                <StaffAssignmentCard
-                  key={group.week}
-                  week={group.week}
-                  assignments={group.assignments}
-                  onDetail={() => handleDetail(group.week)}
-                />
-              ))}
-            </List>
+            {isWeekGroupsLoading ? (
+              <LoadingWrapper>
+                <CircularLoading size={32} />
+              </LoadingWrapper>
+            ) : isWeekGroupsError ? (
+              <EmptyState variant="error" />
+            ) : (
+              <List>
+                {weeks.map((group) => (
+                  <StaffAssignmentCard
+                    key={group.week}
+                    week={group.week}
+                    assignments={group.assignments}
+                    onDetail={() => handleDetail(group.week)}
+                  />
+                ))}
+              </List>
+            )}
           </>
         ) : (
           <>
@@ -304,4 +319,12 @@ const List = styled.div`
   align-items: flex-start;
   gap: 18px;
   width: 100%;
+`;
+
+const LoadingWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 300px;
 `;

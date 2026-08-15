@@ -5,6 +5,8 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay } from 'swiper/modules';
 
 import Button from '@common/button/Button';
+import LinearLoading from '@common/loading/LinearLoading';
+import EmptyState from '@common/emptyState/EmptyState';
 import { getProjectList } from 'src/apis/project';
 import { Black } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -17,10 +19,10 @@ const REPEAT_COUNT = 3;
 
 const ProjectSection = () => {
   const router = useRouter();
-  const { data: projects } = useQuery({ queryKey: ['landingProjects'], queryFn: getProjectList });
+  const { data: projects, isLoading, isError } = useQuery({ queryKey: ['landingProjects'], queryFn: getProjectList });
   const exposedProjects = projects?.filter((project) => project.isExposed) ?? [];
 
-  if (exposedProjects.length === 0) return null;
+  if (!isLoading && !isError && exposedProjects.length === 0) return null;
 
   const slides = Array.from({ length: REPEAT_COUNT }, () => exposedProjects).flat();
   const featuredIndex = exposedProjects.findIndex((project) => project.banner);
@@ -29,26 +31,36 @@ const ProjectSection = () => {
   return (
     <Wrapper>
       <Title>프로젝트</Title>
-      <CardSwiper
-        modules={[Autoplay]}
-        slidesPerView="auto"
-        centeredSlides
-        loop
-        observer
-        observeParents
-        spaceBetween={32}
-        initialSlide={initialSlide}
-        autoplay={{ delay: 3000, disableOnInteraction: false }}
-      >
-        {slides.map((project, index) => (
-          <SwiperSlide key={index}>
-            <ProjectCard {...project} href="/project" />
-          </SwiperSlide>
-        ))}
-      </CardSwiper>
-      <Button size="large" variant="solid" color="assistive" onClick={() => router.push('/project')}>
-        프로젝트 더보기
-      </Button>
+      {isLoading ? (
+        <LoadingWrapper>
+          <LinearLoading />
+        </LoadingWrapper>
+      ) : isError ? (
+        <EmptyState variant="error" />
+      ) : (
+        <>
+          <CardSwiper
+            modules={[Autoplay]}
+            slidesPerView="auto"
+            centeredSlides
+            loop
+            observer
+            observeParents
+            spaceBetween={32}
+            initialSlide={initialSlide}
+            autoplay={{ delay: 3000, disableOnInteraction: false }}
+          >
+            {slides.map((project, index) => (
+              <SwiperSlide key={index}>
+                <ProjectCard {...project} href="/project" />
+              </SwiperSlide>
+            ))}
+          </CardSwiper>
+          <Button size="large" variant="solid" color="assistive" onClick={() => router.push('/project')}>
+            프로젝트 더보기
+          </Button>
+        </>
+      )}
     </Wrapper>
   );
 };
@@ -80,4 +92,12 @@ const CardSwiper = styled(Swiper)`
   .swiper-slide {
     width: 340px;
   }
+`;
+
+const LoadingWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 300px;
 `;

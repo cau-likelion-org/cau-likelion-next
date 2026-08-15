@@ -3,6 +3,8 @@ import { useRouter } from 'next/router';
 import { useQuery } from '@tanstack/react-query';
 
 import Button from '@common/button/Button';
+import LinearLoading from '@common/loading/LinearLoading';
+import EmptyState from '@common/emptyState/EmptyState';
 import { IcChevronDown } from '@assets/svg';
 import { getActivities, PageNavigation } from 'src/apis/activity';
 import { Black, BackgroundWhite, BackgroundLight, Line, Fill, Orange } from '@utils/constant/color';
@@ -19,38 +21,46 @@ const PAGE_NAVIGATION_HREF: Record<PageNavigation, string> = {
 
 const ActivitySection = () => {
   const router = useRouter();
-  const { data: activities } = useQuery({ queryKey: ['activities'], queryFn: getActivities });
+  const { data: activities, isLoading, isError } = useQuery({ queryKey: ['activities'], queryFn: getActivities });
 
   return (
     <Wrapper>
       <Content>
         <Title>활동 소개</Title>
-        <ListGroup>
-          <List>
-            {activities?.map(({ id, name, imageUrl, introduction, description, buttonName, pageNavigation }) => (
-              <Card key={id}>
-                <TextGroup>
-                  <CardTitle>{name}</CardTitle>
-                  <CardSubtitle>{introduction}</CardSubtitle>
-                  <CardDescription>{description}</CardDescription>
-                </TextGroup>
-                <Thumbnail $imageUrl={imageUrl} />
-                <HoverButtonWrapper>
-                  <Button
-                    size="large"
-                    variant="solid"
-                    color="primary"
-                    trailingIcon={<ChevronRightIcon />}
-                    onClick={() => router.push(PAGE_NAVIGATION_HREF[pageNavigation])}
-                  >
-                    {buttonName}
-                  </Button>
-                </HoverButtonWrapper>
-              </Card>
-            ))}
-          </List>
-          <Footnote>*출처정보 (2026년 02월 기준)</Footnote>
-        </ListGroup>
+        {isLoading ? (
+          <LoadingWrapper>
+            <LinearLoading />
+          </LoadingWrapper>
+        ) : isError ? (
+          <EmptyState variant="error" />
+        ) : (
+          <ListGroup>
+            <List>
+              {activities?.map(({ id, name, imageUrl, introduction, description, buttonName, pageNavigation }) => (
+                <Card key={id}>
+                  <TextGroup>
+                    <CardTitle>{name}</CardTitle>
+                    <CardSubtitle>{introduction}</CardSubtitle>
+                    <CardDescription>{description}</CardDescription>
+                  </TextGroup>
+                  <Thumbnail $imageUrl={imageUrl} />
+                  <HoverButtonWrapper>
+                    <Button
+                      size="large"
+                      variant="solid"
+                      color="primary"
+                      trailingIcon={<ChevronRightIcon />}
+                      onClick={() => router.push(PAGE_NAVIGATION_HREF[pageNavigation])}
+                    >
+                      {buttonName}
+                    </Button>
+                  </HoverButtonWrapper>
+                </Card>
+              ))}
+            </List>
+            <Footnote>*출처정보 (2026년 02월 기준)</Footnote>
+          </ListGroup>
+        )}
       </Content>
     </Wrapper>
   );
@@ -179,4 +189,12 @@ const Footnote = styled.p`
   color: ${Black.b50};
   align-self: flex-start;
   margin: 0;
+`;
+
+const LoadingWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 300px;
 `;

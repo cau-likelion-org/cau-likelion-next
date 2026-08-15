@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 
 import { UserProfile } from '@@types/request';
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
+import PageLoadingGate from '@common/pageGate/PageLoadingGate';
 import ProjectUploadForm from '@project/upload/ProjectUploadForm';
 import { getUserProfile } from 'src/apis/account';
 import useTokenStore from 'src/store/useTokenStore';
@@ -14,7 +15,11 @@ const ProjectUpload = () => {
   const tokenState = useTokenStore((state) => state.token);
   const hasHydrated = useTokenStore((state) => state.hasHydrated);
 
-  const { data: userProfile, isFetched } = useQuery<UserProfile>({
+  const {
+    data: userProfile,
+    isFetched,
+    isError: isUserProfileError,
+  } = useQuery<UserProfile>({
     queryKey: ['userProfile'],
     queryFn: () => getUserProfile(tokenState),
     retry: false,
@@ -32,7 +37,7 @@ const ProjectUpload = () => {
     }
   }, [hasHydrated, tokenState, isFetched, userProfile, router]);
 
-  if (!userProfile || !isAdminRole(userProfile.role)) return null;
+  if (!userProfile || !isAdminRole(userProfile.role)) return <PageLoadingGate isError={isUserProfileError} />;
 
   return <ProjectUploadForm />;
 };
