@@ -1,9 +1,11 @@
 import { useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import Button from '@common/button/Button';
 import Card from '@common/card/Card';
 import ContentBadge from '@common/badge/ContentBadge';
+import CircularLoading from '@common/loading/CircularLoading';
+import EmptyState from '@common/emptyState/EmptyState';
 import Select from '@common/select/Select';
 import ListboxOptions from '@common/select/ListboxOptions';
 import Tab from '@common/tab/Tab';
@@ -11,11 +13,14 @@ import Toast from '@common/toast/Toast';
 import IcAdd from '@assets/svg/ic-add.svg';
 import PageHeader from '@common/pageHeader/PageHeader';
 import useListboxSelect from 'src/hooks/useListboxSelect';
+import useTokenStore from 'src/store/useTokenStore';
+import { getUserProfile } from 'src/apis/account';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
+import { isAdminRole } from '@utils/index';
 import { getSessionList, getSession } from 'src/apis/session';
 import { getHistoryList, getHistory } from 'src/apis/history';
-import { getGalleryProjectList, GalleryProjectCategory } from 'src/apis/gallery';
+import { getGalleryProjectList, getGalleryProject, GALLERY_PROJECT_CATEGORY_LABEL } from 'src/apis/gallery';
 
 import HistoryDetailModal from './component/HistoryDetailModal';
 import HistoryEditModal from './component/HistoryEditModal';
@@ -48,13 +53,13 @@ const ADD_BUTTON_LABEL: Record<GalleryTabKey, string> = {
   gallery: '추억 추가',
 };
 
-const PROJECT_CATEGORY_LABEL: Record<GalleryProjectCategory, string> = {
-  IDEATHON: '아이디어톤',
-  HACKATHON: '해커톤',
-  CHUNGKATHON: '중커톤',
-  ETC: '기타',
+const LIST_QUERY_KEY_BY_TAB: Record<GalleryTabKey, string> = {
+  session: 'gallerySessions',
+  project: 'galleryProjects',
+  gallery: 'galleryHistories',
 };
-const PROJECT_CATEGORY_FILTER_OPTIONS = ['전체', ...Object.values(PROJECT_CATEGORY_LABEL)];
+
+const PROJECT_CATEGORY_FILTER_OPTIONS = ['전체', ...Object.values(GALLERY_PROJECT_CATEGORY_LABEL)];
 const ALL_OPTION = '전체';
 // const WIKI_URL = 'https://wiki.cau-likelion.org';
 
@@ -73,10 +78,32 @@ const GalleryListSection = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [toastText, setToastText] = useState('');
   const [isToastOpen, setIsToastOpen] = useState(false);
+  const queryClient = useQueryClient();
 
-  const { data: sessions } = useQuery({ queryKey: ['gallerySessions'], queryFn: getSessionList });
-  const { data: projects } = useQuery({ queryKey: ['galleryProjects'], queryFn: getGalleryProjectList });
-  const { data: histories } = useQuery({ queryKey: ['galleryHistories'], queryFn: getHistoryList });
+  const tokenState = useTokenStore((state) => state.token);
+  const { data: userProfile } = useQuery({
+    queryKey: ['userProfile'],
+    queryFn: () => getUserProfile(tokenState),
+    enabled: !!tokenState.access,
+  });
+  // 프로젝트/갤러리 게시물 생성·수정·삭제는 운영진 이상만 가능 (역할 정의: 운영진/회장/admin)
+  const isStaff = !!userProfile && isAdminRole(userProfile.role);
+
+  const {
+    data: sessions,
+    isLoading: isSessionsLoading,
+    isError: isSessionsError,
+  } = useQuery({ queryKey: ['gallerySessions'], queryFn: getSessionList });
+  const {
+    data: projects,
+    isLoading: isProjectsLoading,
+    isError: isProjectsError,
+  } = useQuery({ queryKey: ['galleryProjects'], queryFn: getGalleryProjectList });
+  const {
+    data: histories,
+    isLoading: isHistoriesLoading,
+    isError: isHistoriesError,
+  } = useQuery({ queryKey: ['galleryHistories'], queryFn: getHistoryList });
 
   const { data: sessionDetail } = useQuery({
     queryKey: ['gallerySessionDetail', selectedId],
@@ -88,7 +115,11 @@ const GalleryListSection = () => {
     queryFn: () => getHistory(selectedId as number),
     enabled: activeTab === 'gallery' && selectedId !== null,
   });
-  const projectDetail = useMemo(() => projects?.find((project) => project.id === selectedId), [projects, selectedId]);
+  const { data: projectDetail } = useQuery({
+    queryKey: ['galleryProjectDetail', selectedId],
+    queryFn: () => getGalleryProject(selectedId as number),
+    enabled: activeTab === 'project' && selectedId !== null,
+  });
 
   const showToast = (text: string) => {
     setToastText(text);
@@ -112,13 +143,20 @@ const GalleryListSection = () => {
     setIsEditModalOpen(false);
     setSelectedId(null);
   };
-  const handleDelete = () => {
-    setIsEditModalOpen(false);
-    setSelectedId(null);
+  const invalidateActiveTabList = () => queryClient.invalidateQueries({ queryKey: [LIST_QUERY_KEY_BY_TAB[activeTab]] });
+
+  const handleUploadSuccess = () => {
+    invalidateActiveTabList();
+    showToast('등록이 완료되었습니다.');
+  };
+  const handleEditSuccess = () => {
+    invalidateActiveTabList();
+    showToast('변경사항이 저장되었습니다.');
+  };
+  const handleDeleteSuccess = () => {
+    invalidateActiveTabList();
     showToast('삭제가 완료되었습니다.');
   };
-  const handleUploadSubmit = () => showToast('등록이 완료되었습니다.');
-  const handleEditSubmit = () => showToast('변경사항이 저장되었습니다.');
 
   const generationOptions = useMemo(() => {
     const source: { generationNumber: number }[] =
@@ -140,7 +178,7 @@ const GalleryListSection = () => {
   const projectCards = (projects ?? []).filter(
     (item) =>
       (generation === ALL_OPTION || `${item.generationNumber}기` === generation) &&
-      (projectCategory === ALL_OPTION || PROJECT_CATEGORY_LABEL[item.category] === projectCategory),
+      (projectCategory === ALL_OPTION || GALLERY_PROJECT_CATEGORY_LABEL[item.category] === projectCategory),
   );
   const historyCards = (histories ?? []).filter(
     (item) => generation === ALL_OPTION || `${item.generationNumber}기` === generation,
@@ -157,7 +195,7 @@ const GalleryListSection = () => {
           description={sessionDetail.description}
           date={toDisplayDate(sessionDetail.sessionDate)}
           onClose={closeDetailModal}
-          onEdit={openEditModal}
+          onEdit={isStaff ? openEditModal : undefined}
         />
       );
     }
@@ -165,11 +203,14 @@ const GalleryListSection = () => {
       return (
         <ProjectDetailModal
           title={projectDetail.title}
-          badges={[`${projectDetail.generationNumber}기`, PROJECT_CATEGORY_LABEL[projectDetail.category]]}
-          description={projectDetail.summary}
-          date={[toDisplayDate(projectDetail.startDate), toDisplayDate(projectDetail.endDate)]}
+          badges={[`${projectDetail.generationNumber}기`, GALLERY_PROJECT_CATEGORY_LABEL[projectDetail.category]]}
+          description={projectDetail.description}
+          date={[
+            toDisplayDate(projectDetail.startDate),
+            toDisplayDate(projectDetail.endDate ?? projectDetail.startDate),
+          ]}
           onClose={closeDetailModal}
-          onEdit={openEditModal}
+          onEdit={isStaff ? openEditModal : undefined}
         />
       );
     }
@@ -184,7 +225,7 @@ const GalleryListSection = () => {
             toDisplayDate(historyDetail.endDate ?? historyDetail.startDate),
           ]}
           onClose={closeDetailModal}
-          onEdit={openEditModal}
+          onEdit={isStaff ? openEditModal : undefined}
         />
       );
     }
@@ -195,6 +236,7 @@ const GalleryListSection = () => {
     if (activeTab === 'session' && sessionDetail) {
       return (
         <SessionEditModal
+          id={sessionDetail.id}
           initialValues={{
             title: sessionDetail.title,
             content: sessionDetail.description,
@@ -202,41 +244,49 @@ const GalleryListSection = () => {
             category: sessionDetail.partName,
             week: String(sessionDetail.degree),
             date: sessionDetail.sessionDate.split('T')[0],
+            imageUrls: sessionDetail.imageUrls,
+            thumbnailUrl: sessionDetail.thumbnailUrl,
           }}
           onClose={closeEditModal}
-          onDelete={handleDelete}
-          onSubmit={handleEditSubmit}
+          onDeleteSuccess={handleDeleteSuccess}
+          onSubmitSuccess={handleEditSuccess}
         />
       );
     }
     if (activeTab === 'project' && projectDetail) {
       return (
         <ProjectEditModal
+          id={projectDetail.id}
           initialValues={{
             title: projectDetail.title,
-            content: projectDetail.summary,
+            content: projectDetail.description,
             generation: String(projectDetail.generationNumber),
-            category: PROJECT_CATEGORY_LABEL[projectDetail.category],
-            dateRange: [projectDetail.startDate, projectDetail.endDate],
+            category: GALLERY_PROJECT_CATEGORY_LABEL[projectDetail.category],
+            dateRange: [projectDetail.startDate, projectDetail.endDate ?? projectDetail.startDate],
+            imageUrls: projectDetail.imageUrls,
+            thumbnailUrl: projectDetail.imageUrls[0],
           }}
           onClose={closeEditModal}
-          onDelete={handleDelete}
-          onSubmit={handleEditSubmit}
+          onDeleteSuccess={handleDeleteSuccess}
+          onSubmitSuccess={handleEditSuccess}
         />
       );
     }
     if (activeTab === 'gallery' && historyDetail) {
       return (
         <HistoryEditModal
+          id={historyDetail.id}
           initialValues={{
             title: historyDetail.title,
             content: historyDetail.description,
             generation: String(historyDetail.generationNumber),
             dateRange: [historyDetail.startDate, historyDetail.endDate ?? historyDetail.startDate],
+            imageUrls: historyDetail.imageUrls,
+            thumbnailUrl: historyDetail.imageUrls[0],
           }}
           onClose={closeEditModal}
-          onDelete={handleDelete}
-          onSubmit={handleEditSubmit}
+          onDeleteSuccess={handleDeleteSuccess}
+          onSubmitSuccess={handleEditSuccess}
         />
       );
     }
@@ -291,21 +341,23 @@ const GalleryListSection = () => {
               />
             )}
           </FilterGroup>
-          <AddButtonWrapper>
-            <Button
-              variant="solid"
-              color="primary"
-              size="large"
-              trailingIcon={<IcAdd width={20} height={20} />}
-              onClick={() => setIsUploadModalOpen(true)}
-            >
-              {ADD_BUTTON_LABEL[activeTab]}
-            </Button>
-          </AddButtonWrapper>
+          {isStaff && (
+            <AddButtonWrapper>
+              <Button
+                variant="solid"
+                color="primary"
+                size="large"
+                trailingIcon={<IcAdd width={20} height={20} />}
+                onClick={() => setIsUploadModalOpen(true)}
+              >
+                {ADD_BUTTON_LABEL[activeTab]}
+              </Button>
+            </AddButtonWrapper>
+          )}
         </FilterRow>
       </Header>
 
-      {isUploadModalOpen && <UploadModal onClose={closeUploadModal} onSubmit={handleUploadSubmit} />}
+      {isUploadModalOpen && <UploadModal onClose={closeUploadModal} onSuccess={handleUploadSuccess} />}
       {selectedId !== null && !isEditModalOpen && renderDetailModal()}
       {selectedId !== null && isEditModalOpen && renderEditModal()}
       <ToastWrapper>
@@ -318,43 +370,59 @@ const GalleryListSection = () => {
         aria-label="중앙대학교 멋쟁이사자처럼 위키 바로가기"
       /> */}
 
-      {activeTab === 'session' && (
-        <CardGrid>
-          {sessionCards.map((item) => (
-            <Card
-              key={item.id}
-              thumbnailRatio={16 / 9}
-              thumbnailSrc={item.thumbnailUrl}
-              title={item.title}
-              onClick={() => setSelectedId(item.id)}
-              bottomContent={
-                <BottomContent>
-                  <BadgeRow>
-                    {[`${item.generationNumber}기`, item.partName, `${item.degree}주차`].map((badge) => (
-                      <ContentBadge key={badge} text={badge} color="accent" size="medium" />
-                    ))}
-                  </BadgeRow>
-                </BottomContent>
-              }
-            />
-          ))}
-        </CardGrid>
-      )}
-      {activeTab === 'project' && (
-        <CardGrid>
-          {projectCards.map((item) => {
-            const thumbnail = item.images.find((image) => image.isMain)?.imageUrl ?? item.images[0]?.imageUrl;
-            return (
+      {activeTab === 'session' &&
+        (isSessionsLoading ? (
+          <LoadingWrapper>
+            <CircularLoading size={32} />
+          </LoadingWrapper>
+        ) : isSessionsError ? (
+          <EmptyState variant="error" />
+        ) : sessionCards.length === 0 ? (
+          <EmptyState message="조건에 맞는 세션이 없습니다." />
+        ) : (
+          <CardGrid>
+            {sessionCards.map((item) => (
               <Card
                 key={item.id}
                 thumbnailRatio={16 / 9}
-                thumbnailSrc={thumbnail}
+                thumbnailSrc={item.thumbnailUrl}
                 title={item.title}
                 onClick={() => setSelectedId(item.id)}
                 bottomContent={
                   <BottomContent>
                     <BadgeRow>
-                      {[`${item.generationNumber}기`, PROJECT_CATEGORY_LABEL[item.category]].map((badge) => (
+                      {[`${item.generationNumber}기`, item.partName, `${item.degree}주차`].map((badge) => (
+                        <ContentBadge key={badge} text={badge} color="accent" size="medium" />
+                      ))}
+                    </BadgeRow>
+                  </BottomContent>
+                }
+              />
+            ))}
+          </CardGrid>
+        ))}
+      {activeTab === 'project' &&
+        (isProjectsLoading ? (
+          <LoadingWrapper>
+            <CircularLoading size={32} />
+          </LoadingWrapper>
+        ) : isProjectsError ? (
+          <EmptyState variant="error" />
+        ) : projectCards.length === 0 ? (
+          <EmptyState message="조건에 맞는 프로젝트가 없습니다." />
+        ) : (
+          <CardGrid>
+            {projectCards.map((item) => (
+              <Card
+                key={item.id}
+                thumbnailRatio={16 / 9}
+                thumbnailSrc={item.thumbnailUrl}
+                title={item.title}
+                onClick={() => setSelectedId(item.id)}
+                bottomContent={
+                  <BottomContent>
+                    <BadgeRow>
+                      {[`${item.generationNumber}기`, GALLERY_PROJECT_CATEGORY_LABEL[item.category]].map((badge) => (
                         <ContentBadge key={badge} text={badge} color="accent" size="medium" />
                       ))}
                     </BadgeRow>
@@ -362,31 +430,39 @@ const GalleryListSection = () => {
                   </BottomContent>
                 }
               />
-            );
-          })}
-        </CardGrid>
-      )}
-      {activeTab === 'gallery' && (
-        <CardGrid>
-          {historyCards.map((item) => (
-            <Card
-              key={item.id}
-              thumbnailRatio={16 / 9}
-              thumbnailSrc={item.thumbnailUrl}
-              title={item.title}
-              onClick={() => setSelectedId(item.id)}
-              bottomContent={
-                <BottomContent>
-                  <BadgeRow>
-                    <ContentBadge text={`${item.generationNumber}기`} color="accent" size="medium" />
-                  </BadgeRow>
-                  <Period>{toPeriodDisplay(item.startDate, item.endDate)}</Period>
-                </BottomContent>
-              }
-            />
-          ))}
-        </CardGrid>
-      )}
+            ))}
+          </CardGrid>
+        ))}
+      {activeTab === 'gallery' &&
+        (isHistoriesLoading ? (
+          <LoadingWrapper>
+            <CircularLoading size={32} />
+          </LoadingWrapper>
+        ) : isHistoriesError ? (
+          <EmptyState variant="error" />
+        ) : historyCards.length === 0 ? (
+          <EmptyState message="조건에 맞는 추억이 없습니다." />
+        ) : (
+          <CardGrid>
+            {historyCards.map((item) => (
+              <Card
+                key={item.id}
+                thumbnailRatio={16 / 9}
+                thumbnailSrc={item.thumbnailUrl}
+                title={item.title}
+                onClick={() => setSelectedId(item.id)}
+                bottomContent={
+                  <BottomContent>
+                    <BadgeRow>
+                      <ContentBadge text={`${item.generationNumber}기`} color="accent" size="medium" />
+                    </BadgeRow>
+                    <Period>{toPeriodDisplay(item.startDate, item.endDate)}</Period>
+                  </BottomContent>
+                }
+              />
+            ))}
+          </CardGrid>
+        ))}
     </Wrapper>
   );
 };
@@ -539,6 +615,14 @@ const ToastWrapper = styled.div`
 //   background-color: ${Fill.subtle};
 //   cursor: pointer;
 // `;
+
+const LoadingWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 300px;
+`;
 
 const CardGrid = styled.div`
   width: 100%;

@@ -19,7 +19,7 @@ export interface PostDetailModalProps {
   description: string;
   date: string | [string, string];
   imageCount?: number;
-  onEdit: () => void;
+  onEdit?: () => void;
   onClose: () => void;
 }
 
@@ -92,9 +92,11 @@ const PostDetailModal = ({
           )}
         </Information>
         <Actions>
-          <TextButton color="assistive" onClick={onEdit}>
-            수정
-          </TextButton>
+          {onEdit && (
+            <TextButton color="assistive" onClick={onEdit}>
+              수정
+            </TextButton>
+          )}
           <TextButton color="primary" onClick={onClose}>
             닫기
           </TextButton>

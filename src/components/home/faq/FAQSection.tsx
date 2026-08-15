@@ -3,11 +3,13 @@ import styled from 'styled-components';
 import { useQuery } from '@tanstack/react-query';
 import { IcChevronDown } from '@assets/svg';
 import { getFaqs } from 'src/apis/faq';
+import LinearLoading from '@common/loading/LinearLoading';
+import EmptyState from '@common/emptyState/EmptyState';
 import { Black, BackgroundWhite, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 const FAQSection = () => {
-  const { data: faqs } = useQuery({ queryKey: ['faqs'], queryFn: () => getFaqs() });
+  const { data: faqs, isLoading, isError } = useQuery({ queryKey: ['faqs'], queryFn: () => getFaqs() });
   const [openIds, setOpenIds] = useState<number[]>([]);
 
   const toggle = (id: number) => {
@@ -17,20 +19,28 @@ const FAQSection = () => {
   return (
     <Wrapper>
       <Title>FAQ</Title>
-      <List>
-        {faqs?.map(({ id, question, answer }) => {
-          const isOpen = openIds.includes(id);
-          return (
-            <Item key={id} type="button" $open={isOpen} aria-expanded={isOpen} onClick={() => toggle(id)}>
-              <TextGroup>
-                <Question>{question}</Question>
-                {isOpen && <Answer>{answer}</Answer>}
-              </TextGroup>
-              <ChevronIcon $open={isOpen} />
-            </Item>
-          );
-        })}
-      </List>
+      {isLoading ? (
+        <LoadingWrapper>
+          <LinearLoading />
+        </LoadingWrapper>
+      ) : isError ? (
+        <EmptyState variant="error" />
+      ) : (
+        <List>
+          {faqs?.map(({ id, question, answer }) => {
+            const isOpen = openIds.includes(id);
+            return (
+              <Item key={id} type="button" $open={isOpen} aria-expanded={isOpen} onClick={() => toggle(id)}>
+                <TextGroup>
+                  <Question>{question}</Question>
+                  {isOpen && <Answer>{answer}</Answer>}
+                </TextGroup>
+                <ChevronIcon $open={isOpen} />
+              </Item>
+            );
+          })}
+        </List>
+      )}
     </Wrapper>
   );
 };
@@ -103,4 +113,12 @@ const ChevronIcon = styled(IcChevronDown)<{ $open: boolean }>`
   width: 24px;
   height: 24px;
   transform: rotate(${(props) => (props.$open ? '180deg' : '0deg')});
+`;
+
+const LoadingWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 300px;
 `;

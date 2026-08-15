@@ -11,6 +11,7 @@ import styled from 'styled-components';
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import Toast from '@common/toast/Toast';
 import MyPageShell from '@mypage/component/MyPageShell';
+import PageLoadingGate from '@common/pageGate/PageLoadingGate';
 import ProfileCard from '@mypage/component/ProfileCard';
 import AttendanceCheckCard from '@mypage/component/AttendanceCheckCard';
 import MakeAttendanceCard from '@mypage/component/MakeAttendanceCard';
@@ -24,7 +25,7 @@ const MyPage = () => {
   const profileChanged = useProfileChangedStore((state) => state.profileChanged);
   const router = useRouter();
 
-  const { data: userProfile } = useQuery<UserProfile, AxiosError>({
+  const { data: userProfile, isError: isUserProfileError } = useQuery<UserProfile, AxiosError>({
     queryKey: ['userProfile', profileChanged],
     queryFn: () => getUserProfile(tokenState),
     retry: false,
@@ -46,26 +47,30 @@ const MyPage = () => {
     return () => cancelAnimationFrame(frame);
   }, []);
 
-  if (!userProfile) return null;
-
   return (
     <>
       <ToastWrapper>
         <Toast variant="negative" text={toastMessage} show={!!toastMessage} onHidden={() => setToastMessage('')} />
       </ToastWrapper>
-      <MyPageShell active="home" isAdmin={canManageSitePages(userProfile.role)}>
-        <CardRow>
-          <ProfileCard user={userProfile} />
-          {canCreateAttendance(userProfile.role) ? (
-            <MakeAttendanceCard />
-          ) : (
-            <AttendanceCheckCard isTarget={isAttendanceTarget(userProfile.role)} />
-          )}
-        </CardRow>
-        {isAdminRole(userProfile.role) ? (
-          <MemberScoreSection userProfile={userProfile} />
+      <MyPageShell active="home" isAdmin={!!userProfile && canManageSitePages(userProfile.role)}>
+        {!userProfile ? (
+          <PageLoadingGate isError={isUserProfileError} />
         ) : (
-          <MyScoreSection userProfile={userProfile} />
+          <>
+            <CardRow>
+              <ProfileCard user={userProfile} />
+              {canCreateAttendance(userProfile.role) ? (
+                <MakeAttendanceCard />
+              ) : (
+                <AttendanceCheckCard isTarget={isAttendanceTarget(userProfile.role)} />
+              )}
+            </CardRow>
+            {isAdminRole(userProfile.role) ? (
+              <MemberScoreSection userProfile={userProfile} />
+            ) : (
+              <MyScoreSection userProfile={userProfile} />
+            )}
+          </>
         )}
       </MyPageShell>
     </>

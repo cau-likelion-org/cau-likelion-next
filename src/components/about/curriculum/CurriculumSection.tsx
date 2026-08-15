@@ -3,6 +3,8 @@ import { useQuery } from '@tanstack/react-query';
 import styled from 'styled-components';
 
 import Tab from '@common/tab/Tab';
+import LinearLoading from '@common/loading/LinearLoading';
+import EmptyState from '@common/emptyState/EmptyState';
 import { getTracks } from 'src/apis/track';
 import { getCurriculums } from 'src/apis/curriculum';
 import { Label } from '@utils/constant/color';
@@ -12,8 +14,20 @@ import CurriculumInfoCard from './component/CurriculumInfoCard';
 import WeekAccordion from './component/WeekAccordion';
 
 const CurriculumSection = () => {
-  const { data: tracks } = useQuery({ queryKey: ['tracks'], queryFn: () => getTracks() });
-  const { data: curriculums } = useQuery({ queryKey: ['curriculums'], queryFn: () => getCurriculums() });
+  const {
+    data: tracks,
+    isLoading: isTracksLoading,
+    isError: isTracksError,
+  } = useQuery({ queryKey: ['tracks'], queryFn: () => getTracks() });
+  const {
+    data: curriculums,
+    isLoading: isCurriculumsLoading,
+    isError: isCurriculumsError,
+  } = useQuery({ queryKey: ['curriculums'], queryFn: () => getCurriculums() });
+
+  const isLoading = isTracksLoading || isCurriculumsLoading;
+  const isError = isTracksError || isCurriculumsError;
+
   const [activeTrackKey, setActiveTrackKey] = useState('');
 
   const activeTrack = tracks?.find((track) => String(track.id) === activeTrackKey) ?? tracks?.[0];
@@ -30,18 +44,28 @@ const CurriculumSection = () => {
   return (
     <Wrapper>
       <SectionTitle>14기 커리큘럼</SectionTitle>
-      <Tab
-        items={(tracks ?? []).map((track) => ({ key: String(track.id), label: track.koName }))}
-        activeKey={activeTrack ? String(activeTrack.id) : ''}
-        onChange={setActiveTrackKey}
-        size="large"
-        horizontalPadding
-      />
-      {activeTrack && (
-        <Content>
-          <CurriculumInfoCard track={activeTrack} />
-          <WeekAccordion key={activeTrack.id} weeks={weeks} />
-        </Content>
+      {isLoading ? (
+        <LoadingWrapper>
+          <LinearLoading />
+        </LoadingWrapper>
+      ) : isError ? (
+        <EmptyState variant="error" />
+      ) : (
+        activeTrack && (
+          <>
+            <Tab
+              items={(tracks ?? []).map((track) => ({ key: String(track.id), label: track.koName }))}
+              activeKey={String(activeTrack.id)}
+              onChange={setActiveTrackKey}
+              size="large"
+              horizontalPadding
+            />
+            <Content>
+              <CurriculumInfoCard track={activeTrack} />
+              <WeekAccordion key={activeTrack.id} weeks={weeks} />
+            </Content>
+          </>
+        )
       )}
     </Wrapper>
   );
@@ -79,4 +103,12 @@ const Content = styled.div`
     /* 세로로 쌓일 때는 카드가 콘텐츠 폭으로 줄지 않고 전체 폭을 쓰도록 */
     align-items: stretch;
   }
+`;
+
+const LoadingWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 300px;
 `;

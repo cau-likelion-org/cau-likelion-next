@@ -1,27 +1,37 @@
 import { ReactNode } from 'react';
-import { IcCircleExclamation } from '@assets/svg';
+import { IcCircleExclamation, IcFailure } from '@assets/svg';
 import { CoolNeutral, Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import styled from 'styled-components';
 
-interface ProjectEmptyStateProps {
+export type EmptyStateVariant = 'empty' | 'error';
+
+export interface EmptyStateProps {
+  variant?: EmptyStateVariant;
   icon?: ReactNode;
   message?: string;
 }
 
-const ProjectEmptyState = ({
-  icon = <IcCircleExclamation width={64} height={64} />,
-  message = '조건에 맞는 프로젝트가 없습니다.',
-}: ProjectEmptyStateProps) => {
+const DEFAULT_ICON: Record<EmptyStateVariant, ReactNode> = {
+  empty: <IcCircleExclamation width={64} height={64} />,
+  error: <IcFailure width={64} height={64} />,
+};
+
+const DEFAULT_MESSAGE: Record<EmptyStateVariant, string> = {
+  empty: '데이터가 없습니다.',
+  error: '정보 불러오기를 실패했어요.',
+};
+
+const EmptyState = ({ variant = 'empty', icon, message }: EmptyStateProps) => {
   return (
     <Wrapper>
-      <IconWrapper>{icon}</IconWrapper>
-      <Message>{message}</Message>
+      <IconWrapper>{icon ?? DEFAULT_ICON[variant]}</IconWrapper>
+      <Message>{message ?? DEFAULT_MESSAGE[variant]}</Message>
     </Wrapper>
   );
 };
 
-export default ProjectEmptyState;
+export default EmptyState;
 
 const Wrapper = styled.div`
   display: flex;

@@ -5,6 +5,8 @@ import styled from 'styled-components';
 import { UserProfile } from '@@types/request';
 import { getMyScore } from 'src/apis/mypage';
 import useTokenStore from 'src/store/useTokenStore';
+import LinearLoading from '@common/loading/LinearLoading';
+import EmptyState from '@common/emptyState/EmptyState';
 import { BackgroundWhite, Black, Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
@@ -14,7 +16,11 @@ const MyScoreSection = ({ userProfile }: { userProfile: UserProfile }) => {
   const tokenValue = useTokenStore((state) => state.token);
   const isActiveGeneration = userProfile.role === 'BABY_LION';
 
-  const { data: score } = useQuery({
+  const {
+    data: score,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ['myScore'],
     queryFn: () => getMyScore(tokenValue),
     enabled: !!tokenValue.access && isActiveGeneration,
@@ -23,7 +29,15 @@ const MyScoreSection = ({ userProfile }: { userProfile: UserProfile }) => {
   return (
     <Section>
       <SectionTitle>상벌점내역표</SectionTitle>
-      {isActiveGeneration ? (
+      {!isActiveGeneration ? (
+        <EmptyCard>올해 활동 내역이 없습니다</EmptyCard>
+      ) : isLoading ? (
+        <LoadingWrapper>
+          <LinearLoading />
+        </LoadingWrapper>
+      ) : isError ? (
+        <EmptyState variant="error" />
+      ) : (
         <CardRow>
           <StatCard title="출결">
             <StatItem label="지각" value={score?.lateCount ?? 0} />
@@ -36,8 +50,6 @@ const MyScoreSection = ({ userProfile }: { userProfile: UserProfile }) => {
           </StatCard>
           <TotalScoreCard score={score?.total ?? 0} />
         </CardRow>
-      ) : (
-        <EmptyCard>올해 활동 내역이 없습니다</EmptyCard>
       )}
     </Section>
   );
@@ -107,6 +119,14 @@ const EmptyCard = styled.div`
   background-color: ${BackgroundWhite.secondary};
   color: ${Label.assistive};
   ${typographyCss(Typography.body1Normal.medium)}
+`;
+
+const LoadingWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 164px;
 `;
 
 const StatCardWrapper = styled.div`
