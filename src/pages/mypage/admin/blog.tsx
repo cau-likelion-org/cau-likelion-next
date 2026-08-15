@@ -11,6 +11,7 @@ import Toast from '@common/toast/Toast';
 import MyPageShell from '@mypage/component/MyPageShell';
 import CircularLoading from '@common/loading/CircularLoading';
 import EmptyState from '@common/emptyState/EmptyState';
+import PageLoadingGate from '@common/pageGate/PageLoadingGate';
 import BlogSection, {
   BlogItem,
   BLOG_CATEGORY_LABEL,
@@ -55,7 +56,7 @@ const MyPageAdminBlog = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const { data: userProfile } = useQuery<UserProfile, AxiosError>({
+  const { data: userProfile, isError: isUserProfileError } = useQuery<UserProfile, AxiosError>({
     queryKey: ['userProfile'],
     queryFn: () => getUserProfile(tokenState),
     retry: false,
@@ -133,36 +134,42 @@ const MyPageAdminBlog = () => {
     }
   };
 
-  if (!userProfile || !isAdminRole(userProfile.role)) return null;
+  const isAuthorized = !!userProfile && isAdminRole(userProfile.role);
 
   return (
     <>
-      <MyPageShell active="admin-blog" isAdmin={isAdminRole(userProfile.role)}>
-        <TitleRow>
-          <PageTitle>블로그 페이지 관리</PageTitle>
-          <ButtonRow>
-            {isEditing ? (
-              <>
-                <Button variant="outlined" color="assistive" size="small" onClick={handleCancel}>
-                  취소
-                </Button>
-                <Button size="small" onClick={handleSave} loading={isSaving}>
-                  저장
-                </Button>
-              </>
-            ) : (
-              <EditButton onClick={() => setIsEditing(true)} disabled={!isDataLoaded} />
-            )}
-          </ButtonRow>
-        </TitleRow>
-        {isDataError ? (
-          <EmptyState variant="error" />
-        ) : !isDataLoaded ? (
-          <LoadingWrapper>
-            <CircularLoading size={32} />
-          </LoadingWrapper>
+      <MyPageShell active="admin-blog" isAdmin={isAuthorized}>
+        {!isAuthorized ? (
+          <PageLoadingGate isError={isUserProfileError} />
         ) : (
-          <BlogSection items={blogItems} onChange={setBlogItems} showErrors={showErrors} disabled={!isEditing} />
+          <>
+            <TitleRow>
+              <PageTitle>블로그 페이지 관리</PageTitle>
+              <ButtonRow>
+                {isEditing ? (
+                  <>
+                    <Button variant="outlined" color="assistive" size="small" onClick={handleCancel}>
+                      취소
+                    </Button>
+                    <Button size="small" onClick={handleSave} loading={isSaving}>
+                      저장
+                    </Button>
+                  </>
+                ) : (
+                  <EditButton onClick={() => setIsEditing(true)} disabled={!isDataLoaded} />
+                )}
+              </ButtonRow>
+            </TitleRow>
+            {isDataError ? (
+              <EmptyState variant="error" />
+            ) : !isDataLoaded ? (
+              <LoadingWrapper>
+                <CircularLoading size={32} />
+              </LoadingWrapper>
+            ) : (
+              <BlogSection items={blogItems} onChange={setBlogItems} showErrors={showErrors} disabled={!isEditing} />
+            )}
+          </>
         )}
       </MyPageShell>
       <ToastWrapper>

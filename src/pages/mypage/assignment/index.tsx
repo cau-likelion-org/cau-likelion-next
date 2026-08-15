@@ -9,6 +9,7 @@ import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import Toast from '@common/toast/Toast';
 import CircularLoading from '@common/loading/CircularLoading';
 import EmptyState from '@common/emptyState/EmptyState';
+import PageLoadingGate from '@common/pageGate/PageLoadingGate';
 import MyPageShell from '@mypage/component/MyPageShell';
 import AssignmentPartSelect from '@mypage/component/AssignmentPartSelect';
 import StaffAssignmentCard from '@mypage/component/StaffAssignmentCard';
@@ -84,7 +85,7 @@ const MyPageAssignment = () => {
   const hasHydrated = useTokenStore((state) => state.hasHydrated);
   const router = useRouter();
 
-  const { data: userProfile } = useQuery<UserProfile, AxiosError>({
+  const { data: userProfile, isError: isUserProfileError } = useQuery<UserProfile, AxiosError>({
     queryKey: ['userProfile'],
     queryFn: () => getUserProfile(tokenState),
     retry: false,
@@ -145,12 +146,12 @@ const MyPageAssignment = () => {
     });
   })();
 
-  if (!userProfile) return null;
-
   return (
     <>
-      <MyPageShell active="assignment" isAdmin={isAdminRole(userProfile.role)}>
-        {isStaffOrAdmin ? (
+      <MyPageShell active="assignment" isAdmin={!!userProfile && isAdminRole(userProfile.role)}>
+        {!userProfile ? (
+          <PageLoadingGate isError={isUserProfileError} />
+        ) : isStaffOrAdmin ? (
           <>
             <Header>
               <TitleRow>

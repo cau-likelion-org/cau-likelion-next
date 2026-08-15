@@ -9,6 +9,7 @@ import { canCreateAttendance, isAdminRole } from '@utils/index';
 import styled from 'styled-components';
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import MyPageShell from '@mypage/component/MyPageShell';
+import PageLoadingGate from '@common/pageGate/PageLoadingGate';
 import ProfileCard from '@mypage/component/ProfileCard';
 import AttendanceCheckCard from '@mypage/component/AttendanceCheckCard';
 import MakeAttendanceCard from '@mypage/component/MakeAttendanceCard';
@@ -22,7 +23,7 @@ const MyPage = () => {
   const profileChanged = useProfileChangedStore((state) => state.profileChanged);
   const router = useRouter();
 
-  const { data: userProfile } = useQuery<UserProfile, AxiosError>({
+  const { data: userProfile, isError: isUserProfileError } = useQuery<UserProfile, AxiosError>({
     queryKey: ['userProfile', profileChanged],
     queryFn: () => getUserProfile(tokenState),
     retry: false,
@@ -33,18 +34,22 @@ const MyPage = () => {
     if (hasHydrated && !tokenState.access) router.push('/login');
   }, [hasHydrated, tokenState, router]);
 
-  if (!userProfile) return null;
-
   return (
-    <MyPageShell active="home" isAdmin={isAdminRole(userProfile.role)}>
-      <CardRow>
-        <ProfileCard user={userProfile} />
-        {canCreateAttendance(userProfile.role) ? <MakeAttendanceCard /> : <AttendanceCheckCard />}
-      </CardRow>
-      {isAdminRole(userProfile.role) ? (
-        <TotalScoreSection myName={userProfile.name} />
+    <MyPageShell active="home" isAdmin={!!userProfile && isAdminRole(userProfile.role)}>
+      {!userProfile ? (
+        <PageLoadingGate isError={isUserProfileError} />
       ) : (
-        <MyScoreSection userProfile={userProfile} />
+        <>
+          <CardRow>
+            <ProfileCard user={userProfile} />
+            {canCreateAttendance(userProfile.role) ? <MakeAttendanceCard /> : <AttendanceCheckCard />}
+          </CardRow>
+          {isAdminRole(userProfile.role) ? (
+            <TotalScoreSection myName={userProfile.name} />
+          ) : (
+            <MyScoreSection userProfile={userProfile} />
+          )}
+        </>
       )}
     </MyPageShell>
   );

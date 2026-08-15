@@ -9,6 +9,7 @@ import MyPageShell from '@mypage/component/MyPageShell';
 import Toast from '@common/toast/Toast';
 import CircularLoading from '@common/loading/CircularLoading';
 import EmptyState from '@common/emptyState/EmptyState';
+import PageLoadingGate from '@common/pageGate/PageLoadingGate';
 import PartAttendanceTable from '@mypage/component/PartAttendanceTable';
 import WeeklyAttendanceCard, { WeeklyAttendanceRecord } from '@mypage/component/WeeklyAttendanceCard';
 import { getGenerations, getUserProfile } from 'src/apis/account';
@@ -46,7 +47,7 @@ const MyPageAttendance = () => {
     if (hasHydrated && !tokenState.access) router.push('/login');
   }, [hasHydrated, tokenState, router]);
 
-  const { data: userProfile } = useQuery<UserProfile>({
+  const { data: userProfile, isError: isUserProfileError } = useQuery<UserProfile>({
     queryKey: ['userProfile'],
     queryFn: () => getUserProfile(tokenState),
     retry: false,
@@ -101,15 +102,15 @@ const MyPageAttendance = () => {
     return saveMutation.mutateAsync(updates);
   };
 
-  if (!userProfile) return null;
-
   return (
     <>
       <ToastWrapper>
         <Toast variant="negative" text={errorMessage} show={!!errorMessage} onHidden={() => setErrorMessage('')} />
       </ToastWrapper>
-      <MyPageShell active="attendance" isAdmin={isAdminRole(userProfile.role)}>
-        {isStaff ? (
+      <MyPageShell active="attendance" isAdmin={!!userProfile && isAdminRole(userProfile.role)}>
+        {!userProfile ? (
+          <PageLoadingGate isError={isUserProfileError} />
+        ) : isStaff ? (
           isAttendanceLoading ? (
             <LoadingWrapper>
               <CircularLoading size={32} />

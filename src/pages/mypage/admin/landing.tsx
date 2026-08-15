@@ -11,6 +11,7 @@ import Toast from '@common/toast/Toast';
 import MyPageShell from '@mypage/component/MyPageShell';
 import LinearLoading from '@common/loading/LinearLoading';
 import EmptyState from '@common/emptyState/EmptyState';
+import PageLoadingGate from '@common/pageGate/PageLoadingGate';
 import IntroduceSection, { LandingMetrics, isMetricsInvalid } from '@mypage/admin/IntroduceSection';
 import TrackSection, { TrackIntroItem, isTrackItemInvalid } from '@mypage/admin/TrackSection';
 import ActivitySection, {
@@ -96,7 +97,7 @@ const MyPageAdminLanding = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const { data: userProfile } = useQuery<UserProfile, AxiosError>({
+  const { data: userProfile, isError: isUserProfileError } = useQuery<UserProfile, AxiosError>({
     queryKey: ['userProfile'],
     queryFn: () => getUserProfile(tokenState),
     retry: false,
@@ -256,51 +257,62 @@ const MyPageAdminLanding = () => {
     }
   };
 
-  if (!userProfile || !isAdminRole(userProfile.role)) return null;
+  const isAuthorized = !!userProfile && isAdminRole(userProfile.role);
 
   return (
     <>
-      <MyPageShell active="admin-landing" isAdmin={isAdminRole(userProfile.role)}>
-        <TitleRow>
-          <PageTitle>랜딩페이지 관리</PageTitle>
-          <ButtonRow>
-            {isEditing ? (
-              <>
-                <Button variant="outlined" color="assistive" size="small" onClick={handleCancel}>
-                  취소
-                </Button>
-                <Button size="small" onClick={handleSave} loading={isSaving}>
-                  저장
-                </Button>
-              </>
-            ) : (
-              <EditButton onClick={() => setIsEditing(true)} disabled={!isDataLoaded} />
-            )}
-          </ButtonRow>
-        </TitleRow>
-        {isDataError ? (
-          <EmptyState variant="error" />
-        ) : !isDataLoaded ? (
-          <LoadingWrapper>
-            <LinearLoading />
-          </LoadingWrapper>
+      <MyPageShell active="admin-landing" isAdmin={isAuthorized}>
+        {!isAuthorized ? (
+          <PageLoadingGate isError={isUserProfileError} />
         ) : (
           <>
-            <IntroduceSection
-              metrics={introduceMetrics}
-              onChange={setIntroduceMetrics}
-              showErrors={showErrors}
-              disabled={!isEditing}
-            />
-            <TrackSection items={trackItems} onChange={setTrackItems} showErrors={showErrors} disabled={!isEditing} />
-            <ActivitySection
-              items={activityItems}
-              onChange={setActivityItems}
-              showErrors={showErrors}
-              disabled={!isEditing}
-            />
-            <ProjectSection projects={projectItems} onChange={setProjectItems} disabled={!isEditing} />
-            <FAQSection items={faqItems} onChange={setFaqItems} showErrors={showErrors} disabled={!isEditing} />
+            <TitleRow>
+              <PageTitle>랜딩페이지 관리</PageTitle>
+              <ButtonRow>
+                {isEditing ? (
+                  <>
+                    <Button variant="outlined" color="assistive" size="small" onClick={handleCancel}>
+                      취소
+                    </Button>
+                    <Button size="small" onClick={handleSave} loading={isSaving}>
+                      저장
+                    </Button>
+                  </>
+                ) : (
+                  <EditButton onClick={() => setIsEditing(true)} disabled={!isDataLoaded} />
+                )}
+              </ButtonRow>
+            </TitleRow>
+            {isDataError ? (
+              <EmptyState variant="error" />
+            ) : !isDataLoaded ? (
+              <LoadingWrapper>
+                <LinearLoading />
+              </LoadingWrapper>
+            ) : (
+              <>
+                <IntroduceSection
+                  metrics={introduceMetrics}
+                  onChange={setIntroduceMetrics}
+                  showErrors={showErrors}
+                  disabled={!isEditing}
+                />
+                <TrackSection
+                  items={trackItems}
+                  onChange={setTrackItems}
+                  showErrors={showErrors}
+                  disabled={!isEditing}
+                />
+                <ActivitySection
+                  items={activityItems}
+                  onChange={setActivityItems}
+                  showErrors={showErrors}
+                  disabled={!isEditing}
+                />
+                <ProjectSection projects={projectItems} onChange={setProjectItems} disabled={!isEditing} />
+                <FAQSection items={faqItems} onChange={setFaqItems} showErrors={showErrors} disabled={!isEditing} />
+              </>
+            )}
           </>
         )}
       </MyPageShell>
