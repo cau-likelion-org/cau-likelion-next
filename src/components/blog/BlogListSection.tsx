@@ -4,12 +4,11 @@ import { useQuery } from '@tanstack/react-query';
 import PageHeader from '@common/pageHeader/PageHeader';
 import Select from '@common/select/Select';
 import ListboxOptions from '@common/select/ListboxOptions';
-import { IcCircleExclamation } from '@assets/svg';
+import CircularLoading from '@common/loading/CircularLoading';
+import EmptyState from '@common/emptyState/EmptyState';
 import useListboxSelect from 'src/hooks/useListboxSelect';
 import { getBlogs, BlogCategory } from 'src/apis/blog';
 import { toDateString } from '@utils/index';
-import { BackgroundColor, Fill, Label } from '@utils/constant/color';
-import { Typography, typographyCss } from '@utils/constant/typography';
 
 import BlogCard from './component/BlogCard';
 
@@ -26,7 +25,7 @@ const CATEGORY_LABEL: Record<BlogCategory, string> = {
 const CATEGORY_OPTIONS = [ALL_OPTION, ...Object.values(CATEGORY_LABEL)];
 
 const BlogListSection = () => {
-  const { data: blogs } = useQuery({ queryKey: ['blogs'], queryFn: getBlogs });
+  const { data: blogs, isLoading, isError } = useQuery({ queryKey: ['blogs'], queryFn: getBlogs });
   const [generation, setGeneration] = useState(ALL_OPTION);
   const [category, setCategory] = useState(ALL_OPTION);
   const [openFilter, setOpenFilter] = useState<FilterKey | null>(null);
@@ -74,11 +73,14 @@ const BlogListSection = () => {
         </FilterRow>
       </Header>
 
-      {posts.length === 0 ? (
-        <EmptyState>
-          <IcCircleExclamation width={64} height={64} />
-          <EmptyStateText>조건에 맞는 블로그 글이 없습니다.</EmptyStateText>
-        </EmptyState>
+      {isLoading ? (
+        <LoadingWrapper>
+          <CircularLoading size={32} />
+        </LoadingWrapper>
+      ) : isError && posts.length === 0 ? (
+        <EmptyState variant="error" />
+      ) : posts.length === 0 ? (
+        <EmptyState message="조건에 맞는 블로그 글이 없습니다." />
       ) : (
         <PostList>
           {posts.map((post) => (
@@ -194,21 +196,10 @@ const PostList = styled.div`
   gap: 22px;
 `;
 
-const EmptyState = styled.div`
-  width: 100%;
-  min-height: 468px;
-  padding: 10px;
+const LoadingWrapper = styled.div`
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 28px;
-  color: ${Label.assistive};
-`;
-
-const EmptyStateText = styled.p`
-  ${typographyCss(Typography.body1Normal.medium)}
-  color: ${Label.alternative};
-  text-align: center;
-  margin: 0;
+  width: 100%;
+  min-height: 468px;
 `;
