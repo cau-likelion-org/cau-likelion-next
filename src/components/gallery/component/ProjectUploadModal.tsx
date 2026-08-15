@@ -3,13 +3,13 @@ import { PROJECT_CATEGORY_OPTIONS } from '@utils/constant';
 
 interface ProjectUploadModalProps {
   onClose: () => void;
-  onSubmit?: () => void;
+  onSuccess?: () => void;
 }
 
-const ProjectUploadModal = ({ onClose, onSubmit }: ProjectUploadModalProps) => (
+const ProjectUploadModal = ({ onClose, onSuccess }: ProjectUploadModalProps) => (
   <PostUploadModal
     onClose={onClose}
-    onSubmit={onSubmit}
+    onSubmit={async () => onSuccess?.()}
     postType="project"
     category={{ label: '프로젝트 구분', options: PROJECT_CATEGORY_OPTIONS }}
     dateFieldLabel="프로젝트 기간"

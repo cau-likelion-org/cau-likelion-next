@@ -18,8 +18,8 @@ const ProjectEditModal = ({ initialValues, onClose, onDelete, onSubmit }: Projec
   <PostUploadModal
     mode="edit"
     onClose={onClose}
-    onDelete={onDelete}
-    onSubmit={onSubmit}
+    onDelete={async () => onDelete()}
+    onSubmit={async () => onSubmit?.()}
     postType="project"
     category={{ label: '프로젝트 구분', options: PROJECT_CATEGORY_OPTIONS }}
     dateFieldLabel="프로젝트 기간"

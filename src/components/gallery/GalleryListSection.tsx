@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import Button from '@common/button/Button';
 import Card from '@common/card/Card';
 import ContentBadge from '@common/badge/ContentBadge';
@@ -48,6 +48,12 @@ const ADD_BUTTON_LABEL: Record<GalleryTabKey, string> = {
   gallery: '추억 추가',
 };
 
+const LIST_QUERY_KEY_BY_TAB: Record<GalleryTabKey, string> = {
+  session: 'gallerySessions',
+  project: 'galleryProjects',
+  gallery: 'galleryHistories',
+};
+
 const PROJECT_CATEGORY_LABEL: Record<GalleryProjectCategory, string> = {
   IDEATHON: '아이디어톤',
   HACKATHON: '해커톤',
@@ -73,6 +79,7 @@ const GalleryListSection = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [toastText, setToastText] = useState('');
   const [isToastOpen, setIsToastOpen] = useState(false);
+  const queryClient = useQueryClient();
 
   const { data: sessions } = useQuery({ queryKey: ['gallerySessions'], queryFn: getSessionList });
   const { data: projects } = useQuery({ queryKey: ['galleryProjects'], queryFn: getGalleryProjectList });
@@ -112,13 +119,20 @@ const GalleryListSection = () => {
     setIsEditModalOpen(false);
     setSelectedId(null);
   };
-  const handleDelete = () => {
-    setIsEditModalOpen(false);
-    setSelectedId(null);
+  const invalidateActiveTabList = () => queryClient.invalidateQueries({ queryKey: [LIST_QUERY_KEY_BY_TAB[activeTab]] });
+
+  const handleUploadSuccess = () => {
+    invalidateActiveTabList();
+    showToast('등록이 완료되었습니다.');
+  };
+  const handleEditSuccess = () => {
+    invalidateActiveTabList();
+    showToast('변경사항이 저장되었습니다.');
+  };
+  const handleDeleteSuccess = () => {
+    invalidateActiveTabList();
     showToast('삭제가 완료되었습니다.');
   };
-  const handleUploadSubmit = () => showToast('등록이 완료되었습니다.');
-  const handleEditSubmit = () => showToast('변경사항이 저장되었습니다.');
 
   const generationOptions = useMemo(() => {
     const source: { generationNumber: number }[] =
@@ -195,6 +209,7 @@ const GalleryListSection = () => {
     if (activeTab === 'session' && sessionDetail) {
       return (
         <SessionEditModal
+          id={sessionDetail.id}
           initialValues={{
             title: sessionDetail.title,
             content: sessionDetail.description,
@@ -202,10 +217,12 @@ const GalleryListSection = () => {
             category: sessionDetail.partName,
             week: String(sessionDetail.degree),
             date: sessionDetail.sessionDate.split('T')[0],
+            imageUrls: sessionDetail.imageUrls,
+            thumbnailUrl: sessionDetail.thumbnailUrl,
           }}
           onClose={closeEditModal}
-          onDelete={handleDelete}
-          onSubmit={handleEditSubmit}
+          onDeleteSuccess={handleDeleteSuccess}
+          onSubmitSuccess={handleEditSuccess}
         />
       );
     }
@@ -220,23 +237,26 @@ const GalleryListSection = () => {
             dateRange: [projectDetail.startDate, projectDetail.endDate],
           }}
           onClose={closeEditModal}
-          onDelete={handleDelete}
-          onSubmit={handleEditSubmit}
+          onDelete={handleDeleteSuccess}
+          onSubmit={handleEditSuccess}
         />
       );
     }
     if (activeTab === 'gallery' && historyDetail) {
       return (
         <HistoryEditModal
+          id={historyDetail.id}
           initialValues={{
             title: historyDetail.title,
             content: historyDetail.description,
             generation: String(historyDetail.generationNumber),
             dateRange: [historyDetail.startDate, historyDetail.endDate ?? historyDetail.startDate],
+            imageUrls: historyDetail.imageUrls,
+            thumbnailUrl: historyDetail.imageUrls[0],
           }}
           onClose={closeEditModal}
-          onDelete={handleDelete}
-          onSubmit={handleEditSubmit}
+          onDeleteSuccess={handleDeleteSuccess}
+          onSubmitSuccess={handleEditSuccess}
         />
       );
     }
@@ -305,7 +325,7 @@ const GalleryListSection = () => {
         </FilterRow>
       </Header>
 
-      {isUploadModalOpen && <UploadModal onClose={closeUploadModal} onSubmit={handleUploadSubmit} />}
+      {isUploadModalOpen && <UploadModal onClose={closeUploadModal} onSuccess={handleUploadSuccess} />}
       {selectedId !== null && !isEditModalOpen && renderDetailModal()}
       {selectedId !== null && isEditModalOpen && renderEditModal()}
       <ToastWrapper>
