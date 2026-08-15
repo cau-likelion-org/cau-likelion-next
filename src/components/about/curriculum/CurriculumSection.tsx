@@ -12,8 +12,8 @@ import CurriculumInfoCard from './component/CurriculumInfoCard';
 import WeekAccordion from './component/WeekAccordion';
 
 const CurriculumSection = () => {
-  const { data: tracks } = useQuery({ queryKey: ['tracks'], queryFn: getTracks });
-  const { data: curriculums } = useQuery({ queryKey: ['curriculums'], queryFn: getCurriculums });
+  const { data: tracks } = useQuery({ queryKey: ['tracks'], queryFn: () => getTracks() });
+  const { data: curriculums } = useQuery({ queryKey: ['curriculums'], queryFn: () => getCurriculums() });
   const [activeTrackKey, setActiveTrackKey] = useState('');
 
   const activeTrack = tracks?.find((track) => String(track.id) === activeTrackKey) ?? tracks?.[0];

@@ -104,17 +104,17 @@ const MyPageAdminLanding = () => {
   // 편집 화면이라 창 포커스 시 백그라운드 재조회로 입력 중인 값이 덮어써지지 않도록 자동 재조회를 끔
   const { data: introduce } = useQuery({
     queryKey: ['adminIntroduce'],
-    queryFn: getIntroduce,
+    queryFn: () => getIntroduce(tokenState),
     refetchOnWindowFocus: false,
   });
   const { data: tracks } = useQuery({
     queryKey: ['adminTracks'],
-    queryFn: getTracks,
+    queryFn: () => getTracks(tokenState),
     refetchOnWindowFocus: false,
   });
   const { data: activities } = useQuery({
     queryKey: ['adminActivities'],
-    queryFn: getActivities,
+    queryFn: () => getActivities(tokenState),
     refetchOnWindowFocus: false,
   });
   const { data: projects } = useQuery({
@@ -124,7 +124,7 @@ const MyPageAdminLanding = () => {
   });
   const { data: faqs } = useQuery({
     queryKey: ['adminFaqs'],
-    queryFn: getFaqs,
+    queryFn: () => getFaqs(tokenState),
     refetchOnWindowFocus: false,
   });
 

@@ -7,7 +7,7 @@ import { Black, BackgroundWhite, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 const FAQSection = () => {
-  const { data: faqs } = useQuery({ queryKey: ['faqs'], queryFn: getFaqs });
+  const { data: faqs } = useQuery({ queryKey: ['faqs'], queryFn: () => getFaqs() });
   const [openIds, setOpenIds] = useState<number[]>([]);
 
   const toggle = (id: number) => {

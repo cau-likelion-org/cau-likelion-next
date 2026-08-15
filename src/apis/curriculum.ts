@@ -19,7 +19,11 @@ export interface CurriculumRequest {
   description: string;
 }
 
-export const getCurriculums = () => {
+export const getCurriculums = (token?: IToken) => {
+  if (token)
+    return getAuthAxios(token)
+      .get<CurriculumResponse[]>('/api/admin/curriculums')
+      .then((res) => res.data);
   return axios.get<CurriculumResponse[]>(`${url}/api/admin/curriculums`).then((res) => res.data);
 };
 

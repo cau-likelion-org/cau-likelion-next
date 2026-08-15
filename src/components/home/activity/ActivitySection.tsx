@@ -19,7 +19,7 @@ const PAGE_NAVIGATION_HREF: Record<PageNavigation, string> = {
 
 const ActivitySection = () => {
   const router = useRouter();
-  const { data: activities } = useQuery({ queryKey: ['activities'], queryFn: getActivities });
+  const { data: activities } = useQuery({ queryKey: ['activities'], queryFn: () => getActivities() });
 
   return (
     <Wrapper>

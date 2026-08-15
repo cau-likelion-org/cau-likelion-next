@@ -14,9 +14,10 @@ export interface FaqRequest {
   answer: string;
 }
 
-// 퍼블릭 랜딩페이지 FAQSection에서도 그대로 재사용하는 조회용 API라 인증 없이 호출
-export async function getFaqs() {
-  const { data } = await axios.get<FaqResponse[]>(`${url}/api/admin/faqs`);
+export async function getFaqs(token?: IToken) {
+  const { data } = token
+    ? await getAuthAxios(token).get<FaqResponse[]>('/api/admin/faqs')
+    : await axios.get<FaqResponse[]>(`${url}/api/admin/faqs`);
   return data;
 }
 

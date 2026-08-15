@@ -24,9 +24,10 @@ export interface ActivityRequest {
   pageNavigation: PageNavigation;
 }
 
-// 퍼블릭 랜딩페이지 ActivitySection에서도 그대로 재사용하는 조회용 API라 인증 없이 호출
-export async function getActivities() {
-  const { data } = await axios.get<ActivityResponse[]>(`${url}/api/admin/activities`);
+export async function getActivities(token?: IToken) {
+  const { data } = token
+    ? await getAuthAxios(token).get<ActivityResponse[]>('/api/admin/activities')
+    : await axios.get<ActivityResponse[]>(`${url}/api/admin/activities`);
   return data;
 }
 

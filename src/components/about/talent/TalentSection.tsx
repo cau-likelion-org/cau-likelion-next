@@ -15,7 +15,7 @@ const toItems = (content: string) =>
     .filter((line) => line !== '');
 
 const TalentSection = () => {
-  const { data } = useQuery({ queryKey: ['talents'], queryFn: getTalents });
+  const { data } = useQuery({ queryKey: ['talents'], queryFn: () => getTalents() });
 
   const talents = data ?? [];
   const common = talents.find((talent) => talent.partName.startsWith('공통'));

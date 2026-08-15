@@ -109,14 +109,26 @@ const MyPageAdminAbout = () => {
   });
 
   // 편집 화면이라 창 포커스 시 백그라운드 재조회로 입력 중인 값이 덮어써지지 않도록 자동 재조회를 끔
-  const { data: talents } = useQuery({ queryKey: ['adminTalents'], queryFn: getTalents, refetchOnWindowFocus: false });
-  const { data: tracks } = useQuery({ queryKey: ['adminTracks'], queryFn: getTracks, refetchOnWindowFocus: false });
-  const { data: curriculums } = useQuery({
-    queryKey: ['adminCurriculums'],
-    queryFn: getCurriculums,
+  const { data: talents } = useQuery({
+    queryKey: ['adminTalents'],
+    queryFn: () => getTalents(tokenState),
     refetchOnWindowFocus: false,
   });
-  const { data: roadmap } = useQuery({ queryKey: ['adminRoadmap'], queryFn: getRoadmap, refetchOnWindowFocus: false });
+  const { data: tracks } = useQuery({
+    queryKey: ['adminTracks'],
+    queryFn: () => getTracks(tokenState),
+    refetchOnWindowFocus: false,
+  });
+  const { data: curriculums } = useQuery({
+    queryKey: ['adminCurriculums'],
+    queryFn: () => getCurriculums(tokenState),
+    refetchOnWindowFocus: false,
+  });
+  const { data: roadmap } = useQuery({
+    queryKey: ['adminRoadmap'],
+    queryFn: () => getRoadmap(tokenState),
+    refetchOnWindowFocus: false,
+  });
   // 조회가 끝나기 전에 편집을 시작하면, 뒤늦게 도착한 최초 조회 결과가 입력 중인 값을 덮어쓸 수 있어
   // 조회가 모두 끝나기 전까지는 수정 버튼을 눌러 편집을 시작할 수 없도록 막음
   const isDataLoaded =

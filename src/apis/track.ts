@@ -18,9 +18,10 @@ export interface TrackRequest {
   techStack: string[];
 }
 
-// 퍼블릭 랜딩페이지 TrackSection에서도 그대로 재사용하는 조회용 API라 인증 없이 호출
-export async function getTracks() {
-  const { data } = await axios.get<TrackResponse[]>(`${url}/api/admin/tracks`);
+export async function getTracks(token?: IToken) {
+  const { data } = token
+    ? await getAuthAxios(token).get<TrackResponse[]>('/api/admin/tracks')
+    : await axios.get<TrackResponse[]>(`${url}/api/admin/tracks`);
   return data;
 }
 

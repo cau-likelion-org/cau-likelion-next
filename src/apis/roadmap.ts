@@ -8,9 +8,11 @@ export interface RoadmapResponse {
   imageUrl: string;
 }
 
-export const getRoadmap = async () => {
+export const getRoadmap = async (token?: IToken) => {
   try {
-    const { data } = await axios.get<RoadmapResponse>(`${url}/api/admin/roadmap`);
+    const { data } = token
+      ? await getAuthAxios(token).get<RoadmapResponse>('/api/admin/roadmap')
+      : await axios.get<RoadmapResponse>(`${url}/api/admin/roadmap`);
     return data;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.status === 404) return null;

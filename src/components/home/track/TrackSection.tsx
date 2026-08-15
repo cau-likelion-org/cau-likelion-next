@@ -7,7 +7,7 @@ import { Black, BackgroundWhite, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 const TrackSection = () => {
-  const { data: tracks } = useQuery({ queryKey: ['tracks'], queryFn: getTracks });
+  const { data: tracks } = useQuery({ queryKey: ['tracks'], queryFn: () => getTracks() });
 
   return (
     <Wrapper>
