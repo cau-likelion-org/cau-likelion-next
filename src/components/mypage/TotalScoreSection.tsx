@@ -7,6 +7,8 @@ import { useQuery } from '@tanstack/react-query';
 import useTokenStore from 'src/store/useTokenStore';
 import useScoreChangedStore from 'src/store/useScoreChangedStore';
 import { getAssignments, getTotalAttendance } from 'src/apis/mypage';
+import LinearLoading from '@common/loading/LinearLoading';
+import EmptyState from '@common/emptyState/EmptyState';
 import styled from 'styled-components';
 import ScoreEditModal from './component/ScoreEditModal';
 import ScoreHeader from './component/ScoreHeader';
@@ -63,12 +65,21 @@ const TotalScoreSection = ({ myName }: { myName: string }) => {
     });
   }, [totalAssignment, totalAttendance]);
 
+  const isLoading = totalAssignmentLoading || totalAttendanceLoading;
+  const isError = !!totalAssignmentError || !!totalAttendanceError;
+
   return (
     <>
       <Wrapper>
         <ScoreHeader isAdmin={true} name={myName} />
         <ScoreWrapper>
-          {!totalAssignmentLoading && !totalAttendanceLoading && (
+          {isLoading ? (
+            <LoadingWrapper>
+              <LinearLoading />
+            </LoadingWrapper>
+          ) : isError ? (
+            <EmptyState variant="error" />
+          ) : (
             <>
               <ScoreRow index={0}>
                 <ScoreTitle index={0}>이름</ScoreTitle>
@@ -162,4 +173,12 @@ const Score = styled.div<{ type?: string }>`
 const EditButton = styled(TiPencil)`
   cursor: pointer;
   margin-left: 2px;
+`;
+
+const LoadingWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 86px;
 `;
