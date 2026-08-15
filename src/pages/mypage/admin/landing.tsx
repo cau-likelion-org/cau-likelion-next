@@ -137,6 +137,8 @@ const MyPageAdminLanding = () => {
     projects !== undefined &&
     faqs !== undefined;
   const isDataError = isIntroduceError || isTracksError || isActivitiesError || isProjectsError || isFaqsError;
+  const dataLoadProgress =
+    [introduce, tracks, activities, projects, faqs].filter((item) => item !== undefined).length / 5;
 
   const [introduceMetrics, setIntroduceMetrics] = useState(DEFAULT_INTRODUCE_METRICS);
   const [trackItems, setTrackItems] = useState<TrackIntroItem[]>([]);
@@ -287,7 +289,7 @@ const MyPageAdminLanding = () => {
               <EmptyState variant="error" />
             ) : !isDataLoaded ? (
               <LoadingWrapper>
-                <LinearLoading />
+                <LinearLoading progress={dataLoadProgress} />
               </LoadingWrapper>
             ) : (
               <>

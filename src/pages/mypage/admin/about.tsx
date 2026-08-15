@@ -137,6 +137,7 @@ const MyPageAdminAbout = () => {
   const isDataLoaded =
     talents !== undefined && tracks !== undefined && curriculums !== undefined && roadmap !== undefined;
   const isDataError = isTalentsError || isTracksError || isCurriculumsError || isRoadmapError;
+  const dataLoadProgress = [talents, tracks, curriculums, roadmap].filter((item) => item !== undefined).length / 4;
 
   const [talentItems, setTalentItems] = useState<TalentItem[]>([]);
   const [curriculumTracks, setCurriculumTracks] = useState<CurriculumTrackItems[]>([]);
@@ -284,7 +285,7 @@ const MyPageAdminAbout = () => {
               <EmptyState variant="error" />
             ) : !isDataLoaded ? (
               <LoadingWrapper>
-                <LinearLoading />
+                <LinearLoading progress={dataLoadProgress} />
               </LoadingWrapper>
             ) : (
               <>
