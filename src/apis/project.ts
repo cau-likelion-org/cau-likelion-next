@@ -37,6 +37,7 @@ export async function getProjects(): Promise<ArchivingArrayType<IProjectData>> {
       subtitle: project.tagline,
       description: project.summary,
       category: PROJECT_CATEGORY_LABEL[project.category],
+      banner: project.banner,
       dev_stack: [],
     });
     return grouped;

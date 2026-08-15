@@ -8,16 +8,12 @@ import { Typography, typographyCss } from '@utils/constant/typography';
 const RoadmapSection = () => {
   const { data: roadmap } = useQuery({ queryKey: ['roadmap'], queryFn: getRoadmap });
 
-  if (!roadmap) return null;
-
   return (
     <Wrapper>
       <Content>
         <SectionTitle>활동 로드맵</SectionTitle>
-        <ChartImageWrapper>
-          <ChartImage src={roadmap.imageUrl} alt="활동 로드맵" />
-        </ChartImageWrapper>
-        <Caption>*일정 상 변경될 수 있습니다</Caption>
+        <ChartImageWrapper>{roadmap && <ChartImage src={roadmap.imageUrl} alt="활동 로드맵" />}</ChartImageWrapper>
+        <Caption>*상기 일정은 사정에 따라 변경될 수 있습니다</Caption>
       </Content>
     </Wrapper>
   );

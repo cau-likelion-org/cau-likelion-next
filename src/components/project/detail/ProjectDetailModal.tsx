@@ -1,5 +1,7 @@
 import { UserProfile } from '@@types/request';
 import { useQuery } from '@tanstack/react-query';
+import Button from '@common/button/Button';
+import { IcChevronLeft } from '@assets/svg';
 import { AccentTint, Label, Material, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { useRouter } from 'next/router';
@@ -57,6 +59,19 @@ const ProjectDetailModal = ({ projectId, staticData, onClose }: ProjectDetailMod
   return (
     <Backdrop onClick={onClose}>
       <ModalCard onClick={(event) => event.stopPropagation()}>
+        {/* 모바일은 모달이 화면을 덮어 배경 클릭으로 닫을 수 없으므로, 로딩 중에도 닫기 버튼을 노출한다 */}
+        <MobileHeader>
+          <Button
+            variant="outlined"
+            color="assistive"
+            size="small"
+            leadingIcon={<IcChevronLeft width={16} height={16} />}
+            onClick={onClose}
+          >
+            닫기
+          </Button>
+          <MobileTitle>프로젝트 상세보기</MobileTitle>
+        </MobileHeader>
         {!project ? (
           <LoadingWrapper>불러오는 중...</LoadingWrapper>
         ) : (
@@ -110,6 +125,10 @@ const Backdrop = styled.div`
   justify-content: center;
   padding: 24px;
   background-color: ${Material.dimmer};
+
+  @media (max-width: 700px) {
+    padding: 0;
+  }
 `;
 
 const ModalCard = styled.div`
@@ -126,6 +145,32 @@ const ModalCard = styled.div`
 
   border-radius: 16px;
   background-color: #fff;
+
+  /* 모바일에서는 화면을 꽉 채우고 상단 헤더로 닫는다 */
+  @media (max-width: 700px) {
+    width: 100%;
+    height: 100%;
+    max-height: none;
+    border-radius: 0;
+  }
+`;
+
+const MobileHeader = styled.div`
+  display: none;
+
+  @media (max-width: 700px) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 52px 20px;
+  }
+`;
+
+const MobileTitle = styled.p`
+  margin: 0;
+  color: ${Orange.o500};
+  ${typographyCss(Typography.title2.bold)}
 `;
 
 const LoadingWrapper = styled.div`
@@ -139,6 +184,10 @@ const Contents = styled.div`
   flex-direction: column;
   gap: 42px;
   padding: 28px;
+
+  @media (max-width: 700px) {
+    padding: 0 20px 60px;
+  }
 `;
 
 const TextBlock = styled.div`
@@ -184,6 +233,8 @@ const PanelRow = styled.div`
 
   @media (max-width: 700px) {
     flex-direction: column;
+    /* 세로로 쌓일 때 패널이 콘텐츠 폭으로 줄지 않고 전체 폭을 쓰도록 */
+    align-items: stretch;
   }
 `;
 
@@ -192,6 +243,11 @@ const Actions = styled.div`
   justify-content: flex-end;
   gap: 24px;
   padding: 0 28px 20px;
+
+  /* 모바일에서는 상단 헤더의 닫기 버튼을 쓰고, 수정은 데스크톱에서만 가능하다 */
+  @media (max-width: 700px) {
+    display: none;
+  }
 `;
 
 const CloseButton = styled.button`

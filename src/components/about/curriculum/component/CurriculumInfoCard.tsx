@@ -3,26 +3,31 @@ import styled from 'styled-components';
 import { Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
-import type { CurriculumTrack } from '../data';
+import type { TrackResponse } from 'src/apis/track';
 
 export interface CurriculumInfoCardProps {
-  track: CurriculumTrack;
+  track: TrackResponse;
 }
 
 const CurriculumInfoCard = ({ track }: CurriculumInfoCardProps) => {
+  const introductions = track.introduction
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((line) => line !== '');
+
   return (
     <Wrapper>
       <Heading>
-        <Title>{track.title}</Title>
-        <Subtitle>{track.subtitle}</Subtitle>
+        <Title>{track.koName}</Title>
+        <Subtitle>{track.enName}</Subtitle>
       </Heading>
       <List>
-        {track.items.map((item, index) => (
+        {introductions.map((item, index) => (
           <ListItem key={index}>{item}</ListItem>
         ))}
       </List>
       <ChipRow>
-        {track.chips.map((chip) => (
+        {track.techStack.map((chip) => (
           <Chip key={chip}>{chip}</Chip>
         ))}
       </ChipRow>

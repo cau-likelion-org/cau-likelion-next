@@ -152,7 +152,9 @@ const FilterSelect = ({
 };
 
 const Wrapper = styled.div`
-  width: 1060px;
+  width: 100%;
+  max-width: 1100px;
+  padding: 0 20px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -165,17 +167,35 @@ const Header = styled.div`
   flex-direction: column;
   align-items: flex-start;
   gap: 42px;
+
+  @media (max-width: 600px) {
+    gap: 0;
+  }
 `;
 
 const Intro = styled(PageHeader)`
   gap: 24px;
   padding-bottom: 22px;
+
+  @media (max-width: 600px) {
+    padding-top: 52px;
+    padding-bottom: 52px;
+
+    /* PageHeader는 900px 이하에서 타이틀을 title2로 줄이지만, 모바일 시안은 display2를 유지한다 */
+    p:first-of-type {
+      ${typographyCss(Typography.display2.bold)}
+    }
+  }
 `;
 
 const FilterRow = styled.div`
   display: flex;
   align-items: center;
   gap: 20px;
+
+  @media (max-width: 600px) {
+    width: 100%;
+  }
 `;
 
 const SelectWrapper = styled.div`
@@ -184,6 +204,12 @@ const SelectWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
+
+  @media (max-width: 600px) {
+    flex: 1 0 0;
+    min-width: 0;
+    width: auto;
+  }
 `;
 
 const PostList = styled.div`
@@ -192,6 +218,10 @@ const PostList = styled.div`
   flex-direction: column;
   align-items: flex-start;
   gap: 22px;
+
+  @media (max-width: 600px) {
+    gap: 32px;
+  }
 `;
 
 const EmptyState = styled.div`

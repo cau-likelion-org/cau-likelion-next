@@ -12,6 +12,7 @@ interface SessionDetailModalProps {
 const SessionDetailModal = ({ title, badges, description, date, onClose, onEdit }: SessionDetailModalProps) => (
   <PostDetailModal
     title={title}
+    headerTitle="세션 상세보기"
     badges={badges}
     description={description}
     date={date}

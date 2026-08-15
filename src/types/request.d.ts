@@ -44,6 +44,7 @@ export interface IArchivingData {
 }
 export interface IProjectData extends IArchivingData {
   category: string;
+  banner?: string;
   dev_stack: number[];
 }
 
