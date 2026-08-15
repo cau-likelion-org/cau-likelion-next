@@ -9,6 +9,8 @@ import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import Button from '@common/button/Button';
 import Toast from '@common/toast/Toast';
 import MyPageShell from '@mypage/component/MyPageShell';
+import LinearLoading from '@common/loading/LinearLoading';
+import EmptyState from '@common/emptyState/EmptyState';
 import TalentSection, { TalentItem, isTalentItemsInvalid } from '@mypage/admin/TalentSection';
 import CurriculumSection, {
   CurriculumTrackItems,
@@ -109,18 +111,31 @@ const MyPageAdminAbout = () => {
   });
 
   // 편집 화면이라 창 포커스 시 백그라운드 재조회로 입력 중인 값이 덮어써지지 않도록 자동 재조회를 끔
-  const { data: talents } = useQuery({ queryKey: ['adminTalents'], queryFn: getTalents, refetchOnWindowFocus: false });
-  const { data: tracks } = useQuery({ queryKey: ['adminTracks'], queryFn: getTracks, refetchOnWindowFocus: false });
-  const { data: curriculums } = useQuery({
+  const { data: talents, isError: isTalentsError } = useQuery({
+    queryKey: ['adminTalents'],
+    queryFn: getTalents,
+    refetchOnWindowFocus: false,
+  });
+  const { data: tracks, isError: isTracksError } = useQuery({
+    queryKey: ['adminTracks'],
+    queryFn: getTracks,
+    refetchOnWindowFocus: false,
+  });
+  const { data: curriculums, isError: isCurriculumsError } = useQuery({
     queryKey: ['adminCurriculums'],
     queryFn: getCurriculums,
     refetchOnWindowFocus: false,
   });
-  const { data: roadmap } = useQuery({ queryKey: ['adminRoadmap'], queryFn: getRoadmap, refetchOnWindowFocus: false });
+  const { data: roadmap, isError: isRoadmapError } = useQuery({
+    queryKey: ['adminRoadmap'],
+    queryFn: getRoadmap,
+    refetchOnWindowFocus: false,
+  });
   // 조회가 끝나기 전에 편집을 시작하면, 뒤늦게 도착한 최초 조회 결과가 입력 중인 값을 덮어쓸 수 있어
   // 조회가 모두 끝나기 전까지는 수정 버튼을 눌러 편집을 시작할 수 없도록 막음
   const isDataLoaded =
     talents !== undefined && tracks !== undefined && curriculums !== undefined && roadmap !== undefined;
+  const isDataError = isTalentsError || isTracksError || isCurriculumsError || isRoadmapError;
 
   const [talentItems, setTalentItems] = useState<TalentItem[]>([]);
   const [curriculumTracks, setCurriculumTracks] = useState<CurriculumTrackItems[]>([]);
@@ -260,23 +275,38 @@ const MyPageAdminAbout = () => {
             )}
           </ButtonRow>
         </TitleRow>
-        <TalentSection items={talentItems} onChange={setTalentItems} showErrors={showErrors} disabled={!isEditing} />
-        {curriculumTracks.length > 0 && (
-          <CurriculumSection
-            tracks={curriculumTracks}
-            onChange={setCurriculumTracks}
-            showErrors={showErrors}
-            disabled={!isEditing}
-          />
+        {isDataError ? (
+          <EmptyState variant="error" />
+        ) : !isDataLoaded ? (
+          <LoadingWrapper>
+            <LinearLoading />
+          </LoadingWrapper>
+        ) : (
+          <>
+            <TalentSection
+              items={talentItems}
+              onChange={setTalentItems}
+              showErrors={showErrors}
+              disabled={!isEditing}
+            />
+            {curriculumTracks.length > 0 && (
+              <CurriculumSection
+                tracks={curriculumTracks}
+                onChange={setCurriculumTracks}
+                showErrors={showErrors}
+                disabled={!isEditing}
+              />
+            )}
+            <RoadmapSection
+              imageUrl={roadmapFile.url}
+              fileName={roadmapFile.name}
+              onSelectFile={handleRoadmapFileSelect}
+              onClear={handleRoadmapClear}
+              disabled={!isEditing}
+              isUploading={isUploadingRoadmap}
+            />
+          </>
         )}
-        <RoadmapSection
-          imageUrl={roadmapFile.url}
-          fileName={roadmapFile.name}
-          onSelectFile={handleRoadmapFileSelect}
-          onClear={handleRoadmapClear}
-          disabled={!isEditing}
-          isUploading={isUploadingRoadmap}
-        />
       </MyPageShell>
       <ToastWrapper>
         <Toast variant={toastVariant} text={toastMessage} show={!!toastMessage} onHidden={() => setToastMessage('')} />
@@ -308,6 +338,14 @@ const ButtonRow = styled.div`
   display: flex;
   align-items: center;
   gap: 12px;
+`;
+
+const LoadingWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 300px;
 `;
 
 const ToastWrapper = styled.div`
