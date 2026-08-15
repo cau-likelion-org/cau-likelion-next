@@ -1,13 +1,4 @@
-import {
-  ArchivingArrayType,
-  IGalleryData,
-  IProjectData,
-  ISessionData,
-  MemberRole,
-  TotalScoreParams,
-  UserScore,
-} from '@@types/request';
-import { TRACK_INDEX } from './constant';
+import { ArchivingArrayType, IGalleryData, IProjectData, ISessionData, MemberRole } from '@@types/request';
 
 export const toDateString = (date?: Date, formatter = '-') => {
   if (!date) return '';
@@ -27,19 +18,6 @@ export const concatDateString = (startDate: string, endDate: string) => {
 
 export const isUnfilled = (value: string) => value.trim().length === 0;
 
-export const getTotalScore = (target: TotalScoreParams) => {
-  let defaultScore = 3;
-  const totalScore =
-    defaultScore -
-    (1 * target.absence +
-      0.2 * target.lateSubmitted +
-      1 * target.notSubmitted +
-      0.5 * target.tardiness +
-      1.5 * target.truancy);
-
-  return Number(totalScore.toFixed(1)) > 0 ? Number(totalScore.toFixed(1)) : 0;
-};
-
 // 운영진(STAFF) 이상 — 담당 파트에 한정된 관리 권한까지 포함해 "관리자 화면 접근 가능 여부" 판단에 사용
 const ADMIN_ROLES: MemberRole[] = ['STAFF', 'PRESIDENT', 'ADMIN'];
 
@@ -49,29 +27,17 @@ const FULL_ADMIN_ROLES: MemberRole[] = ['PRESIDENT', 'ADMIN'];
 export const isAdminRole = (role: MemberRole) => ADMIN_ROLES.includes(role);
 export const isFullAdminRole = (role: MemberRole) => FULL_ADMIN_ROLES.includes(role);
 
+// 출석체크는 활동 중인 아기사자만 대상
+export const isAttendanceTarget = (role: MemberRole) => role === 'BABY_LION';
+
 // 출석부 생성은 회장 전용 권한
 export const canCreateAttendance = (role: MemberRole) => role === 'PRESIDENT';
 
+// 사이드바 '관리자' 메뉴(랜딩·소개 페이지 관리)는 중하하 관리자 전용 — 운영진·회장에게는 보이지 않는다
+export const canManageSitePages = (role: MemberRole) => role === 'ADMIN';
+
 // 전체 구성원 권한 설정은 중하하 관리자 전용 권한
 export const canManageMemberRoles = (role: MemberRole) => role === 'ADMIN';
-
-export const getTotalNameObject = (data: any): Record<string, UserScore> => {
-  let totalNameObject: Record<string, UserScore> = {};
-  data.forEach((user: any, i: number) => {
-    totalNameObject[user['이름']] = {
-      user_id: 0,
-      name: user['이름'],
-      track: TRACK_INDEX[user['트랙']],
-      lateSubmitted: user['과제 지각제출'],
-      notSubmitted: user['과제 미제출'],
-      absence: 0,
-      truancy: 0,
-      tardiness: 0,
-      totalScore: 0,
-    };
-  });
-  return totalNameObject;
-};
 
 export const sortArchivingListDesc = <T extends IGalleryData | IProjectData>(
   data: ArchivingArrayType<T>,

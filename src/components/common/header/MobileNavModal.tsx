@@ -1,135 +1,174 @@
-import { BackgroundColor } from '@utils/constant/color';
-import React, { useEffect, useRef, useState } from 'react';
-import useTokenStore from 'src/store/useTokenStore';
+import { useState } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { useQuery } from '@tanstack/react-query';
 import styled from 'styled-components';
-import { IMenu } from './NavBar';
-import NavButton from './NavButton';
-import NavProfileCard from './NavProfileCard';
 
-const MobileNavModal = ({ isModalOn }: { isModalOn: boolean }) => {
-  const { access: tokenState } = useTokenStore((state) => state.token);
+import { UserProfile } from '@@types/request';
+import Button from '@common/button/Button';
+import LogoutButton from '@mypage/component/LogoutButton';
+import MobileUnsupportedModal from '@common/modal/MobileUnsupportedModal';
+import { getUserProfile } from 'src/apis/account';
+import useTokenStore from 'src/store/useTokenStore';
+import { canManageSitePages } from '@utils/index';
+import { BackgroundColor, Black, Line } from '@utils/constant/color';
+import { Typography, typographyCss } from '@utils/constant/typography';
+
+const SITE_MENU = [
+  { title: '소개', routing: '/about' },
+  { title: '프로젝트', routing: '/project' },
+  { title: '갤러리', routing: '/gallery' },
+  { title: '블로그', routing: '/blog' },
+  { title: '지원하기', routing: '#' },
+];
+
+const MY_PAGE_MENU = [
+  { title: '홈', routing: '/mypage' },
+  { title: '과제관리', routing: '/mypage/assignment' },
+  { title: '출결관리', routing: '/mypage/attendance' },
+];
+
+const MobileNavModal = ({ isModalOn, onClose }: { isModalOn: boolean; onClose?: () => void }) => {
+  const router = useRouter();
+  const { access } = useTokenStore((state) => state.token);
   const hasHydrated = useTokenStore((state) => state.hasHydrated);
-  const [visibilityAnimation, setVisibilityAnimation] = useState(false);
-  const repeatRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const isLogin = hasHydrated && !!tokenState;
+  const isLogin = hasHydrated && !!access;
 
-  const menu: IMenu[] = [
-    { title: '프로젝트', routing: '/project' },
-    { title: '세션', routing: '/session' },
-    { title: '추억', routing: '/gallery' },
-    { title: '위키', routing: 'https://wiki.cau-likelion.org', target: '_blank' },
-    { title: '피드', routing: 'https://blog.cau-likelion.org', target: '_blank' },
-  ];
+  const [isUnsupportedOpen, setIsUnsupportedOpen] = useState(false);
 
-  useEffect(() => {
-    if (isModalOn) {
-      if (repeatRef.current) clearTimeout(repeatRef.current);
-      repeatRef.current = null;
-      // isModalOn prop 변경(외부 트리거)에 즉시 반응해야 해서 useMemo로 대체 불가
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setVisibilityAnimation(true);
-    } else {
-      repeatRef.current = setTimeout(() => {
-        setVisibilityAnimation(false);
-      }, 400);
-    }
-    return () => {
-      if (repeatRef.current) clearTimeout(repeatRef.current);
-    };
-  }, [isModalOn]);
+  const { data: userProfile } = useQuery<UserProfile>({
+    queryKey: ['userProfile'],
+    queryFn: () => getUserProfile({ access, refresh: null }),
+    retry: false,
+    enabled: isLogin,
+  });
+
+  const handleNavigate = (routing: string) => {
+    onClose?.();
+    if (routing !== '#') router.push(routing);
+  };
+
+  // 관리자 페이지는 데스크톱 전용이라 모바일에서는 이동 대신 안내 모달을 띄운다
+  const handleAdminClick = () => {
+    onClose?.();
+    setIsUnsupportedOpen(true);
+  };
 
   return (
-    <>
-      <Layer isModalOn={isModalOn} />
-      {visibilityAnimation && (
-        <Wrapper className={isModalOn ? 'slide-fade-in-dropdown' : 'slide-fade-out-dropdown'}>
-          <NavProfileCard />
-          <ButtonWrapper>
-            {isLogin && <NavButton title={'출석체크'} routing={'/attendance'} isLogin={isLogin} />}
-            {menu.map((m, i) => (
-              <NavButton key={i} title={m.title} routing={m.routing} target={m.target} isLogin={isLogin} />
-            ))}
-          </ButtonWrapper>
-        </Wrapper>
-      )}
-    </>
+    <Wrapper $open={isModalOn} aria-hidden={!isModalOn}>
+      <Inner>
+        {isLogin ? (
+          <>
+            <MenuGroup $gap={26}>
+              <GroupTitle>마이페이지</GroupTitle>
+              {MY_PAGE_MENU.map((item) => (
+                <MenuItem key={item.routing} type="button" onClick={() => handleNavigate(item.routing)}>
+                  {item.title}
+                </MenuItem>
+              ))}
+              {/* 관리자 메뉴는 중하하 관리자에게만 노출 */}
+              {!!userProfile && canManageSitePages(userProfile.role) && (
+                <MenuItem type="button" onClick={handleAdminClick}>
+                  관리자
+                </MenuItem>
+              )}
+            </MenuGroup>
+            <LogoutButton />
+          </>
+        ) : (
+          <Button variant="solid" color="primary" size="small" onClick={() => handleNavigate('/login')}>
+            로그인
+          </Button>
+        )}
+
+        <Divider />
+
+        <MenuGroup $gap={40}>
+          {SITE_MENU.map((item) =>
+            item.routing === '#' ? (
+              <MenuItem key={item.title} type="button" onClick={() => handleNavigate(item.routing)}>
+                {item.title}
+              </MenuItem>
+            ) : (
+              <MenuLink key={item.title} href={item.routing} onClick={onClose}>
+                {item.title}
+              </MenuLink>
+            ),
+          )}
+        </MenuGroup>
+      </Inner>
+
+      {isUnsupportedOpen && <MobileUnsupportedModal onClose={() => setIsUnsupportedOpen(false)} />}
+    </Wrapper>
   );
 };
 
 export default MobileNavModal;
 
-const Layer = styled.div<{ isModalOn: boolean }>`
-  max-width: 100vw;
-  width: 100%;
-  display: ${(props) => (props.isModalOn ? 'block' : 'none')};
+const Wrapper = styled.div<{ $open: boolean }>`
   position: fixed;
-  top: 0;
+  top: 60px;
   left: 0;
+  right: 0;
   bottom: 0;
-  right: 0;
-  width: 101%;
-  background-color: rgba(0, 0, 0, 0.6);
-  z-index: 9997;
-  @media (min-width: 900px) {
-    display: none;
-  }
-`;
-
-const Wrapper = styled.div`
-  max-width: 100vw;
-  width: 100%;
-  @media (min-width: 900px) {
-    display: none;
-  }
-  @keyframes slide-fade-out-dropdown-animation {
-    0% {
-      transform: translateY(0);
-    }
-    100% {
-      transform: translateY(-100%);
-    }
-  }
-
-  @keyframes slide-fade-in-dropdown-animation {
-    0% {
-      transform: translateY(-100%);
-    }
-    100% {
-      transform: translateY(0);
-    }
-  }
-
-  &.slide-fade-in-dropdown {
-    animation: slide-fade-in-dropdown-animation 0.4s ease;
-  }
-
-  &.slide-fade-out-dropdown {
-    animation: slide-fade-out-dropdown-animation 0.4s ease;
-    animation-fill-mode: forwards;
-  }
-
-  position: fixed;
-  left: 0;
-  right: 0;
-  width: 101%;
-  top: 51.5px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background-color: ${BackgroundColor};
-  border-radius: 0 0 1rem 1rem;
-  box-shadow: 10px 10px 30px 0px #00000014;
-  padding-left: 4rem;
-  padding-right: 4rem;
   z-index: 9998;
-  min-height: 300px;
+  overflow-y: auto;
+  background-color: ${BackgroundColor};
+  opacity: ${(props) => (props.$open ? 1 : 0)};
+  visibility: ${(props) => (props.$open ? 'visible' : 'hidden')};
+  transition:
+    opacity 0.3s ease,
+    visibility 0.3s ease;
+
+  @media (min-width: 900px) {
+    display: none;
+  }
 `;
 
-const ButtonWrapper = styled.div`
+const Inner = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: flex-end;
+  gap: 40px;
   width: 100%;
-  margin-top: 10px;
-  align-items: flex-start;
-  gap: 5px;
+  padding: 10px 20px 40px;
+`;
+
+const MenuGroup = styled.div<{ $gap: number }>`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: ${(props) => props.$gap}px;
+`;
+
+const GroupTitle = styled.p`
+  margin: 0;
+  color: ${Black.b80};
+  ${typographyCss(Typography.label1Normal.medium)}
+`;
+
+const menuItemCss = `
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  text-decoration: none;
+`;
+
+const MenuItem = styled.button`
+  ${menuItemCss}
+  color: ${Black.b900};
+  ${typographyCss(Typography.headline1.bold)}
+`;
+
+const MenuLink = styled(Link)`
+  ${menuItemCss}
+  color: ${Black.b900};
+  ${typographyCss(Typography.headline1.bold)}
+`;
+
+const Divider = styled.div`
+  width: 100%;
+  height: 1px;
+  background-color: ${Line.normal};
 `;

@@ -35,7 +35,7 @@ import {
 import { getRoadmap, addRoadmap } from 'src/apis/roadmap';
 import { uploadFile } from 'src/apis/upload';
 import useTokenStore from 'src/store/useTokenStore';
-import { isAdminRole } from '@utils/index';
+import { isAdminRole, canManageSitePages } from '@utils/index';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
@@ -259,7 +259,7 @@ const MyPageAdminAbout = () => {
 
   return (
     <>
-      <MyPageShell active="admin-about" isAdmin={isAuthorized}>
+      <MyPageShell active="admin-about" isAdmin={!!userProfile && canManageSitePages(userProfile.role)}>
         {!isAuthorized ? (
           <PageLoadingGate isError={isUserProfileError} />
         ) : (

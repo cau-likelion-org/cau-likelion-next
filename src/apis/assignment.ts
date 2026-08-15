@@ -18,6 +18,52 @@ export interface AssignmentWeekGroup {
 }
 
 // 운영진: 본인 파트에 생성한 과제 목록을 주차별로 조회
+export interface AssignmentFileInfo {
+  fileUrl: string; // 스토리지에 저장된 파일 URL
+  originalFilename: string;
+}
+
+export interface AssignmentSubmitRequest {
+  content?: string; // 제출물 설명 (최대 300자)
+  url?: string; // type이 URL일 때 필수
+  files?: AssignmentFileInfo[]; // type이 FILE일 때 1개 이상 필수
+}
+
+// 과제 첨부파일은 스토리지에 먼저 올리고 그 URL을 제출 요청에 담는다
+export async function uploadAssignmentFile(token: IToken, file: File) {
+  const authAxios = getAuthAxios(token);
+  const formData = new FormData();
+  formData.append('file', file);
+  const response = await authAxios.post<{ url: string }>('/api/files/ASSIGNMENT', formData);
+  return response.data.url;
+}
+
+// 아기사자: 과제 제출/수정/재제출
+export function submitAssignment(token: IToken, assignmentId: number, payload: AssignmentSubmitRequest) {
+  const authAxios = getAuthAxios(token);
+  return authAxios.post(`/api/assignments/me/${assignmentId}/submissions`, payload).then((res) => res.data);
+}
+
+export interface AssignmentSummary {
+  assignmentId: number;
+  title: string;
+  endDate: string; // 마감 기한 (ISO)
+  status: AssignmentDisplayStatus;
+  submittedAt: string | null; // 제출 이력이 없으면 null
+}
+
+export interface AssignmentSummaryWeekGroup {
+  week: number;
+  weeklyStatus: AssignmentDisplayStatus; // 주차 종합 상태
+  assignments: AssignmentSummary[];
+}
+
+// 아기사자: 본인 파트 과제 목록을 주차별로 조회
+export function getMyAssignments(token: IToken) {
+  const authAxios = getAuthAxios(token);
+  return authAxios.get<AssignmentSummaryWeekGroup[]>('/api/assignments/me').then((res) => res.data);
+}
+
 export function getStaffAssignments(token: IToken) {
   const authAxios = getAuthAxios(token);
   return authAxios.get<AssignmentWeekGroup[]>('/api/assignments/staff').then((res) => res.data);

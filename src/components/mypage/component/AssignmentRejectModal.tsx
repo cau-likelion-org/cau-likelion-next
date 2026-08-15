@@ -15,23 +15,25 @@ const AssignmentRejectModal = ({ onClose, onSubmit }: AssignmentRejectModalProps
   const canSubmit = reason.trim().length > 0;
 
   return (
-    <Overlay role="dialog" aria-modal="true" aria-label="반려 사유">
+    <Overlay role="dialog" aria-modal="true" aria-label="과제 반려 사유">
       <Dimmer onClick={onClose} />
       <Modal>
-        <ModalTitle>반려 사유</ModalTitle>
-        <ModalDescription>반려 사유를 입력해 주세요.</ModalDescription>
-        <ReasonInput
-          autoFocus
-          value={reason}
-          placeholder="텍스트를 입력해 주세요."
-          onChange={(event) => setReason(event.target.value)}
-        />
+        <Information>
+          <ModalTitle>과제 반려 사유</ModalTitle>
+          <ModalDescription>사유를 적어주어야 과제를 반려 처리할 수 있어요</ModalDescription>
+          <ReasonInput
+            autoFocus
+            value={reason}
+            placeholder="텍스트를 입력해 주세요."
+            onChange={(event) => setReason(event.target.value)}
+          />
+        </Information>
         <ModalActions>
           <ModalButton type="button" onClick={onClose}>
             취소
           </ModalButton>
           <ModalButton type="button" $primary disabled={!canSubmit} onClick={() => onSubmit(reason.trim())}>
-            반려
+            반려 처리
           </ModalButton>
         </ModalActions>
       </Modal>
@@ -62,18 +64,25 @@ const Modal = styled.div`
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 12px;
   width: 100%;
+  min-width: 320px;
   max-width: 400px;
-  padding: 28px;
-  border-radius: 16px;
+  border-radius: 12px;
+  overflow: hidden;
   background-color: ${BackgroundWhite.primary};
+`;
+
+const Information = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
 `;
 
 const ModalTitle = styled.p`
   margin: 0;
   color: ${Label.normal};
-  ${typographyCss(Typography.heading2.bold)}
+  ${typographyCss(Typography.headline1.bold)}
 `;
 
 const ModalDescription = styled.p`
@@ -83,10 +92,12 @@ const ModalDescription = styled.p`
 `;
 
 const ReasonInput = styled.textarea`
+  box-sizing: border-box;
   height: 80px;
-  padding: 12px;
+  padding: 12px 16px;
   border: 1px solid ${Line.normal};
   border-radius: 12px;
+  box-shadow: 0 1px 2px -1px rgba(23, 23, 23, 0.1);
   resize: none;
   color: ${Label.normal};
   ${typographyCss(Typography.body1Normal.regular)}
@@ -106,18 +117,44 @@ const ModalActions = styled.div`
   align-items: center;
   justify-content: flex-end;
   gap: 24px;
+  padding: 0 20px 12px;
 `;
 
 const ModalButton = styled.button<{ $primary?: boolean }>`
-  padding: 4px;
+  position: relative;
+  padding: 4px 0;
   border: none;
   background: none;
   cursor: pointer;
   color: ${(props) => (props.$primary ? Orange.o500 : Label.alternative)};
   ${typographyCss(Typography.body1Normal.bold)}
 
+  /* Figma Interaction 레이어 */
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: -7px;
+    right: -7px;
+    height: 32px;
+    transform: translateY(-50%);
+    border-radius: 6px;
+    background-color: ${Label.normal};
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+  }
+
+  &:not(:disabled):hover::after {
+    opacity: 0.04;
+  }
+
+  &:not(:disabled):active::after {
+    opacity: 0.08;
+  }
+
   &:disabled {
-    color: ${Label.assistive};
+    color: ${Label.disable};
     cursor: not-allowed;
   }
 `;

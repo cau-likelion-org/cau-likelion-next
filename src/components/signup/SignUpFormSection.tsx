@@ -21,11 +21,10 @@ import {
 } from 'src/apis/signUp';
 import { isUnfilled } from '@utils/index';
 
-type OpenField = 'generation' | 'part' | null;
+type OpenField = 'part' | null;
 
 const SignUpFormSection = () => {
   const [name, setName] = useState('');
-  const [generationLabel, setGenerationLabel] = useState('');
   const [partName, setPartName] = useState('');
   const [openField, setOpenField] = useState<OpenField>(null);
   const [signupToken] = useState(() =>
@@ -40,33 +39,12 @@ const SignUpFormSection = () => {
     queryFn: getGenerations,
   });
 
-  const generationOptions = useMemo(() => generations?.map((g) => `${g.number}기`) ?? [], [generations]);
-  const selectedGeneration = useMemo(
-    () => generations?.find((g) => `${g.number}기` === generationLabel),
-    [generations, generationLabel],
+  // 기수는 더 이상 사용자가 선택하지 않고, 운영진이 Admin에서 지정한 현재 기수로 고정
+  const activeGeneration = useMemo(
+    () => generations?.find((g) => g.status === 'IN_ACTIVITY') ?? generations?.[generations.length - 1],
+    [generations],
   );
-  const partOptions = useMemo(() => selectedGeneration?.parts.map((p) => p.name) ?? [], [selectedGeneration]);
-
-  const {
-    listId: generationListId,
-    wrapperRef: generationWrapperRef,
-    triggerRef: generationTriggerRef,
-    activeIndex: generationActiveIndex,
-    handleKeyDown: handleGenerationKeyDown,
-    handleBlur: handleGenerationBlur,
-    selectOption: selectGenerationOption,
-  } = useListboxSelect({
-    isOpen: openField === 'generation',
-    options: generationOptions,
-    value: generationLabel,
-    onOpen: () => setOpenField('generation'),
-    onClose: () => setOpenField(null),
-    onSelect: (option) => {
-      setGenerationLabel(option);
-      setPartName('');
-      setOpenField(null);
-    },
-  });
+  const partOptions = useMemo(() => activeGeneration?.parts.map((p) => p.name) ?? [], [activeGeneration]);
 
   const {
     listId: partListId,
@@ -94,8 +72,8 @@ const SignUpFormSection = () => {
     }
   }, [router, signupToken]);
 
-  const selectedPart = selectedGeneration?.parts.find((p) => p.name === partName);
-  const isFormActivated = !isUnfilled(name) && !!selectedGeneration && !!selectedPart;
+  const selectedPart = activeGeneration?.parts.find((p) => p.name === partName);
+  const isFormActivated = !isUnfilled(name) && !!activeGeneration && !!selectedPart;
 
   const signUpFormPost = useMutation({
     mutationFn: signUp,
@@ -117,11 +95,11 @@ const SignUpFormSection = () => {
   });
 
   const handleSubmit = () => {
-    if (!isFormActivated || !selectedGeneration || !selectedPart || typeof signupToken !== 'string') return;
+    if (!isFormActivated || !activeGeneration || !selectedPart || typeof signupToken !== 'string') return;
     signUpFormPost.mutate({
       signupToken,
       name,
-      generationId: selectedGeneration.id,
+      generationId: activeGeneration.id,
       partId: selectedPart.id,
     });
   };
@@ -149,35 +127,14 @@ const SignUpFormSection = () => {
             value={name}
             onChange={(event) => setName(event.target.value)}
           />
-          <SelectWrapper
-            ref={generationWrapperRef}
-            onKeyDownCapture={handleGenerationKeyDown}
-            onBlur={handleGenerationBlur}
-          >
-            <Select
-              ref={generationTriggerRef}
-              heading="기수"
-              required
-              placeholder="선택"
-              value={generationLabel}
-              onClick={() => setOpenField((prev) => (prev === 'generation' ? null : 'generation'))}
-              description="본인의 기수를 선택해 주세요."
-              aria-expanded={openField === 'generation'}
-              aria-activedescendant={
-                openField === 'generation' ? `${generationListId}-${generationActiveIndex}` : undefined
-              }
-              aria-controls={generationListId}
-            />
-            {openField === 'generation' && (
-              <ListboxOptions
-                listId={generationListId}
-                options={generationOptions}
-                value={generationLabel}
-                activeIndex={generationActiveIndex}
-                onSelect={selectGenerationOption}
-              />
-            )}
-          </SelectWrapper>
+          <TextField
+            heading="기수"
+            required
+            disabled
+            readOnly
+            value={activeGeneration ? String(activeGeneration.number) : ''}
+            description="수정이 필요한 경우 운영진에게 문의해주세요."
+          />
           <SelectWrapper ref={partWrapperRef} onKeyDownCapture={handlePartKeyDown} onBlur={handlePartBlur}>
             <Select
               ref={partTriggerRef}
@@ -187,7 +144,7 @@ const SignUpFormSection = () => {
               value={partName}
               onClick={() => setOpenField((prev) => (prev === 'part' ? null : 'part'))}
               description="파트를 선택해 주세요."
-              disabled={!selectedGeneration}
+              disabled={!activeGeneration}
               aria-expanded={openField === 'part'}
               aria-activedescendant={openField === 'part' ? `${partListId}-${partActiveIndex}` : undefined}
               aria-controls={partListId}

@@ -27,7 +27,7 @@ const RoadmapSection = () => {
             <ChartImageWrapper>
               <ChartImage src={roadmap!.imageUrl} alt="활동 로드맵" />
             </ChartImageWrapper>
-            <Caption>*일정 상 변경될 수 있습니다</Caption>
+            <Caption>*상기 일정은 사정에 따라 변경될 수 있습니다</Caption>
           </>
         )}
       </Content>

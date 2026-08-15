@@ -32,7 +32,7 @@ import { getIntroduce, updateIntroduce, IntroduceResponse } from 'src/apis/intro
 import { getAdminProjectList, updateProjectExposure, AdminProjectListItem } from 'src/apis/project';
 import { PROJECT_CATEGORY_LABEL } from '@home/project/component/ProjectCard';
 import useTokenStore from 'src/store/useTokenStore';
-import { isAdminRole } from '@utils/index';
+import { isAdminRole, canManageSitePages } from '@utils/index';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
@@ -263,7 +263,7 @@ const MyPageAdminLanding = () => {
 
   return (
     <>
-      <MyPageShell active="admin-landing" isAdmin={isAuthorized}>
+      <MyPageShell active="admin-landing" isAdmin={!!userProfile && canManageSitePages(userProfile.role)}>
         {!isAuthorized ? (
           <PageLoadingGate isError={isUserProfileError} />
         ) : (

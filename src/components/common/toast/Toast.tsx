@@ -38,7 +38,7 @@ const Toast = ({
   show,
   width = 335,
   delay = 300,
-  duration = 1000,
+  duration = 2000,
   onHidden,
 }: ToastProps) => {
   const [isMounted, setIsMounted] = useState(false);

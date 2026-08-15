@@ -5,14 +5,19 @@ import { MdKeyboardArrowDown, MdKeyboardArrowUp } from 'react-icons/md';
 import { BackgroundWhite, CoolNeutral, Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
-import type { CurriculumWeek } from '../data';
+export interface CurriculumWeek {
+  key: string;
+  badge: string;
+  title: string;
+  content?: string;
+}
 
 export interface WeekAccordionProps {
   weeks: CurriculumWeek[];
 }
 
 const WeekAccordion = ({ weeks }: WeekAccordionProps) => {
-  const [expandedKey, setExpandedKey] = useState(weeks[0]?.key ?? '');
+  const [expandedKey, setExpandedKey] = useState('');
 
   const onToggle = (key: string) => {
     setExpandedKey((prev) => (prev === key ? '' : key));

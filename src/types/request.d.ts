@@ -1,4 +1,3 @@
-export type MemberStack = 'pm_design' | 'frontend' | 'backend';
 export type MemberStackKor = '기획디자인' | '프론트엔드' | '백엔드';
 export type ProjectMemberRole = 'pm' | 'design' | 'frontend' | 'backend';
 export type ShareURL = 'github' | 'youtube' | 'web';
@@ -45,6 +44,7 @@ export interface IArchivingData {
 }
 export interface IProjectData extends IArchivingData {
   category: string;
+  banner?: string;
   dev_stack: number[];
 }
 
@@ -72,13 +72,6 @@ interface ResponseData<T> {
   message: string;
   data: T;
 }
-
-export interface TodayAttendanceData {
-  name: string;
-  track: number;
-  attendance_result: 1 | 2;
-}
-export type TodayAttendanceListData = Record<MemberStack, string[]>;
 
 export type MemberRole = 'BABY_LION' | 'ADULT_LION' | 'STAFF' | 'PRESIDENT' | 'ADMIN';
 
@@ -123,27 +116,7 @@ export interface UserProfile {
   role: MemberRole;
   partId: number;
   partName: string;
-}
-
-export interface UserScore {
-  user_id: number;
-  name: string;
-  track: number;
-  absence: number; // 결석
-  truancy: number; // 무단결석
-  tardiness: number; // 지각
-  notSubmitted: number;
-  lateSubmitted: number;
-  totalScore: number;
-}
-
-export interface UserAttendance {
-  user_id: number;
-  name: string; // 이름
-  track: number;
-  absence: number; // 결석
-  truancy: number; // 무단결석
-  tardiness: number; // 지각
+  generationNumber: number | null; // 소속 파트가 없으면 null
 }
 
 export interface UserAssignment {
@@ -151,19 +124,4 @@ export interface UserAssignment {
   track: number;
   notSubmitted: number;
   lateSubmitted: number;
-}
-
-export interface TotalScoreParams {
-  notSubmitted: number;
-  lateSubmitted: number;
-  absence: number;
-  truancy: number;
-  tardiness: number;
-}
-
-export interface RequestEditUserScore {
-  user_id: number;
-  truancy: number;
-  tardiness: number;
-  absence: number;
 }

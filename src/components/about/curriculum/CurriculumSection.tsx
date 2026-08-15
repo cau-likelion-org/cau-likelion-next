@@ -1,6 +1,6 @@
-import { useMemo, useState } from 'react';
-import styled from 'styled-components';
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import styled from 'styled-components';
 
 import Tab from '@common/tab/Tab';
 import LinearLoading from '@common/loading/LinearLoading';
@@ -10,7 +10,6 @@ import { getCurriculums } from 'src/apis/curriculum';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
-import type { CurriculumTrack } from './data';
 import CurriculumInfoCard from './component/CurriculumInfoCard';
 import WeekAccordion from './component/WeekAccordion';
 
@@ -29,30 +28,18 @@ const CurriculumSection = () => {
   const isLoading = isTracksLoading || isCurriculumsLoading;
   const isError = isTracksError || isCurriculumsError;
 
-  const curriculumTracks: CurriculumTrack[] = useMemo(
-    () =>
-      (tracks ?? []).map((track) => ({
-        key: String(track.id),
-        label: track.koName,
-        title: track.koName,
-        subtitle: track.enName,
-        items: track.introduction.split('\n').filter((line) => line.trim() !== ''),
-        chips: track.techStack,
-        weeks: (curriculums ?? [])
-          .filter((curriculum) => curriculum.trackKoName === track.koName)
-          .map((curriculum) => ({
-            key: String(curriculum.id),
-            badge: curriculum.week,
-            title: curriculum.title,
-            content: curriculum.description,
-          })),
-      })),
-    [tracks, curriculums],
-  );
+  const [activeTrackKey, setActiveTrackKey] = useState('');
 
-  const [selectedTrackKey, setSelectedTrackKey] = useState('');
-  const activeTrack = curriculumTracks.find((track) => track.key === selectedTrackKey) ?? curriculumTracks[0];
-  const tabItems = curriculumTracks.map((track) => ({ key: track.key, label: track.label }));
+  const activeTrack = tracks?.find((track) => String(track.id) === activeTrackKey) ?? tracks?.[0];
+
+  const weeks = (curriculums ?? [])
+    .filter((curriculum) => curriculum.trackId === activeTrack?.id)
+    .map((curriculum) => ({
+      key: String(curriculum.id),
+      badge: curriculum.week,
+      title: curriculum.title,
+      content: curriculum.description,
+    }));
 
   return (
     <Wrapper>
@@ -67,15 +54,15 @@ const CurriculumSection = () => {
         activeTrack && (
           <>
             <Tab
-              items={tabItems}
-              activeKey={activeTrack.key}
-              onChange={setSelectedTrackKey}
+              items={(tracks ?? []).map((track) => ({ key: String(track.id), label: track.koName }))}
+              activeKey={String(activeTrack.id)}
+              onChange={setActiveTrackKey}
               size="large"
               horizontalPadding
             />
             <Content>
               <CurriculumInfoCard track={activeTrack} />
-              <WeekAccordion key={activeTrack.key} weeks={activeTrack.weeks} />
+              <WeekAccordion key={activeTrack.id} weeks={weeks} />
             </Content>
           </>
         )
@@ -113,6 +100,8 @@ const Content = styled.div`
 
   @media (max-width: 900px) {
     flex-direction: column;
+    /* 세로로 쌓일 때는 카드가 콘텐츠 폭으로 줄지 않고 전체 폭을 쓰도록 */
+    align-items: stretch;
   }
 `;
 

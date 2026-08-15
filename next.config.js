@@ -18,6 +18,21 @@ const nextConfig = {
       { protocol: 'https', hostname: 'chunghaha-14th.s3.ap-northeast-2.amazonaws.com', pathname: '/**' },
     ],
   },
+  async rewrites() {
+    // 개발 모드 전용 API 프록시
+    // 백엔드에 localhost용 CORS 설정이 없어서, 브라우저가 같은 출처(localhost:3000)로 요청
+    if (process.env.NODE_ENV !== 'development') {
+      return [];
+    }
+
+    const target = process.env.API_PROXY_TARGET;
+    if (!target) {
+      return [];
+    }
+
+    return [{ source: '/api/:path*', destination: `${target}/api/:path*` }];
+  },
+
   async headers() {
     // 개발 모드에서는 /_next/static 청크가 프로덕션처럼 콘텐츠 해시로 고정되지 않아,
     // immutable 캐시를 적용하면 브라우저가 재컴파일된 새 코드 대신 예전 청크를 계속 써버린다.

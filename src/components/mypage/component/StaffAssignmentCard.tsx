@@ -50,16 +50,24 @@ const StaffAssignmentCard = ({ week, assignments, onDetail }: StaffAssignmentCar
 
           return (
             <Row key={assignment.assignmentId}>
-              <AssignmentTitle>{assignment.title}</AssignmentTitle>
-              <Count $emphasis={assignment.pendingReviewCount > 0 ? 'orange' : 'dark'}>
-                승인 대기 {assignment.pendingReviewCount}
-              </Count>
-              <Count $emphasis="muted">승인 완료 {assignment.approvedCount}</Count>
-              <Count $emphasis="muted">지각 제출 {assignment.lateSubmittedCount}</Count>
-              <Count $emphasis="muted">
-                {unsubmitted.label} {unsubmitted.count}
-              </Count>
-              <Deadline>{formatDeadline(assignment.endDate)}</Deadline>
+              <TitleLine>
+                <AssignmentTitle>{assignment.title}</AssignmentTitle>
+                <Deadline>{formatDeadline(assignment.endDate)}</Deadline>
+              </TitleLine>
+              <Stats>
+                <Count $emphasis={assignment.pendingReviewCount > 0 ? 'orange' : 'dark'} $mobileOrder={1}>
+                  승인 대기 {assignment.pendingReviewCount}
+                </Count>
+                <Count $emphasis="muted" $mobileOrder={3}>
+                  승인 완료 {assignment.approvedCount}
+                </Count>
+                <Count $emphasis="muted" $mobileOrder={2}>
+                  지각 제출 {assignment.lateSubmittedCount}
+                </Count>
+                <Count $emphasis="muted" $mobileOrder={4}>
+                  {unsubmitted.label} {unsubmitted.count}
+                </Count>
+              </Stats>
             </Row>
           );
         })}
@@ -107,6 +115,10 @@ const DetailButton = styled.button`
   color: ${Label.strong};
   cursor: pointer;
   ${typographyCss(Typography.body1Normal.bold)}
+
+  @media (max-width: 900px) {
+    ${typographyCss(Typography.label1Normal.bold)}
+  }
 `;
 
 const ChevronRight = styled.span`
@@ -119,13 +131,56 @@ const Rows = styled.div`
   flex-direction: column;
   gap: 16px;
   width: 100%;
+
+  /* Figma 모바일: 과제 사이 간격 22px + 구분선 */
+  @media (max-width: 900px) {
+    gap: 22px;
+  }
 `;
 
+/* 모바일은 [제목 · 마감일] / [카운트 4개 2열]로 쌓고, 데스크톱은 래퍼를 display:contents로
+   투명하게 만들어 기존처럼 한 줄에 모두 늘어놓는다. */
 const Row = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
+
+  @media (max-width: 900px) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  & + & {
+    @media (max-width: 900px) {
+      padding-top: 22px;
+      border-top: 1px solid ${Line.subtle};
+    }
+  }
+`;
+
+const TitleLine = styled.div`
+  display: contents;
+
+  @media (max-width: 900px) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+`;
+
+const Stats = styled.div`
+  display: contents;
+
+  @media (max-width: 900px) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    row-gap: 12px;
+  }
 `;
 
 const EmptyRow = styled.p`
@@ -143,9 +198,16 @@ const AssignmentTitle = styled.p`
   text-overflow: ellipsis;
   color: ${TEXT_DARK};
   ${typographyCss(Typography.heading2.bold)}
+
+  @media (max-width: 900px) {
+    flex: 1 0 0;
+    min-width: 0;
+    width: auto;
+    ${typographyCss(Typography.headline1.bold)}
+  }
 `;
 
-const Count = styled.p<{ $emphasis: 'orange' | 'dark' | 'muted' }>`
+const Count = styled.p<{ $emphasis: 'orange' | 'dark' | 'muted'; $mobileOrder: number }>`
   flex-shrink: 0;
   width: 100px;
   margin: 0;
@@ -153,13 +215,26 @@ const Count = styled.p<{ $emphasis: 'orange' | 'dark' | 'muted' }>`
   color: ${(props) =>
     props.$emphasis === 'orange' ? Orange.o500 : props.$emphasis === 'dark' ? TEXT_DARK : TEXT_MUTED};
   ${typographyCss(Typography.body1Normal.medium)}
+
+  /* 모바일은 2열이라 승인 대기 · 지각 제출 / 승인 완료 · 제출 전 순으로 재배치 (Figma) */
+  @media (max-width: 900px) {
+    order: ${(props) => props.$mobileOrder};
+    ${typographyCss(Typography.body2Normal.medium)}
+  }
 `;
 
 const Deadline = styled.p`
   flex-shrink: 0;
   width: 100px;
   margin: 0;
+  /* 데스크톱은 한 줄 배치에서 맨 끝으로 보낸다 (DOM상으로는 제목 바로 뒤) */
+  order: 1;
   text-align: right;
   color: ${Label.alternative};
   ${typographyCss(Typography.body1Reading.regular)}
+
+  @media (max-width: 900px) {
+    order: 0;
+    ${typographyCss(Typography.label1Normal.regular)}
+  }
 `;

@@ -1,3 +1,6 @@
+// 어른사자가 활동 전용 메뉴에 접근했을 때 마이페이지 홈에서 띄울 안내 플래그
+export const INACTIVE_MEMBER_NOTICE_KEY = 'inactiveMemberNotice';
+
 export const NUMERIC_ONLY_REGEX = /^[0-9]*$/;
 
 export const ROLE_LABEL: Record<'BABY_LION' | 'ADULT_LION' | 'STAFF' | 'PRESIDENT' | 'ADMIN', string> = {

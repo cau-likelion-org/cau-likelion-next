@@ -11,32 +11,47 @@ import CircularLoading from '@common/loading/CircularLoading';
 import EmptyState from '@common/emptyState/EmptyState';
 import PageLoadingGate from '@common/pageGate/PageLoadingGate';
 import PartAttendanceTable from '@mypage/component/PartAttendanceTable';
-import WeeklyAttendanceCard, { WeeklyAttendanceRecord } from '@mypage/component/WeeklyAttendanceCard';
+import WeeklyAttendanceCard, {
+  WeeklyAttendanceRecord,
+  WeeklyAttendanceStatus,
+} from '@mypage/component/WeeklyAttendanceCard';
 import { getGenerations, getUserProfile } from 'src/apis/account';
 import {
+  AttendanceStatus,
+  AttendanceStatusResponse,
   AttendanceStatusUpdate,
   MemberAttendanceResponse,
   getAllAttendances,
+  getMyAttendances,
   getPartAttendance,
   updateAttendanceBatch,
 } from 'src/apis/attendance';
 import useTokenStore from 'src/store/useTokenStore';
-import { isAdminRole, isFullAdminRole } from '@utils/index';
+import { INACTIVE_MEMBER_NOTICE_KEY } from '@utils/constant';
+import { isAdminRole, isFullAdminRole, canManageSitePages } from '@utils/index';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 // 회장/관리자 파트 필터의 '전체' 옵션 (나머지는 현재 활동 기수의 파트 목록에서 가져옴)
 const ALL_PART = '전체';
 
-// 백엔드 API 준비 전까지 사용하는 목 데이터 (아기사자 본인 뷰)
-const MOCK_WEEKLY_ATTENDANCE: WeeklyAttendanceRecord[] = [
-  { week: 19, date: '2026/12/13', status: 'before' },
-  { week: 18, date: '2026/12/12', status: 'present', checkInTime: '18:55:42' },
-  { week: 17, date: '2026/12/11', status: 'late', checkInTime: '18:55:42' },
-  { week: 16, date: '2026/12/10', status: 'absent', reason: '병원 진료로 인한 결석' },
-  { week: 15, date: '2026/12/10', status: 'unauthorized' },
-  { week: 14, date: '2026/12/12', status: 'excused', reason: '엘레베이터 고장 이슈' },
-];
+const CARD_STATUS: Record<AttendanceStatus, WeeklyAttendanceStatus> = {
+  BEFORE: 'before',
+  PRESENT: 'present',
+  LATE: 'late',
+  ABSENT: 'absent',
+  UNAUTHORIZED_ABSENT: 'unauthorized',
+  EXCUSED: 'excused',
+};
+
+// 서버 응답(YYYY-MM-DD / ISO date-time)을 카드 표기 형식으로 바꾼다
+const toWeeklyRecord = (record: AttendanceStatusResponse): WeeklyAttendanceRecord => ({
+  week: record.weekNumber,
+  date: record.date.replace(/-/g, '/'),
+  status: CARD_STATUS[record.status],
+  checkInTime: record.checkedAt ? record.checkedAt.slice(11, 19) : undefined,
+  reason: record.reason || undefined,
+});
 
 const MyPageAttendance = () => {
   const tokenState = useTokenStore((state) => state.token);
@@ -53,6 +68,13 @@ const MyPageAttendance = () => {
     retry: false,
     enabled: !!tokenState.access,
   });
+
+  // 어른사자는 활동 중인 구성원이 아니므로 홈으로 돌려보내고, 홈에서 사유를 토스트로 안내한다
+  useEffect(() => {
+    if (userProfile?.role !== 'ADULT_LION') return;
+    sessionStorage.setItem(INACTIVE_MEMBER_NOTICE_KEY, '1');
+    router.replace('/mypage');
+  }, [userProfile?.role, router]);
 
   const isStaff = !!userProfile && isAdminRole(userProfile.role);
   const isPresident = !!userProfile && isFullAdminRole(userProfile.role);
@@ -83,6 +105,13 @@ const MyPageAttendance = () => {
     enabled: isStaff,
   });
 
+  // 아기사자 본인 주차별 출결
+  const { data: myAttendances } = useQuery<AttendanceStatusResponse[]>({
+    queryKey: ['myAttendance'],
+    queryFn: () => getMyAttendances(tokenState),
+    enabled: !!userProfile && !isStaff && userProfile.role !== 'ADULT_LION',
+  });
+
   const members =
     isPresident && selectedPart !== ALL_PART
       ? (attendance ?? []).filter((member) => member.partName === selectedPart)
@@ -107,7 +136,7 @@ const MyPageAttendance = () => {
       <ToastWrapper>
         <Toast variant="negative" text={errorMessage} show={!!errorMessage} onHidden={() => setErrorMessage('')} />
       </ToastWrapper>
-      <MyPageShell active="attendance" isAdmin={!!userProfile && isAdminRole(userProfile.role)}>
+      <MyPageShell active="attendance" isAdmin={!!userProfile && canManageSitePages(userProfile.role)}>
         {!userProfile ? (
           <PageLoadingGate isError={isUserProfileError} />
         ) : isStaff ? (
@@ -132,7 +161,7 @@ const MyPageAttendance = () => {
           <>
             <SectionTitle>주차별 출결 현황</SectionTitle>
             <List>
-              {MOCK_WEEKLY_ATTENDANCE.map((record) => (
+              {(myAttendances ?? []).map(toWeeklyRecord).map((record) => (
                 <WeeklyAttendanceCard key={record.week} record={record} />
               ))}
             </List>

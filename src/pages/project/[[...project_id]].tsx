@@ -40,7 +40,7 @@ const ProjectList = ({
       ) : (
         <ListPageHead category={ARCHIVING.PROJECT} canoUrl={'https://cau-likelion.org/project'} />
       )}
-      <ProjectPageHeader title="프로젝트" subtitle="멋사와 함께한 프로젝트" />
+      <ProjectPageHeader title="프로젝트" subtitle="멋쟁이사자처럼 중앙대학교에서 탄생한 프로젝트를 소개합니다." />
       <ProjectsSection staticData={projectStaticData} />
       {projectId && (
         <ProjectDetailModal

@@ -1,14 +1,12 @@
-import { ReactNode, useMemo } from 'react';
-import { AxiosError } from 'axios';
+import { ReactNode } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import styled from 'styled-components';
 
 import { UserProfile } from '@@types/request';
-import { getAssignments, getUserAttendance } from 'src/apis/mypage';
+import { getMyScore } from 'src/apis/mypage';
 import useTokenStore from 'src/store/useTokenStore';
 import LinearLoading from '@common/loading/LinearLoading';
 import EmptyState from '@common/emptyState/EmptyState';
-import { getTotalScore } from '@utils/index';
 import { BackgroundWhite, Black, Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
@@ -19,40 +17,14 @@ const MyScoreSection = ({ userProfile }: { userProfile: UserProfile }) => {
   const isActiveGeneration = userProfile.role === 'BABY_LION';
 
   const {
-    data: userAttendance,
-    isLoading: isAttendanceLoading,
-    isError: isAttendanceError,
+    data: score,
+    isLoading,
+    isError,
   } = useQuery({
-    queryKey: ['userAttendance'],
-    queryFn: () => getUserAttendance(tokenValue),
+    queryKey: ['myScore'],
+    queryFn: () => getMyScore(tokenValue),
     enabled: !!tokenValue.access && isActiveGeneration,
   });
-
-  const {
-    data: userAssignment,
-    isLoading: isAssignmentLoading,
-    isError: isAssignmentError,
-  } = useQuery({
-    queryKey: ['userAssignment'],
-    queryFn: () => getAssignments().then((data) => data.filter((user: any) => user['이름'] === userProfile.name)),
-    enabled: isActiveGeneration,
-  });
-
-  const isLoading = isActiveGeneration && (isAttendanceLoading || isAssignmentLoading);
-  const isError = isActiveGeneration && (isAttendanceError || isAssignmentError);
-
-  const totalScore = useMemo(() => {
-    if (!userAttendance || !userAssignment || userAssignment.length === 0) return 0;
-    return getTotalScore({
-      absence: userAttendance.absence,
-      truancy: userAttendance.truancy,
-      tardiness: userAttendance.tardiness,
-      notSubmitted: userAssignment[0]['과제 미제출'],
-      lateSubmitted: userAssignment[0]['과제 지각제출'],
-    });
-  }, [userAssignment, userAttendance]);
-
-  const hasAssignment = !!userAssignment && userAssignment.length > 0;
 
   return (
     <Section>
@@ -68,15 +40,15 @@ const MyScoreSection = ({ userProfile }: { userProfile: UserProfile }) => {
       ) : (
         <CardRow>
           <StatCard title="출결">
-            <StatItem label="지각" value={userAttendance?.tardiness ?? 0} />
-            <StatItem label="결석" value={userAttendance?.absence ?? 0} />
-            <StatItem label="무단결석" value={userAttendance?.truancy ?? 0} />
+            <StatItem label="지각" value={score?.lateCount ?? 0} />
+            <StatItem label="결석" value={score?.absentCount ?? 0} />
+            <StatItem label="무단결석" value={score?.unauthorizedAbsentCount ?? 0} />
           </StatCard>
           <StatCard title="과제">
-            <StatItem label="지각제출" value={hasAssignment ? userAssignment[0]['과제 지각제출'] : 0} />
-            <StatItem label="미제출" value={hasAssignment ? userAssignment[0]['과제 미제출'] : 0} />
+            <StatItem label="지각제출" value={score?.lateSubmitCount ?? 0} />
+            <StatItem label="미제출" value={score?.missedCount ?? 0} />
           </StatCard>
-          <TotalScoreCard score={totalScore} />
+          <TotalScoreCard score={score?.total ?? 0} />
         </CardRow>
       )}
     </Section>
@@ -129,6 +101,11 @@ const CardRow = styled.div`
   align-items: center;
   gap: 20px;
   width: 100%;
+
+  @media (max-width: 900px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
 `;
 
 const EmptyCard = styled.div`
@@ -158,6 +135,10 @@ const StatCardWrapper = styled.div`
   align-items: center;
   flex-shrink: 0;
   width: 340px;
+
+  @media (max-width: 900px) {
+    width: 100%;
+  }
 `;
 
 const StatCardHeader = styled.div`
@@ -218,6 +199,10 @@ const TotalCardWrapper = styled.div`
   flex-shrink: 0;
   width: 160px;
   height: 164px;
+
+  @media (max-width: 900px) {
+    width: 100%;
+  }
 `;
 
 const TotalCardHeader = styled.div`

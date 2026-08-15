@@ -12,6 +12,7 @@ interface ProjectDetailModalProps {
 const ProjectDetailModal = ({ title, badges, description, date, onClose, onEdit }: ProjectDetailModalProps) => (
   <PostDetailModal
     title={title}
+    headerTitle="프로젝트 상세보기"
     badges={badges}
     description={description}
     date={date}

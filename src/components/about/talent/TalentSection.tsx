@@ -1,6 +1,5 @@
-import { useMemo } from 'react';
-import styled from 'styled-components';
 import { useQuery } from '@tanstack/react-query';
+import styled from 'styled-components';
 
 import { getTalents } from 'src/apis/talent';
 import LinearLoading from '@common/loading/LinearLoading';
@@ -10,23 +9,19 @@ import { Typography, typographyCss } from '@utils/constant/typography';
 
 import TalentListBlock from './component/TalentListBlock';
 
-const COMMON_PART_NAME = '공통';
+// 인재상 관리에서 한 파트당 한 건으로 저장하고, 줄바꿈으로 구분한 문장을 목록으로 노출
+const toItems = (content: string) =>
+  content
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((line) => line !== '');
 
 const TalentSection = () => {
-  const { data: talents, isLoading, isError } = useQuery({ queryKey: ['talents'], queryFn: getTalents });
+  const { data, isLoading, isError } = useQuery({ queryKey: ['talents'], queryFn: getTalents });
 
-  const groups = useMemo(() => {
-    const map = new Map<string, string[]>();
-    (talents ?? []).forEach(({ partName, content }) => {
-      const items = map.get(partName) ?? [];
-      items.push(content);
-      map.set(partName, items);
-    });
-    return Array.from(map.entries()).map(([title, items]) => ({ title, items }));
-  }, [talents]);
-
-  const commonGroup = groups.find((group) => group.title === COMMON_PART_NAME);
-  const partGroups = groups.filter((group) => group.title !== COMMON_PART_NAME);
+  const talents = data ?? [];
+  const common = talents.find((talent) => talent.partName.startsWith('공통'));
+  const parts = talents.filter((talent) => talent !== common);
 
   return (
     <Wrapper>
@@ -40,11 +35,11 @@ const TalentSection = () => {
           <EmptyState variant="error" />
         ) : (
           <Card>
-            {commonGroup && <TalentListBlock title="공통 인재상" items={commonGroup.items} />}
+            {common && <TalentListBlock title={common.partName} items={toItems(common.content)} />}
             <PartRow>
-              {partGroups.map((part) => (
-                <PartCard key={part.title}>
-                  <TalentListBlock title={part.title} items={part.items} />
+              {parts.map((part) => (
+                <PartCard key={part.id}>
+                  <TalentListBlock title={part.partName} items={toItems(part.content)} />
                 </PartCard>
               ))}
             </PartRow>
