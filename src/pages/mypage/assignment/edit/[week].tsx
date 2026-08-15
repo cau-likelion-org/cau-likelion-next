@@ -1,13 +1,11 @@
-import { ReactElement, useEffect, useState } from 'react';
+import { ReactElement, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import styled from 'styled-components';
 
-import { UserProfile } from '@@types/request';
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import Toast from '@common/toast/Toast';
 import AssignmentCreateForm, { AssignmentDraft } from '@mypage/component/AssignmentCreateForm';
-import { getUserProfile } from 'src/apis/account';
 import {
   AssignmentDetail,
   AssignmentWeekGroup,
@@ -18,11 +16,11 @@ import {
   getStaffAssignments,
   updateAssignment,
 } from 'src/apis/assignment';
+import useStaffOnly from 'src/hooks/useStaffOnly';
 import useTokenStore from 'src/store/useTokenStore';
 
 const AssignmentEditPage = () => {
   const tokenState = useTokenStore((state) => state.token);
-  const hasHydrated = useTokenStore((state) => state.hasHydrated);
   const router = useRouter();
   const queryClient = useQueryClient();
 
@@ -30,22 +28,13 @@ const AssignmentEditPage = () => {
   // 회장이 다른 파트를 보고 넘어온 경우 그 파트로 조회 (없으면 본인 파트)
   const partId = router.query.partId ? Number(router.query.partId) : null;
 
-  useEffect(() => {
-    if (hasHydrated && !tokenState.access) router.push('/login');
-  }, [hasHydrated, tokenState, router]);
-
-  const { data: userProfile } = useQuery<UserProfile>({
-    queryKey: ['userProfile'],
-    queryFn: () => getUserProfile(tokenState),
-    retry: false,
-    enabled: !!tokenState.access,
-  });
+  const { userProfile, isStaff } = useStaffOnly();
 
   const assignmentsQueryKey = partId != null ? ['presidentAssignments', partId] : ['staffAssignments'];
   const { data: weekGroups } = useQuery<AssignmentWeekGroup[]>({
     queryKey: assignmentsQueryKey,
     queryFn: () => (partId != null ? getPresidentAssignments(tokenState, partId) : getStaffAssignments(tokenState)),
-    enabled: !!tokenState.access,
+    enabled: isStaff,
   });
   const assignments = weekGroups?.find((group) => group.week === week)?.assignments ?? [];
 
@@ -100,8 +89,9 @@ const AssignmentEditPage = () => {
     },
   });
 
-  // weekGroups가 아직 안 왔을 때만 대기 (주차에 과제가 없어도 폼은 열려야 함)
-  if (!userProfile || !weekGroups || !details) return null;
+  // 운영진이 아니면 훅이 리다이렉트하므로 그동안 아무것도 그리지 않는다.
+  // weekGroups는 아직 안 왔을 때만 대기 (주차에 과제가 없어도 폼은 열려야 함)
+  if (!userProfile || !isStaff || !weekGroups || !details) return null;
 
   return (
     <>

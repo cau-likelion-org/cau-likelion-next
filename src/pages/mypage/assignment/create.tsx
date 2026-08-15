@@ -1,30 +1,19 @@
-import { ReactElement, useEffect } from 'react';
+import { ReactElement } from 'react';
 import { useRouter } from 'next/router';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { UserProfile } from '@@types/request';
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import AssignmentCreateForm from '@mypage/component/AssignmentCreateForm';
-import { getUserProfile } from 'src/apis/account';
 import { AssignmentCreateRequest, createAssignments } from 'src/apis/assignment';
+import useStaffOnly from 'src/hooks/useStaffOnly';
 import useTokenStore from 'src/store/useTokenStore';
 
 const AssignmentCreatePage = () => {
   const tokenState = useTokenStore((state) => state.token);
-  const hasHydrated = useTokenStore((state) => state.hasHydrated);
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  useEffect(() => {
-    if (hasHydrated && !tokenState.access) router.push('/login');
-  }, [hasHydrated, tokenState, router]);
-
-  const { data: userProfile } = useQuery<UserProfile>({
-    queryKey: ['userProfile'],
-    queryFn: () => getUserProfile(tokenState),
-    retry: false,
-    enabled: !!tokenState.access,
-  });
+  const { userProfile, isStaff } = useStaffOnly();
 
   const createMutation = useMutation({
     mutationFn: (payload: AssignmentCreateRequest) => createAssignments(tokenState, payload),
@@ -36,7 +25,8 @@ const AssignmentCreatePage = () => {
     },
   });
 
-  if (!userProfile) return null;
+  // 운영진이 아니면 훅이 리다이렉트하므로 그동안 아무것도 그리지 않는다
+  if (!userProfile || !isStaff) return null;
 
   return (
     <AssignmentCreateForm

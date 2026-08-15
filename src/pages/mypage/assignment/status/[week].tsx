@@ -24,6 +24,7 @@ import {
   getStaffAssignments,
   updateIndividualDeadlines,
 } from 'src/apis/assignment';
+import useStaffOnly from 'src/hooks/useStaffOnly';
 import useTokenStore from 'src/store/useTokenStore';
 import { IcChevronLeft } from '@assets/svg';
 import { Orange } from '@utils/constant/color';
@@ -32,22 +33,19 @@ import { Typography, typographyCss } from '@utils/constant/typography';
 const MyPageAssignmentDetail = () => {
   const router = useRouter();
   const tokenState = useTokenStore((state) => state.token);
-  const hasHydrated = useTokenStore((state) => state.hasHydrated);
   const queryClient = useQueryClient();
 
   const week = Number(router.query.week);
   // 회장이 목록에서 다른 파트를 보고 넘어온 경우 그 파트로 조회 (없으면 본인 파트)
   const partId = router.query.partId ? Number(router.query.partId) : null;
 
-  useEffect(() => {
-    if (hasHydrated && !tokenState.access) router.push('/login');
-  }, [hasHydrated, tokenState, router]);
+  const { isStaff } = useStaffOnly();
 
   // 해당 주차의 과제 목록 (탭/카드용)
   const { data: staffWeekGroups } = useQuery<AssignmentWeekGroup[]>({
     queryKey: partId != null ? ['presidentAssignments', partId] : ['staffAssignments'],
     queryFn: () => (partId != null ? getPresidentAssignments(tokenState, partId) : getStaffAssignments(tokenState)),
-    enabled: !!tokenState.access,
+    enabled: isStaff,
   });
   const assignments = staffWeekGroups?.find((group) => group.week === week)?.assignments ?? [];
 
@@ -58,7 +56,7 @@ const MyPageAssignmentDetail = () => {
   const { data: submissionHistory } = useQuery<AssignmentSubmissionHistory>({
     queryKey: ['assignmentSubmissions', activeAssignmentId],
     queryFn: () => getAssignmentSubmissions(tokenState, activeAssignmentId as number),
-    enabled: activeAssignmentId != null,
+    enabled: isStaff && activeAssignmentId != null,
   });
   const members = submissionHistory?.submissions ?? [];
 
@@ -103,6 +101,9 @@ const MyPageAssignmentDetail = () => {
     key: String(assignment.assignmentId),
     label: `과제 ${index + 1}`,
   }));
+
+  // 운영진이 아니면 훅이 리다이렉트하므로 그동안 아무것도 그리지 않는다
+  if (!isStaff) return null;
 
   return (
     <Page>
