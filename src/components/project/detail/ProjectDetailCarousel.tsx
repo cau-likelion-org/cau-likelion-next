@@ -92,17 +92,28 @@ const Dots = styled.div`
 `;
 
 const Dot = styled.button<{ $active: boolean }>`
+  position: relative;
   width: 10px;
   height: 10px;
-
-  @media (max-width: 700px) {
-    width: 6px;
-    height: 6px;
-  }
   padding: 0;
   border: none;
   border-radius: 999px;
   background-color: ${Label.normal};
   opacity: ${(props) => (props.$active ? 1 : 0.16)};
   cursor: pointer;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: -7px;
+  }
+
+  @media (max-width: 700px) {
+    width: 6px;
+    height: 6px;
+
+    &::after {
+      inset: -9px;
+    }
+  }
 `;
