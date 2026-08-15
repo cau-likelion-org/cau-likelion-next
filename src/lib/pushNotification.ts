@@ -1,6 +1,8 @@
 import { FirebaseApp, getApp, getApps, initializeApp } from 'firebase/app';
 import { MessagePayload, getMessaging, getToken, isSupported, onMessage } from 'firebase/messaging';
 
+import LocalStorage from '@utils/localStorage';
+
 // FCM 웹 푸시 설정.
 // 서비스 워커는 번들러를 안 거쳐서 환경변수를 직접 못 읽으므로 쿼리스트링으로 넘긴다.
 // (dev/prod Firebase 프로젝트가 달라도 파일 수정 없이 동작)
@@ -55,10 +57,13 @@ export const registerMessagingServiceWorker = async (): Promise<ServiceWorkerReg
   }
 };
 
-// 알림 권한을 요청하고 이 기기의 FCM 토큰을 발급받는다.
-// 권한이 거부됐거나 지원하지 않는 환경이면 null.
-export const requestFcmToken = async (): Promise<string | null> => {
-  if (!isPushSupported() || !(await isSupported())) return null;
+// 로그아웃할 때 이 기기 토큰만 골라 삭제해야 하는데, 그 시점엔 토큰을 다시 발급받을 수 없어서 캐시해둔다
+const FCM_TOKEN_KEY = 'fcmToken';
+
+export const getCachedFcmToken = () => LocalStorage.getItem(FCM_TOKEN_KEY);
+export const clearCachedFcmToken = () => LocalStorage.removeItem(FCM_TOKEN_KEY);
+
+const issueToken = async (): Promise<string | null> => {
   if (!VAPID_KEY) {
     console.warn('[push] NEXT_PUBLIC_FIREBASE_VAPID_KEY가 없어 토큰을 발급할 수 없습니다.');
     return null;
@@ -67,15 +72,12 @@ export const requestFcmToken = async (): Promise<string | null> => {
   const registration = await registerMessagingServiceWorker();
   if (!registration) return null;
 
-  // 브라우저가 사용자 제스처 없이 호출하면 무시하거나 영구 차단하므로 반드시 클릭 등에서 호출할 것
-  const permission = await Notification.requestPermission();
-  if (permission !== 'granted') return null;
-
   try {
     const token = await getToken(getMessaging(getFirebaseApp()), {
       vapidKey: VAPID_KEY,
       serviceWorkerRegistration: registration,
     });
+    if (token) LocalStorage.setItem(FCM_TOKEN_KEY, token);
     return token || null;
   } catch (error) {
     console.error('[push] FCM 토큰 발급 실패', error);
@@ -83,10 +85,45 @@ export const requestFcmToken = async (): Promise<string | null> => {
   }
 };
 
-// 앱이 열려 있는 동안에는 서비스 워커의 onBackgroundMessage가 아니라 이쪽으로 들어온다.
+// 알림 권한을 요청하고 이 기기의 FCM 토큰을 발급받는다.
+// 브라우저가 사용자 제스처 없이 호출하면 무시하거나 영구 차단하므로 반드시 클릭에서 호출할 것.
+export const requestFcmToken = async (): Promise<string | null> => {
+  if (!isPushSupported() || !(await isSupported())) return null;
+
+  const permission = await Notification.requestPermission();
+  if (permission !== 'granted') return null;
+
+  return issueToken();
+};
+
+// 이미 허용한 기기에서만 조용히 토큰을 갱신한다 (권한 팝업을 띄우지 않음).
+// FCM 토큰은 브라우저가 주기적으로 재발급하므로 접속할 때마다 갱신해야 알림이 끊기지 않는다.
+export const refreshFcmTokenIfGranted = async (): Promise<string | null> => {
+  if (!isPushSupported() || Notification.permission !== 'granted') return null;
+  if (!(await isSupported())) return null;
+
+  return issueToken();
+};
+
+// 앱이 열려 있는 동안에는 서비스 워커의 onBackgroundMessage가 아니라 이쪽으로 들어오고,
+// 이 경우 브라우저가 알림을 자동으로 띄워주지 않으므로 직접 띄운다.
 // 반환값은 구독 해제 함수.
-export const subscribeForegroundMessage = async (handler: (payload: MessagePayload) => void) => {
+export const subscribeForegroundNotification = async (): Promise<(() => void) | undefined> => {
   if (!isPushSupported() || !(await isSupported())) return undefined;
   if (missingConfigKeys().length > 0) return undefined;
-  return onMessage(getMessaging(getFirebaseApp()), handler);
+
+  return onMessage(getMessaging(getFirebaseApp()), async (payload: MessagePayload) => {
+    const title = payload.notification?.title;
+    if (!title) return;
+
+    const registration = await navigator.serviceWorker.getRegistration();
+    if (!registration) return;
+
+    registration.showNotification(title, {
+      body: payload.notification?.body,
+      icon: '/android-icon-192x192.png',
+      badge: '/android-icon-96x96.png',
+      data: payload.data,
+    });
+  });
 };
