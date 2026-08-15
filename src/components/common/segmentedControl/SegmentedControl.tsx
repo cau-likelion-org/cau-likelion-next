@@ -161,9 +161,35 @@ const Segment = styled.button<{
   background: none;
   cursor: pointer;
 
+  transition: background-color 0.15s ease;
+
   &:disabled {
     cursor: not-allowed;
   }
+
+  ${(props) =>
+    props.$variant === 'filled' &&
+    css`
+      /* Figma Interaction 레이어 */
+      &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        background-color: ${Label.normal};
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.15s ease;
+      }
+
+      &:not(:disabled):hover::before {
+        opacity: 0.04;
+      }
+
+      &:not(:disabled):active::before {
+        opacity: 0.08;
+      }
+    `}
 
   ${(props) =>
     props.$variant === 'filled' &&
@@ -182,6 +208,19 @@ const Segment = styled.button<{
         ${props.$isLast ? props.$radius : 0}px ${props.$isFirst ? props.$radius : 0}px;
       background-color: rgba(255, 96, 0, 0.05);
       box-shadow: inset 0 0 0 1px ${AccentTint.border};
+    `}
+
+  /* hover 시 선택될 색(오렌지 틴트)을 미리 보여준다 */
+  ${(props) =>
+    props.$variant === 'outlined' &&
+    css`
+      &:not(:disabled):hover {
+        background-color: rgba(255, 96, 0, ${props.$active ? 0.1 : 0.05});
+      }
+
+      &:not(:disabled):active {
+        background-color: rgba(255, 96, 0, ${props.$active ? 0.14 : 0.08});
+      }
     `}
 
   ${(props) =>
@@ -215,5 +254,15 @@ const Label_ = styled.span<{
     if (!props.$active) return Label.alternative;
     return props.$variant === 'outlined' ? Orange.o500 : Label.normal;
   }};
+  transition: color 0.15s ease;
   ${(props) => typographyCss(props.$font)}
+
+  ${(props) =>
+    props.$variant === 'outlined' &&
+    !props.$disabled &&
+    css`
+      ${Segment}:hover & {
+        color: ${Orange.o500};
+      }
+    `}
 `;
