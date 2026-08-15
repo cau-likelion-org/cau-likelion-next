@@ -23,11 +23,11 @@ export interface HistoryDetail {
 }
 
 export const getHistoryList = () => {
-  return axios.get<HistoryListItem[]>(`${url}/api/histories`).then((res) => res.data);
+  return axios.get<HistoryListItem[]>(`${url}/api/gallery/histories`).then((res) => res.data);
 };
 
 export const getHistory = (id: number) => {
-  return axios.get<HistoryDetail>(`${url}/api/histories/${id}`).then((res) => res.data);
+  return axios.get<HistoryDetail>(`${url}/api/gallery/histories/${id}`).then((res) => res.data);
 };
 
 export interface HistoryCreateRequestPayload {
@@ -52,16 +52,16 @@ export interface HistoryUpdateRequestPayload {
 
 export const createHistory = (token: IToken, payload: HistoryCreateRequestPayload) => {
   return getAuthAxios(token)
-    .post<HistoryDetail>('/api/histories', payload)
+    .post<HistoryDetail>('/api/gallery/histories', payload)
     .then((res) => res.data);
 };
 
 export const updateHistory = (token: IToken, id: number, payload: HistoryUpdateRequestPayload) => {
   return getAuthAxios(token)
-    .put<HistoryDetail>(`/api/histories/${id}`, payload)
+    .put<HistoryDetail>(`/api/gallery/histories/${id}`, payload)
     .then((res) => res.data);
 };
 
 export const deleteHistory = (token: IToken, id: number) => {
-  return getAuthAxios(token).delete(`/api/histories/${id}`);
+  return getAuthAxios(token).delete(`/api/gallery/histories/${id}`);
 };
