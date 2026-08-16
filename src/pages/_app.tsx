@@ -10,7 +10,7 @@ import LayoutDefault from '@common/layout/LayoutDefault';
 import { useState, useEffect, useRef } from 'react';
 import NextRouter, { Router, useRouter } from 'next/router';
 import Loading from '@common/loading/Loading';
-import ReactGA from 'react-ga4';
+import { sendPageView } from 'src/lib/ga';
 import useTokenStore from 'src/store/useTokenStore';
 import { track, markPageEntry, setUserId, getUserIdFromToken } from 'src/lib/amplitude';
 import {
@@ -26,12 +26,6 @@ type NextPageWithLayout = NextPage & {
 type AppPropsWithLayout = AppProps & {
   Component: NextPageWithLayout;
 };
-
-const GA_ID = process.env.NEXT_PUBLIC_GA_ID || 'G-WPZ880EJTD';
-
-if (typeof window !== 'undefined' && GA_ID) {
-  ReactGA.initialize(GA_ID);
-}
 
 function AppContent({ Component, pageProps }: AppPropsWithLayout) {
   const [loading, setLoading] = useState(false);
@@ -88,7 +82,7 @@ function AppContent({ Component, pageProps }: AppPropsWithLayout) {
   }, [tokenState]);
 
   useEffect(() => {
-    ReactGA.send({ hitType: 'pageview', page: router.asPath });
+    sendPageView(router.asPath);
     markPageEntry();
     track('Page Viewed', {
       page_path: router.asPath,
@@ -103,7 +97,7 @@ function AppContent({ Component, pageProps }: AppPropsWithLayout) {
 
     const end = (url: string) => {
       setLoading(false);
-      ReactGA.send({ hitType: 'pageview', page: url });
+      sendPageView(url);
       markPageEntry();
       track('Page Viewed', {
         page_path: url,
