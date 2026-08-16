@@ -48,12 +48,14 @@ const Backdrop = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0 20px;
   background-color: ${Material.dimmer};
   z-index: 9999;
 `;
 
 const Modal = styled.div`
-  width: 400px;
+  width: 100%;
+  max-width: 400px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -66,8 +68,6 @@ const Modal = styled.div`
   z-index: 10000;
 
   @media (max-width: 900px) {
-    width: calc(100% - 40px);
-    max-width: 335px;
     border-radius: 16px;
   }
 `;

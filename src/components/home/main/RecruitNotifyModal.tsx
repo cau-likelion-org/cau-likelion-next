@@ -186,13 +186,14 @@ const Backdrop = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0 20px;
   background-color: ${Material.dimmer};
   z-index: 9999;
 `;
 
 const Modal = styled.div`
-  width: 400px;
-  min-width: 320px;
+  width: 100%;
+  max-width: 400px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -203,10 +204,6 @@ const Modal = styled.div`
   z-index: 10000;
 
   @media (max-width: ${MOBILE}px) {
-    width: calc(100% - 40px);
-    min-width: 0;
-    max-width: 335px;
-    /* 디자인 기준(812px 높이)보다 짧은 기기에서는 모달 안에서 스크롤되게 한다 */
     max-height: calc(100vh - 40px);
     overflow-y: auto;
   }
