@@ -1,4 +1,4 @@
-import { ChangeEvent, KeyboardEvent, ReactNode, useRef, useState } from 'react';
+import { ChangeEvent, DragEvent, KeyboardEvent, ReactNode, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import styled from 'styled-components';
@@ -175,6 +175,8 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
   const [imageFiles, setImageFiles] = useState<(File | null)[]>(Array(MAX_IMAGE_COUNT).fill(null));
   const [featuredIndex, setFeaturedIndex] = useState(initialFeaturedIndex);
   const [isUploadingImages, setIsUploadingImages] = useState(false);
+  const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
   const handleFileChange = (index: number, event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -214,6 +216,40 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
       return next;
     });
   };
+
+  const moveImage = (from: number, to: number) => {
+    if (from === to) return;
+    const reorder = <T,>(list: T[]) => {
+      const next = [...list];
+      const [moved] = next.splice(from, 1);
+      next.splice(to, 0, moved);
+      return next;
+    };
+    setImages(reorder);
+    setImageFiles(reorder);
+    setFeaturedIndex((prev) => {
+      if (prev === from) return to;
+      if (from < prev && prev <= to) return prev - 1;
+      if (to <= prev && prev < from) return prev + 1;
+      return prev;
+    });
+  };
+
+  const dropTargetProps = (index: number) => ({
+    onDragOver: (event: DragEvent<HTMLElement>) => {
+      if (draggingIndex === null) return;
+      event.preventDefault();
+      event.dataTransfer.dropEffect = 'move';
+      setDragOverIndex(index);
+    },
+    onDragLeave: () => setDragOverIndex((prev) => (prev === index ? null : prev)),
+    onDrop: (event: DragEvent<HTMLElement>) => {
+      event.preventDefault();
+      if (draggingIndex !== null) moveImage(draggingIndex, index);
+      setDraggingIndex(null);
+      setDragOverIndex(null);
+    },
+  });
 
   const [title, setTitle] = useState(initialData?.title ?? '');
   const [subtitle, setSubtitle] = useState(initialData?.tagline ?? '');
@@ -455,6 +491,8 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
                 role="button"
                 tabIndex={0}
                 $active={index === featuredIndex}
+                $dragging={draggingIndex === index}
+                $dropTarget={dragOverIndex === index && draggingIndex !== index}
                 aria-label={`${index + 1}번째 이미지를 대표사진으로 설정`}
                 onClick={() => setFeaturedIndex(index)}
                 onKeyDown={(event) => {
@@ -463,8 +501,20 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
                     setFeaturedIndex(index);
                   }
                 }}
+                draggable
+                onDragStart={(event: DragEvent<HTMLElement>) => {
+                  event.dataTransfer.effectAllowed = 'move';
+                  // Firefox는 데이터가 설정되어야 드래그를 시작함
+                  event.dataTransfer.setData('text/plain', String(index));
+                  setDraggingIndex(index);
+                }}
+                onDragEnd={() => {
+                  setDraggingIndex(null);
+                  setDragOverIndex(null);
+                }}
+                {...dropTargetProps(index)}
               >
-                <ThumbnailImage src={image} alt="" />
+                <ThumbnailImage src={image} alt="" draggable={false} />
                 <RemoveThumbnailButton
                   type="button"
                   aria-label={`${index + 1}번째 이미지 삭제`}
@@ -477,7 +527,7 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
                 </RemoveThumbnailButton>
               </ThumbnailSlot>
             ) : (
-              <ThumbnailSlot key={index}>
+              <ThumbnailSlot key={index} $dropTarget={dragOverIndex === index} {...dropTargetProps(index)}>
                 <ImagePlaceholderIcon />
                 <HiddenFileInput
                   type="file"
@@ -1009,7 +1059,7 @@ const ThumbnailRow = styled.div`
   gap: 20px;
 `;
 
-const ThumbnailSlot = styled.label<{ $active?: boolean }>`
+const ThumbnailSlot = styled.label<{ $active?: boolean; $dragging?: boolean; $dropTarget?: boolean }>`
   position: relative;
   flex-shrink: 0;
   width: 160px;
@@ -1023,6 +1073,9 @@ const ThumbnailSlot = styled.label<{ $active?: boolean }>`
   color: ${Line.normal};
   cursor: pointer;
   padding: 0;
+  opacity: ${(props) => (props.$dragging ? 0.4 : 1)};
+  outline: ${(props) => (props.$dropTarget ? `2px dashed ${Orange.o500}` : 'none')};
+  outline-offset: 2px;
 `;
 
 const RemoveThumbnailButton = styled.button`
