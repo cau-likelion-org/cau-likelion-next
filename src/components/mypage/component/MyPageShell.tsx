@@ -16,6 +16,7 @@ const BREADCRUMB_LABEL: Record<SidebarActive, string> = {
   'admin-about': '소개 페이지 관리',
   'admin-blog': '블로그 페이지 관리',
   'admin-members': '전체 회원/파트 관리',
+  'admin-recruit': '리크루팅 사전 알림 발송',
 };
 
 const MyPageShell = ({

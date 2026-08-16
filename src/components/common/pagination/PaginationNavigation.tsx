@@ -137,7 +137,7 @@ const Wrapper = styled.div<{ variant: 'extended' | 'compact' }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: ${(props) => (props.variant === 'extended' ? '760px' : '335px')};
+  width: ${(props) => (props.variant === 'extended' ? '760px' : '100%')};
   max-width: 100%;
 `;
 
@@ -162,6 +162,7 @@ const PageList = styled.div`
   display: flex;
   align-items: center;
   gap: 16px;
+  padding: 0 16px;
 `;
 
 const ChevronButton = styled.button`
@@ -198,7 +199,7 @@ const PageButton = styled.button<{ selected: boolean }>`
   font-size: 15px;
   line-height: 1.467;
   letter-spacing: 0.144px;
-  font-weight: ${(props) => (props.selected ? 700 : 400)};
+  font-weight: ${(props) => (props.selected ? 500 : 400)};
   color: ${(props) => (props.selected ? Label.strong : Label.neutral)};
 
   &::before {
@@ -207,7 +208,7 @@ const PageButton = styled.button<{ selected: boolean }>`
     inset: -1px -7px;
     border-radius: 6px;
     background-color: ${Label.normal};
-    opacity: 0;
+    opacity: ${(props) => (props.selected ? 0.09 : 0)};
     pointer-events: none;
   }
 

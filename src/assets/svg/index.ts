@@ -11,6 +11,7 @@ import IcCircleCheck from './icon/ic-circle-check.svg';
 import IcCircleClose from './icon/ic-circle-close.svg';
 import IcCircleCloseOutline from './icon/ic-circle-close-outline.svg';
 import IcCircleExclamation from './icon/ic-circle-exclamation.svg';
+import IcClock from './icon/ic-clock.svg';
 import IcDocument from './icon/ic-document.svg';
 import IcDownload from './icon/ic-download.svg';
 import IcEmail from './icon/ic-email.svg';
@@ -44,6 +45,7 @@ export {
   IcCircleClose,
   IcCircleCloseOutline,
   IcCircleExclamation,
+  IcClock,
   IcDocument,
   IcDownload,
   IcEmail,
