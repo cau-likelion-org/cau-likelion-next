@@ -80,17 +80,6 @@ export const ATTENDANCE_CATEGORY_NAME: { [key: number]: string } = {
   [ATTENDANCE_CATEGORY.TOTALSCORE]: '총점',
 };
 
-export enum DEV_STACK {
-  NodeJS,
-  Spring,
-  Django,
-  Typescript,
-  NextJS,
-  React,
-  HTML_CSS,
-  JS,
-}
-
 export enum ARCHIVING {
   SESSION,
   GALLERY,
