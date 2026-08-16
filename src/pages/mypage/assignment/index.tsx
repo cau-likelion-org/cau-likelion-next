@@ -189,7 +189,7 @@ const MyPageAssignment = () => {
   return (
     <>
       <MyPageShell active="assignment" isAdmin={!!userProfile && canManageSitePages(userProfile.role)}>
-        {!userProfile ? (
+        {!userProfile || userProfile.role === 'ADULT_LION' ? (
           <PageLoadingGate isError={isUserProfileError} />
         ) : isStaffOrAdmin ? (
           <>
@@ -199,7 +199,7 @@ const MyPageAssignment = () => {
                 {isPresident ? (
                   <PartSelect value={currentPartName} options={partOptions} onChange={setSelectedPartName} />
                 ) : (
-                  <TrackName>{userProfile.partName} 파트</TrackName>
+                  userProfile.partName && <TrackName>{userProfile.partName} 파트</TrackName>
                 )}
               </TitleRow>
               <CreateButton type="button" onClick={handleCreate}>
@@ -232,7 +232,8 @@ const MyPageAssignment = () => {
           <>
             <TitleRow>
               <SectionTitle>주차별 과제 현황</SectionTitle>
-              <TrackName>{userProfile.partName} 파트</TrackName>
+              {/* 소속 파트가 해제된 계정은 partName이 비어 오므로 ' 파트'만 남지 않게 감춘다 */}
+              {userProfile.partName && <TrackName>{userProfile.partName} 파트</TrackName>}
             </TitleRow>
             {isMyWeekGroupsLoading ? (
               <LoadingWrapper>

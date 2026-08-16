@@ -14,8 +14,6 @@ import axios from 'axios';
 import { url } from '.';
 import { getAuthAxios } from './authAxios';
 
-export const LOGIN_UNREGISTERED_FLAG_KEY = 'loginUnregistered';
-
 export const googleLogin = (idToken: string) => {
   return axios.post<GoogleLoginResponse>(`${url}/api/auth/google-login`, { idToken }).then((res) => res.data);
 };

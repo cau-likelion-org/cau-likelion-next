@@ -1,40 +1,3 @@
-export type MemberStackKor = '기획디자인' | '프론트엔드' | '백엔드';
-export type ProjectMemberRole = 'pm' | 'design' | 'frontend' | 'backend';
-export type ShareURL = 'github' | 'youtube' | 'web';
-export type ArchivingType = 'gallery' | 'session' | 'project';
-
-export interface IShareURL {
-  web: string;
-  github: string;
-  youtube: string;
-}
-
-export interface UploadData {
-  title: string;
-  subtitle: string;
-  dev_stack: string;
-  tumbnail: File | null;
-  version: number;
-  team_name: string;
-  team_member: {
-    pm: string[];
-    design: string[];
-    frontend: string[];
-    backend: string[];
-  };
-  start_date: string;
-  end_date: string;
-  description: string;
-  link: {
-    github: string;
-    youtube: string;
-    web: string;
-  };
-  category: string;
-  login_email: string;
-  images: File[];
-}
-
 export interface IArchivingData {
   id: number;
   title: string;
@@ -45,7 +8,6 @@ export interface IArchivingData {
 export interface IProjectData extends IArchivingData {
   category: string;
   banner?: string;
-  dev_stack: number[];
 }
 
 export interface ISessionData extends IArchivingData {
@@ -56,22 +18,7 @@ export interface IGalleryData extends IArchivingData {
   date: string;
 }
 
-export interface IProjectDetail extends IProjectData {
-  subtitle: string;
-  team_name: string;
-  team_member: Record<ProjectMemberRole, string[]>;
-  date: string;
-  link: IShareURL;
-  generation: number;
-  image: string[];
-}
-
 export type ArchivingArrayType<T> = Record<string, T[]>;
-
-interface ResponseData<T> {
-  message: string;
-  data: T;
-}
 
 export type MemberRole = 'BABY_LION' | 'ADULT_LION' | 'STAFF' | 'PRESIDENT' | 'ADMIN';
 

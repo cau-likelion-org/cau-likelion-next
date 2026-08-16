@@ -6,13 +6,11 @@ import PageHeader from '@common/pageHeader/PageHeader';
 import Toast from '@common/toast/Toast';
 import LoginButton from 'src/components/login/contents/component/LoginButton';
 import useAuthRedirect from 'src/hooks/useAuthRedirect';
-import { LOGIN_UNREGISTERED_FLAG_KEY } from 'src/apis/account';
 import { SIGNUP_UNAPPROVED_EMAIL_FLAG_KEY } from 'src/apis/signUp';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 const TOAST_MESSAGE_BY_FLAG: Record<string, ReactNode> = {
-  [LOGIN_UNREGISTERED_FLAG_KEY]: '회원가입한 이메일로만 로그인이 가능해요.',
   [SIGNUP_UNAPPROVED_EMAIL_FLAG_KEY]: (
     <>
       사전 등록된 이메일로만 회원가입이 가능합니다.
@@ -62,7 +60,7 @@ const Login = () => {
         }
       />
       <LoginButton
-        onUnregistered={() => setToastMessage(TOAST_MESSAGE_BY_FLAG[LOGIN_UNREGISTERED_FLAG_KEY])}
+        onUnregistered={() => setToastMessage(TOAST_MESSAGE_BY_FLAG[SIGNUP_UNAPPROVED_EMAIL_FLAG_KEY])}
         onGoogleUnavailable={() => setToastMessage(GOOGLE_LOGIN_FAILED_MESSAGE)}
       />
       <GuideText>

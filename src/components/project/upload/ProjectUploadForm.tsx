@@ -1,6 +1,6 @@
-import { ChangeEvent, KeyboardEvent, ReactNode, useRef, useState } from 'react';
+import { ChangeEvent, DragEvent, KeyboardEvent, ReactNode, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import styled from 'styled-components';
 
 import Alert from '@common/alert/Alert';
@@ -53,8 +53,10 @@ import { isUnfilled } from '@utils/index';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 const MAX_IMAGE_COUNT = 4;
+const MAX_BANNER_LENGTH = 15;
 const LINK_TYPE_OPTIONS = ['Web', 'GitHub', 'Behance'];
 const CONTENT_PLACEHOLDER = '예시)이 서비스는 ~~한 서비스입니다\n서비스의 핵심기능\n\n· 이런거\n· 이\n· 이';
+const TAG_SEPARATOR_REGEX = /[\s,]+/;
 
 const LINK_TYPE_TO_PLATFORM: Record<string, LinkPlatform> = {
   Web: 'WEB',
@@ -131,6 +133,7 @@ interface ProjectUploadFormProps {
 
 const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormProps) => {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const tokenState = useTokenStore((state) => state.token);
   const isEditMode = mode === 'edit';
 
@@ -175,6 +178,8 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
   const [imageFiles, setImageFiles] = useState<(File | null)[]>(Array(MAX_IMAGE_COUNT).fill(null));
   const [featuredIndex, setFeaturedIndex] = useState(initialFeaturedIndex);
   const [isUploadingImages, setIsUploadingImages] = useState(false);
+  const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
   const handleFileChange = (index: number, event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -198,22 +203,59 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
   };
 
   const handleRemoveImage = (index: number) => {
-    setImages((prev) => {
-      if (prev[index]) URL.revokeObjectURL(prev[index] as string);
-      const next = [...prev];
-      next[index] = null;
-      if (featuredIndex === index) {
-        const fallback = next.findIndex((image) => image !== null);
-        setFeaturedIndex(fallback === -1 ? 0 : fallback);
-      }
+    const removed = images[index];
+    if (removed) URL.revokeObjectURL(removed);
+
+    const compact = <T,>(list: T[]) => {
+      const next = [...list];
+      next.splice(index, 1);
+      next.push(null as T);
       return next;
-    });
-    setImageFiles((prev) => {
-      const next = [...prev];
-      next[index] = null;
-      return next;
+    };
+    const nextImages = compact(images);
+    setImages(nextImages);
+    setImageFiles(compact);
+    setFeaturedIndex((prev) => {
+      if (prev < index) return prev;
+      if (prev > index) return prev - 1;
+      const fallback = nextImages.findIndex((image) => image !== null);
+      return fallback === -1 ? 0 : fallback;
     });
   };
+
+  const moveImage = (from: number, to: number) => {
+    if (from === to) return;
+    const reorder = <T,>(list: T[]) => {
+      const next = [...list];
+      const [moved] = next.splice(from, 1);
+      next.splice(to, 0, moved);
+      return next;
+    };
+    setImages(reorder);
+    setImageFiles(reorder);
+    setFeaturedIndex((prev) => {
+      if (prev === from) return to;
+      if (from < prev && prev <= to) return prev - 1;
+      if (to <= prev && prev < from) return prev + 1;
+      return prev;
+    });
+  };
+
+  const dropTargetProps = (index: number) => ({
+    onDragOver: (event: DragEvent<HTMLElement>) => {
+      if (draggingIndex === null) return;
+      event.preventDefault();
+      event.dataTransfer.dropEffect = 'move';
+      setDragOverIndex(index);
+    },
+    onDragLeave: () => setDragOverIndex((prev) => (prev === index ? null : prev)),
+    onDrop: (event: DragEvent<HTMLElement>) => {
+      event.preventDefault();
+      if (draggingIndex !== null) moveImage(draggingIndex, index);
+      setDraggingIndex(null);
+      setDragOverIndex(null);
+    },
+  });
 
   const [title, setTitle] = useState(initialData?.title ?? '');
   const [subtitle, setSubtitle] = useState(initialData?.tagline ?? '');
@@ -388,6 +430,9 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
     const mutation = isEditMode ? updateMutation : createMutation;
     mutation.mutate(payload, {
       onSuccess: () => {
+        // 폼은 initialData로 state를 최초 1회만 초기화하므로,
+        // 캐시가 남아 있으면 다시 수정에 들어왔을 때 저장 전 데이터로 초기화된다
+        if (isEditMode) queryClient.removeQueries({ queryKey: ['adminProject', initialData!.id] });
         sessionStorage.setItem(isEditMode ? PROJECT_UPDATED_FLAG_KEY : PROJECT_CREATED_FLAG_KEY, 'true');
         router.push('/project');
       },
@@ -403,6 +448,7 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
     setIsDeleteAlertOpen(false);
     deleteMutation.mutate(undefined, {
       onSuccess: () => {
+        queryClient.removeQueries({ queryKey: ['adminProject', initialData!.id] });
         sessionStorage.setItem(PROJECT_DELETED_FLAG_KEY, 'true');
         router.push('/project');
       },
@@ -455,6 +501,8 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
                 role="button"
                 tabIndex={0}
                 $active={index === featuredIndex}
+                $dragging={draggingIndex === index}
+                $dropTarget={dragOverIndex === index && draggingIndex !== index}
                 aria-label={`${index + 1}번째 이미지를 대표사진으로 설정`}
                 onClick={() => setFeaturedIndex(index)}
                 onKeyDown={(event) => {
@@ -463,8 +511,20 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
                     setFeaturedIndex(index);
                   }
                 }}
+                draggable
+                onDragStart={(event: DragEvent<HTMLElement>) => {
+                  event.dataTransfer.effectAllowed = 'move';
+                  // Firefox는 데이터가 설정되어야 드래그를 시작함
+                  event.dataTransfer.setData('text/plain', String(index));
+                  setDraggingIndex(index);
+                }}
+                onDragEnd={() => {
+                  setDraggingIndex(null);
+                  setDragOverIndex(null);
+                }}
+                {...dropTargetProps(index)}
               >
-                <ThumbnailImage src={image} alt="" />
+                <ThumbnailImage src={image} alt="" draggable={false} />
                 <RemoveThumbnailButton
                   type="button"
                   aria-label={`${index + 1}번째 이미지 삭제`}
@@ -695,7 +755,13 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
             heading="배너 추가하기"
             placeholder="예시)2026해커톤본선진출작"
             value={banner}
-            onChange={(event) => setBanner(event.target.value)}
+            onChange={(event) => setBanner(event.target.value.slice(0, MAX_BANNER_LENGTH))}
+            maxLength={MAX_BANNER_LENGTH}
+            trailingContent={
+              <CharCount>
+                {banner.length}/{MAX_BANNER_LENGTH}
+              </CharCount>
+            }
           />
         </TeamColumn>
       </TeamRow>
@@ -841,9 +907,22 @@ const TagChipInput = ({
     setInputValue('');
   };
 
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const raw = event.target.value;
+    if (!TAG_SEPARATOR_REGEX.test(raw)) {
+      setInputValue(raw);
+      return;
+    }
+    const parts = raw.split(TAG_SEPARATOR_REGEX);
+    const pending = parts.pop() ?? '';
+    const committed = parts.filter(Boolean);
+    if (committed.length > 0) onChange([...values, ...committed]);
+    setInputValue(pending);
+  };
+
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     if (isComposingRef.current) return;
-    if (event.key === 'Enter' || event.key === ' ' || event.key === ',') {
+    if (event.key === 'Enter') {
       event.preventDefault();
       commitValue();
     } else if (event.key === 'Backspace' && !inputValue && values.length > 0) {
@@ -876,7 +955,7 @@ const TagChipInput = ({
         ))}
         <TagTextInput
           value={inputValue}
-          onChange={(event) => setInputValue(event.target.value)}
+          onChange={handleInputChange}
           onKeyDown={handleKeyDown}
           onCompositionStart={() => {
             isComposingRef.current = true;
@@ -1009,7 +1088,7 @@ const ThumbnailRow = styled.div`
   gap: 20px;
 `;
 
-const ThumbnailSlot = styled.label<{ $active?: boolean }>`
+const ThumbnailSlot = styled.label<{ $active?: boolean; $dragging?: boolean; $dropTarget?: boolean }>`
   position: relative;
   flex-shrink: 0;
   width: 160px;
@@ -1023,6 +1102,9 @@ const ThumbnailSlot = styled.label<{ $active?: boolean }>`
   color: ${Line.normal};
   cursor: pointer;
   padding: 0;
+  opacity: ${(props) => (props.$dragging ? 0.4 : 1)};
+  outline: ${(props) => (props.$dropTarget ? `2px dashed ${Orange.o500}` : 'none')};
+  outline-offset: 2px;
 `;
 
 const RemoveThumbnailButton = styled.button`
@@ -1041,6 +1123,15 @@ const RemoveThumbnailButton = styled.button`
   background-color: ${BackgroundColor};
   color: ${Orange.o500};
   cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+
+  ${ThumbnailSlot}:hover &,
+  ${ThumbnailSlot}:focus-within & {
+    opacity: 1;
+    pointer-events: auto;
+  }
 `;
 
 const ThumbnailImage = styled.img`
