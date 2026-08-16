@@ -4,7 +4,7 @@ import { Typography, typographyCss } from '@utils/constant/typography';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
-import LogoTrophy from '@assets/svg/logo/logo-trophy.svg';
+import { IcTrophy } from '@assets/svg';
 import { track, getDeviceType, getPageEntryTime } from 'src/lib/amplitude';
 
 interface ProjectCardProps extends IProjectData {
@@ -63,7 +63,7 @@ const ProjectCard = ({
           />
           {banner && (
             <AwardBanner>
-              <LogoTrophy width={24} height={24} />
+              <IcTrophy width={24} height={24} />
               <AwardText>{banner}</AwardText>
             </AwardBanner>
           )}
