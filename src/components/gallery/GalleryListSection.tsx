@@ -194,6 +194,7 @@ const GalleryListSection = () => {
           badges={[`${sessionDetail.generationNumber}기`, sessionDetail.partName, `${sessionDetail.degree}주차`]}
           description={sessionDetail.description}
           date={toDisplayDate(sessionDetail.sessionDate)}
+          imageUrls={sessionDetail.imageUrls}
           onClose={closeDetailModal}
           onEdit={isStaff ? openEditModal : undefined}
         />
@@ -209,6 +210,7 @@ const GalleryListSection = () => {
             toDisplayDate(projectDetail.startDate),
             toDisplayDate(projectDetail.endDate ?? projectDetail.startDate),
           ]}
+          imageUrls={projectDetail.imageUrls}
           onClose={closeDetailModal}
           onEdit={isStaff ? openEditModal : undefined}
         />
@@ -224,6 +226,7 @@ const GalleryListSection = () => {
             toDisplayDate(historyDetail.startDate),
             toDisplayDate(historyDetail.endDate ?? historyDetail.startDate),
           ]}
+          imageUrls={historyDetail.imageUrls}
           onClose={closeDetailModal}
           onEdit={isStaff ? openEditModal : undefined}
         />

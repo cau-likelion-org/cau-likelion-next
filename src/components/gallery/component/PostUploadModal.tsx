@@ -123,24 +123,38 @@ const PostUploadModal = ({
   const modalAriaLabel = `${POST_TYPE_LABEL[postType]} ${mode === 'edit' ? '수정' : '추가'}`;
 
   const handleFileChange = (index: number, event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
+    const files = Array.from(event.target.files ?? []);
     event.target.value = '';
-    if (!file) return;
+    if (files.length === 0) return;
 
     const hadNoImages = images.every((image) => image === null);
-    const objectUrl = URL.createObjectURL(file);
+
+    const targets: { targetIndex: number; file: File }[] = [];
+    let cursor = index;
+    for (const file of files) {
+      while (cursor < MAX_IMAGE_COUNT && images[cursor] !== null) cursor++;
+      if (cursor >= MAX_IMAGE_COUNT) break;
+      targets.push({ targetIndex: cursor, file });
+      cursor++;
+    }
+    if (targets.length === 0) return;
+
     setImages((prev) => {
-      if (prev[index]) URL.revokeObjectURL(prev[index] as string);
       const next = [...prev];
-      next[index] = objectUrl;
+      targets.forEach(({ targetIndex, file }) => {
+        if (next[targetIndex]) URL.revokeObjectURL(next[targetIndex] as string);
+        next[targetIndex] = URL.createObjectURL(file);
+      });
       return next;
     });
     setImageFiles((prev) => {
       const next = [...prev];
-      next[index] = file;
+      targets.forEach(({ targetIndex, file }) => {
+        next[targetIndex] = file;
+      });
       return next;
     });
-    if (hadNoImages) setFeaturedIndex(index);
+    if (hadNoImages) setFeaturedIndex(targets[0].targetIndex);
   };
 
   const handleRemoveImage = (index: number) => {
@@ -236,6 +250,7 @@ const PostUploadModal = ({
                   <HiddenFileInput
                     type="file"
                     accept="image/*"
+                    multiple
                     aria-label="대표 이미지 선택"
                     onChange={(event) => handleFileChange(featuredIndex, event)}
                   />
@@ -278,6 +293,7 @@ const PostUploadModal = ({
                     <HiddenFileInput
                       type="file"
                       accept="image/*"
+                      multiple
                       aria-label={`이미지 ${index + 1} 선택`}
                       onChange={(event) => handleFileChange(index, event)}
                     />
