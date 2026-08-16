@@ -33,10 +33,10 @@ import {
   uploadProjectImage,
 } from 'src/apis/project';
 import useTokenStore from 'src/store/useTokenStore';
-import IcAdd from '@assets/svg/ic-add.svg';
-import IcCalender from '@assets/svg/ic-calender.svg';
 import {
+  IcAdd,
   IcBehance,
+  IcCalendar,
   IcChevronLeft,
   IcCircleClose,
   IcCircleExclamation,
@@ -990,7 +990,7 @@ const SingleDateInput = ({
 
   return (
     <DateInputWrapper $invalid={invalid} onClick={() => inputRef.current?.showPicker?.()}>
-      <IcCalender width={22} height={22} />
+      <IcCalendar width={22} height={22} />
       <DateValue $placeholder={!value}>{value || placeholder}</DateValue>
       {invalid && (
         <IconSlot>

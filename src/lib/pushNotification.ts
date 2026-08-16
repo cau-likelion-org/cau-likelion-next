@@ -121,8 +121,8 @@ export const subscribeForegroundNotification = async (): Promise<(() => void) | 
 
     registration.showNotification(title, {
       body: payload.notification?.body,
-      icon: '/android-icon-192x192.png',
-      badge: '/android-icon-96x96.png',
+      icon: '/favicon-192x192.png',
+      badge: '/favicon-96x96.png',
       data: payload.data,
     });
   });

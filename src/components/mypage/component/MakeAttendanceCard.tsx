@@ -3,8 +3,7 @@ import { useMutation } from '@tanstack/react-query';
 import styled from 'styled-components';
 
 import Toast from '@common/toast/Toast';
-import IcCalender from '@assets/svg/ic-calender.svg';
-import { IcRefresh } from '@assets/svg';
+import { IcCalendar, IcRefresh } from '@assets/svg';
 import { WeeklyAttendanceCreatePayload, createWeeklyAttendance } from 'src/apis/attendance';
 import useTokenStore from 'src/store/useTokenStore';
 import { toDateString } from '@utils/index';
@@ -60,7 +59,7 @@ const MakeAttendanceCard = () => {
           <Field $width="158px" $mobileGrow>
             <FieldLabel>출석 일자 설정</FieldLabel>
             <DateInputWrapper $disabled={isCreated} onClick={() => dateInputRef.current?.showPicker?.()}>
-              <IcCalender width={22} height={22} />
+              <IcCalendar width={22} height={22} />
               <DateValue $placeholder={!date}>{date ? date.replace(/-/g, '/') : '캘린더 선택'}</DateValue>
               <HiddenDateInput
                 ref={dateInputRef}

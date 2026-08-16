@@ -1,3 +1,4 @@
+import IcAdd from './icon/ic-add.svg';
 import IcBehance from './icon/ic-behance.svg';
 import IcBlank from './icon/ic-blank.svg';
 import IcCalendar from './icon/ic-calendar.svg';
@@ -12,6 +13,7 @@ import IcCircleClose from './icon/ic-circle-close.svg';
 import IcCircleCloseOutline from './icon/ic-circle-close-outline.svg';
 import IcCircleExclamation from './icon/ic-circle-exclamation.svg';
 import IcClock from './icon/ic-clock.svg';
+import IcCloseCircle from './icon/ic-close-circle.svg';
 import IcDocument from './icon/ic-document.svg';
 import IcDownload from './icon/ic-download.svg';
 import IcEmail from './icon/ic-email.svg';
@@ -29,9 +31,11 @@ import IcRefresh from './icon/ic-refresh.svg';
 import IcSearch from './icon/ic-search.svg';
 import IcTrash from './icon/ic-trash.svg';
 import IcTriangleExclamation from './icon/ic-triangle-exclamation.svg';
+import IcTrophy from './icon/ic-trophy.svg';
 import IllustSignupComplete from './illustration/illust-signup-complete.svg';
 
 export {
+  IcAdd,
   IcBehance,
   IcBlank,
   IcCalendar,
@@ -46,6 +50,7 @@ export {
   IcCircleCloseOutline,
   IcCircleExclamation,
   IcClock,
+  IcCloseCircle,
   IcDocument,
   IcDownload,
   IcEmail,
@@ -63,5 +68,6 @@ export {
   IcSearch,
   IcTrash,
   IcTriangleExclamation,
+  IcTrophy,
   IllustSignupComplete,
 };

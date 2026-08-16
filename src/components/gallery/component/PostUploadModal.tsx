@@ -9,11 +9,7 @@ import TextField from '@common/textField/TextField';
 import Textarea from '@common/textarea/Textarea';
 import CharCount from '@common/charCount/CharCount';
 import Toast from '@common/toast/Toast';
-import IcAdd from '@assets/svg/ic-add.svg';
-import IcCalender from '@assets/svg/ic-calender.svg';
-import IcCircleExclamation from '@assets/svg/icon/ic-circle-exclamation.svg';
-import IcLineHorizontal from '@assets/svg/icon/ic-line-horizontal.svg';
-import IcXButton from '@assets/svg/ic-XButton.svg';
+import { IcAdd, IcCalendar, IcCircleExclamation, IcCloseCircle, IcLineHorizontal } from '@assets/svg';
 import useFocusTrap from 'src/hooks/useFocusTrap';
 import useInput from 'src/hooks/useInput';
 import useListboxSelect from 'src/hooks/useListboxSelect';
@@ -273,7 +269,7 @@ const PostUploadModal = ({
                         handleRemoveImage(index);
                       }}
                     >
-                      <IcXButton width={24} height={24} />
+                      <IcCloseCircle width={24} height={24} />
                     </RemoveThumbnailButton>
                   </ThumbnailSlot>
                 ) : (
@@ -522,7 +518,7 @@ const SingleDateInput = ({
 
   return (
     <DateInputWrapper $invalid={invalid} onClick={() => inputRef.current?.showPicker?.()}>
-      <IcCalender width={22} height={22} />
+      <IcCalendar width={22} height={22} />
       <DateValue $placeholder={!value}>{value || placeholder}</DateValue>
       {invalid && (
         <IconSlot>

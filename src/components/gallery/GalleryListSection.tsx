@@ -10,7 +10,7 @@ import Select from '@common/select/Select';
 import ListboxOptions from '@common/select/ListboxOptions';
 import Tab from '@common/tab/Tab';
 import Toast from '@common/toast/Toast';
-import IcAdd from '@assets/svg/ic-add.svg';
+import { IcAdd } from '@assets/svg';
 import PageHeader from '@common/pageHeader/PageHeader';
 import useListboxSelect from 'src/hooks/useListboxSelect';
 import useTokenStore from 'src/store/useTokenStore';
