@@ -1,6 +1,6 @@
 import { ChangeEvent, DragEvent, KeyboardEvent, ReactNode, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import styled from 'styled-components';
 
 import Alert from '@common/alert/Alert';
@@ -133,6 +133,7 @@ interface ProjectUploadFormProps {
 
 const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormProps) => {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const tokenState = useTokenStore((state) => state.token);
   const isEditMode = mode === 'edit';
 
@@ -429,6 +430,9 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
     const mutation = isEditMode ? updateMutation : createMutation;
     mutation.mutate(payload, {
       onSuccess: () => {
+        // 폼은 initialData로 state를 최초 1회만 초기화하므로,
+        // 캐시가 남아 있으면 다시 수정에 들어왔을 때 저장 전 데이터로 초기화된다
+        if (isEditMode) queryClient.removeQueries({ queryKey: ['adminProject', initialData!.id] });
         sessionStorage.setItem(isEditMode ? PROJECT_UPDATED_FLAG_KEY : PROJECT_CREATED_FLAG_KEY, 'true');
         router.push('/project');
       },
@@ -444,6 +448,7 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
     setIsDeleteAlertOpen(false);
     deleteMutation.mutate(undefined, {
       onSuccess: () => {
+        queryClient.removeQueries({ queryKey: ['adminProject', initialData!.id] });
         sessionStorage.setItem(PROJECT_DELETED_FLAG_KEY, 'true');
         router.push('/project');
       },
