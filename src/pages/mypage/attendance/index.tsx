@@ -8,6 +8,8 @@ import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import MyPageShell from '@mypage/component/MyPageShell';
 import Toast from '@common/toast/Toast';
 import PageLoadingGate from '@common/pageGate/PageLoadingGate';
+import CircularLoading from '@common/loading/CircularLoading';
+import EmptyState from '@common/emptyState/EmptyState';
 import PartAttendanceTable from '@mypage/component/PartAttendanceTable';
 import WeeklyAttendanceCard, {
   WeeklyAttendanceRecord,
@@ -108,11 +110,16 @@ const MyPageAttendance = () => {
   });
 
   // 아기사자 본인 주차별 출결
-  const { data: myAttendances } = useQuery<AttendanceStatusResponse[]>({
+  const {
+    data: myAttendances,
+    isLoading: isMyAttendancesLoading,
+    isError: isMyAttendancesError,
+  } = useQuery<AttendanceStatusResponse[]>({
     queryKey: ['myAttendance'],
     queryFn: () => getMyAttendances(tokenState),
     enabled: !!userProfile && !isStaff && userProfile.role !== 'ADULT_LION',
   });
+  const myRecords = (myAttendances ?? []).map(toWeeklyRecord);
 
   const members =
     isPresident && selectedPart !== ALL_PART
@@ -156,11 +163,21 @@ const MyPageAttendance = () => {
         ) : (
           <>
             <SectionTitle>주차별 출결 현황</SectionTitle>
-            <List>
-              {(myAttendances ?? []).map(toWeeklyRecord).map((record) => (
-                <WeeklyAttendanceCard key={record.week} record={record} />
-              ))}
-            </List>
+            {isMyAttendancesLoading ? (
+              <LoadingWrapper>
+                <CircularLoading size={32} />
+              </LoadingWrapper>
+            ) : isMyAttendancesError ? (
+              <EmptyState variant="error" />
+            ) : myRecords.length === 0 ? (
+              <EmptyState message="출결 정보가 없습니다." />
+            ) : (
+              <List>
+                {myRecords.map((record) => (
+                  <WeeklyAttendanceCard key={record.week} record={record} />
+                ))}
+              </List>
+            )}
           </>
         )}
       </MyPageShell>
@@ -196,4 +213,12 @@ const List = styled.div`
   align-items: flex-start;
   gap: 18px;
   width: 100%;
+`;
+
+const LoadingWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 300px;
 `;
