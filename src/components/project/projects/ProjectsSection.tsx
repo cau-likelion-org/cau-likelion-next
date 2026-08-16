@@ -3,7 +3,7 @@ import Button from '@common/button/Button';
 import CircularLoading from '@common/loading/CircularLoading';
 import EmptyState from '@common/emptyState/EmptyState';
 import Toast from '@common/toast/Toast';
-import IcAdd from '@assets/svg/ic-add.svg';
+import { IcAdd } from '@assets/svg';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
