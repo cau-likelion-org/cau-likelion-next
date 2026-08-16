@@ -154,7 +154,7 @@ const LogoRow = styled.div`
 const Catchphrase = styled(LogoCatchphrase)`
   @media (max-width: ${MOBILE}px) {
     width: 100%;
-    max-width: 694px;
+    max-width: 335px;
     height: auto;
   }
 `;
