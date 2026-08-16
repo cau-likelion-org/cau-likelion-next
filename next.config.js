@@ -10,6 +10,7 @@ const nextConfig = {
     remotePatterns: [
       { protocol: 'https', hostname: 'cau-like-lion.s3.ap-northeast-2.amazonaws.com', pathname: '/**' },
       { protocol: 'https', hostname: 'chunghahaha.s3.ap-northeast-2.amazonaws.com', pathname: '/**' },
+      { protocol: 'https', hostname: 'chunghaha-s3.s3.ap-northeast-2.amazonaws.com', pathname: '/**' },
       { protocol: 'https', hostname: 'd1sgygn8l0lfd5.cloudfront.net', pathname: '/**' },
       { protocol: 'https', hostname: 'dcpshnp4boilw.cloudfront.net', pathname: '/**' },
       { protocol: 'https', hostname: 'd1e39uzon1ymuo.cloudfront.net', pathname: '/**' },
