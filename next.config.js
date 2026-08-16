@@ -3,6 +3,14 @@ const path = require('path');
 
 const nextConfig = {
   reactStrictMode: true,
+  // styled-components 변환. 예전엔 .babelrc의 babel-plugin-styled-components로 처리했는데,
+  // 커스텀 babel 설정이 있으면 Next가 SWC를 통째로 끄기 때문에 SWC 내장 옵션으로 옮김
+  compiler: {
+    styledComponents: {
+      ssr: true,
+      displayName: true,
+    },
+  },
   images: {
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
