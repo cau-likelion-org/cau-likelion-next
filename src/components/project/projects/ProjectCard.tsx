@@ -3,6 +3,7 @@ import { AccentTint, Black, Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { useState } from 'react';
 import styled from 'styled-components';
 import LogoTrophy from '@assets/svg/logo/logo-trophy.svg';
 import { track, getDeviceType, getPageEntryTime } from 'src/lib/amplitude';
@@ -27,6 +28,9 @@ const ProjectCard = ({
 }: ProjectCardProps) => {
   const router = useRouter();
   const introText = subtitle || description;
+  // 실패한 src를 기억해두면 thumbnail이 바뀔 때 자동으로 다시 시도하게 된다
+  const [failedThumbnail, setFailedThumbnail] = useState<string | null>(null);
+  const showThumbnail = !!thumbnail && failedThumbnail !== thumbnail;
 
   const handleClick = () => {
     track('Archiving Card Clicked', {
@@ -51,16 +55,15 @@ const ProjectCard = ({
     <Link href={`/project/${id}`} prefetch={false} shallow>
       <Wrapper onClick={handleClick}>
         <Thumbnail>
-          <img
-            key={thumbnail}
-            src={thumbnail || '/image/likelion_thumbnail.png'}
-            alt={title}
-            onLoad={handleImageLoad}
-            onError={(e) => {
-              const target = e.target as HTMLImageElement;
-              target.src = '/image/likelion_thumbnail.png';
-            }}
-          />
+          {showThumbnail && (
+            <img
+              key={thumbnail}
+              src={thumbnail}
+              alt={title}
+              onLoad={handleImageLoad}
+              onError={() => setFailedThumbnail(thumbnail)}
+            />
+          )}
           {banner && (
             <AwardBanner>
               <LogoTrophy width={24} height={24} />
