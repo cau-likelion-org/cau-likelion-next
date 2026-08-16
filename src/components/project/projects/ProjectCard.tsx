@@ -6,6 +6,7 @@ import { useRouter } from 'next/router';
 import { useState } from 'react';
 import styled from 'styled-components';
 import LogoTrophy from '@assets/svg/logo/logo-trophy.svg';
+import ThumbnailPlaceholder from '@common/thumbnail/ThumbnailPlaceholder';
 import { track, getDeviceType, getPageEntryTime } from 'src/lib/amplitude';
 
 interface ProjectCardProps extends IProjectData {
@@ -55,7 +56,7 @@ const ProjectCard = ({
     <Link href={`/project/${id}`} prefetch={false} shallow>
       <Wrapper onClick={handleClick}>
         <Thumbnail>
-          {showThumbnail && (
+          {showThumbnail ? (
             <img
               key={thumbnail}
               src={thumbnail}
@@ -63,6 +64,8 @@ const ProjectCard = ({
               onLoad={handleImageLoad}
               onError={() => setFailedThumbnail(thumbnail)}
             />
+          ) : (
+            <ThumbnailPlaceholder />
           )}
           {banner && (
             <AwardBanner>
