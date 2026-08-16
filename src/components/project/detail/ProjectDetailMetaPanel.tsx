@@ -12,6 +12,12 @@ const LINK_PLATFORM_ICON: Record<LinkPlatform, ReactNode> = {
   BEHANCE: <IcBehance width={20} height={14} />,
 };
 
+// 프로토콜 없이 저장된 링크(예: www.github.com/foo)는 상대경로로 취급되어 현재 주소 뒤에 붙는다
+const toAbsoluteUrl = (url: string) => {
+  const trimmed = url.trim();
+  return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed.replace(/^\/+/, '')}`;
+};
+
 interface ProjectDetailMetaPanelProps {
   startDate: string;
   endDate: string;
@@ -52,7 +58,13 @@ const ProjectDetailMetaPanel = ({ startDate, endDate, stack, links }: ProjectDet
       </Column>
       <LinkRow>
         {validLinks.map((link) => (
-          <LinkButton key={link.id} href={link.url} target="_blank" rel="noreferrer" aria-label={link.platform}>
+          <LinkButton
+            key={link.id}
+            href={toAbsoluteUrl(link.url)}
+            target="_blank"
+            rel="noreferrer"
+            aria-label={link.platform}
+          >
             {LINK_PLATFORM_ICON[link.platform]}
           </LinkButton>
         ))}
