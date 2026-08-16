@@ -64,6 +64,12 @@ const Modal = styled.div`
     0px 4px 6px -2px rgba(23, 23, 23, 0.07);
   outline: none;
   z-index: 10000;
+
+  @media (max-width: 900px) {
+    width: calc(100% - 40px);
+    max-width: 335px;
+    border-radius: 16px;
+  }
 `;
 
 const Information = styled.div`
@@ -73,12 +79,23 @@ const Information = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 12px;
+
+  @media (max-width: 900px) {
+    padding: 28px;
+    align-items: flex-start;
+    gap: 8px;
+  }
 `;
 
 const Title = styled.p`
   ${typographyCss(Typography.headline1.bold)}
   color: ${Label.normal};
   margin: 0;
+
+  @media (max-width: 900px) {
+    ${typographyCss(Typography.heading2.bold)}
+    width: 100%;
+  }
 `;
 
 const EmailButton = styled.button`
@@ -98,6 +115,10 @@ const Actions = styled.div`
   padding: 0 20px 12px;
   display: flex;
   justify-content: flex-end;
+
+  @media (max-width: 900px) {
+    padding: 0 28px 20px;
+  }
 `;
 
 const CloseButton = styled.button`
@@ -106,4 +127,8 @@ const CloseButton = styled.button`
   background: none;
   border: none;
   cursor: pointer;
+
+  @media (max-width: 900px) {
+    padding: 4px 0;
+  }
 `;
