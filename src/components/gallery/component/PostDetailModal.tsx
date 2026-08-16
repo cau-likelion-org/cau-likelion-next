@@ -1,4 +1,4 @@
-import { useId, useRef } from 'react';
+import { useId, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import Button from '@common/button/Button';
@@ -7,7 +7,7 @@ import Chip from '@common/chip/Chip';
 import PaginationDots from '@common/pagination/PaginationDots';
 import TextButton from '@common/textButton/TextButton';
 import IcLineHorizontal from '@assets/svg/icon/ic-line-horizontal.svg';
-import { IcChevronLeft } from '@assets/svg';
+import { IcChevronLeft, IcChevronRight } from '@assets/svg';
 import useFocusTrap from 'src/hooks/useFocusTrap';
 import { BackgroundColor, Fill, Label, Material, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -18,7 +18,7 @@ export interface PostDetailModalProps {
   badges: string[];
   description: string;
   date: string | [string, string];
-  imageCount?: number;
+  imageUrls: string[];
   onEdit?: () => void;
   onClose: () => void;
 }
@@ -29,13 +29,24 @@ const PostDetailModal = ({
   badges,
   description,
   date,
-  imageCount = 4,
+  imageUrls,
   onEdit,
   onClose,
 }: PostDetailModalProps) => {
   const titleId = useId();
   const modalRef = useRef<HTMLDivElement>(null);
   useFocusTrap(modalRef, onClose);
+
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [prevImageUrls, setPrevImageUrls] = useState(imageUrls);
+  if (imageUrls !== prevImageUrls) {
+    setPrevImageUrls(imageUrls);
+    setActiveIndex(0);
+  }
+
+  const showNavigation = imageUrls.length > 1;
+  const goToPrev = () => setActiveIndex((prev) => (prev === 0 ? imageUrls.length - 1 : prev - 1));
+  const goToNext = () => setActiveIndex((prev) => (prev === imageUrls.length - 1 ? 0 : prev + 1));
 
   return (
     <Backdrop onClick={onClose}>
@@ -61,8 +72,20 @@ const PostDetailModal = ({
         </MobileHeader>
         <Information>
           <ImageGroup>
-            <MainThumbnail />
-            <Dots total={imageCount} current={0} size="medium" />
+            <MainThumbnail>
+              {imageUrls.length > 0 && <MainThumbnailImage src={imageUrls[activeIndex]} alt="" />}
+              {showNavigation && (
+                <>
+                  <NavButton type="button" aria-label="이전 이미지" $side="left" onClick={goToPrev}>
+                    <IcChevronLeft width={20} height={20} />
+                  </NavButton>
+                  <NavButton type="button" aria-label="다음 이미지" $side="right" onClick={goToNext}>
+                    <IcChevronRight width={20} height={20} />
+                  </NavButton>
+                </>
+              )}
+            </MainThumbnail>
+            {showNavigation && <Dots total={imageUrls.length} current={activeIndex} size="medium" />}
           </ImageGroup>
 
           <TextGroup>
@@ -190,10 +213,36 @@ const ImageGroup = styled.div`
 `;
 
 const MainThumbnail = styled.div`
+  position: relative;
   width: 100%;
   aspect-ratio: 16 / 9;
   border-radius: 22px;
+  overflow: hidden;
   background-color: ${Fill.subtle};
+`;
+
+const MainThumbnailImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+`;
+
+const NavButton = styled.button<{ $side: 'left' | 'right' }>`
+  position: absolute;
+  top: 50%;
+  ${(props) => (props.$side === 'left' ? 'left: 16px;' : 'right: 16px;')}
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background-color: ${BackgroundColor};
+  color: ${Label.normal};
+  padding: 0;
+  cursor: pointer;
 `;
 
 const TextGroup = styled.div`
