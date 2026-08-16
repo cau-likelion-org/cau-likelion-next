@@ -1,7 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import useTokenStore from 'src/store/useTokenStore';
 import { createSession } from 'src/apis/session';
-import { TRACK_OPTIONS } from '@utils/constant';
 import PostUploadModal, { PostUploadModalSubmitValues } from './PostUploadModal';
 
 interface SessionUploadModalProps {
@@ -35,7 +34,7 @@ const SessionUploadModal = ({ onClose, onSuccess }: SessionUploadModalProps) => 
       onClose={onClose}
       onSubmit={handleSubmit}
       postType="session"
-      category={{ label: '파트 구분', options: TRACK_OPTIONS }}
+      category={{ label: '파트 구분', options: [] }}
       showWeekField
       dateFieldLabel="세션 일자"
       dateMode="single"
