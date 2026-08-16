@@ -1,4 +1,5 @@
 import { GreyScale } from '@utils/constant/color';
+import { FontFamily } from '@utils/constant/typography';
 import React from 'react';
 import styled from 'styled-components';
 
@@ -29,5 +30,5 @@ const Text = styled.div`
   align-items: center;
   font-size: 2rem;
   color: ${GreyScale.default};
-  font-family: 'Gmarket Sans';
+  font-family: ${FontFamily};
 `;

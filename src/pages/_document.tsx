@@ -29,21 +29,14 @@ export default class MyDocument extends Document {
     return (
       <Html>
         <Head>
-          <link
-            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;900;500;600;700;800&display=swap"
-            rel="stylesheet"
-          />
-          <link
-            href="https://cdn.jsdelivr.net/gh/leetaewook/gmarket-sans-dynamic-subset/GmarketSans.css"
-            rel="stylesheet"
-          />
+          {/* 본문 폰트. 렌더를 막는 외부 스타일시트는 이 하나만 남긴다.
+              (Inter는 어디서도 font-family로 쓰이지 않아 제거, GmarketSans는 CSS만 256KB라 제거) */}
+          <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="anonymous" />
           <link
             rel="stylesheet"
             type="text/css"
             href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css"
           />
-          <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap" rel="stylesheet" />
-          <script src="https://apis.google.com/js/platform.js?onload=init" async defer></script>
 
           {/* PWA (iOS는 홈 화면에 추가한 경우에만 웹 푸시가 동작) */}
           <link rel="manifest" href="/manifest.json" />
