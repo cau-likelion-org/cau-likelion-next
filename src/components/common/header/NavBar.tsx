@@ -7,7 +7,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import useTokenStore from 'src/store/useTokenStore';
 import useRecruitModalStore from 'src/store/useRecruitModalStore';
-import RecruitModalRoot from '@home/main/RecruitModalRoot';
 import LikelionCAULogo from 'src/assets/svg/logo/logo-likelion-chungang.svg';
 
 export interface IMenu {
@@ -83,7 +82,6 @@ const NavBar = () => {
           </Button>
         </RightSection>
       </Content>
-      <RecruitModalRoot />
     </Wrapper>
   );
 };

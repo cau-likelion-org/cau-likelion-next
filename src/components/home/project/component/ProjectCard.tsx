@@ -2,10 +2,11 @@ import Link from 'next/link';
 import styled from 'styled-components';
 
 import ContentBadge from '@common/badge/ContentBadge';
-import LogoTrophy from 'src/assets/svg/logo/logo-trophy.svg';
+import { IcTrophy } from '@assets/svg';
 import { ProjectCategory } from 'src/apis/project';
 import { Black, Fill, Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
+import { MOBILE } from '@home/common/responsive';
 
 export const PROJECT_CATEGORY_LABEL: Record<ProjectCategory, string> = {
   IDEATHON: '아이디어톤',
@@ -28,7 +29,7 @@ const ProjectCard = ({ title, generationNumber, category, banner, href }: IProje
         <ThumbnailArea>
           {banner && (
             <AwardBanner>
-              <LogoTrophy width={24} height={24} />
+              <IcTrophy width={24} height={24} />
               <AwardText>{banner}</AwardText>
             </AwardBanner>
           )}
@@ -54,6 +55,10 @@ const Wrapper = styled.div`
   align-items: flex-start;
   gap: 10px;
   cursor: pointer;
+
+  @media (max-width: ${MOBILE}px) {
+    width: 335px;
+  }
 `;
 
 const ThumbnailArea = styled.div`

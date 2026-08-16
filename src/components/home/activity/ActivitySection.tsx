@@ -1,4 +1,5 @@
-import styled from 'styled-components';
+import { useState } from 'react';
+import styled, { css } from 'styled-components';
 import { useRouter } from 'next/router';
 import { useQuery } from '@tanstack/react-query';
 
@@ -9,6 +10,7 @@ import { IcChevronDown } from '@assets/svg';
 import { getActivities, PageNavigation } from 'src/apis/activity';
 import { Black, BackgroundWhite, BackgroundLight, Line, Fill, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
+import { MOBILE } from '@home/common/responsive';
 
 // 갤러리 페이지가 아직 세션/프로젝트/추억 탭을 URL로 지정하는 기능이 없어 셋 다 우선 /gallery로 이동
 const PAGE_NAVIGATION_HREF: Record<PageNavigation, string> = {
@@ -27,6 +29,8 @@ const ActivitySection = () => {
     isError,
   } = useQuery({ queryKey: ['activities'], queryFn: () => getActivities() });
 
+  const [expandedId, setExpandedId] = useState<number | null>(null);
+
   return (
     <Wrapper>
       <Content>
@@ -41,7 +45,11 @@ const ActivitySection = () => {
           <ListGroup>
             <List>
               {activities?.map(({ id, name, imageUrl, introduction, description, buttonName, pageNavigation }) => (
-                <Card key={id}>
+                <Card
+                  key={id}
+                  $expanded={expandedId === id}
+                  onClick={() => setExpandedId((prev) => (prev === id ? null : id))}
+                >
                   <TextGroup>
                     <CardTitle>{name}</CardTitle>
                     <CardSubtitle>{introduction}</CardSubtitle>
@@ -59,6 +67,17 @@ const ActivitySection = () => {
                       {buttonName}
                     </Button>
                   </HoverButtonWrapper>
+                  <MobileButtonWrapper onClick={(event) => event.stopPropagation()}>
+                    <Button
+                      size="medium"
+                      variant="solid"
+                      color="primary"
+                      trailingIcon={<ChevronRightIcon />}
+                      onClick={() => router.push(PAGE_NAVIGATION_HREF[pageNavigation])}
+                    >
+                      {buttonName}
+                    </Button>
+                  </MobileButtonWrapper>
                 </Card>
               ))}
             </List>
@@ -79,6 +98,11 @@ const Wrapper = styled.div`
   justify-content: center;
   background-color: ${BackgroundLight.secondary};
   scroll-snap-align: start;
+
+  @media (max-width: ${MOBILE}px) {
+    width: 100%;
+    padding: 60px 20px;
+  }
 `;
 
 const Content = styled.div`
@@ -87,12 +111,20 @@ const Content = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 52px;
+
+  @media (max-width: ${MOBILE}px) {
+    width: 100%;
+  }
 `;
 
 const Title = styled.p`
   ${typographyCss(Typography.display2.bold)}
   color: ${Black.b900};
   margin: 0;
+
+  @media (max-width: ${MOBILE}px) {
+    ${typographyCss(Typography.title1.bold)}
+  }
 `;
 
 const ListGroup = styled.div`
@@ -120,6 +152,12 @@ const Thumbnail = styled.div<{ $imageUrl?: string }>`
   background-image: ${(props) => (props.$imageUrl ? `url(${props.$imageUrl})` : 'none')};
   background-size: cover;
   background-position: center;
+
+  @media (max-width: ${MOBILE}px) {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 300 / 169;
+  }
 `;
 
 const HoverButtonWrapper = styled.div`
@@ -128,7 +166,26 @@ const HoverButtonWrapper = styled.div`
   align-self: flex-end;
 `;
 
-const Card = styled.div`
+const MobileButtonWrapper = styled.div`
+  display: none;
+  flex-shrink: 0;
+  align-self: flex-start;
+`;
+
+const CardDescription = styled.p`
+  ${typographyCss(Typography.body1Normal.medium)}
+  color: ${Black.b900};
+  margin: 0;
+
+  @media (max-width: ${MOBILE}px) {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+  }
+`;
+
+const Card = styled.div<{ $expanded: boolean }>`
   width: 100%;
   min-height: 233px;
   display: flex;
@@ -153,6 +210,52 @@ const Card = styled.div`
       display: flex;
     }
   }
+
+  @media (max-width: ${MOBILE}px) {
+    flex-direction: column;
+    min-height: 0;
+    cursor: pointer;
+
+    /* 모바일 브라우저에서 탭 후 남는 hover 상태를 무시하고, $expanded만 열림 상태로 쓴다 */
+    &,
+    &:hover {
+      justify-content: flex-start;
+      gap: 14px;
+      background-color: ${BackgroundWhite.secondary};
+      box-shadow: inset 0 0 0 1px ${Line.subtle};
+
+      ${Thumbnail} {
+        display: block;
+      }
+
+      ${HoverButtonWrapper} {
+        display: none;
+      }
+    }
+
+    ${(props) =>
+      props.$expanded &&
+      css`
+        &,
+        &:hover {
+          background-color: ${Orange.o50};
+          box-shadow: inset 0 0 0 1px ${Orange.o500};
+
+          ${Thumbnail} {
+            display: none;
+          }
+
+          ${MobileButtonWrapper} {
+            display: flex;
+          }
+
+          ${CardDescription} {
+            display: block;
+            overflow: visible;
+          }
+        }
+      `}
+  }
 `;
 
 const TextGroup = styled.div`
@@ -162,6 +265,10 @@ const TextGroup = styled.div`
   flex-direction: column;
   align-items: flex-start;
   gap: 14px;
+
+  @media (max-width: ${MOBILE}px) {
+    width: 100%;
+  }
 `;
 
 const CardTitle = styled.p`
@@ -173,12 +280,6 @@ const CardTitle = styled.p`
 const CardSubtitle = styled.p`
   ${typographyCss(Typography.headline1.regular)}
   color: ${Black.b80};
-  margin: 0;
-`;
-
-const CardDescription = styled.p`
-  ${typographyCss(Typography.body1Normal.medium)}
-  color: ${Black.b900};
   margin: 0;
 `;
 

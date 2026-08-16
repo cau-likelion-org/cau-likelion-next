@@ -4,21 +4,29 @@ import Button from '@common/button/Button';
 import { Black } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import BgLanding from 'src/assets/svg/bg-landing.svg';
+import BgLandingMobile from 'src/assets/svg/bg-landing-mobile.svg';
 import LogoLikelion from 'src/assets/svg/logo/logo-likelion.svg';
 import LogoX from 'src/assets/svg/logo/logo-x.svg';
 import LogoCAU from 'src/assets/svg/logo/logo-cau.svg';
 import LogoCatchphrase from 'src/assets/svg/logo/logo-catchphrase.svg';
 import useRecruitModalStore from 'src/store/useRecruitModalStore';
+import { MOBILE } from '@home/common/responsive';
 
 const DESCRIPTION =
   '중앙대학교 멋쟁이사자처럼은 중앙대 학생들로 이루어진 IT 창업 동아리입니다\n아이디어를 현실로 만들고, 세계를 향한 첫 발자국을 멋쟁이사자처럼에서 내딛어보세요';
 
+const MOBILE_DESCRIPTION =
+  '중앙대학교 멋쟁이사자처럼은 중앙대 학생들로 이루어진\nIT 창업 동아리입니다 아이디어를 현실로 만들고,\n세계를 향한 첫 발자국을 멋쟁이사자처럼에서 내딛어보세요';
+
+const BUTTON_LABEL = '다음 기수 모집 알림받기';
+
 const MainSection = () => {
-  const openRecruitNotifyModal = useRecruitModalStore((state) => state.openNotifyModal);
+  const openRecruitModal = useRecruitModalStore((state) => state.openNotifyModal);
 
   return (
     <Wrapper>
-      <BgLanding width={1440} height={666} aria-label="배경 이미지" />
+      <DesktopBg width={1440} height={666} aria-label="배경 이미지" />
+      <MobileBg aria-label="배경 이미지" />
 
       <Content>
         <TopGroup>
@@ -27,21 +35,34 @@ const MainSection = () => {
             <LogoX />
             <LogoCAU />
           </LogoRow>
-          <LogoCatchphrase />
+          <Catchphrase />
         </TopGroup>
 
-        <BottomGroup>
+        <DesktopGroup>
           <Description>{DESCRIPTION}</Description>
           <Button
             variant="solid"
             color="assistive"
             size="large"
             trailingIcon={<HiOutlineBell />}
-            onClick={openRecruitNotifyModal}
+            onClick={openRecruitModal}
           >
-            다음 기수 모집 알림받기
+            {BUTTON_LABEL}
           </Button>
-        </BottomGroup>
+        </DesktopGroup>
+
+        <MobileGroup>
+          <Description>{MOBILE_DESCRIPTION}</Description>
+          <Button
+            variant="solid"
+            color="assistive"
+            size="small"
+            trailingIcon={<HiOutlineBell />}
+            onClick={openRecruitModal}
+          >
+            {BUTTON_LABEL}
+          </Button>
+        </MobileGroup>
       </Content>
     </Wrapper>
   );
@@ -57,6 +78,35 @@ const Wrapper = styled.div`
   align-items: center;
   justify-content: center;
   scroll-snap-align: start;
+
+  @media (max-width: ${MOBILE}px) {
+    width: 100%;
+    height: 652px;
+    padding-top: 0;
+    align-items: flex-start;
+    justify-content: flex-start;
+    overflow: hidden;
+  }
+`;
+
+const DesktopBg = styled(BgLanding)`
+  @media (max-width: ${MOBILE}px) {
+    display: none;
+  }
+`;
+
+const MobileBg = styled(BgLandingMobile)`
+  display: none;
+
+  @media (max-width: ${MOBILE}px) {
+    display: block;
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    margin-left: -476px;
+    width: 756px;
+    height: auto;
+  }
 `;
 
 const Content = styled.div`
@@ -67,6 +117,16 @@ const Content = styled.div`
   flex-direction: column;
   align-items: flex-start;
   gap: 77px;
+
+  @media (max-width: ${MOBILE}px) {
+    position: relative;
+    z-index: 1;
+    left: auto;
+    top: auto;
+    width: 100%;
+    padding: 113px 20px 0;
+    gap: 22px;
+  }
 `;
 
 const TopGroup = styled.div`
@@ -74,19 +134,29 @@ const TopGroup = styled.div`
   flex-direction: column;
   align-items: flex-start;
   gap: 36px;
+
+  @media (max-width: ${MOBILE}px) {
+    width: 100%;
+    gap: 0;
+  }
 `;
 
 const LogoRow = styled.div`
   display: flex;
   align-items: center;
   gap: 14px;
+
+  @media (max-width: ${MOBILE}px) {
+    display: none;
+  }
 `;
 
-const BottomGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 32px;
+const Catchphrase = styled(LogoCatchphrase)`
+  @media (max-width: ${MOBILE}px) {
+    width: 100%;
+    max-width: 335px;
+    height: auto;
+  }
 `;
 
 const Description = styled.p`
@@ -94,4 +164,31 @@ const Description = styled.p`
   color: ${Black.b70};
   white-space: pre-line;
   margin: 0;
+
+  @media (max-width: ${MOBILE}px) {
+    ${typographyCss(Typography.caption2.regular)}
+  }
+`;
+
+const DesktopGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 32px;
+
+  @media (max-width: ${MOBILE}px) {
+    display: none;
+  }
+`;
+
+const MobileGroup = styled.div`
+  display: none;
+
+  @media (max-width: ${MOBILE}px) {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 22px;
+    width: 100%;
+  }
 `;

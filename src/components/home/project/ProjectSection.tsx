@@ -10,6 +10,7 @@ import EmptyState from '@common/emptyState/EmptyState';
 import { getProjectList } from 'src/apis/project';
 import { Black } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
+import { MOBILE } from '@home/common/responsive';
 
 import ProjectCard from './component/ProjectCard';
 
@@ -75,12 +76,21 @@ const Wrapper = styled.div`
   align-items: center;
   gap: 52px;
   scroll-snap-align: start;
+
+  @media (max-width: ${MOBILE}px) {
+    width: 100%;
+    padding: 60px 20px;
+  }
 `;
 
 const Title = styled.p`
   ${typographyCss(Typography.display2.bold)}
   color: ${Black.b900};
   margin: 0;
+
+  @media (max-width: ${MOBILE}px) {
+    ${typographyCss(Typography.title1.bold)}
+  }
 `;
 
 const CardSwiper = styled(Swiper)`
@@ -91,6 +101,16 @@ const CardSwiper = styled(Swiper)`
 
   .swiper-slide {
     width: 340px;
+  }
+
+  @media (max-width: ${MOBILE}px) {
+    width: calc(100% + 40px);
+    margin-left: -20px;
+    margin-right: -20px;
+
+    .swiper-slide {
+      width: 335px;
+    }
   }
 `;
 

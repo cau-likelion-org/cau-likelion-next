@@ -109,6 +109,8 @@ const Container = styled.div<{ $visible: boolean; $width: number }>`
   align-items: center;
   gap: 8px;
   width: ${(props) => props.$width}px;
+  max-width: calc(100vw - 40px);
+  min-height: 54px;
   padding: 11px 16px;
   border-radius: 12px;
   overflow: hidden;
@@ -159,6 +161,8 @@ const Text = styled.p`
   margin: 0;
   flex: 1 0 0;
   min-width: 0;
+  /* 디자인 시스템 Toast의 Message 여백 (한 줄일 때 본문 영역 32px) */
+  padding: 5px 2px;
   word-break: break-word;
   color: ${BackgroundColor};
   opacity: 0.88;

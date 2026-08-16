@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import styled from 'styled-components';
-import LogoTrophy from '@assets/svg/logo/logo-trophy.svg';
+import { IcTrophy } from '@assets/svg';
 import ThumbnailPlaceholder from '@common/thumbnail/ThumbnailPlaceholder';
 import { track, getDeviceType, getPageEntryTime } from 'src/lib/amplitude';
 
@@ -69,7 +69,7 @@ const ProjectCard = ({
           )}
           {banner && (
             <AwardBanner>
-              <LogoTrophy width={24} height={24} />
+              <IcTrophy width={24} height={24} />
               <AwardText>{banner}</AwardText>
             </AwardBanner>
           )}
