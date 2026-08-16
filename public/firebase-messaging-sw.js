@@ -25,8 +25,8 @@ firebase.messaging().onBackgroundMessage((payload) => {
   const data = payload.data || {};
   self.registration.showNotification(data.title || '중앙대 멋쟁이사자처럼', {
     body: data.body,
-    icon: '/android-icon-192x192.png',
-    badge: '/android-icon-96x96.png',
+    icon: '/favicon-192x192.png',
+    badge: '/favicon-96x96.png',
     data,
   });
 });
