@@ -7,6 +7,7 @@ import type { AppProps } from 'next/app';
 import React, { ReactElement, ReactNode } from 'react';
 import { NextPage } from 'next';
 import LayoutDefault from '@common/layout/LayoutDefault';
+import RecruitModalRoot from '@home/main/RecruitModalRoot';
 import { useState, useEffect, useRef } from 'react';
 import NextRouter, { Router, useRouter } from 'next/router';
 import Loading from '@common/loading/Loading';
@@ -134,6 +135,7 @@ function AppContent({ Component, pageProps }: AppPropsWithLayout) {
         <title>LikeLionCAU</title>
       </Head>
       {loading ? <Loading /> : getLayout(<Component {...pageProps} />)}
+      <RecruitModalRoot />
     </QueryClientProvider>
   );
 }

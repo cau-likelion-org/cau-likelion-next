@@ -14,6 +14,7 @@ import useRecruitModalStore from 'src/store/useRecruitModalStore';
 import { isUnfilled } from '@utils/index';
 import { BackgroundColor, Fill, Label, Material } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
+import { MOBILE } from '@home/common/responsive';
 
 const KAKAO_CHANNEL_URL = 'https://pf.kakao.com/_HMPxfG';
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -159,9 +160,7 @@ const RecruitNotifyModal = ({ onClose }: { onClose: () => void }) => {
           </ActionRow>
           <Promo>
             <PromoText>
-              멋쟁이사자처럼 중앙대 공식 카카오톡 채널을 추가하면
-              <br />
-              소식을 더 빠르게 받아볼 수 있어요.
+              멋쟁이사자처럼 중앙대 공식 카카오톡 채널을 추가하면 소식을 더 빠르게 받아볼 수 있어요.
             </PromoText>
             <Button
               variant="solid"
@@ -187,13 +186,14 @@ const Backdrop = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0 20px;
   background-color: ${Material.dimmer};
   z-index: 9999;
 `;
 
 const Modal = styled.div`
-  width: 400px;
-  min-width: 320px;
+  width: 100%;
+  max-width: 400px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -202,6 +202,11 @@ const Modal = styled.div`
   overflow: hidden;
   outline: none;
   z-index: 10000;
+
+  @media (max-width: ${MOBILE}px) {
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+  }
 `;
 
 const Information = styled.div`
@@ -232,17 +237,31 @@ const Row = styled.div`
   display: flex;
   align-items: flex-start;
   gap: 20px;
+
+  @media (max-width: ${MOBILE}px) {
+    flex-direction: column;
+  }
 `;
 
 const FieldWrapper = styled.div`
   flex: 1 0 0;
   min-width: 0;
+
+  @media (max-width: ${MOBILE}px) {
+    flex: 0 0 auto;
+    width: 100%;
+  }
 `;
 
 const SelectWrapper = styled.div`
   position: relative;
   flex: 1 0 0;
   min-width: 0;
+
+  @media (max-width: ${MOBILE}px) {
+    flex: 0 0 auto;
+    width: 100%;
+  }
 `;
 
 const Actions = styled.div`

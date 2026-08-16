@@ -6,6 +6,7 @@ import LogoTrophy from 'src/assets/svg/logo/logo-trophy.svg';
 import { ProjectCategory } from 'src/apis/project';
 import { Black, Fill, Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
+import { MOBILE } from '@home/common/responsive';
 
 export const PROJECT_CATEGORY_LABEL: Record<ProjectCategory, string> = {
   IDEATHON: '아이디어톤',
@@ -54,6 +55,10 @@ const Wrapper = styled.div`
   align-items: flex-start;
   gap: 10px;
   cursor: pointer;
+
+  @media (max-width: ${MOBILE}px) {
+    width: 335px;
+  }
 `;
 
 const ThumbnailArea = styled.div`
