@@ -53,6 +53,7 @@ import { isUnfilled } from '@utils/index';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 const MAX_IMAGE_COUNT = 4;
+const MAX_BANNER_LENGTH = 15;
 const LINK_TYPE_OPTIONS = ['Web', 'GitHub', 'Behance'];
 const CONTENT_PLACEHOLDER = '예시)이 서비스는 ~~한 서비스입니다\n서비스의 핵심기능\n\n· 이런거\n· 이\n· 이';
 const TAG_SEPARATOR_REGEX = /[\s,]+/;
@@ -749,7 +750,13 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
             heading="배너 추가하기"
             placeholder="예시)2026해커톤본선진출작"
             value={banner}
-            onChange={(event) => setBanner(event.target.value)}
+            onChange={(event) => setBanner(event.target.value.slice(0, MAX_BANNER_LENGTH))}
+            maxLength={MAX_BANNER_LENGTH}
+            trailingContent={
+              <CharCount>
+                {banner.length}/{MAX_BANNER_LENGTH}
+              </CharCount>
+            }
           />
         </TeamColumn>
       </TeamRow>
