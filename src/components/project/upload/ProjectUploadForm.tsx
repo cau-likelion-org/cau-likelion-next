@@ -55,6 +55,7 @@ import { Typography, typographyCss } from '@utils/constant/typography';
 const MAX_IMAGE_COUNT = 4;
 const LINK_TYPE_OPTIONS = ['Web', 'GitHub', 'Behance'];
 const CONTENT_PLACEHOLDER = '예시)이 서비스는 ~~한 서비스입니다\n서비스의 핵심기능\n\n· 이런거\n· 이\n· 이';
+const TAG_SEPARATOR_REGEX = /[\s,]+/;
 
 const LINK_TYPE_TO_PLATFORM: Record<string, LinkPlatform> = {
   Web: 'WEB',
@@ -894,9 +895,22 @@ const TagChipInput = ({
     setInputValue('');
   };
 
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const raw = event.target.value;
+    if (!TAG_SEPARATOR_REGEX.test(raw)) {
+      setInputValue(raw);
+      return;
+    }
+    const parts = raw.split(TAG_SEPARATOR_REGEX);
+    const pending = parts.pop() ?? '';
+    const committed = parts.filter(Boolean);
+    if (committed.length > 0) onChange([...values, ...committed]);
+    setInputValue(pending);
+  };
+
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     if (isComposingRef.current) return;
-    if (event.key === 'Enter' || event.key === ' ' || event.key === ',') {
+    if (event.key === 'Enter') {
       event.preventDefault();
       commitValue();
     } else if (event.key === 'Backspace' && !inputValue && values.length > 0) {
@@ -929,7 +943,7 @@ const TagChipInput = ({
         ))}
         <TagTextInput
           value={inputValue}
-          onChange={(event) => setInputValue(event.target.value)}
+          onChange={handleInputChange}
           onKeyDown={handleKeyDown}
           onCompositionStart={() => {
             isComposingRef.current = true;
