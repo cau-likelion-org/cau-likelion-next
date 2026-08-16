@@ -14,6 +14,7 @@ import useRecruitModalStore from 'src/store/useRecruitModalStore';
 import { isUnfilled } from '@utils/index';
 import { BackgroundColor, Fill, Label, Material } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
+import { MOBILE } from '@home/common/responsive';
 
 const KAKAO_CHANNEL_URL = 'https://pf.kakao.com/_HMPxfG';
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -202,6 +203,15 @@ const Modal = styled.div`
   overflow: hidden;
   outline: none;
   z-index: 10000;
+
+  @media (max-width: ${MOBILE}px) {
+    width: calc(100% - 40px);
+    min-width: 0;
+    max-width: 335px;
+    /* 디자인 기준(812px 높이)보다 짧은 기기에서는 모달 안에서 스크롤되게 한다 */
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+  }
 `;
 
 const Information = styled.div`
@@ -232,17 +242,31 @@ const Row = styled.div`
   display: flex;
   align-items: flex-start;
   gap: 20px;
+
+  @media (max-width: ${MOBILE}px) {
+    flex-direction: column;
+  }
 `;
 
 const FieldWrapper = styled.div`
   flex: 1 0 0;
   min-width: 0;
+
+  @media (max-width: ${MOBILE}px) {
+    flex: 0 0 auto;
+    width: 100%;
+  }
 `;
 
 const SelectWrapper = styled.div`
   position: relative;
   flex: 1 0 0;
   min-width: 0;
+
+  @media (max-width: ${MOBILE}px) {
+    flex: 0 0 auto;
+    width: 100%;
+  }
 `;
 
 const Actions = styled.div`
@@ -285,4 +309,10 @@ const PromoText = styled.p`
   color: ${Label.alternative};
   text-align: center;
   margin: 0;
+
+  @media (max-width: ${MOBILE}px) {
+    br {
+      display: none;
+    }
+  }
 `;

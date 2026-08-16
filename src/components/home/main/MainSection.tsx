@@ -95,7 +95,6 @@ const DesktopBg = styled(BgLanding)`
   }
 `;
 
-// 좌우로 화면을 넘치도록 놓인 장식 일러스트. 375px 기준 left -288.7px를 화면 중앙 기준 오프셋으로 환산해 고정한다
 const MobileBg = styled(BgLandingMobile)`
   display: none;
 
@@ -120,13 +119,11 @@ const Content = styled.div`
   gap: 77px;
 
   @media (max-width: ${MOBILE}px) {
-    /* 배경 일러스트 위로 올린다 */
     position: relative;
     z-index: 1;
     left: auto;
     top: auto;
     width: 100%;
-    /* MobileNavBar가 position: fixed(60px)라 자리를 차지하지 않으므로 60px + 디자인 여백 53px */
     padding: 113px 20px 0;
     gap: 22px;
   }
@@ -138,7 +135,6 @@ const TopGroup = styled.div`
   align-items: flex-start;
   gap: 36px;
 
-  /* align-items: flex-start인 부모 안에서는 로고 원본 너비(694px)로 늘어나므로 명시적으로 채운다 */
   @media (max-width: ${MOBILE}px) {
     width: 100%;
     gap: 0;
@@ -158,7 +154,6 @@ const LogoRow = styled.div`
 const Catchphrase = styled(LogoCatchphrase)`
   @media (max-width: ${MOBILE}px) {
     width: 100%;
-    /* 원본(694px)보다 커지지는 않게 한다 */
     max-width: 694px;
     height: auto;
   }
@@ -175,7 +170,6 @@ const Description = styled.p`
   }
 `;
 
-// size prop은 CSS로 덮을 수 없어서 데스크톱/모바일 버튼을 따로 둔다
 const DesktopGroup = styled.div`
   display: flex;
   flex-direction: column;

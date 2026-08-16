@@ -2,6 +2,7 @@ import styled from 'styled-components';
 
 import Toast from '@common/toast/Toast';
 import useRecruitModalStore from 'src/store/useRecruitModalStore';
+import { MOBILE } from '@home/common/responsive';
 
 import RecruitClosedAlert from './RecruitClosedAlert';
 import RecruitNotifyModal from './RecruitNotifyModal';
@@ -37,4 +38,8 @@ const ToastWrapper = styled.div`
   transform: translateX(-50%);
   z-index: 10001;
   pointer-events: none;
+
+  @media (max-width: ${MOBILE}px) {
+    top: 36px;
+  }
 `;
