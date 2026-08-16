@@ -189,7 +189,7 @@ const MyPageAssignment = () => {
   return (
     <>
       <MyPageShell active="assignment" isAdmin={!!userProfile && canManageSitePages(userProfile.role)}>
-        {!userProfile ? (
+        {!userProfile || userProfile.role === 'ADULT_LION' ? (
           <PageLoadingGate isError={isUserProfileError} />
         ) : isStaffOrAdmin ? (
           <>
