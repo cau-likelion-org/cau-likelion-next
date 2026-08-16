@@ -7,6 +7,7 @@ import LinearLoading from '@common/loading/LinearLoading';
 import EmptyState from '@common/emptyState/EmptyState';
 import { Black, BackgroundWhite, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
+import { MOBILE } from '@home/common/responsive';
 
 const FAQSection = () => {
   const { data: faqs, isLoading, isError } = useQuery({ queryKey: ['faqs'], queryFn: () => getFaqs() });
@@ -55,12 +56,21 @@ const Wrapper = styled.div`
   align-items: center;
   gap: 52px;
   scroll-snap-align: start;
+
+  @media (max-width: ${MOBILE}px) {
+    width: 100%;
+    padding: 60px 20px;
+  }
 `;
 
 const Title = styled.p`
   ${typographyCss(Typography.display2.bold)}
   color: ${Black.b900};
   margin: 0;
+
+  @media (max-width: ${MOBILE}px) {
+    ${typographyCss(Typography.title1.bold)}
+  }
 `;
 
 const List = styled.div`
@@ -84,6 +94,11 @@ const Item = styled.button<{ $open: boolean }>`
   border: none;
   cursor: pointer;
   text-align: left;
+
+  @media (max-width: ${MOBILE}px) {
+    gap: 14px;
+    padding: 18px;
+  }
 `;
 
 const TextGroup = styled.div`

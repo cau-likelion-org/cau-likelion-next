@@ -6,6 +6,7 @@ import LinearLoading from '@common/loading/LinearLoading';
 import EmptyState from '@common/emptyState/EmptyState';
 import { Black, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
+import { MOBILE } from '@home/common/responsive';
 
 interface IStat {
   number: string;
@@ -65,6 +66,11 @@ const Wrapper = styled.div`
   display: flex;
   justify-content: center;
   scroll-snap-align: start;
+
+  @media (max-width: ${MOBILE}px) {
+    width: 100%;
+    padding: 60px 20px 80px;
+  }
 `;
 
 const Content = styled.div`
@@ -73,6 +79,11 @@ const Content = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 52px;
+
+  @media (max-width: ${MOBILE}px) {
+    width: 100%;
+    gap: 50px;
+  }
 `;
 
 const TextGroup = styled.div`
@@ -83,18 +94,36 @@ const TextGroup = styled.div`
   gap: 32px;
   text-align: center;
   color: ${Black.b0};
+
+  @media (max-width: ${MOBILE}px) {
+    width: 100%;
+    gap: 24px;
+  }
 `;
 
 const Title = styled.p`
   ${typographyCss(Typography.display2.bold)}
   width: 100%;
   margin: 0;
+
+  @media (max-width: ${MOBILE}px) {
+    ${typographyCss(Typography.title1.bold)}
+  }
 `;
 
 const Description = styled.p`
   ${typographyCss(Typography.heading2.medium)}
   width: 100%;
   margin: 0;
+
+  @media (max-width: ${MOBILE}px) {
+    ${typographyCss(Typography.label1Normal.medium)}
+
+    /* 좁은 화면에서는 자연스럽게 흐르도록 데스크톱 줄바꿈을 무시한다 */
+    br {
+      display: none;
+    }
+  }
 `;
 
 const StatsGroup = styled.div`
@@ -103,6 +132,10 @@ const StatsGroup = styled.div`
   flex-direction: column;
   align-items: flex-start;
   gap: 28px;
+
+  @media (max-width: ${MOBILE}px) {
+    width: 217px;
+  }
 `;
 
 const StatRow = styled.div`
@@ -110,6 +143,10 @@ const StatRow = styled.div`
   display: flex;
   align-items: center;
   gap: 20px;
+
+  @media (max-width: ${MOBILE}px) {
+    flex-direction: column;
+  }
 `;
 
 const StatCard = styled.div`
@@ -124,6 +161,14 @@ const StatCard = styled.div`
   border-radius: 14px;
   background-color: ${Orange.o400};
   color: ${Black.b0};
+
+  @media (max-width: ${MOBILE}px) {
+    flex: 0 0 auto;
+    width: 100%;
+    height: 130px;
+    justify-content: center;
+    gap: 4px;
+  }
 `;
 
 const StatNumber = styled.p`
@@ -135,6 +180,11 @@ const StatNumber = styled.p`
   width: 100%;
   text-align: center;
   margin: 0;
+
+  @media (max-width: ${MOBILE}px) {
+    ${typographyCss(Typography.display2.bold)}
+    flex: 0 0 auto;
+  }
 `;
 
 const StatLabel = styled.p`
@@ -146,6 +196,10 @@ const Footnote = styled.p`
   ${typographyCss(Typography.caption1.regular)}
   color: ${Orange.o100};
   margin: 0;
+
+  @media (max-width: ${MOBILE}px) {
+    ${typographyCss(Typography.caption2.regular)}
+  }
 `;
 
 const LoadingWrapper = styled.div`

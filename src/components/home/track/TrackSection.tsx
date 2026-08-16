@@ -7,6 +7,7 @@ import LinearLoading from '@common/loading/LinearLoading';
 import EmptyState from '@common/emptyState/EmptyState';
 import { Black, BackgroundWhite, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
+import { MOBILE } from '@home/common/responsive';
 
 const TrackSection = () => {
   const { data: tracks, isLoading, isError } = useQuery({ queryKey: ['tracks'], queryFn: () => getTracks() });
@@ -66,12 +67,21 @@ const Wrapper = styled.div`
   align-items: center;
   gap: 52px;
   scroll-snap-align: start;
+
+  @media (max-width: ${MOBILE}px) {
+    width: 100%;
+    padding: 60px 20px;
+  }
 `;
 
 const Title = styled.p`
   ${typographyCss(Typography.display2.bold)}
   color: ${Black.b900};
   margin: 0;
+
+  @media (max-width: ${MOBILE}px) {
+    ${typographyCss(Typography.title1.bold)}
+  }
 `;
 
 const TrackListGroup = styled.div`
@@ -100,12 +110,22 @@ const TrackCard = styled.div`
   border-radius: 22px;
   background-color: ${BackgroundWhite.secondary};
   box-shadow: inset 0 0 0 1px ${Line.subtle};
+
+  @media (max-width: ${MOBILE}px) {
+    gap: 22px;
+  }
 `;
 
 const TrackHeader = styled.div`
   display: flex;
   align-items: center;
   gap: 20px;
+
+  @media (max-width: ${MOBILE}px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
 `;
 
 const TrackName = styled.p`
@@ -125,6 +145,10 @@ const TrackBody = styled.div`
   display: flex;
   align-items: flex-start;
   gap: 20px;
+
+  @media (max-width: ${MOBILE}px) {
+    flex-direction: column;
+  }
 `;
 
 const BulletBox = styled.ul`
@@ -144,6 +168,11 @@ const BulletBox = styled.ul`
   li:last-child {
     margin-bottom: 0;
   }
+
+  @media (max-width: ${MOBILE}px) {
+    flex: 0 0 auto;
+    width: 100%;
+  }
 `;
 
 const ChipWrap = styled.div`
@@ -152,6 +181,10 @@ const ChipWrap = styled.div`
   flex-wrap: wrap;
   align-items: flex-start;
   gap: 14px;
+
+  @media (max-width: ${MOBILE}px) {
+    width: 100%;
+  }
 `;
 
 const Footnote = styled.p`
