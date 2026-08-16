@@ -162,7 +162,10 @@ const MyPageAttendance = () => {
           />
         ) : (
           <>
-            <SectionTitle>주차별 출결 현황</SectionTitle>
+            <TitleRow>
+              <SectionTitle>주차별 출결 현황</SectionTitle>
+              <TrackName>{userProfile.partName} 파트</TrackName>
+            </TitleRow>
             {isMyAttendancesLoading ? (
               <LoadingWrapper>
                 <CircularLoading size={32} />
@@ -200,11 +203,29 @@ const ToastWrapper = styled.div`
   pointer-events: none;
 `;
 
+const TitleRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  width: 100%;
+
+  @media (max-width: 900px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+`;
+
 const SectionTitle = styled.p`
   margin: 0;
-  width: 100%;
   color: ${Label.normal};
   ${typographyCss(Typography.heading2.bold)}
+`;
+
+const TrackName = styled.p`
+  margin: 0;
+  color: ${Label.alternative};
+  ${typographyCss(Typography.body1Reading.regular)}
 `;
 
 const List = styled.div`
