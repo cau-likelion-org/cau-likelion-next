@@ -18,6 +18,7 @@ import { UploadDomain, uploadFile } from 'src/apis/upload';
 import { NUMERIC_ONLY_REGEX } from '@utils/constant';
 import { BackgroundColor, Fill, Label, Line, Material, Orange, State } from '@utils/constant/color';
 import { isUnfilled } from '@utils/index';
+import { resizeImageFile } from '@utils/resizeImage';
 import { Typography, typographyCss } from '@utils/constant/typography';
 const MAX_IMAGE_COUNT = 10;
 const CONTENT_PLACEHOLDER = '예시)이 서비스는 ~~한 서비스입니다\n서비스의 핵심기능\n\n· 이런거\n· 이\n· 이';
@@ -122,7 +123,7 @@ const PostUploadModal = ({
   useFocusTrap(modalRef, onClose);
   const modalAriaLabel = `${POST_TYPE_LABEL[postType]} ${mode === 'edit' ? '수정' : '추가'}`;
 
-  const handleFileChange = (index: number, event: ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (index: number, event: ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files ?? []);
     event.target.value = '';
     if (files.length === 0) return;
@@ -139,9 +140,13 @@ const PostUploadModal = ({
     }
     if (targets.length === 0) return;
 
+    const resizedTargets = await Promise.all(
+      targets.map(async ({ targetIndex, file }) => ({ targetIndex, file: await resizeImageFile(file) })),
+    );
+
     setImages((prev) => {
       const next = [...prev];
-      targets.forEach(({ targetIndex, file }) => {
+      resizedTargets.forEach(({ targetIndex, file }) => {
         if (next[targetIndex]) URL.revokeObjectURL(next[targetIndex] as string);
         next[targetIndex] = URL.createObjectURL(file);
       });
@@ -149,12 +154,12 @@ const PostUploadModal = ({
     });
     setImageFiles((prev) => {
       const next = [...prev];
-      targets.forEach(({ targetIndex, file }) => {
+      resizedTargets.forEach(({ targetIndex, file }) => {
         next[targetIndex] = file;
       });
       return next;
     });
-    if (hadNoImages) setFeaturedIndex(targets[0].targetIndex);
+    if (hadNoImages) setFeaturedIndex(resizedTargets[0].targetIndex);
   };
 
   const handleRemoveImage = (index: number) => {
