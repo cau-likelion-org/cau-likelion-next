@@ -1,4 +1,4 @@
-import { ChangeEvent, useRef, useState } from 'react';
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { useQuery } from '@tanstack/react-query';
 import Button from '@common/button/Button';
@@ -24,6 +24,8 @@ import { resizeImageFile } from '@utils/resizeImage';
 import { Typography, typographyCss } from '@utils/constant/typography';
 const MAX_IMAGE_COUNT = 10;
 const CONTENT_PLACEHOLDER = '예시)이 서비스는 ~~한 서비스입니다\n서비스의 핵심기능\n\n· 이런거\n· 이\n· 이';
+// 두 자리 기수를 입력하는 도중(예: "1" → "13") 검증이 앞서 트리거되지 않도록 입력이 멈춘 뒤에만 검증
+const GENERATION_VALIDATION_DELAY = 1500;
 // 2021년(9기)부터의 활동만 아카이빙 대상
 const MIN_ALLOWED_GENERATION_NUMBER = 9;
 const GENERATION_BEFORE_CUTOFF_MESSAGE = '2021년 이후 사진만 등록이 가능합니다.';
@@ -113,11 +115,18 @@ const PostUploadModal = ({
   const [errorToast, setErrorToast] = useState('');
 
   const { data: generations } = useQuery({ queryKey: ['generations'], queryFn: getGenerations });
-  const generationNumber = Number(generation);
-  const isGenerationBeforeCutoff = generation.length > 0 && generationNumber < MIN_ALLOWED_GENERATION_NUMBER;
+
+  const [debouncedGeneration, setDebouncedGeneration] = useState(generation);
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedGeneration(generation), GENERATION_VALIDATION_DELAY);
+    return () => clearTimeout(timer);
+  }, [generation]);
+
+  const generationNumber = Number(debouncedGeneration);
+  const isGenerationBeforeCutoff = debouncedGeneration.length > 0 && generationNumber < MIN_ALLOWED_GENERATION_NUMBER;
   const matchedGeneration = generations?.find((item) => item.number === generationNumber);
   const isGenerationNotFound =
-    generation.length > 0 && !isGenerationBeforeCutoff && !!generations && !matchedGeneration;
+    debouncedGeneration.length > 0 && !isGenerationBeforeCutoff && !!generations && !matchedGeneration;
   const generationError = isGenerationBeforeCutoff
     ? GENERATION_BEFORE_CUTOFF_MESSAGE
     : isGenerationNotFound
@@ -385,9 +394,7 @@ const PostUploadModal = ({
                 value={generation}
                 onChange={onChangeGeneration}
                 status={generationError ? 'negative' : showErrors && isUnfilled(generation) ? 'negative' : 'normal'}
-                description={
-                  generationError || (showErrors && isUnfilled(generation) ? '기수를 입력해 주세요.' : undefined)
-                }
+                description={showErrors && isUnfilled(generation) ? '기수를 입력해 주세요.' : undefined}
               />
             </NarrowField>
             {categoryConfig && (
