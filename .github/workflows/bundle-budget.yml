@@ -1,0 +1,95 @@
+name: Bundle Budget
+
+# main뿐 아니라 dev로 가는 PR에도 건다.
+# 작업 PR은 대부분 dev로 향하는데 그동안 dev PR에는 검증이 하나도 걸려 있지 않았다.
+on:
+  pull_request:
+    branches: [main, dev]
+
+# 같은 PR에 연속으로 push하면 이전 실행은 취소한다
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions: {}
+
+jobs:
+  # 빌드/측정 job은 읽기 권한만 가진다.
+  # npm ci가 실행되는 job에 PR 쓰기 토큰을 쥐여주지 않기 위해 코멘트 job과 분리했다.
+  measure:
+    name: 번들 사이즈 측정
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      check_outcome: ${{ steps.check.outcome }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # 번들 사이즈는 시크릿 값에 의존하지 않으므로 주입하지 않는다.
+      # (NEXT_PUBLIC_* 값이 번들에 인라인되는 만큼 로컬 측정치보다 0.2kB 가량 작게 나오지만,
+      #  기준값보다 항상 작은 방향이라 오탐으로 실패하지 않는다)
+      - name: 프로덕션 빌드
+        run: npm run build
+
+      - name: 예산 검사
+        id: check
+        continue-on-error: true
+        run: node .github/scripts/bundle-budget.js check --out bundle-budget-comment.md
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bundle-budget-comment
+          path: bundle-budget-comment.md
+          retention-days: 7
+
+      - name: 예산 초과 시 실패 처리
+        if: steps.check.outcome == 'failure'
+        run: exit 1
+
+  # 코멘트 job만 쓰기 권한을 가진다. 빌드도, 의존성 설치도 하지 않는다.
+  comment:
+    name: PR 코멘트
+    needs: measure
+    # 예산을 초과해 measure가 실패해도 코멘트는 남긴다.
+    # 다만 실행이 취소됐거나 빌드 단계에서 죽어 리포트 자체가 없으면 건너뛴다.
+    if: >-
+      ${{ !cancelled()
+      && (needs.measure.outputs.check_outcome == 'success'
+          || needs.measure.outputs.check_outcome == 'failure') }}
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: bundle-budget-comment
+
+      # 마크다운 본문은 --field body=@파일로 넘긴다.
+      # 본문을 shell에 직접 넣으면 라우트명·수치가 커맨드로 해석될 수 있다.
+      - name: 코멘트 등록 또는 갱신
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          COMMENT_ID=$(gh api "repos/$GH_REPO/issues/$PR_NUMBER/comments" --paginate \
+            --jq '[.[] | select(.user.login == "github-actions[bot]")
+                       | select(.body | startswith("<!-- bundle-budget -->"))] | .[0].id // empty')
+
+          if [ -n "$COMMENT_ID" ]; then
+            gh api --method PATCH "repos/$GH_REPO/issues/comments/$COMMENT_ID" \
+              --field body=@bundle-budget-comment.md --silent
+            echo "기존 코멘트를 갱신했습니다. (id: $COMMENT_ID)"
+          else
+            gh api --method POST "repos/$GH_REPO/issues/$PR_NUMBER/comments" \
+              --field body=@bundle-budget-comment.md --silent
+            echo "새 코멘트를 등록했습니다."
+          fi
