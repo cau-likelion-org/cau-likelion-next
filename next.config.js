@@ -131,18 +131,6 @@ const nextConfig = {
     };
 
     config.module.rules.push({
-      test: /\.mp4$/,
-      use: [
-        {
-          loader: 'file-loader',
-          options: {
-            name: '[name].[ext]',
-          },
-        },
-      ],
-    });
-
-    config.module.rules.push({
       test: /\.svg$/i,
       issuer: /\.[jt]sx?$/,
       use: [
