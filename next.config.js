@@ -2,6 +2,23 @@
 const path = require('path');
 const { withSentryConfig } = require('@sentry/nextjs');
 
+// webpack과 Turbopack 양쪽에서 같은 설정을 써야 해서 한 곳에 둔다.
+// 한쪽만 고치면 실행 방법에 따라 SVG 렌더 결과가 달라진다.
+const svgrOptions = {
+  svgoConfig: {
+    plugins: [
+      {
+        name: 'preset-default',
+        params: {
+          overrides: {
+            removeViewBox: false,
+          },
+        },
+      },
+    ],
+  },
+};
+
 const nextConfig = {
   reactStrictMode: true,
   // styled-components 변환. 예전엔 .babelrc의 babel-plugin-styled-components로 처리했는데,
@@ -71,6 +88,18 @@ const nextConfig = {
       },
     ];
   },
+  // dev·build 스크립트는 --webpack으로 고정돼 있지만, 플래그 없이 next를 직접 실행하면
+  // Next 16 기본값인 Turbopack으로 뜬다. 그때 SVG가 컴포넌트로 변환되지 않아
+  // styled(Icon) 지점에서 앱 전체가 500으로 죽으므로 같은 규칙을 여기에도 등록해 둔다.
+  // (프로덕션 빌드는 계속 webpack을 쓴다 — Turbopack은 번들이 라우트당 +52%라 채택하지 않음)
+  turbopack: {
+    rules: {
+      '*.svg': {
+        loaders: [{ loader: '@svgr/webpack', options: svgrOptions }],
+        as: '*.js',
+      },
+    },
+  },
   webpack(config, { webpack }) {
     // 성능 추적을 쓰지 않으므로 Sentry의 트레이싱 코드를 빌드에서 제거한다
     config.plugins.push(
@@ -119,20 +148,7 @@ const nextConfig = {
       use: [
         {
           loader: '@svgr/webpack',
-          options: {
-            svgoConfig: {
-              plugins: [
-                {
-                  name: 'preset-default',
-                  params: {
-                    overrides: {
-                      removeViewBox: false,
-                    },
-                  },
-                },
-              ],
-            },
-          },
+          options: svgrOptions,
         },
       ],
     });
