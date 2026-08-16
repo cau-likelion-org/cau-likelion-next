@@ -10,6 +10,7 @@ import LayoutDefault from '@common/layout/LayoutDefault';
 import { useState, useEffect, useRef } from 'react';
 import NextRouter, { Router, useRouter } from 'next/router';
 import Loading from '@common/loading/Loading';
+import ErrorBoundary from '@common/errorBoundary/ErrorBoundary';
 import { sendPageView } from 'src/lib/ga';
 import useTokenStore from 'src/store/useTokenStore';
 import { track, markPageEntry, setUserId, getUserIdFromToken } from 'src/lib/amplitude';
@@ -127,7 +128,16 @@ function AppContent({ Component, pageProps }: AppPropsWithLayout) {
       <Head>
         <title>LikeLionCAU</title>
       </Head>
-      {loading ? <Loading /> : getLayout(<Component {...pageProps} />)}
+      {/* 레이아웃 안쪽을 감싸서, 페이지가 죽어도 네비게이션으로 빠져나갈 수 있게 한다 */}
+      {loading ? (
+        <Loading />
+      ) : (
+        getLayout(
+          <ErrorBoundary>
+            <Component {...pageProps} />
+          </ErrorBoundary>,
+        )
+      )}
     </QueryClientProvider>
   );
 }

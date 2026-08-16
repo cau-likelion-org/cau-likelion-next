@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const path = require('path');
+const { withSentryConfig } = require('@sentry/nextjs');
 
 const nextConfig = {
   reactStrictMode: true,
@@ -70,7 +71,15 @@ const nextConfig = {
       },
     ];
   },
-  webpack(config) {
+  webpack(config, { webpack }) {
+    // 성능 추적을 쓰지 않으므로 Sentry의 트레이싱 코드를 빌드에서 제거한다
+    config.plugins.push(
+      new webpack.DefinePlugin({
+        __SENTRY_TRACING__: false,
+        __SENTRY_DEBUG__: false,
+      }),
+    );
+
     config.resolve = {
       alias: {
         '@common': path.resolve(__dirname, 'src/components/common'),
@@ -131,4 +140,20 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
+module.exports = withSentryConfig(nextConfig, {
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  // 토큰이 없으면 소스맵 업로드를 건너뛴다 (로컬·PR CI 빌드)
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  silent: true,
+  // Sentry 내부 디버그 로깅 코드를 빌드에서 제거해 번들을 줄인다
+  webpack: {
+    treeshake: {
+      removeDebugLogging: true,
+    },
+  },
+  // 소스맵은 업로드 후 삭제한다. 배포 산출물에 남으면 원본 코드가 공개된다.
+  sourcemaps: {
+    deleteSourcemapsAfterUpload: true,
+  },
+});
