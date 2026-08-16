@@ -27,6 +27,8 @@ const BUDGET_FILE = path.join(ROOT, '.github', 'bundle-budget.json');
 // zlib 버전에 따라 결과가 흔들리지 않도록 압축 레벨을 고정한다
 const GZIP_OPTIONS = { level: 9 };
 
+const LOCAL_ONLY_ROUTE = /^\/_debug-/;
+
 const toKb = (bytes) => Math.round((bytes / 1024) * 10) / 10;
 const fmt = (kb) => `${kb.toFixed(1)} kB`;
 const signed = (kb) => `${kb > 0 ? '+' : ''}${kb.toFixed(1)} kB`;
@@ -53,7 +55,7 @@ function measure() {
   const manifest = readManifest();
   const isJs = (f) => f.endsWith('.js');
   const appFiles = (manifest.pages['/_app'] || []).filter(isJs);
-  const routeNames = Object.keys(manifest.pages).filter((r) => r !== '/_app');
+  const routeNames = Object.keys(manifest.pages).filter((r) => r !== '/_app' && !LOCAL_ONLY_ROUTE.test(r));
 
   // 모든 라우트가 공통으로 받는 청크
   let shared = new Set(appFiles);
