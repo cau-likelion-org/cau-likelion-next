@@ -146,7 +146,7 @@ const MyPageAttendance = () => {
         <Toast variant="negative" text={errorMessage} show={!!errorMessage} onHidden={() => setErrorMessage('')} />
       </ToastWrapper>
       <MyPageShell active="attendance" isAdmin={!!userProfile && canManageSitePages(userProfile.role)}>
-        {!userProfile ? (
+        {!userProfile || userProfile.role === 'ADULT_LION' ? (
           <PageLoadingGate isError={isUserProfileError} />
         ) : isStaff ? (
           <PartAttendanceTable
