@@ -200,20 +200,23 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
   };
 
   const handleRemoveImage = (index: number) => {
-    setImages((prev) => {
-      if (prev[index]) URL.revokeObjectURL(prev[index] as string);
-      const next = [...prev];
-      next[index] = null;
-      if (featuredIndex === index) {
-        const fallback = next.findIndex((image) => image !== null);
-        setFeaturedIndex(fallback === -1 ? 0 : fallback);
-      }
+    const removed = images[index];
+    if (removed) URL.revokeObjectURL(removed);
+
+    const compact = <T,>(list: T[]) => {
+      const next = [...list];
+      next.splice(index, 1);
+      next.push(null as T);
       return next;
-    });
-    setImageFiles((prev) => {
-      const next = [...prev];
-      next[index] = null;
-      return next;
+    };
+    const nextImages = compact(images);
+    setImages(nextImages);
+    setImageFiles(compact);
+    setFeaturedIndex((prev) => {
+      if (prev < index) return prev;
+      if (prev > index) return prev - 1;
+      const fallback = nextImages.findIndex((image) => image !== null);
+      return fallback === -1 ? 0 : fallback;
     });
   };
 
@@ -527,7 +530,7 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
                 </RemoveThumbnailButton>
               </ThumbnailSlot>
             ) : (
-              <ThumbnailSlot key={index} $dropTarget={dragOverIndex === index} {...dropTargetProps(index)}>
+              <ThumbnailSlot key={index}>
                 <ImagePlaceholderIcon />
                 <HiddenFileInput
                   type="file"
@@ -1094,6 +1097,15 @@ const RemoveThumbnailButton = styled.button`
   background-color: ${BackgroundColor};
   color: ${Orange.o500};
   cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+
+  ${ThumbnailSlot}:hover &,
+  ${ThumbnailSlot}:focus-within & {
+    opacity: 1;
+    pointer-events: auto;
+  }
 `;
 
 const ThumbnailImage = styled.img`
