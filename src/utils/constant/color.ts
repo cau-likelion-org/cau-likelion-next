@@ -139,7 +139,7 @@ export enum Status {
 
 // material
 export enum Material {
-  dimmer = 'rgba(23, 23, 25, 0.52)',
+  dimmer = 'rgba(23, 23, 25, 0.22)',
 }
 
 // fill

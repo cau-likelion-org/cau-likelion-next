@@ -160,9 +160,7 @@ const RecruitNotifyModal = ({ onClose }: { onClose: () => void }) => {
           </ActionRow>
           <Promo>
             <PromoText>
-              멋쟁이사자처럼 중앙대 공식 카카오톡 채널을 추가하면
-              <br />
-              소식을 더 빠르게 받아볼 수 있어요.
+              멋쟁이사자처럼 중앙대 공식 카카오톡 채널을 추가하면 소식을 더 빠르게 받아볼 수 있어요.
             </PromoText>
             <Button
               variant="solid"
@@ -309,10 +307,4 @@ const PromoText = styled.p`
   color: ${Label.alternative};
   text-align: center;
   margin: 0;
-
-  @media (max-width: ${MOBILE}px) {
-    br {
-      display: none;
-    }
-  }
 `;
