@@ -7,6 +7,7 @@ import Button from '@common/button/Button';
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import Tab from '@common/tab/Tab';
 import Toast from '@common/toast/Toast';
+import { NarrowBreak, WIDE_TOAST_WIDTH } from '@common/toast/toastLayout';
 import AssignmentDeadlineModal from '@mypage/component/AssignmentDeadlineModal';
 import AssignmentInfoCard from '@mypage/component/AssignmentInfoCard';
 import AssignmentRejectModal from '@mypage/component/AssignmentRejectModal';
@@ -64,16 +65,31 @@ const MyPageAssignmentDetail = () => {
     mutationFn: ({ submitId, payload }: { submitId: number; payload: SubmissionEvaluatePayload }) =>
       evaluateSubmission(tokenState, activeAssignmentId as number, submitId, payload),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['assignmentSubmissions', activeAssignmentId] }),
+    onError: (_error, variables) =>
+      showToast('negative', failureText(variables.payload.status === 'APPROVED' ? '승인 처리' : '반려 처리')),
   });
 
   const [deadlineOpen, setDeadlineOpen] = useState(false);
-  const [toastMessage, setToastMessage] = useState('');
+  const [toastMessage, setToastMessage] = useState<React.ReactNode>('');
+  const [toastVariant, setToastVariant] = useState<'positive' | 'negative'>('positive');
+
+  const showToast = (variant: 'positive' | 'negative', message: React.ReactNode) => {
+    setToastVariant(variant);
+    setToastMessage(message);
+  };
+
+  const failureText = (action: string) => (
+    <>
+      {action}에 실패했습니다. <NarrowBreak />
+      잠시 후 다시 시도해 주세요.
+    </>
+  );
 
   // 과제 수정 후 넘어오면 토스트 표시
   useEffect(() => {
     if (!sessionStorage.getItem('assignmentEdited')) return;
     sessionStorage.removeItem('assignmentEdited');
-    const frame = requestAnimationFrame(() => setToastMessage('변경사항이 저장되었습니다.'));
+    const frame = requestAnimationFrame(() => showToast('positive', '변경사항이 저장되었습니다.'));
     return () => cancelAnimationFrame(frame);
   }, []);
 
@@ -82,9 +98,10 @@ const MyPageAssignmentDetail = () => {
       updateIndividualDeadlines(tokenState, assignmentId, payload),
     onSuccess: () => {
       setDeadlineOpen(false);
-      setToastMessage('개별 마감일이 변경되었습니다.');
+      showToast('positive', '개별 마감일이 변경되었습니다.');
       queryClient.invalidateQueries({ queryKey: ['assignmentSubmissions'] });
     },
+    onError: () => showToast('negative', failureText('개별 마감일 변경')),
   });
 
   const [viewTarget, setViewTarget] = useState<AssignmentSubmission | null>(null);
@@ -96,7 +113,7 @@ const MyPageAssignmentDetail = () => {
     evaluateMutation.mutate(
       { submitId: rejectTarget, payload: { status: 'REJECTED', rejectionReason: reason } },
       // 알림 발송까지 끝난 뒤에만 완료 토스트를 띄운다
-      { onSuccess: () => setToastMessage('반려 처리가 완료되었습니다.') },
+      { onSuccess: () => showToast('positive', '반려 처리가 완료되었습니다.') },
     );
     setRejectTarget(null);
   };
@@ -189,7 +206,13 @@ const MyPageAssignmentDetail = () => {
       )}
 
       <ToastWrapper>
-        <Toast variant="positive" text={toastMessage} show={!!toastMessage} onHidden={() => setToastMessage('')} />
+        <Toast
+          variant={toastVariant}
+          width={WIDE_TOAST_WIDTH}
+          text={toastMessage}
+          show={!!toastMessage}
+          onHidden={() => setToastMessage('')}
+        />
       </ToastWrapper>
 
       {rejectTarget != null && <AssignmentRejectModal onClose={() => setRejectTarget(null)} onSubmit={confirmReject} />}

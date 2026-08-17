@@ -5,6 +5,7 @@ import styled from 'styled-components';
 
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import Toast from '@common/toast/Toast';
+import { NarrowBreak, WIDE_TOAST_WIDTH } from '@common/toast/toastLayout';
 import AssignmentCreateForm from '@mypage/component/AssignmentCreateForm';
 import { AssignmentCreateRequest, createAssignments } from 'src/apis/assignment';
 import useStaffOnly from 'src/hooks/useStaffOnly';
@@ -37,7 +38,7 @@ const AssignmentCreatePage = () => {
       <ToastWrapper>
         <Toast
           variant="negative"
-          width={TOAST_WIDTH}
+          width={WIDE_TOAST_WIDTH}
           text={
             <>
               과제 생성에 실패했습니다. <NarrowBreak />
@@ -68,14 +69,6 @@ AssignmentCreatePage.getLayout = function getLayout(page: ReactElement) {
 };
 
 export default AssignmentCreatePage;
-
-const TOAST_WIDTH = 460;
-
-const NarrowBreak = styled.br`
-  @media (min-width: ${TOAST_WIDTH + 40}px) {
-    display: none;
-  }
-`;
 
 const ToastWrapper = styled.div`
   position: fixed;
