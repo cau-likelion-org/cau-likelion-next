@@ -51,7 +51,7 @@ const SignUpSuccess = () => {
             <>
               멋쟁이사자처럼 중앙대학교 커뮤니티
               <br />
-              CAU LION 회원이 되신 것을 환영합니다
+              CAU LION 회원이 되신 것을 환영합니다.
             </>
           }
         />

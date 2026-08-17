@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import PageHeader from '@common/pageHeader/PageHeader';
 import Toast from '@common/toast/Toast';
-import LoginButton from 'src/components/login/contents/component/LoginButton';
+import LoginButton from 'src/components/login/component/LoginButton';
 import useAuthRedirect from 'src/hooks/useAuthRedirect';
 import { SIGNUP_UNAPPROVED_EMAIL_FLAG_KEY } from 'src/apis/signUp';
 import { Label } from '@utils/constant/color';
@@ -55,7 +55,7 @@ const Login = () => {
           <>
             멋쟁이사자처럼 중앙대학교 커뮤니티
             <br />
-            CAU LION에 오신것을 환영합니다!
+            CAU LION에 오신 것을 환영합니다.
           </>
         }
       />
