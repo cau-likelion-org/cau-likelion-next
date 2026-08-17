@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import Select from '@common/select/Select';
@@ -11,9 +11,20 @@ import CharCount from '@common/charCount/CharCount';
 import useListboxSelect from 'src/hooks/useListboxSelect';
 import { isUnfilled } from '@utils/index';
 import { PageNavigation } from 'src/apis/activity';
-import { BackgroundWhite, Label, Line } from '@utils/constant/color';
+import { IcCircleCloseOutline, IcImage } from '@assets/svg';
+import { BackgroundWhite, Label, Line, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { createId } from './utils';
+
+// imageName엔 원본 파일명이 아니라 업로드된 이미지의 URL이 들어있어(S3 URL만 내려옴),
+// 화면에 보여줄 파일명은 URL 마지막 경로에서 추출한다
+const getFileNameFromUrl = (url: string) => {
+  try {
+    return decodeURIComponent(url.split('/').pop() ?? url);
+  } catch {
+    return url;
+  }
+};
 
 export interface ActivityIntroItem {
   id: string;
@@ -27,6 +38,7 @@ export interface ActivityIntroItem {
 
 export const isActivityItemInvalid = (item: ActivityIntroItem) =>
   isUnfilled(item.title) ||
+  isUnfilled(item.imageName) ||
   isUnfilled(item.subtitle) ||
   isUnfilled(item.description) ||
   isUnfilled(item.buttonText) ||
@@ -60,11 +72,15 @@ const ActivitySection = ({
   onChange,
   showErrors,
   disabled = false,
+  uploadingIds,
+  onUploadImage,
 }: {
   items: ActivityIntroItem[];
   onChange: (items: ActivityIntroItem[]) => void;
   showErrors: boolean;
   disabled?: boolean;
+  uploadingIds: string[];
+  onUploadImage: (id: string, file: File) => void;
 }) => {
   const updateItem = (id: string, patch: Partial<ActivityIntroItem>) => {
     onChange(items.map((item) => (item.id === id ? { ...item, ...patch } : item)));
@@ -83,8 +99,10 @@ const ActivitySection = ({
           item={item}
           showErrors={showErrors}
           disabled={disabled}
+          isUploading={uploadingIds.includes(item.id)}
           onChange={(patch) => updateItem(item.id, patch)}
           onRemove={() => removeItem(item.id)}
+          onUploadImage={(file) => onUploadImage(item.id, file)}
         />
       ))}
       {!disabled && <AddCardButton onClick={addItem} ariaLabel="활동 소개 추가" />}
@@ -98,15 +116,21 @@ const ActivityCard = ({
   item,
   showErrors,
   disabled,
+  isUploading,
   onChange,
   onRemove,
+  onUploadImage,
 }: {
   item: ActivityIntroItem;
   showErrors: boolean;
   disabled: boolean;
+  isUploading: boolean;
   onChange: (patch: Partial<ActivityIntroItem>) => void;
   onRemove: () => void;
+  onUploadImage: (file: File) => void;
 }) => {
+  const imageInputRef = useRef<HTMLInputElement>(null);
+  const isImageInteractive = !disabled && !isUploading;
   const [isPageLinkOpen, setIsPageLinkOpen] = useState(false);
   const {
     listId: pageLinkListId,
@@ -140,13 +164,45 @@ const ActivityCard = ({
           />
         </NameFieldWrapper>
         <FieldWrapper>
-          <TextField
-            heading="이미지 첨부"
-            value={item.imageName}
-            placeholder="이미지 파일을 선택해 주세요."
-            readOnly={disabled}
-            onChange={(event) => onChange({ imageName: event.target.value })}
+          <ImageFieldHeading>이미지 첨부</ImageFieldHeading>
+          <ImageInputWrapper
+            onClick={() => isImageInteractive && imageInputRef.current?.click()}
+            $clickable={isImageInteractive}
+          >
+            <IconSlot>
+              <IcImage width={22} height={22} />
+            </IconSlot>
+            <ImageFileName $empty={!item.imageName}>
+              {isUploading
+                ? '업로드 중...'
+                : item.imageName
+                  ? getFileNameFromUrl(item.imageName)
+                  : '이미지 파일을 선택해 주세요.'}
+            </ImageFileName>
+            {item.imageName && !disabled && !isUploading && (
+              <ClearButton
+                type="button"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onChange({ imageName: '' });
+                }}
+                aria-label="이미지 삭제"
+              >
+                <IcCircleCloseOutline width={20} height={20} />
+              </ClearButton>
+            )}
+          </ImageInputWrapper>
+          <HiddenInput
+            ref={imageInputRef}
+            type="file"
+            accept="image/*"
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+              if (file) onUploadImage(file);
+              event.target.value = '';
+            }}
           />
+          {showErrors && isUnfilled(item.imageName) && <ImageErrorText>이미지를 첨부해 주세요.</ImageErrorText>}
         </FieldWrapper>
       </Row>
       <TextField
@@ -251,6 +307,9 @@ const NameFieldWrapper = styled.div`
 `;
 
 const FieldWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   flex: 1 0 0;
   min-width: 0;
 `;
@@ -265,4 +324,66 @@ const ButtonRow = styled.div`
   display: flex;
   justify-content: flex-end;
   width: 100%;
+`;
+
+const ImageFieldHeading = styled.p`
+  margin: 0;
+  color: ${Label.neutral};
+  ${typographyCss(Typography.label1Normal.bold)}
+`;
+
+const ImageInputWrapper = styled.div<{ $clickable: boolean }>`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 24px;
+  padding: 12px;
+  border-radius: 12px;
+  box-shadow:
+    inset 0 0 0 1px ${Line.normal},
+    0 1px 2px -1px rgba(23, 23, 23, 0.1);
+  cursor: ${(props) => (props.$clickable ? 'pointer' : 'default')};
+`;
+
+const IconSlot = styled.span`
+  display: flex;
+  flex-shrink: 0;
+  color: ${Label.alternative};
+`;
+
+const ImageFileName = styled.p<{ $empty: boolean }>`
+  flex: 1 0 0;
+  min-width: 0;
+  margin: 0;
+  padding: 0 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: ${(props) => (props.$empty ? Label.assistive : Label.normal)};
+  text-decoration: ${(props) => (props.$empty ? 'none' : 'underline')};
+  ${typographyCss(Typography.body1Normal.regular)}
+`;
+
+const ClearButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  color: ${Label.normal};
+  cursor: pointer;
+`;
+
+const HiddenInput = styled.input`
+  display: none;
+`;
+
+const ImageErrorText = styled.p`
+  margin: 0;
+  width: 100%;
+  color: ${State.error};
+  ${typographyCss(Typography.caption1.regular)}
 `;

@@ -30,6 +30,7 @@ import { getActivities, createActivity, updateActivity, deleteActivity, Activity
 import { getFaqs, createFaq, updateFaq, deleteFaq, FaqResponse } from 'src/apis/faq';
 import { getIntroduce, updateIntroduce, IntroduceResponse } from 'src/apis/introduce';
 import { getAdminProjectList, updateProjectExposure, AdminProjectListItem } from 'src/apis/project';
+import { uploadFile } from 'src/apis/upload';
 import { PROJECT_CATEGORY_LABEL } from '@home/project/component/ProjectCard';
 import useTokenStore from 'src/store/useTokenStore';
 import { isAdminRole, canManageSitePages } from '@utils/index';
@@ -148,9 +149,11 @@ const MyPageAdminLanding = () => {
   const [activityItems, setActivityItems] = useState<ActivityIntroItem[]>(() =>
     (activities ?? []).map(activityToLocal),
   );
+  const [uploadingActivityIds, setUploadingActivityIds] = useState<string[]>([]);
   const [projectItems, setProjectItems] = useState<FeaturedProject[]>(() => (projects ?? []).map(projectToLocal));
   const [faqItems, setFaqItems] = useState<FaqItem[]>(() => (faqs ?? []).map(faqToLocal));
   const [toastMessage, setToastMessage] = useState<ReactNode>('');
+  const [toastVariant, setToastVariant] = useState<'positive' | 'negative'>('positive');
   const [showErrors, setShowErrors] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -265,12 +268,27 @@ const MyPageAdminLanding = () => {
         queryClient.invalidateQueries({ queryKey: ['adminProjects'] }),
         queryClient.invalidateQueries({ queryKey: ['adminFaqs'] }),
       ]);
+      setToastVariant('positive');
       setToastMessage('변경사항이 저장되었습니다.');
       setIsEditing(false);
     } catch {
+      setToastVariant('negative');
       setToastMessage('저장 중 오류가 발생했습니다. 다시 시도해 주세요.');
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleActivityImageSelect = async (id: string, file: File) => {
+    setUploadingActivityIds((prev) => [...prev, id]);
+    try {
+      const { url } = await uploadFile(tokenState, 'ACTIVITY', file);
+      setActivityItems((prev) => prev.map((item) => (item.id === id ? { ...item, imageName: url } : item)));
+    } catch {
+      setToastVariant('negative');
+      setToastMessage('이미지 업로드 중 오류가 발생했습니다.');
+    } finally {
+      setUploadingActivityIds((prev) => prev.filter((itemId) => itemId !== id));
     }
   };
 
@@ -325,6 +343,8 @@ const MyPageAdminLanding = () => {
                   onChange={setActivityItems}
                   showErrors={showErrors}
                   disabled={!isEditing}
+                  uploadingIds={uploadingActivityIds}
+                  onUploadImage={handleActivityImageSelect}
                 />
                 <ProjectSection projects={projectItems} onChange={setProjectItems} disabled={!isEditing} />
                 <FAQSection items={faqItems} onChange={setFaqItems} showErrors={showErrors} disabled={!isEditing} />
@@ -334,7 +354,7 @@ const MyPageAdminLanding = () => {
         )}
       </MyPageShell>
       <ToastWrapper>
-        <Toast variant="positive" text={toastMessage} show={!!toastMessage} onHidden={() => setToastMessage('')} />
+        <Toast variant={toastVariant} text={toastMessage} show={!!toastMessage} onHidden={() => setToastMessage('')} />
       </ToastWrapper>
     </>
   );
