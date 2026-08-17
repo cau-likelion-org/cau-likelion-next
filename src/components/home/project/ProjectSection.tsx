@@ -15,15 +15,20 @@ import { MOBILE } from '@home/common/responsive';
 import ProjectCard from './component/ProjectCard';
 
 // Swiper's loop mode needs roughly 2x slidesPerView worth of real slides to cycle smoothly,
-// so the fetched projects are repeated to give it enough material.
-const REPEAT_COUNT = 3;
+// so the fetched projects are repeated to give it enough material. When there are only a
+// couple of exposed projects, a fixed 3x repeat still falls short and the loop shows a gap
+// at the wrap-around point, so the repeat count scales up to guarantee a minimum slide count.
+const MIN_SLIDE_COUNT = 12;
+const MIN_REPEAT_COUNT = 3;
 
 const ProjectSection = () => {
   const router = useRouter();
   const { data: projects, isLoading, isError } = useQuery({ queryKey: ['landingProjects'], queryFn: getProjectList });
   const exposedProjects = projects?.filter((project) => project.isExposed) ?? [];
 
-  const slides = Array.from({ length: REPEAT_COUNT }, () => exposedProjects).flat();
+  const repeatCount =
+    exposedProjects.length === 0 ? 0 : Math.max(MIN_REPEAT_COUNT, Math.ceil(MIN_SLIDE_COUNT / exposedProjects.length));
+  const slides = Array.from({ length: repeatCount }, () => exposedProjects).flat();
   const featuredIndex = exposedProjects.findIndex((project) => project.banner);
   const initialSlide = featuredIndex === -1 ? 0 : exposedProjects.length + featuredIndex;
 
