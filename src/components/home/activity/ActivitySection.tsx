@@ -12,13 +12,12 @@ import { Black, BackgroundWhite, BackgroundLight, Line, Fill, Orange } from '@ut
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { MOBILE } from '@home/common/responsive';
 
-// 갤러리 페이지가 아직 세션/프로젝트/추억 탭을 URL로 지정하는 기능이 없어 셋 다 우선 /gallery로 이동
 const PAGE_NAVIGATION_HREF: Record<PageNavigation, string> = {
   INTRO_CURRICULUM: '/about',
   PROJECT: '/project',
-  GALLERY_SESSION: '/gallery',
-  GALLERY_PROJECT: '/gallery',
-  GALLERY_MEMORY: '/gallery',
+  GALLERY_SESSION: '/gallery?tab=session',
+  GALLERY_PROJECT: '/gallery?tab=project',
+  GALLERY_MEMORY: '/gallery?tab=gallery',
 };
 
 const ActivitySection = () => {

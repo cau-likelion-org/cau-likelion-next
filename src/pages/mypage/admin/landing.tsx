@@ -20,7 +20,11 @@ import ActivitySection, {
   PAGE_NAVIGATION_LABEL,
   PAGE_NAVIGATION_BY_LABEL,
 } from '@mypage/admin/ActivitySection';
-import ProjectSection, { FeaturedProject } from '@mypage/admin/ProjectSection';
+import ProjectSection, {
+  FeaturedProject,
+  isProjectSelectionInvalid,
+  MIN_EXPOSED_PROJECT_COUNT,
+} from '@mypage/admin/ProjectSection';
 import FAQSection, { FaqItem, isFaqItemInvalid } from '@mypage/admin/FAQSection';
 import EditButton from '@mypage/admin/component/EditButton';
 import { syncListSection } from '@mypage/admin/utils';
@@ -218,10 +222,15 @@ const MyPageAdminLanding = () => {
       isMetricsInvalid(introduceMetrics) ||
       trackItems.some(isTrackItemInvalid) ||
       activityItems.some(isActivityItemInvalid) ||
+      isProjectSelectionInvalid(projectItems) ||
       faqItems.some(isFaqItemInvalid);
 
     if (hasError) {
       setShowErrors(true);
+      if (isProjectSelectionInvalid(projectItems)) {
+        setToastVariant('negative');
+        setToastMessage(`노출 프로젝트는 최소 ${MIN_EXPOSED_PROJECT_COUNT}개 이상 선택해 주세요.`);
+      }
       return;
     }
     setShowErrors(false);
@@ -346,7 +355,12 @@ const MyPageAdminLanding = () => {
                   uploadingIds={uploadingActivityIds}
                   onUploadImage={handleActivityImageSelect}
                 />
-                <ProjectSection projects={projectItems} onChange={setProjectItems} disabled={!isEditing} />
+                <ProjectSection
+                  projects={projectItems}
+                  onChange={setProjectItems}
+                  showErrors={showErrors}
+                  disabled={!isEditing}
+                />
                 <FAQSection items={faqItems} onChange={setFaqItems} showErrors={showErrors} disabled={!isEditing} />
               </>
             )}
