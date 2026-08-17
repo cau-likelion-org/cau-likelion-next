@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import PageHeader from '@common/pageHeader/PageHeader';
 import Toast from '@common/toast/Toast';
-import LoginButton from 'src/components/login/contents/component/LoginButton';
+import LoginButton from 'src/components/login/component/LoginButton';
 import useAuthRedirect from 'src/hooks/useAuthRedirect';
 import { SIGNUP_UNAPPROVED_EMAIL_FLAG_KEY } from 'src/apis/signUp';
 import { Label } from '@utils/constant/color';
