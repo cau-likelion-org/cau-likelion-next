@@ -1,5 +1,6 @@
-import { ChangeEvent, useRef, useState } from 'react';
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
+import { useQuery } from '@tanstack/react-query';
 import Button from '@common/button/Button';
 import Radio from '@common/radio/Radio';
 import Select from '@common/select/Select';
@@ -15,6 +16,7 @@ import useInput from 'src/hooks/useInput';
 import useListboxSelect from 'src/hooks/useListboxSelect';
 import useTokenStore from 'src/store/useTokenStore';
 import { UploadDomain, uploadFile } from 'src/apis/upload';
+import { getGenerations } from 'src/apis/account';
 import { NUMERIC_ONLY_REGEX } from '@utils/constant';
 import { BackgroundColor, Fill, Label, Line, Material, Orange, State } from '@utils/constant/color';
 import { isUnfilled } from '@utils/index';
@@ -22,6 +24,12 @@ import { resizeImageFile } from '@utils/resizeImage';
 import { Typography, typographyCss } from '@utils/constant/typography';
 const MAX_IMAGE_COUNT = 10;
 const CONTENT_PLACEHOLDER = '예시)이 서비스는 ~~한 서비스입니다\n서비스의 핵심기능\n\n· 이런거\n· 이\n· 이';
+// 두 자리 기수를 입력하는 도중(예: "1" → "13") 검증이 앞서 트리거되지 않도록 입력이 멈춘 뒤에만 검증
+const GENERATION_VALIDATION_DELAY = 1500;
+// 2021년(9기)부터의 활동만 아카이빙 대상
+const MIN_ALLOWED_GENERATION_NUMBER = 9;
+const GENERATION_BEFORE_CUTOFF_MESSAGE = '2021년 이후 사진만 등록이 가능합니다.';
+const GENERATION_NOT_FOUND_MESSAGE = '활동 이력이 없는 기수입니다. 다시 입력해주세요.';
 
 const POST_TYPE_LABEL: Record<PostType, string> = {
   session: '세션',
@@ -104,7 +112,43 @@ const PostUploadModal = ({
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
   const [showErrors, setShowErrors] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState('');
+  const [errorToast, setErrorToast] = useState('');
+
+  const { data: generations } = useQuery({ queryKey: ['generations'], queryFn: getGenerations });
+
+  const [debouncedGeneration, setDebouncedGeneration] = useState(generation);
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedGeneration(generation), GENERATION_VALIDATION_DELAY);
+    return () => clearTimeout(timer);
+  }, [generation]);
+
+  const generationNumber = Number(debouncedGeneration);
+  const isGenerationBeforeCutoff = debouncedGeneration.length > 0 && generationNumber < MIN_ALLOWED_GENERATION_NUMBER;
+  const matchedGeneration = generations?.find((item) => item.number === generationNumber);
+  const isGenerationNotFound =
+    debouncedGeneration.length > 0 && !isGenerationBeforeCutoff && !!generations && !matchedGeneration;
+  const generationError = isGenerationBeforeCutoff
+    ? GENERATION_BEFORE_CUTOFF_MESSAGE
+    : isGenerationNotFound
+      ? GENERATION_NOT_FOUND_MESSAGE
+      : '';
+
+  const [prevGenerationError, setPrevGenerationError] = useState(generationError);
+  if (generationError !== prevGenerationError) {
+    setPrevGenerationError(generationError);
+    if (generationError) setErrorToast(generationError);
+  }
+
+  const categoryOptions =
+    postType === 'session'
+      ? (matchedGeneration?.parts.map((part) => part.name) ?? [])
+      : (categoryConfig?.options ?? []);
+  const categoryOptionsKey = categoryOptions.join(' ');
+  const [prevCategoryOptionsKey, setPrevCategoryOptionsKey] = useState(categoryOptionsKey);
+  if (categoryOptionsKey !== prevCategoryOptionsKey) {
+    setPrevCategoryOptionsKey(categoryOptionsKey);
+    if (category && !categoryOptions.includes(category)) setCategory('');
+  }
 
   const initialImageUrls = initialValues?.imageUrls ?? [];
   const initialImages =
@@ -185,6 +229,7 @@ const PostUploadModal = ({
     isUnfilled(title) ||
     isUnfilled(content) ||
     isUnfilled(generation) ||
+    !!generationError ||
     (!!categoryConfig && isUnfilled(category)) ||
     (showWeekField && isUnfilled(week)) ||
     isDateInvalid;
@@ -199,7 +244,7 @@ const PostUploadModal = ({
       return;
     }
 
-    setSubmitError('');
+    setErrorToast('');
     setIsSubmitting(true);
     try {
       const filledIndices = images.map((image, index) => (image ? index : -1)).filter((index) => index !== -1);
@@ -217,7 +262,7 @@ const PostUploadModal = ({
       await onSubmit({ title, content, generation, category, week, date, dateRange, imageUrls, thumbnailUrl });
       onClose();
     } catch {
-      setSubmitError('저장에 실패했어요. 잠시 후 다시 시도해 주세요.');
+      setErrorToast('저장에 실패했어요. 잠시 후 다시 시도해 주세요.');
     } finally {
       setIsSubmitting(false);
     }
@@ -225,13 +270,13 @@ const PostUploadModal = ({
 
   const handleConfirmDelete = async () => {
     if (!onDelete) return;
-    setSubmitError('');
+    setErrorToast('');
     setIsSubmitting(true);
     try {
       await onDelete();
       onClose();
     } catch {
-      setSubmitError('삭제에 실패했어요. 잠시 후 다시 시도해 주세요.');
+      setErrorToast('삭제에 실패했어요. 잠시 후 다시 시도해 주세요.');
       setIsSubmitting(false);
     }
   };
@@ -348,16 +393,17 @@ const PostUploadModal = ({
                 placeholder="숫자 입력"
                 value={generation}
                 onChange={onChangeGeneration}
-                status={showErrors && isUnfilled(generation) ? 'negative' : 'normal'}
+                status={generationError ? 'negative' : showErrors && isUnfilled(generation) ? 'negative' : 'normal'}
                 description={showErrors && isUnfilled(generation) ? '기수를 입력해 주세요.' : undefined}
               />
             </NarrowField>
             {categoryConfig && (
               <CategorySelect
                 label={categoryConfig.label}
-                options={categoryConfig.options}
+                options={categoryOptions}
                 value={category}
                 onChange={setCategory}
+                disabled={postType === 'session' && !!generationError}
                 status={showErrors && isUnfilled(category) ? 'negative' : 'normal'}
                 description={
                   showErrors && isUnfilled(category) ? `${categoryConfig.label}을 선택해 주세요.` : undefined
@@ -454,14 +500,21 @@ const PostUploadModal = ({
             <Button variant="outlined" color="assistive" size="large" onClick={onClose}>
               취소
             </Button>
-            <Button variant="solid" color="primary" size="large" onClick={handleSubmit} loading={isSubmitting}>
+            <Button
+              variant="solid"
+              color="primary"
+              size="large"
+              onClick={handleSubmit}
+              loading={isSubmitting}
+              disabled={!!generationError}
+            >
               {mode === 'edit' ? '저장하기' : '등록하기'}
             </Button>
           </ActionGroup>
         </Actions>
       </Modal>
       <ToastWrapper>
-        <Toast variant="negative" text={submitError} show={!!submitError} onHidden={() => setSubmitError('')} />
+        <Toast variant="negative" text={errorToast} show={!!errorToast} onHidden={() => setErrorToast('')} />
       </ToastWrapper>
     </Backdrop>
   );
@@ -474,6 +527,7 @@ const CategorySelect = ({
   options,
   value,
   onChange,
+  disabled = false,
   status,
   description,
 }: {
@@ -481,6 +535,7 @@ const CategorySelect = ({
   options: string[];
   value: string;
   onChange: (value: string) => void;
+  disabled?: boolean;
   status?: 'normal' | 'positive' | 'negative';
   description?: string;
 }) => {
@@ -502,6 +557,7 @@ const CategorySelect = ({
         required
         placeholder="선택"
         value={value}
+        disabled={disabled}
         onClick={() => setIsOpen((prev) => !prev)}
         aria-expanded={isOpen}
         aria-activedescendant={isOpen ? `${listId}-${activeIndex}` : undefined}
