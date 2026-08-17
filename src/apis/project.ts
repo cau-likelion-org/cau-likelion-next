@@ -197,10 +197,17 @@ export interface AdminProjectListItem {
   generationNumber: number;
   category: ProjectCategory;
   isExposed: boolean;
+  thumbnail: string;
+}
+
+interface AdminProjectListResponseItem extends Omit<AdminProjectListItem, 'thumbnail'> {
+  images: ProjectImageDto[];
 }
 
 export const getAdminProjectList = () => {
-  return axios.get<AdminProjectListItem[]>(`${url}/api/projects`).then((res) => res.data);
+  return axios
+    .get<AdminProjectListResponseItem[]>(`${url}/api/projects`)
+    .then((res) => res.data.map(({ images, ...rest }) => ({ ...rest, thumbnail: getProjectThumbnail(images) })));
 };
 
 export const updateProjectExposure = (token: IToken, exposedProjectIds: number[]) => {
