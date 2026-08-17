@@ -1,7 +1,8 @@
 import styled from 'styled-components';
 import ContentBadge from '@common/badge/ContentBadge';
 import Thumbnail from '@common/thumbnail/Thumbnail';
-import { BackgroundWhite, Fill, Label, Line } from '@utils/constant/color';
+import ThumbnailPlaceholder from '@common/thumbnail/ThumbnailPlaceholder';
+import { BackgroundWhite, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 export interface BlogCardProps {
@@ -34,7 +35,7 @@ const BlogCard = ({ title, description, badges, date, url, thumbnailUrl, thumbna
       {thumbnailUrl ? (
         <Thumbnail src={thumbnailUrl} alt={thumbnailAlt ?? title} ratio={1} radius border />
       ) : (
-        <ThumbnailPlaceholder />
+        <ThumbnailPlaceholder radius border />
       )}
     </ThumbnailSlot>
   </Wrapper>
@@ -138,12 +139,4 @@ const ThumbnailSlot = styled.div`
     height: auto;
     aspect-ratio: 1;
   }
-`;
-
-const ThumbnailPlaceholder = styled.div`
-  width: 100%;
-  height: 100%;
-  border-radius: 12px;
-  border: 1px solid ${Line.subtle};
-  background-color: ${Fill.subtle};
 `;

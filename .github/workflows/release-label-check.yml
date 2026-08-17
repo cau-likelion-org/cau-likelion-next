@@ -1,0 +1,52 @@
+name: Release Label Check
+
+# main으로 가는 PR은 머지 즉시 Amplify가 배포하므로, 어떤 버전으로 나가는지를
+# 머지 전에 확정해둔다. 라벨이 없거나 여러 개면 여기서 막는다.
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, labeled, unlabeled]
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions: {}
+
+jobs:
+  check:
+    name: 릴리즈 라벨 검증
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      # 라벨은 사용자가 자유롭게 만들 수 있는 문자열이므로 shell에 직접 넣지 않고
+      # env로 넘긴 JSON을 jq로 파싱한다.
+      - name: 라벨 확인
+        env:
+          LABELS_JSON: ${{ toJSON(github.event.pull_request.labels.*.name) }}
+        run: |
+          BUMPS=$(jq -c '[.[] | select(startswith("release:")) | ltrimstr("release:")] | unique' <<< "$LABELS_JSON")
+          COUNT=$(jq -r 'length' <<< "$BUMPS")
+          NAMES=$(jq -r 'join(", ")' <<< "$BUMPS")
+
+          if [ "$COUNT" -eq 0 ]; then
+            echo "::error::release:* 라벨이 없습니다. major/minor/patch 중 하나를 붙여주세요. 배포가 아닌 변경이면 release:skip을 붙입니다."
+            exit 1
+          fi
+
+          if [ "$COUNT" -gt 1 ]; then
+            echo "::error::release:* 라벨은 하나만 붙일 수 있습니다. 현재: $NAMES"
+            exit 1
+          fi
+
+          BUMP=$(jq -r '.[0]' <<< "$BUMPS")
+          case "$BUMP" in
+            major|minor|patch|skip) ;;
+            *)
+              echo "::error::정의되지 않은 릴리즈 라벨입니다: release:$BUMP (허용: major, minor, patch, skip)"
+              exit 1
+              ;;
+          esac
+
+          echo "release:$BUMP 확인됨"

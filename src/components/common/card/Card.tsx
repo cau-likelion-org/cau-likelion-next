@@ -4,6 +4,7 @@ import { MdBookmark, MdBookmarkBorder } from 'react-icons/md';
 
 import { Label, Line } from '@utils/constant/color';
 import Thumbnail from '@common/thumbnail/Thumbnail';
+import ThumbnailPlaceholder from '@common/thumbnail/ThumbnailPlaceholder';
 import SkeletonText from '@common/loading/SkeletonText';
 import { skeletonPulse } from '@common/loading/skeletonPulse';
 
@@ -181,12 +182,6 @@ const SkeletonThumbnail = styled.div<{ ratio: number }>`
   aspect-ratio: ${(props) => props.ratio};
   background-color: rgba(112, 115, 124, 0.05);
   animation: ${skeletonPulse} 1.5s ease-in-out infinite;
-`;
-
-const ThumbnailPlaceholder = styled.div<{ ratio: number }>`
-  width: 100%;
-  aspect-ratio: ${(props) => props.ratio};
-  background-color: rgba(112, 115, 124, 0.05);
 `;
 
 const TOGGLE_RESERVED_WIDTH = 28;

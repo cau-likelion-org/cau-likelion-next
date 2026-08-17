@@ -1,5 +1,4 @@
-import { FirebaseApp, getApp, getApps, initializeApp } from 'firebase/app';
-import { MessagePayload, getMessaging, getToken, isSupported, onMessage } from 'firebase/messaging';
+import type { MessagePayload } from 'firebase/messaging';
 
 import LocalStorage from '@utils/localStorage';
 
@@ -36,8 +35,18 @@ export const isIosBrowserWithoutPush = () => {
 export const getNotificationPermission = (): NotificationPermission | 'unsupported' =>
   isPushSupported() ? Notification.permission : 'unsupported';
 
-const getFirebaseApp = (): FirebaseApp =>
-  getApps().length > 0 ? getApp() : initializeApp(FIREBASE_CONFIG as Required<typeof FIREBASE_CONFIG>);
+// firebase SDK를 정적으로 import하면 firebase/app + firebase/messaging + idb가
+// 전 페이지 공통 청크에 들어가 첫 화면 렌더를 막는다.
+// 알림 기능을 실제로 건드리는 시점에만 내려받는다.
+type MessagingModule = typeof import('firebase/messaging');
+
+const loadMessaging = () => import('firebase/messaging');
+
+const getMessagingInstance = async (messaging: MessagingModule) => {
+  const { getApp, getApps, initializeApp } = await import('firebase/app');
+  const app = getApps().length > 0 ? getApp() : initializeApp(FIREBASE_CONFIG as Required<typeof FIREBASE_CONFIG>);
+  return messaging.getMessaging(app);
+};
 
 export const registerMessagingServiceWorker = async (): Promise<ServiceWorkerRegistration | null> => {
   if (!isPushSupported()) return null;
@@ -73,7 +82,8 @@ const issueToken = async (): Promise<string | null> => {
   if (!registration) return null;
 
   try {
-    const token = await getToken(getMessaging(getFirebaseApp()), {
+    const messaging = await loadMessaging();
+    const token = await messaging.getToken(await getMessagingInstance(messaging), {
       vapidKey: VAPID_KEY,
       serviceWorkerRegistration: registration,
     });
@@ -88,7 +98,8 @@ const issueToken = async (): Promise<string | null> => {
 // 알림 권한을 요청하고 이 기기의 FCM 토큰을 발급받는다.
 // 브라우저가 사용자 제스처 없이 호출하면 무시하거나 영구 차단하므로 반드시 클릭에서 호출할 것.
 export const requestFcmToken = async (): Promise<string | null> => {
-  if (!isPushSupported() || !(await isSupported())) return null;
+  if (!isPushSupported()) return null;
+  if (!(await (await loadMessaging()).isSupported())) return null;
 
   const permission = await Notification.requestPermission();
   if (permission !== 'granted') return null;
@@ -100,7 +111,7 @@ export const requestFcmToken = async (): Promise<string | null> => {
 // FCM 토큰은 브라우저가 주기적으로 재발급하므로 접속할 때마다 갱신해야 알림이 끊기지 않는다.
 export const refreshFcmTokenIfGranted = async (): Promise<string | null> => {
   if (!isPushSupported() || Notification.permission !== 'granted') return null;
-  if (!(await isSupported())) return null;
+  if (!(await (await loadMessaging()).isSupported())) return null;
 
   return issueToken();
 };
@@ -109,10 +120,13 @@ export const refreshFcmTokenIfGranted = async (): Promise<string | null> => {
 // 이 경우 브라우저가 알림을 자동으로 띄워주지 않으므로 직접 띄운다.
 // 반환값은 구독 해제 함수.
 export const subscribeForegroundNotification = async (): Promise<(() => void) | undefined> => {
-  if (!isPushSupported() || !(await isSupported())) return undefined;
-  if (missingConfigKeys().length > 0) return undefined;
+  // 설정값 확인을 firebase 로드보다 먼저 해서, 환경변수가 없으면 SDK를 아예 받지 않는다
+  if (!isPushSupported() || missingConfigKeys().length > 0) return undefined;
 
-  return onMessage(getMessaging(getFirebaseApp()), async (payload: MessagePayload) => {
+  const messaging = await loadMessaging();
+  if (!(await messaging.isSupported())) return undefined;
+
+  return messaging.onMessage(await getMessagingInstance(messaging), async (payload: MessagePayload) => {
     const title = payload.notification?.title;
     if (!title) return;
 
