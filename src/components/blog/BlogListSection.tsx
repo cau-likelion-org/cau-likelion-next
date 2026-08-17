@@ -45,7 +45,7 @@ const BlogListSection = () => {
   return (
     <Wrapper>
       <Header>
-        <Intro title="블로그" subtitle="페이지 소개 글 페이지 소개 글 페이지 소개 글 페이지 소개 글" />
+        <Intro title="블로그" subtitle="멋사인들이 직접 쓴 프로젝트·취업 후기" />
         <FilterRow>
           <FilterSelect
             label="기수 구분"

@@ -299,7 +299,7 @@ const GalleryListSection = () => {
   return (
     <Wrapper>
       <Header>
-        <Intro title="갤러리" subtitle="페이지 소개 글 페이지 소개 글 페이지 소개 글 페이지 소개 글" />
+        <Intro title="갤러리" subtitle="멋사 중앙대의 성장과 추억의 기록" />
         <GalleryTab items={TABS} activeKey={activeTab} onChange={handleTabChange} size="medium" />
         <FilterRow>
           <FilterGroup>
