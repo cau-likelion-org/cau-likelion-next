@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import Button from '@common/button/Button';
@@ -35,6 +36,9 @@ import SessionUploadModal from './component/SessionUploadModal';
 type GalleryTabKey = 'session' | 'project' | 'gallery';
 type FilterKey = 'generation' | 'track' | 'category';
 
+const isGalleryTabKey = (value: unknown): value is GalleryTabKey =>
+  value === 'session' || value === 'project' || value === 'gallery';
+
 const UPLOAD_MODAL_BY_TAB: Record<GalleryTabKey, typeof SessionUploadModal> = {
   session: SessionUploadModal,
   project: ProjectUploadModal,
@@ -68,6 +72,7 @@ const toPeriodDisplay = (startDate: string, endDate: string | null) =>
   `${toDisplayDate(startDate)}${endDate ? `-${toDisplayDate(endDate)}` : ''}`;
 
 const GalleryListSection = () => {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<GalleryTabKey>('session');
   const [generation, setGeneration] = useState(ALL_OPTION);
   const [track, setTrack] = useState(ALL_OPTION);
@@ -79,6 +84,13 @@ const GalleryListSection = () => {
   const [toastText, setToastText] = useState('');
   const [isToastOpen, setIsToastOpen] = useState(false);
   const queryClient = useQueryClient();
+
+  const queryTab = router.isReady && isGalleryTabKey(router.query.tab) ? router.query.tab : null;
+  const [syncedQueryTab, setSyncedQueryTab] = useState<GalleryTabKey | null>(null);
+  if (queryTab !== null && queryTab !== syncedQueryTab) {
+    setSyncedQueryTab(queryTab);
+    setActiveTab(queryTab);
+  }
 
   const tokenState = useTokenStore((state) => state.token);
   const { data: userProfile } = useQuery({
