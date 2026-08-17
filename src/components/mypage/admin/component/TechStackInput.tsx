@@ -2,7 +2,7 @@ import { ChangeEvent, useState } from 'react';
 import styled from 'styled-components';
 
 import Chip from '@common/chip/Chip';
-import { Label, Line, State } from '@utils/constant/color';
+import { Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 const TechStackInput = ({
@@ -17,7 +17,6 @@ const TechStackInput = ({
   disabled?: boolean;
 }) => {
   const [draft, setDraft] = useState('');
-  const [isDuplicate, setIsDuplicate] = useState(false);
 
   const removeTag = (tag: string) => onChange(value.filter((item) => item !== tag));
 
@@ -30,7 +29,6 @@ const TechStackInput = ({
     const parts = raw.split(/[ ,]+/);
     if (parts.length === 1) {
       setDraft(raw);
-      setIsDuplicate(false);
       return;
     }
     const segments = parts
@@ -41,38 +39,27 @@ const TechStackInput = ({
     if (newTags.length > 0) {
       onChange([...value, ...newTags]);
       setDraft(parts[parts.length - 1]);
-      setIsDuplicate(false);
       return;
     }
-    // 입력한 항목이 전부 이미 추가된 태그면, 조용히 지우는 대신 그대로 남겨서
-    // "글자가 사라졌다"처럼 보이지 않게 하고 안내 문구로 이유를 알려준다
-    if (segments.length > 0) {
-      setIsDuplicate(true);
-      return;
-    }
+    // 입력한 항목이 전부 이미 추가된 태그면, 조용히 지우지 않고 그대로 남겨둔다
+    if (segments.length > 0) return;
     setDraft(parts[parts.length - 1]);
-    setIsDuplicate(false);
   };
 
   return (
     <Wrapper>
-      <TagRow>
-        {value.map((tag) =>
-          disabled ? (
-            <Chip key={tag} size="xsmall">
-              {tag}
-            </Chip>
-          ) : (
-            <Chip key={tag} size="xsmall" trailingIcon={<RemoveIcon>×</RemoveIcon>} onClick={() => removeTag(tag)}>
-              {tag}
-            </Chip>
-          ),
-        )}
-        {!disabled && (
-          <Input value={draft} onChange={handleChange} placeholder={value.length === 0 ? placeholder : ''} />
-        )}
-      </TagRow>
-      {isDuplicate && <DuplicateText>이미 추가된 항목이에요.</DuplicateText>}
+      {value.map((tag) =>
+        disabled ? (
+          <Chip key={tag} size="xsmall">
+            {tag}
+          </Chip>
+        ) : (
+          <Chip key={tag} size="xsmall" trailingIcon={<RemoveIcon>×</RemoveIcon>} onClick={() => removeTag(tag)}>
+            {tag}
+          </Chip>
+        ),
+      )}
+      {!disabled && <Input value={draft} onChange={handleChange} placeholder={value.length === 0 ? placeholder : ''} />}
     </Wrapper>
   );
 };
@@ -80,13 +67,6 @@ const TechStackInput = ({
 export default TechStackInput;
 
 const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  width: 100%;
-`;
-
-const TagRow = styled.div`
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -102,12 +82,6 @@ const TagRow = styled.div`
   &:focus-within {
     box-shadow: inset 0 0 0 2px rgba(71, 172, 255, 0.43);
   }
-`;
-
-const DuplicateText = styled.p`
-  margin: 0;
-  color: ${State.error};
-  ${typographyCss(Typography.caption1.regular)}
 `;
 
 const Input = styled.input`
