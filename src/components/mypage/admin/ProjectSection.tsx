@@ -16,6 +16,7 @@ export interface FeaturedProject {
   generation: string;
   category: string;
   selected: boolean;
+  thumbnail: string;
 }
 
 const ALL_OPTION = '전체';
@@ -81,6 +82,8 @@ const ProjectSection = ({
           <Card
             key={project.id}
             title={project.name}
+            thumbnailSrc={project.thumbnail}
+            thumbnailAlt={project.name}
             thumbnailRatio={246 / 138.375}
             thumbnailOverlay={false}
             bottomContent={

@@ -14,18 +14,20 @@ import { MOBILE } from '@home/common/responsive';
 
 import ProjectCard from './component/ProjectCard';
 
-// Swiper's loop mode needs roughly 2x slidesPerView worth of real slides to cycle smoothly,
-// so the fetched projects are repeated to give it enough material.
-const REPEAT_COUNT = 3;
+// Swiper loop 모드가 매끄럽게 돌려면 실제 슬라이드가 slidesPerView의 2배 정도는 있어야 해서
+// 받아온 프로젝트를 반복시켜 채운다. 노출 프로젝트가 2~3개처럼 적으면 고정 3배로도 부족해
+// 순환 경계에서 빈 공간이 보이므로, 총 슬라이드 수가 최소치를 넘도록 반복 배수를 늘린다.
+const MIN_SLIDE_COUNT = 12;
+const MIN_REPEAT_COUNT = 3;
 
 const ProjectSection = () => {
   const router = useRouter();
   const { data: projects, isLoading, isError } = useQuery({ queryKey: ['landingProjects'], queryFn: getProjectList });
   const exposedProjects = projects?.filter((project) => project.isExposed) ?? [];
 
-  if (!isLoading && !isError && exposedProjects.length === 0) return null;
-
-  const slides = Array.from({ length: REPEAT_COUNT }, () => exposedProjects).flat();
+  const repeatCount =
+    exposedProjects.length === 0 ? 0 : Math.max(MIN_REPEAT_COUNT, Math.ceil(MIN_SLIDE_COUNT / exposedProjects.length));
+  const slides = Array.from({ length: repeatCount }, () => exposedProjects).flat();
   const featuredIndex = exposedProjects.findIndex((project) => project.banner);
   const initialSlide = featuredIndex === -1 ? 0 : exposedProjects.length + featuredIndex;
 
@@ -38,7 +40,7 @@ const ProjectSection = () => {
         </LoadingWrapper>
       ) : isError ? (
         <EmptyState variant="error" />
-      ) : (
+      ) : exposedProjects.length === 0 ? null : (
         <>
           <CardSwiper
             modules={[Autoplay]}

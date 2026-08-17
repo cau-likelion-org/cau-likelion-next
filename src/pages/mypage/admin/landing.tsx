@@ -89,6 +89,7 @@ const projectToLocal = (project: AdminProjectListItem): FeaturedProject => ({
   generation: `${project.generationNumber}기`,
   category: PROJECT_CATEGORY_LABEL[project.category],
   selected: project.isExposed,
+  thumbnail: project.thumbnail,
 });
 
 const MyPageAdminLanding = () => {
