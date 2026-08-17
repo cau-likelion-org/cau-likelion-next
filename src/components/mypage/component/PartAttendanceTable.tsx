@@ -329,6 +329,8 @@ const PartAttendanceTable = ({
         <AttendanceEmptyState variant="error" />
       ) : members.length === 0 ? (
         <AttendanceEmptyState message="출결 정보가 없습니다." />
+      ) : weeks.length === 0 ? (
+        <AttendanceEmptyState message="아직 출결 기록이 없습니다." />
       ) : (
         <TableRow>
           <FixedColumn>
