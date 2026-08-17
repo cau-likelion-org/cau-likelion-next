@@ -32,7 +32,7 @@ const IntroduceSection = ({
 }) => {
   return (
     <Section>
-      <Title>중앙대학교 멋쟁이사자처럼</Title>
+      <Title>정량 지표</Title>
       <Card>
         <FieldWrapper>
           <TextField
