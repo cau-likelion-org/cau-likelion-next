@@ -1,7 +1,6 @@
 import styled from 'styled-components';
 
 import TextField from '@common/textField/TextField';
-import { NUMERIC_ONLY_REGEX } from '@utils/constant';
 import { isUnfilled } from '@utils/index';
 import { BackgroundWhite, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -33,18 +32,14 @@ const IntroduceSection = ({
 }) => {
   return (
     <Section>
-      <Title>중앙대학교 멋쟁이사자처럼</Title>
+      <Title>정량 지표</Title>
       <Card>
         <FieldWrapper>
           <TextField
             heading="누적 활동 기수"
             value={metrics.generationCount}
             readOnly={disabled}
-            onChange={(event) => {
-              if (NUMERIC_ONLY_REGEX.test(event.target.value)) {
-                onChange({ ...metrics, generationCount: event.target.value });
-              }
-            }}
+            onChange={(event) => onChange({ ...metrics, generationCount: event.target.value })}
             status={showErrors && isUnfilled(metrics.generationCount) ? 'negative' : 'normal'}
             description={showErrors && isUnfilled(metrics.generationCount) ? '기수를 입력해 주세요.' : undefined}
           />

@@ -31,6 +31,8 @@ const TechStackInput = ({
   const removeTag = (tag: string) => onChange(value.filter((item) => item !== tag));
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    // 한글 조합 중인 space/comma까지 처리하면 조합 중이던 글자가 중복 입력되거나 지워지므로 건너뛴다
+    if (event.nativeEvent.isComposing) return;
     if (event.key !== ' ' && event.key !== ',') return;
     event.preventDefault();
     addTag();

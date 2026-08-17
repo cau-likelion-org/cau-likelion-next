@@ -20,7 +20,6 @@ export interface FeaturedProject {
 }
 
 const ALL_OPTION = '전체';
-const GENERATION_OPTIONS = [ALL_OPTION, '14기', '13기'];
 const CATEGORY_OPTIONS = [ALL_OPTION, ...PROJECT_CATEGORY_OPTIONS];
 const PAGE_SIZE = 9;
 
@@ -36,6 +35,12 @@ const ProjectSection = ({
   const [generationFilter, setGenerationFilter] = useState(ALL_OPTION);
   const [categoryFilter, setCategoryFilter] = useState(ALL_OPTION);
   const [page, setPage] = useState(1);
+
+  const generationOptions = useMemo(() => {
+    const generations = Array.from(new Set(projects.map((project) => project.generation)));
+    generations.sort((a, b) => parseInt(b, 10) - parseInt(a, 10));
+    return [ALL_OPTION, ...generations];
+  }, [projects]);
 
   const filteredProjects = useMemo(
     () =>
@@ -60,7 +65,7 @@ const ProjectSection = ({
       <FilterRow>
         <ProjectFilterSelect
           heading="기수 구분"
-          options={GENERATION_OPTIONS}
+          options={generationOptions}
           value={generationFilter}
           onChange={(value) => {
             setGenerationFilter(value);
