@@ -7,7 +7,7 @@ import ContentBadge from '@common/badge/ContentBadge';
 import PaginationNavigation from '@common/pagination/PaginationNavigation';
 import ProjectFilterSelect from '@project/projects/ProjectFilterSelect';
 import { PROJECT_CATEGORY_OPTIONS } from '@utils/constant';
-import { Label } from '@utils/constant/color';
+import { Label, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 export interface FeaturedProject {
@@ -19,6 +19,11 @@ export interface FeaturedProject {
   thumbnail: string;
 }
 
+export const MIN_EXPOSED_PROJECT_COUNT = 5;
+
+export const isProjectSelectionInvalid = (projects: FeaturedProject[]) =>
+  projects.filter((project) => project.selected).length < MIN_EXPOSED_PROJECT_COUNT;
+
 const ALL_OPTION = '전체';
 const CATEGORY_OPTIONS = [ALL_OPTION, ...PROJECT_CATEGORY_OPTIONS];
 const PAGE_SIZE = 9;
@@ -26,10 +31,12 @@ const PAGE_SIZE = 9;
 const ProjectSection = ({
   projects,
   onChange,
+  showErrors,
   disabled = false,
 }: {
   projects: FeaturedProject[];
   onChange: (projects: FeaturedProject[]) => void;
+  showErrors: boolean;
   disabled?: boolean;
 }) => {
   const [generationFilter, setGenerationFilter] = useState(ALL_OPTION);
@@ -61,7 +68,12 @@ const ProjectSection = ({
 
   return (
     <Section>
-      <Title>프로젝트</Title>
+      <TitleRow>
+        <Title>프로젝트</Title>
+        {showErrors && isProjectSelectionInvalid(projects) && (
+          <ErrorText>노출 프로젝트는 최소 {MIN_EXPOSED_PROJECT_COUNT}개 이상 선택해 주세요.</ErrorText>
+        )}
+      </TitleRow>
       <FilterRow>
         <ProjectFilterSelect
           heading="기수 구분"
@@ -124,10 +136,22 @@ const Section = styled.div`
   width: 100%;
 `;
 
+const TitleRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+`;
+
 const Title = styled.p`
   margin: 0;
   color: ${Label.normal};
   ${typographyCss(Typography.heading2.bold)}
+`;
+
+const ErrorText = styled.p`
+  margin: 0;
+  color: ${State.error};
+  ${typographyCss(Typography.caption1.regular)}
 `;
 
 const FilterRow = styled.div`
