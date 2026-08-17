@@ -55,7 +55,7 @@ const ProjectSection = () => {
           >
             {slides.map((project, index) => (
               <SwiperSlide key={index}>
-                <ProjectCard {...project} href="/project" />
+                <ProjectCard {...project} href={`/project/${project.id}`} />
               </SwiperSlide>
             ))}
           </CardSwiper>
