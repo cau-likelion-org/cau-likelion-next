@@ -13,6 +13,12 @@ interface IStat {
   label: string;
 }
 
+const DESCRIPTION =
+  '아이디어를 현실로 만드는 IT 창업 동아리, 중앙대학교 멋쟁이사자처럼입니다.\n기획, 디자인, 개발 파트가 함께 소통하며 우리만의 서비스를 세상에 내놓는 경험을 쌓아갑니다.';
+
+const MOBILE_DESCRIPTION =
+  '아이디어를 현실로 만드는 IT 창업 동아리, 중앙대학교 멋쟁이사자처럼입니다. 기획, 디자인, 개발 파트가 함께 소통하며 우리만의 서비스를 세상에 내놓는 경험을 쌓아갑니다.';
+
 const IntroduceSection = () => {
   const { data: indicator, isLoading, isError } = useQuery({ queryKey: ['indicator'], queryFn: () => getIntroduce() });
 
@@ -27,11 +33,8 @@ const IntroduceSection = () => {
       <Content>
         <TextGroup>
           <Title>중앙대학교 멋쟁이사자처럼</Title>
-          <Description>
-            중앙대 멋사 간략한 소개글 두줄 정도 중앙대 멋사 간략한 소개글 두줄 정도 중앙대 멋사 간략한
-            <br />
-            중앙대 멋사 간략한 소개글 두줄 정도 중앙대 멋사 간략한 소개글 두줄 정도
-          </Description>
+          <DesktopDescription>{DESCRIPTION}</DesktopDescription>
+          <MobileDescription>{MOBILE_DESCRIPTION}</MobileDescription>
         </TextGroup>
         {isLoading ? (
           <LoadingWrapper>
@@ -87,7 +90,8 @@ const Content = styled.div`
 `;
 
 const TextGroup = styled.div`
-  width: 713px;
+  width: fit-content;
+  max-width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -114,15 +118,25 @@ const Title = styled.p`
 const Description = styled.p`
   ${typographyCss(Typography.heading2.medium)}
   width: 100%;
+  white-space: pre-line;
   margin: 0;
 
   @media (max-width: ${MOBILE}px) {
     ${typographyCss(Typography.label1Normal.medium)}
+  }
+`;
 
-    /* 좁은 화면에서는 자연스럽게 흐르도록 데스크톱 줄바꿈을 무시한다 */
-    br {
-      display: none;
-    }
+const DesktopDescription = styled(Description)`
+  @media (max-width: ${MOBILE}px) {
+    display: none;
+  }
+`;
+
+const MobileDescription = styled(Description)`
+  display: none;
+
+  @media (max-width: ${MOBILE}px) {
+    display: block;
   }
 `;
 
