@@ -23,8 +23,6 @@ const ProjectSection = () => {
   const { data: projects, isLoading, isError } = useQuery({ queryKey: ['landingProjects'], queryFn: getProjectList });
   const exposedProjects = projects?.filter((project) => project.isExposed) ?? [];
 
-  if (!isLoading && !isError && exposedProjects.length === 0) return null;
-
   const slides = Array.from({ length: REPEAT_COUNT }, () => exposedProjects).flat();
   const featuredIndex = exposedProjects.findIndex((project) => project.banner);
   const initialSlide = featuredIndex === -1 ? 0 : exposedProjects.length + featuredIndex;
@@ -38,7 +36,7 @@ const ProjectSection = () => {
         </LoadingWrapper>
       ) : isError ? (
         <EmptyState variant="error" />
-      ) : (
+      ) : exposedProjects.length === 0 ? null : (
         <>
           <CardSwiper
             modules={[Autoplay]}
