@@ -179,25 +179,16 @@ export interface ProjectListItem {
   banner: string;
   isExposed: boolean;
   thumbnail: string;
-  subtitle: string;
-  description: string;
 }
 
-interface ProjectListResponseItem extends Omit<ProjectListItem, 'thumbnail' | 'subtitle' | 'description'> {
+interface ProjectListResponseItem extends Omit<ProjectListItem, 'thumbnail'> {
   images: ProjectImageDto[];
-  tagline: string;
-  summary: string;
 }
 
 // 랜딩페이지 프로젝트 캐러셀 전용 — GET /api/projects 응답 중 캐러셀에 필요한 필드만 사용
 export async function getProjectList(): Promise<ProjectListItem[]> {
   const { data } = await axios.get<ProjectListResponseItem[]>(`${url}/api/projects`);
-  return data.map(({ images, tagline, summary, ...rest }) => ({
-    ...rest,
-    thumbnail: getProjectThumbnail(images),
-    subtitle: tagline,
-    description: summary,
-  }));
+  return data.map(({ images, ...rest }) => ({ ...rest, thumbnail: getProjectThumbnail(images) }));
 }
 
 export interface AdminProjectListItem {
