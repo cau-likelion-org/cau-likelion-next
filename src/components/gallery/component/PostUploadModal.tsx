@@ -773,7 +773,8 @@ const ThumbnailSlot = styled.label<{ $featured: boolean }>`
   border-radius: 4px;
   background-color: ${Fill.subtle};
   color: ${Label.neutral};
-  box-shadow: ${(props) => (props.$featured ? `inset 0 0 0 2px ${Orange.o500}` : 'none')};
+  outline: ${(props) => (props.$featured ? `2px solid ${Orange.o500}` : 'none')};
+  outline-offset: -2px;
   cursor: pointer;
 `;
 
