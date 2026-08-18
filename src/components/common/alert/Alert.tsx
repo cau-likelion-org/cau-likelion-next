@@ -14,7 +14,7 @@ export interface AlertAction {
 export interface AlertProps {
   className?: string;
   heading?: string;
-  body: string;
+  body?: string;
   actions: AlertAction[];
   onDimmerClick?: () => void;
 }
@@ -32,7 +32,7 @@ const Alert = ({ className, heading, body, actions, onDimmerClick }: AlertProps)
       <Modal>
         <Information>
           {heading && <Heading>{heading}</Heading>}
-          <Body>{body}</Body>
+          {body && <Body>{body}</Body>}
         </Information>
         <Actions>
           {actions.map((action) => (
