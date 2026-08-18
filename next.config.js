@@ -20,6 +20,8 @@ const svgrOptions = {
 };
 
 const nextConfig = {
+  // `npm run typecheck`로 떼어내 CI에서 빌드와 병렬로 돌림
+  typescript: { ignoreBuildErrors: false },
   reactStrictMode: true,
   // styled-components 변환. 예전엔 .babelrc의 babel-plugin-styled-components로 처리했는데,
   // 커스텀 babel 설정이 있으면 Next가 SWC를 통째로 끄기 때문에 SWC 내장 옵션으로 옮김
