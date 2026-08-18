@@ -52,8 +52,6 @@ const resolveActionLabel = (endDate: string, assignments: { submittedAt: string 
   return assignments.every((assignment) => !assignment.submittedAt) ? '제출하기' : '수정하기';
 };
 
-const ALL_PART = '전체';
-
 const MyPageAssignment = () => {
   const tokenState = useTokenStore((state) => state.token);
   const hasHydrated = useTokenStore((state) => state.hasHydrated);
@@ -102,10 +100,10 @@ const MyPageAssignment = () => {
   const parts = (activeGeneration?.parts ?? [])
     .filter((part) => part.name !== '기타')
     .sort((a, b) => TRACK_OPTIONS.indexOf(a.name) - TRACK_OPTIONS.indexOf(b.name));
-  // 출결관리와 동일하게 '전체'를 맨 앞에 두고 기본 선택으로 쓴다
-  const partOptions = [ALL_PART, ...parts.map((part) => part.name)];
-  const [selectedPartName, setSelectedPartName] = useState(ALL_PART);
-  const currentPartName = selectedPartName;
+
+  const partOptions = parts.map((part) => part.name);
+  const [selectedPartName, setSelectedPartName] = useState('');
+  const currentPartName = selectedPartName || partOptions[0] || '';
   const selectedPartId = parts.find((part) => part.name === currentPartName)?.id;
 
   // 과제 생성·상세보기는 데스크톱 전용이라 모바일에서는 안내 모달을 띄운다
@@ -132,18 +130,20 @@ const MyPageAssignment = () => {
   };
 
   // 회장: partId로 파트별 조회 / 운영진: 본인 파트 조회
+  const presidentPartId = isPresident ? selectedPartId : undefined;
   const {
     data: weekGroups,
     isLoading: isWeekGroupsLoading,
     isError: isWeekGroupsError,
   } = useQuery<AssignmentWeekGroup[]>({
-    queryKey: isPresident ? ['presidentAssignments', selectedPartId ?? 'all'] : ['staffAssignments'],
+    queryKey: isPresident ? ['presidentAssignments', presidentPartId] : ['staffAssignments'],
     queryFn: () =>
-      isPresident ? getPresidentAssignments(tokenState, selectedPartId) : getStaffAssignments(tokenState),
-    enabled: isStaffOrAdmin,
+      presidentPartId != null ? getPresidentAssignments(tokenState, presidentPartId) : getStaffAssignments(tokenState),
+    enabled: isStaffOrAdmin && (!isPresident || presidentPartId != null),
   });
 
-  // 최신 주차가 18이면 18 → 1주차까지 연속으로 표시 (과제 없는 주차는 빈 카드)
+  const isPartResolving = isPresident && presidentPartId == null && !generations;
+
   const weeks = (() => {
     const groups = weekGroups ?? [];
     const maxWeek = groups.reduce((max, group) => Math.max(max, group.week), 0);
@@ -207,7 +207,7 @@ const MyPageAssignment = () => {
                 <IcPlus width={16} height={16} />
               </CreateButton>
             </Header>
-            {isWeekGroupsLoading ? (
+            {isWeekGroupsLoading || isPartResolving ? (
               <LoadingWrapper>
                 <CircularLoading size={32} />
               </LoadingWrapper>
