@@ -4,6 +4,7 @@ import { BackgroundWhite, Black, Label, Line, Orange } from '@utils/constant/col
 import { ROLE_LABEL } from '@utils/constant';
 import styled from 'styled-components';
 import { Typography, typographyCss } from '@utils/constant/typography';
+import { media } from '@utils/constant/breakpoint';
 
 const ProfileCard = ({ user }: { user: UserProfile }) => {
   return (
@@ -34,7 +35,7 @@ const Wrapper = styled.div`
   border-radius: 14px;
   background-color: ${BackgroundWhite.secondary};
 
-  @media (max-width: 900px) {
+  @media${media.xs} {
     width: 100%;
   }
 `;

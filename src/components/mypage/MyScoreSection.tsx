@@ -9,6 +9,7 @@ import LinearLoading from '@common/loading/LinearLoading';
 import EmptyState from '@common/emptyState/EmptyState';
 import { BackgroundWhite, Black, Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
+import { media } from '@utils/constant/breakpoint';
 
 const TOTAL_SCORE_MAX = 3;
 
@@ -102,7 +103,7 @@ const CardRow = styled.div`
   gap: 20px;
   width: 100%;
 
-  @media (max-width: 900px) {
+  @media${media.xs} {
     flex-direction: column;
     align-items: stretch;
   }
@@ -136,7 +137,7 @@ const StatCardWrapper = styled.div`
   flex-shrink: 0;
   width: 340px;
 
-  @media (max-width: 900px) {
+  @media${media.xs} {
     width: 100%;
   }
 `;
@@ -200,7 +201,7 @@ const TotalCardWrapper = styled.div`
   width: 160px;
   height: 164px;
 
-  @media (max-width: 900px) {
+  @media${media.xs} {
     width: 100%;
   }
 `;

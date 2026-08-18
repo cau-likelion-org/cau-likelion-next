@@ -15,6 +15,7 @@ import { IcCaretDown, IcCaretUp, IcSearch } from '@assets/svg';
 import { NUMERIC_ONLY_REGEX, ROLE_LABEL } from '@utils/constant';
 import { Black, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
+import { media } from '@utils/constant/breakpoint';
 
 export const ALL_FILTER = '전체';
 const NO_PART_LABEL = '소속 없음';
@@ -511,7 +512,7 @@ const FilterRow = styled.div`
   gap: 18px;
   width: 100%;
 
-  @media (max-width: 900px) {
+  @media${media.xs} {
     flex-wrap: wrap;
   }
 `;

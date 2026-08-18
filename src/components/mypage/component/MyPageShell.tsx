@@ -6,8 +6,8 @@ import Sidebar, { SidebarActive } from '@mypage/component/Sidebar';
 import { IcChevronRight } from '@assets/svg';
 import { Black, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
+import { media } from '@utils/constant/breakpoint';
 
-// 모바일에서는 사이드바 대신 현재 위치를 브레드크럼으로 보여준다
 const BREADCRUMB_LABEL: Record<SidebarActive, string> = {
   home: '홈',
   attendance: '출결관리',
@@ -63,7 +63,7 @@ const Wrapper = styled.div`
   margin: 0 auto;
   padding: 40px 20px 80px;
 
-  @media (max-width: 900px) {
+  @media${media.xs} {
     gap: 0;
     padding: 0 20px 40px;
   }
@@ -74,7 +74,7 @@ const Header = styled.div`
   flex-direction: column;
   width: 100%;
 
-  @media (max-width: 900px) {
+  @media${media.xs} {
     gap: 24px;
     padding: 52px 0;
   }
@@ -96,7 +96,7 @@ const Title = styled.h1`
 const Breadcrumb = styled.nav`
   display: none;
 
-  @media (max-width: 900px) {
+  @media${media.xs} {
     display: flex;
     align-items: center;
     gap: 4px;
@@ -113,7 +113,7 @@ const Content = styled.div`
 `;
 
 const SidebarSlot = styled.div`
-  @media (max-width: 900px) {
+  @media${media.xs} {
     display: none;
   }
 `;
@@ -126,7 +126,7 @@ const Main = styled.div`
   flex: 1;
   min-width: 0;
 
-  @media (max-width: 900px) {
+  @media${media.xs} {
     gap: 32px;
   }
 `;

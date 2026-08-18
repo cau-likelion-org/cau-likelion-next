@@ -6,8 +6,10 @@ export const Breakpoint = {
   xl: 1600, // 와이드 데스크톱
 } as const;
 
+export const XS_MEDIA_QUERY = `(max-width: ${Breakpoint.sm - 1}px)`;
+
 export const media = {
-  xs: `@media (max-width: ${Breakpoint.sm - 1}px)`,
+  xs: `@media ${XS_MEDIA_QUERY}`,
   sm: `@media (min-width: ${Breakpoint.sm}px)`,
   md: `@media (min-width: ${Breakpoint.md}px)`,
   lg: `@media (min-width: ${Breakpoint.lg}px)`,

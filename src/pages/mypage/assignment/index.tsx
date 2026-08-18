@@ -29,8 +29,8 @@ import { isAdminRole, isFullAdminRole, canManageSitePages } from '@utils/index';
 import { IcPlus } from '@assets/svg';
 import { Fill, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
+import { XS_MEDIA_QUERY, media } from '@utils/constant/breakpoint';
 
-// 마감 기한(ISO) → 2026/09/30
 const formatDueDate = (value: string) => {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value;
@@ -108,7 +108,7 @@ const MyPageAssignment = () => {
 
   // 과제 생성·상세보기는 데스크톱 전용이라 모바일에서는 안내 모달을 띄운다
   const [isUnsupportedOpen, setIsUnsupportedOpen] = useState(false);
-  const isMobileViewport = () => typeof window !== 'undefined' && window.matchMedia('(max-width: 900px)').matches;
+  const isMobileViewport = () => typeof window !== 'undefined' && window.matchMedia(XS_MEDIA_QUERY).matches;
 
   const handleCreate = () => {
     if (isMobileViewport()) {
@@ -282,7 +282,7 @@ const Header = styled.div`
   justify-content: space-between;
   width: 100%;
 
-  @media (max-width: 900px) {
+  @media${media.xs} {
     align-items: flex-start;
   }
 `;
@@ -300,8 +300,7 @@ const CreateButton = styled.button`
   cursor: pointer;
   ${typographyCss(Typography.body2Normal.medium)}
 
-  /* Figma 모바일: solid/assistive 버튼 (공용 Button의 small+assistive와 동일한 값) */
-  @media (max-width: 900px) {
+  @media${media.xs} {
     padding: 7px 14px;
     border: none;
     background-color: ${Fill.normal};
@@ -316,8 +315,7 @@ const TitleRow = styled.div`
   gap: 18px;
   width: 100%;
 
-  /* Figma 모바일: 제목 아래 파트명 */
-  @media (max-width: 900px) {
+  @media${media.xs} {
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;

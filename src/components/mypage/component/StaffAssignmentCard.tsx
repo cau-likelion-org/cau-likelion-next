@@ -5,6 +5,7 @@ import { AssignmentStaffSummary } from 'src/apis/assignment';
 import { IcChevronLeft } from '@assets/svg';
 import { Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
+import { media } from '@utils/constant/breakpoint';
 
 interface StaffAssignmentCardProps {
   week: number;
@@ -116,7 +117,7 @@ const DetailButton = styled.button`
   cursor: pointer;
   ${typographyCss(Typography.body1Normal.bold)}
 
-  @media (max-width: 900px) {
+  @media${media.xs} {
     ${typographyCss(Typography.label1Normal.bold)}
   }
 `;
@@ -133,7 +134,7 @@ const Rows = styled.div`
   width: 100%;
 
   /* Figma 모바일: 과제 사이 간격 22px + 구분선 */
-  @media (max-width: 900px) {
+  @media${media.xs} {
     gap: 22px;
   }
 `;
@@ -146,14 +147,14 @@ const Row = styled.div`
   justify-content: space-between;
   width: 100%;
 
-  @media (max-width: 900px) {
+  @media${media.xs} {
     flex-direction: column;
     align-items: stretch;
     gap: 16px;
   }
 
   & + & {
-    @media (max-width: 900px) {
+    @media${media.xs} {
       padding-top: 22px;
       border-top: 1px solid ${Line.subtle};
     }
@@ -163,7 +164,7 @@ const Row = styled.div`
 const TitleLine = styled.div`
   display: contents;
 
-  @media (max-width: 900px) {
+  @media${media.xs} {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -174,7 +175,7 @@ const TitleLine = styled.div`
 const Stats = styled.div`
   display: contents;
 
-  @media (max-width: 900px) {
+  @media${media.xs} {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -199,7 +200,7 @@ const AssignmentTitle = styled.p`
   color: ${TEXT_DARK};
   ${typographyCss(Typography.heading2.bold)}
 
-  @media (max-width: 900px) {
+  @media${media.xs} {
     flex: 1 0 0;
     min-width: 0;
     width: auto;
@@ -217,7 +218,7 @@ const Count = styled.p<{ $emphasis: 'orange' | 'dark' | 'muted'; $mobileOrder: n
   ${typographyCss(Typography.body1Normal.medium)}
 
   /* 모바일은 2열이라 승인 대기 · 지각 제출 / 승인 완료 · 제출 전 순으로 재배치 (Figma) */
-  @media (max-width: 900px) {
+  @media${media.xs} {
     order: ${(props) => props.$mobileOrder};
     ${typographyCss(Typography.body2Normal.medium)}
   }
@@ -233,7 +234,7 @@ const Deadline = styled.p`
   color: ${Label.alternative};
   ${typographyCss(Typography.body1Reading.regular)}
 
-  @media (max-width: 900px) {
+  @media${media.xs} {
     order: 0;
     ${typographyCss(Typography.label1Normal.regular)}
   }

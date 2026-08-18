@@ -18,6 +18,7 @@ import MakeAttendanceCard from '@mypage/component/MakeAttendanceCard';
 import MyScoreSection from '@mypage/MyScoreSection';
 import MemberScoreSection from '@mypage/MemberScoreSection';
 import { useRouter } from 'next/router';
+import { media } from '@utils/constant/breakpoint';
 
 const MyPage = () => {
   const tokenState = useTokenStore((state) => state.token);
@@ -98,7 +99,7 @@ const CardRow = styled.div`
   gap: 20px;
   width: 100%;
 
-  @media (max-width: 900px) {
+  @media${media.xs} {
     flex-direction: column;
     align-items: stretch;
   }

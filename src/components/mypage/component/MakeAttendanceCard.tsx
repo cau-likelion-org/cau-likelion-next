@@ -9,6 +9,7 @@ import useTokenStore from 'src/store/useTokenStore';
 import { toDateString } from '@utils/index';
 import { BackgroundWhite, Black, Label, Line, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
+import { media } from '@utils/constant/breakpoint';
 
 const generatePassword = () => String(Math.floor(1000 + Math.random() * 9000));
 
@@ -135,7 +136,7 @@ const Wrapper = styled.div`
   width: 520px;
   min-height: 152px;
 
-  @media (max-width: 900px) {
+  @media${media.xs} {
     width: 100%;
   }
   padding: 20px;
@@ -166,7 +167,7 @@ const FieldRow = styled.div`
   width: 100%;
 
   /* 모바일은 출석 일자·주차 구분이 한 줄, 비밀번호 생성이 다음 줄 (Figma) */
-  @media (max-width: 900px) {
+  @media${media.xs} {
     flex-wrap: wrap;
   }
 `;
@@ -177,7 +178,7 @@ const Field = styled.div<{ $width?: string; $flex?: boolean; $mobileGrow?: boole
   gap: 8px;
   ${(props) => (props.$flex ? 'flex: 1 0 0; min-width: 0;' : `width: ${props.$width};`)}
 
-  @media (max-width: 900px) {
+  @media${media.xs} {
     ${(props) => props.$mobileGrow && 'flex: 1 0 0; min-width: 0; width: auto;'}
     ${(props) => props.$mobileFull && 'flex: 0 0 100%; width: 100%;'}
   }
