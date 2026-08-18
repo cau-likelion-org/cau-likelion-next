@@ -23,24 +23,12 @@ export interface IProject {
   category: ProjectCategory;
   banner: string;
   thumbnail: string;
-  subtitle: string;
-  description: string;
 }
 
-const ProjectCard = ({
-  title,
-  generationNumber,
-  category,
-  banner,
-  thumbnail,
-  subtitle,
-  description,
-  href,
-}: IProject & { href: string }) => {
+const ProjectCard = ({ title, generationNumber, category, banner, thumbnail, href }: IProject & { href: string }) => {
   // 실패한 src를 기억해두면 thumbnail이 바뀔 때 자동으로 다시 시도하게 된다
   const [failedThumbnail, setFailedThumbnail] = useState<string | null>(null);
   const showThumbnail = !!thumbnail && failedThumbnail !== thumbnail;
-  const introText = subtitle || description;
 
   return (
     <Link href={href}>
@@ -57,11 +45,6 @@ const ProjectCard = ({
               <AwardText>{banner}</AwardText>
             </AwardBanner>
           )}
-          {introText && (
-            <HoverOverlay>
-              <HoverText>{introText.replace(/\\n/g, ' ')}</HoverText>
-            </HoverOverlay>
-          )}
         </ThumbnailArea>
         <Container>
           <Name>{title}</Name>
@@ -77,27 +60,6 @@ const ProjectCard = ({
 
 export default ProjectCard;
 
-const HoverText = styled.p`
-  margin: 0;
-  color: #fff;
-  display: -webkit-box;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  ${typographyCss(Typography.heading1.bold)}
-`;
-
-const HoverOverlay = styled.div`
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: flex-start;
-  padding: 12px;
-  background-color: ${Orange.o500};
-  opacity: 0;
-  transition: opacity 0.2s ease;
-`;
-
 const Wrapper = styled.div`
   width: 340px;
   display: flex;
@@ -105,10 +67,6 @@ const Wrapper = styled.div`
   align-items: flex-start;
   gap: 10px;
   cursor: pointer;
-
-  &:hover ${HoverOverlay} {
-    opacity: 1;
-  }
 
   @media (max-width: ${MOBILE}px) {
     width: 335px;
