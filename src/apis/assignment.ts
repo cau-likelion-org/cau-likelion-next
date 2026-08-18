@@ -64,6 +64,31 @@ export function getMyAssignments(token: IToken) {
   return authAxios.get<AssignmentSummaryWeekGroup[]>('/api/assignments/me').then((res) => res.data);
 }
 
+export interface MyAssignmentSubmissionHistory {
+  assignmentId: number;
+  title: string;
+  detail: string;
+  endDate: string; // 개별 마감일이 있으면 그 값, 없으면 과제 공통 마감일
+  type: AssignmentSubmitType;
+  submissions: AssignmentSubmission[]; // 본인 제출 이력 전체 (최신순, 없으면 빈 배열)
+}
+
+export interface MyAssignmentHistoryWeekGroup {
+  week: number;
+  weeklyStatus: AssignmentDisplayStatus; // 주차 종합 상태
+  assignments: MyAssignmentSubmissionHistory[];
+}
+
+// 아기사자: 주차별 과제 상세 + 본인 제출 이력 조회 (week 미지정 시 전체 주차)
+export function getMyAssignmentHistory(token: IToken, week?: number) {
+  const authAxios = getAuthAxios(token);
+  return authAxios
+    .get<MyAssignmentHistoryWeekGroup[]>('/api/assignments/me/submissions/history', {
+      params: week != null ? { week } : undefined,
+    })
+    .then((res) => res.data);
+}
+
 export function getStaffAssignments(token: IToken) {
   const authAxios = getAuthAxios(token);
   return authAxios.get<AssignmentWeekGroup[]>('/api/assignments/staff').then((res) => res.data);

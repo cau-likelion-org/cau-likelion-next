@@ -151,6 +151,10 @@ const Thumbnail = styled.div`
     height: 100%;
     object-fit: cover;
   }
+
+  &:hover ${HoverOverlay} {
+    opacity: 1;
+  }
 `;
 
 const Title = styled.p`
@@ -192,8 +196,4 @@ const Wrapper = styled.div`
   gap: 10px;
   width: 100%;
   cursor: pointer;
-
-  &:hover ${HoverOverlay} {
-    opacity: 1;
-  }
 `;
