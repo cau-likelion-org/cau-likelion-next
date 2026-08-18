@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
 import { useQuery } from '@tanstack/react-query';
 import styled from 'styled-components';
@@ -7,13 +8,14 @@ import styled from 'styled-components';
 import { UserProfile } from '@@types/request';
 import Button from '@common/button/Button';
 import LogoutButton from '@mypage/component/LogoutButton';
-import NotificationSetting from '@mypage/component/NotificationSetting';
 import MobileUnsupportedModal from '@common/modal/MobileUnsupportedModal';
 import { getUserProfile } from 'src/apis/account';
 import useTokenStore from 'src/store/useTokenStore';
 import { canManageSitePages } from '@utils/index';
 import { BackgroundColor, Black, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
+
+const NotificationSetting = dynamic(() => import('@mypage/component/NotificationSetting'), { ssr: false });
 
 const SITE_MENU = [
   { title: '소개', routing: '/about' },
@@ -67,14 +69,12 @@ const MobileNavModal = ({ isModalOn, onClose }: { isModalOn: boolean; onClose?: 
                   {item.title}
                 </MenuItem>
               ))}
-              {/* 관리자 메뉴는 중하하 관리자에게만 노출 */}
               {!!userProfile && canManageSitePages(userProfile.role) && (
                 <MenuItem type="button" onClick={handleAdminClick}>
                   관리자
                 </MenuItem>
               )}
-              {/* 과제 알림 설정 — 아기사자에게만 노출된다 (컴포넌트가 역할을 직접 판별) */}
-              <NotificationSetting guideAlign="left" />
+              {isModalOn && <NotificationSetting guideAlign="left" />}
             </MenuGroup>
             <LogoutButton />
           </>
