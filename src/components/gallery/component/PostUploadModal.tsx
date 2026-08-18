@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useRef, useState } from 'react';
+import { ChangeEvent, DragEvent, MouseEvent as ReactMouseEvent, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { useQuery } from '@tanstack/react-query';
 import Button from '@common/button/Button';
@@ -162,6 +162,11 @@ const PostUploadModal = ({
   const [images, setImages] = useState<(string | null)[]>(initialImages);
   const [imageFiles, setImageFiles] = useState<(File | null)[]>(Array(MAX_IMAGE_COUNT).fill(null));
   const [featuredIndex, setFeaturedIndex] = useState(initialFeaturedIndex);
+  const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+
+  const thumbnailRowRef = useRef<HTMLDivElement>(null);
+  const rowScrollDragRef = useRef<{ startX: number; scrollLeft: number } | null>(null);
 
   const modalRef = useRef<HTMLDivElement>(null);
   useFocusTrap(modalRef, onClose);
@@ -224,6 +229,61 @@ const PostUploadModal = ({
     } else if (featuredIndex > index) {
       setFeaturedIndex((prev) => prev - 1);
     }
+  };
+
+  const moveImage = (from: number, to: number) => {
+    if (from === to) return;
+    const reorder = <T,>(list: T[]) => {
+      const next = [...list];
+      const [moved] = next.splice(from, 1);
+      next.splice(to, 0, moved);
+      return next;
+    };
+    setImages(reorder);
+    setImageFiles(reorder);
+    setFeaturedIndex((prev) => {
+      if (prev === from) return to;
+      if (from < prev && prev <= to) return prev - 1;
+      if (to <= prev && prev < from) return prev + 1;
+      return prev;
+    });
+  };
+
+  const dropTargetProps = (index: number) => ({
+    onDragOver: (event: DragEvent<HTMLElement>) => {
+      if (draggingIndex === null) return;
+      event.preventDefault();
+      event.dataTransfer.dropEffect = 'move';
+      setDragOverIndex(index);
+    },
+    onDragLeave: () => setDragOverIndex((prev) => (prev === index ? null : prev)),
+    onDrop: (event: DragEvent<HTMLElement>) => {
+      event.preventDefault();
+      if (draggingIndex !== null) moveImage(draggingIndex, index);
+      setDraggingIndex(null);
+      setDragOverIndex(null);
+    },
+  });
+
+  // 썸네일(드래그 가능한 이미지) 바깥 영역에서 시작한 드래그만 좌우 스크롤로 처리하고,
+  // 이미지 위에서 시작한 드래그는 네이티브 HTML5 드래그(순서 변경)에 맡긴다.
+  const handleThumbnailRowMouseDown = (event: ReactMouseEvent<HTMLDivElement>) => {
+    if (event.button !== 0) return;
+    if ((event.target as HTMLElement).closest('[data-thumbnail-index]')) return;
+    const row = thumbnailRowRef.current;
+    if (!row) return;
+    rowScrollDragRef.current = { startX: event.clientX, scrollLeft: row.scrollLeft };
+  };
+
+  const handleThumbnailRowMouseMove = (event: ReactMouseEvent<HTMLDivElement>) => {
+    const dragState = rowScrollDragRef.current;
+    const row = thumbnailRowRef.current;
+    if (!dragState || !row) return;
+    row.scrollLeft = dragState.scrollLeft - (event.clientX - dragState.startX);
+  };
+
+  const handleThumbnailRowMouseUp = () => {
+    rowScrollDragRef.current = null;
   };
 
   const isDateInvalid = dateMode === 'single' ? isUnfilled(date) : isUnfilled(dateRange[0]) || isUnfilled(dateRange[1]);
@@ -309,7 +369,13 @@ const PostUploadModal = ({
                 </>
               )}
             </MainThumbnail>
-            <ThumbnailRow>
+            <ThumbnailRow
+              ref={thumbnailRowRef}
+              onMouseDown={handleThumbnailRowMouseDown}
+              onMouseMove={handleThumbnailRowMouseMove}
+              onMouseUp={handleThumbnailRowMouseUp}
+              onMouseLeave={handleThumbnailRowMouseUp}
+            >
               {images.map((image, index) =>
                 image ? (
                   <ThumbnailSlot
@@ -317,7 +383,10 @@ const PostUploadModal = ({
                     as="div"
                     role="button"
                     tabIndex={0}
+                    data-thumbnail-index={index}
                     $featured={index === featuredIndex}
+                    $dragging={draggingIndex === index}
+                    $dropTarget={dragOverIndex === index && draggingIndex !== index}
                     aria-label={`${index + 1}번째 이미지를 대표사진으로 설정`}
                     onClick={() => setFeaturedIndex(index)}
                     onKeyDown={(event) => {
@@ -326,8 +395,20 @@ const PostUploadModal = ({
                         setFeaturedIndex(index);
                       }
                     }}
+                    draggable
+                    onDragStart={(event: DragEvent<HTMLElement>) => {
+                      event.dataTransfer.effectAllowed = 'move';
+                      // Firefox는 데이터가 설정되어야 드래그를 시작함
+                      event.dataTransfer.setData('text/plain', String(index));
+                      setDraggingIndex(index);
+                    }}
+                    onDragEnd={() => {
+                      setDraggingIndex(null);
+                      setDragOverIndex(null);
+                    }}
+                    {...dropTargetProps(index)}
                   >
-                    <ThumbnailImage src={image} alt="" />
+                    <ThumbnailImage src={image} alt="" draggable={false} />
                     <RemoveThumbnailButton
                       type="button"
                       aria-label={`${index + 1}번째 이미지 삭제`}
@@ -756,13 +837,14 @@ const ThumbnailRow = styled.div`
   padding: 16px 16px 4px 0;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  cursor: grab;
 
   &::-webkit-scrollbar {
     display: none;
   }
 `;
 
-const ThumbnailSlot = styled.label<{ $featured: boolean }>`
+const ThumbnailSlot = styled.label<{ $featured: boolean; $dragging?: boolean; $dropTarget?: boolean }>`
   position: relative;
   flex-shrink: 0;
   width: 160px;
@@ -773,8 +855,9 @@ const ThumbnailSlot = styled.label<{ $featured: boolean }>`
   border-radius: 4px;
   background-color: ${Fill.subtle};
   color: ${Label.neutral};
-  outline: ${(props) => (props.$featured ? `2px solid ${Orange.o500}` : 'none')};
+  outline: ${(props) => (props.$featured || props.$dropTarget ? `2px solid ${Orange.o500}` : 'none')};
   outline-offset: -2px;
+  opacity: ${(props) => (props.$dragging ? 0.4 : 1)};
   cursor: pointer;
 `;
 
