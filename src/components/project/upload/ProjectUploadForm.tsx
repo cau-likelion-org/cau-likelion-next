@@ -571,9 +571,7 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
           resize="fixed"
           maxLength={maxTitleLength}
           bottomTrailingContent={
-            <CharCount>
-              {title.length}/{maxTitleLength}
-            </CharCount>
+            <TitleLengthGuide>{`공백포함 국문 ${MAX_TITLE_LENGTH_KO}자/영문 ${MAX_TITLE_LENGTH_EN}자`}</TitleLengthGuide>
           }
           status={showErrors && (isUnfilled(title) || isTitleOverflow) ? 'negative' : 'normal'}
           description={
@@ -1249,6 +1247,13 @@ const TitleTextarea = styled(Textarea)`
   textarea {
     min-height: 26px;
   }
+`;
+
+const TitleLengthGuide = styled.span`
+  padding: 0 4px;
+  opacity: 0.74;
+  color: ${Label.alternative};
+  ${typographyCss({ ...Typography.label2.bold, fontWeight: 500 })}
 `;
 
 const ContentTextarea = styled(Textarea)`
