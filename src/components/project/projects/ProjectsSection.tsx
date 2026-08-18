@@ -239,4 +239,12 @@ const CardGrid = styled.div`
   @media (max-width: 600px) {
     grid-template-columns: 1fr;
   }
+
+  ${media.md} {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  ${media.xl} {
+    grid-template-columns: repeat(5, 1fr);
+  }
 `;
