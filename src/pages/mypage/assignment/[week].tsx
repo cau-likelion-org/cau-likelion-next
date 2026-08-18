@@ -20,6 +20,7 @@ import {
 import useTokenStore from 'src/store/useTokenStore';
 import { Black, Label, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
+import { containerCss } from '@utils/constant/breakpoint';
 
 const formatDueDate = (value: string) => {
   const date = new Date(value);
@@ -180,10 +181,9 @@ const Wrapper = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 80px;
-  width: 100%;
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 40px 20px 80px;
+  ${containerCss}
+  padding-top: 40px;
+  padding-bottom: 80px;
 `;
 
 const TopRow = styled.div`

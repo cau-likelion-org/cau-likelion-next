@@ -31,6 +31,7 @@ import { INACTIVE_MEMBER_NOTICE_KEY, TRACK_OPTIONS } from '@utils/constant';
 import { isAdminRole, isFullAdminRole, canManageSitePages } from '@utils/index';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
+import { media } from '@utils/constant/breakpoint';
 
 // 회장/관리자 파트 필터의 '전체' 옵션 (나머지는 현재 활동 기수의 파트 목록에서 가져옴)
 const ALL_PART = '전체';
@@ -209,7 +210,7 @@ const TitleRow = styled.div`
   gap: 18px;
   width: 100%;
 
-  @media (max-width: 900px) {
+  ${media.xs} {
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;

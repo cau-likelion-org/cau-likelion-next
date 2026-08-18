@@ -30,6 +30,7 @@ import useTokenStore from 'src/store/useTokenStore';
 import { IcChevronLeft } from '@assets/svg';
 import { Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
+import { containerCss } from '@utils/constant/breakpoint';
 
 const MyPageAssignmentDetail = () => {
   const router = useRouter();
@@ -229,10 +230,9 @@ export default MyPageAssignmentDetail;
 const Page = styled.div`
   display: flex;
   flex-direction: column;
-  width: 100%;
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 90px 20px 80px;
+  ${containerCss}
+  padding-top: 90px;
+  padding-bottom: 80px;
 `;
 
 const ToastWrapper = styled.div`

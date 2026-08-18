@@ -32,6 +32,7 @@ import ProjectUploadModal from './component/ProjectUploadModal';
 import SessionDetailModal from './component/SessionDetailModal';
 import SessionEditModal from './component/SessionEditModal';
 import SessionUploadModal from './component/SessionUploadModal';
+import { containerCss, media } from '@utils/constant/breakpoint';
 
 type GalleryTabKey = 'session' | 'project' | 'gallery';
 type FilterKey = 'generation' | 'track' | 'category';
@@ -535,9 +536,7 @@ const FilterSelect = ({
 };
 
 const Wrapper = styled.div`
-  width: 100%;
-  max-width: 1100px;
-  padding: 0 20px;
+  ${containerCss}
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -559,7 +558,6 @@ const Intro = styled(PageHeader)`
   @media (max-width: 600px) {
     padding-top: 52px;
 
-    /* PageHeader는 900px 이하에서 타이틀을 title2로 줄이지만, 모바일 시안은 display2를 유지한다 */
     p:first-of-type {
       ${typographyCss(Typography.display2.bold)}
     }
@@ -646,12 +644,20 @@ const CardGrid = styled.div`
   column-gap: 20px;
   row-gap: 40px;
 
-  @media (max-width: 900px) {
+  ${media.xs} {
     grid-template-columns: repeat(2, 1fr);
   }
 
   @media (max-width: 600px) {
     grid-template-columns: 1fr;
+  }
+
+  ${media.md} {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  ${media.xl} {
+    grid-template-columns: repeat(5, 1fr);
   }
 `;
 

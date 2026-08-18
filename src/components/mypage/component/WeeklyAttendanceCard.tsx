@@ -5,6 +5,7 @@ import ContentBadge from '@common/badge/ContentBadge';
 import Tooltip from '@common/tooltip/Tooltip';
 import { BackgroundWhite, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
+import { media } from '@utils/constant/breakpoint';
 
 export type WeeklyAttendanceStatus = 'before' | 'present' | 'late' | 'absent' | 'unauthorized' | 'excused';
 
@@ -72,8 +73,7 @@ const Card = styled.div`
   padding: 20px;
   border: 1px solid ${Line.subtle};
 
-  /* 모바일은 좌(주차/날짜)·우(상태/체크인) 2열을 각각 세로로 쌓는다 (Figma) */
-  @media (max-width: 900px) {
+  ${media.xs} {
     align-items: flex-start;
     padding: 14px;
   }
@@ -86,7 +86,7 @@ const Left = styled.div`
   align-items: center;
   gap: 12px;
 
-  @media (max-width: 900px) {
+  ${media.xs} {
     flex-direction: column;
     align-items: flex-start;
     gap: 2px;
@@ -97,7 +97,7 @@ const Week = styled.p`
   margin: 0;
   width: 120px;
 
-  @media (max-width: 900px) {
+  ${media.xs} {
     width: auto;
   }
 
@@ -119,8 +119,7 @@ const Right = styled.div`
   gap: 12px;
   width: 312px;
 
-  /* Figma 모바일: 뱃지가 위, 체크인 시각이 아래 (데스크톱 가로 순서와 반대라 column-reverse) */
-  @media (max-width: 900px) {
+  ${media.xs} {
     flex-direction: column-reverse;
     align-items: flex-end;
     justify-content: center;

@@ -20,6 +20,7 @@ import { isAdminRole, sortArchivingListDesc } from '@utils/index';
 import styled from 'styled-components';
 import ProjectCard from './ProjectCard';
 import ProjectFilterSelect from './ProjectFilterSelect';
+import { containerCss, media } from '@utils/constant/breakpoint';
 
 const ALL_OPTION = '전체';
 
@@ -180,9 +181,7 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 46px;
-  width: 100%;
-  max-width: 1100px;
-  padding: 0 20px;
+  ${containerCss}
 `;
 
 const ToastWrapper = styled.div`
@@ -233,11 +232,19 @@ const CardGrid = styled.div`
   gap: 40px 20px;
   width: 100%;
 
-  @media (max-width: 900px) {
+  ${media.xs} {
     grid-template-columns: repeat(2, 1fr);
   }
 
   @media (max-width: 600px) {
     grid-template-columns: 1fr;
+  }
+
+  ${media.md} {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  ${media.xl} {
+    grid-template-columns: repeat(5, 1fr);
   }
 `;

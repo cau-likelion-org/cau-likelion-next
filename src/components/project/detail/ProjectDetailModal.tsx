@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import Button from '@common/button/Button';
 import { IcChevronLeft } from '@assets/svg';
 import { AccentTint, Label, Material, Orange } from '@utils/constant/color';
+import { media } from '@utils/constant/breakpoint';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
@@ -140,7 +141,7 @@ const Backdrop = styled.div`
 `;
 
 const ModalCard = styled.div`
-  width: 1040px;
+  width: 568px;
   max-width: 100%;
   max-height: 90vh;
   overflow-y: auto;
@@ -154,7 +155,14 @@ const ModalCard = styled.div`
   border-radius: 16px;
   background-color: #fff;
 
-  /* 모바일에서는 화면을 꽉 채우고 상단 헤더로 닫는다 */
+  ${media.md} {
+    width: 711px;
+  }
+
+  ${media.lg} {
+    width: 800px;
+  }
+
   @media (max-width: 700px) {
     width: 100%;
     height: 100%;

@@ -2,6 +2,7 @@ import { ReactNode } from 'react';
 import styled from 'styled-components';
 
 import { Orange } from '@utils/constant/color';
+import { media } from '@utils/constant/breakpoint';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 export interface PageHeaderProps {
@@ -37,7 +38,7 @@ const Title = styled.p`
   color: ${Orange.o500};
   ${typographyCss(Typography.display2.bold)}
 
-  @media (max-width: 900px) {
+  ${media.xs} {
     ${typographyCss(Typography.title2.bold)}
   }
 `;

@@ -12,6 +12,7 @@ import { toDateString } from '@utils/index';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 import BlogCard from './component/BlogCard';
+import { containerCss } from '@utils/constant/breakpoint';
 
 type FilterKey = 'generation' | 'category';
 
@@ -155,9 +156,7 @@ const FilterSelect = ({
 };
 
 const Wrapper = styled.div`
-  width: 100%;
-  max-width: 1100px;
-  padding: 0 20px;
+  ${containerCss}
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -184,7 +183,6 @@ const Intro = styled(PageHeader)`
     padding-top: 52px;
     padding-bottom: 52px;
 
-    /* PageHeader는 900px 이하에서 타이틀을 title2로 줄이지만, 모바일 시안은 display2를 유지한다 */
     p:first-of-type {
       ${typographyCss(Typography.display2.bold)}
     }

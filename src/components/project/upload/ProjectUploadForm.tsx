@@ -51,6 +51,7 @@ import { NUMERIC_ONLY_REGEX, PROJECT_CATEGORY_OPTIONS } from '@utils/constant';
 import { AccentTint, BackgroundColor, Fill, Label, Line, Orange, State } from '@utils/constant/color';
 import { isUnfilled } from '@utils/index';
 import { Typography, typographyCss } from '@utils/constant/typography';
+import { containerCss } from '@utils/constant/breakpoint';
 
 const MAX_IMAGE_COUNT = 4;
 const MAX_BANNER_LENGTH = 15;
@@ -570,9 +571,7 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
           resize="fixed"
           maxLength={maxTitleLength}
           bottomTrailingContent={
-            <CharCount>
-              {title.length}/{maxTitleLength}
-            </CharCount>
+            <TitleLengthGuide>{`공백포함 국문 ${MAX_TITLE_LENGTH_KO}자/영문 ${MAX_TITLE_LENGTH_EN}자`}</TitleLengthGuide>
           }
           status={showErrors && (isUnfilled(title) || isTitleOverflow) ? 'negative' : 'normal'}
           description={
@@ -1025,10 +1024,9 @@ const Wrapper = styled.div`
   flex-direction: column;
   align-items: flex-start;
   gap: 46px;
-  width: 100%;
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 40px 20px 80px;
+  ${containerCss}
+  padding-top: 40px;
+  padding-bottom: 80px;
 `;
 
 const HeaderRow = styled.div`
@@ -1249,6 +1247,13 @@ const TitleTextarea = styled(Textarea)`
   textarea {
     min-height: 26px;
   }
+`;
+
+const TitleLengthGuide = styled.span`
+  padding: 0 4px;
+  opacity: 0.74;
+  color: ${Label.alternative};
+  ${typographyCss({ ...Typography.label2.bold, fontWeight: 500 })}
 `;
 
 const ContentTextarea = styled(Textarea)`

@@ -8,6 +8,7 @@ import useTokenStore from 'src/store/useTokenStore';
 import { toDateString } from '@utils/index';
 import { BackgroundWhite, Black, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
+import { media } from '@utils/constant/breakpoint';
 
 // 출석체크 대상이 아닌 역할(운영진·회장·관리자·어른사자)은 조회 결과와 무관하게 비활성으로 보여준다
 const AttendanceCheckCard = ({ isTarget = true }: { isTarget?: boolean }) => {
@@ -91,15 +92,15 @@ const Wrapper = styled.div<{ $active: boolean }>`
   flex-direction: column;
   flex-shrink: 0;
   gap: 13px;
-  width: 520px;
+  width: 100%;
   min-height: 152px;
   padding: 20px;
   border-radius: 14px;
   border: 1px solid ${(props) => (props.$active ? Orange.o500 : Line.subtle)};
   background-color: ${(props) => (props.$active ? Orange.o50 : BackgroundWhite.secondary)};
 
-  @media (max-width: 900px) {
-    width: 100%;
+  ${media.lg} {
+    width: 520px;
   }
 `;
 
