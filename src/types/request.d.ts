@@ -8,6 +8,7 @@ export interface IArchivingData {
 export interface IProjectData extends IArchivingData {
   category: string;
   banner?: string;
+  startDate?: string; // 프로젝트 시작일 (목록 정렬 기준)
 }
 
 export interface ISessionData extends IArchivingData {

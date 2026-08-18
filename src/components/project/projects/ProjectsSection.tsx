@@ -25,12 +25,10 @@ const ALL_OPTION = '전체';
 
 const CATEGORY_OPTIONS = [ALL_OPTION, ...Object.values(PROJECT_CATEGORY_LABEL)];
 
-const CATEGORY_PRIORITY: Record<string, number> = {
-  중커톤: 0,
-  해커톤: 1,
-  아이디어톤: 2,
+const getStartTime = (startDate?: string) => {
+  const time = new Date(startDate ?? '').getTime();
+  return Number.isNaN(time) ? 0 : time;
 };
-const getCategoryRank = (category: string) => CATEGORY_PRIORITY[category] ?? 3;
 
 interface FlatProject extends IProjectData {
   generation: string;
@@ -97,18 +95,10 @@ const ProjectsSection = ({ staticData }: { staticData: ArchivingArrayType<IProje
     return matchGeneration && matchCategory;
   });
 
-  const isGenerationAll = selectedGeneration === ALL_OPTION;
-  const isCategoryAll = selectedCategory === ALL_OPTION;
-
-  const sortedProjects = [...filteredProjects].sort((a, b) => {
-    const byGeneration = Number(b.generation) - Number(a.generation);
-    const byCategory = getCategoryRank(a.category) - getCategoryRank(b.category);
-
-    if (isGenerationAll && isCategoryAll) return byGeneration || byCategory;
-    if (!isGenerationAll && isCategoryAll) return byCategory;
-    if (isGenerationAll && !isCategoryAll) return byGeneration;
-    return 0;
-  });
+  // 시작 날짜 최신순, 시작일이 같으면 이름 오름차순
+  const sortedProjects = [...filteredProjects].sort(
+    (a, b) => getStartTime(b.startDate) - getStartTime(a.startDate) || a.title.localeCompare(b.title, 'ko'),
+  );
 
   // 불러오기 실패는 데이터 자체가 없을 때만 노출한다.
   // 목록은 있는데 필터 결과만 비어 있는 경우는 '조건에 맞는 프로젝트가 없습니다'가 맞다
