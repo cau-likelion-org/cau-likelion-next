@@ -24,14 +24,23 @@ const GUIDE_TEXT: Record<NotificationPermissionState, string> = {
   unsupported: '이 브라우저에서는\n알림을 받을 수 없어요.',
 };
 
+type GuideAlign = 'center' | 'left';
+
 interface NotificationSettingViewProps {
   permission: NotificationPermissionState;
   enabled: boolean;
   pending?: boolean;
   onToggle?: () => void;
+  guideAlign?: GuideAlign;
 }
 
-export const NotificationSettingView = ({ permission, enabled, pending, onToggle }: NotificationSettingViewProps) => {
+export const NotificationSettingView = ({
+  permission,
+  enabled,
+  pending,
+  onToggle,
+  guideAlign = 'center',
+}: NotificationSettingViewProps) => {
   const isDisabled = !!pending || permission === 'unsupported' || permission === 'denied';
 
   return (
@@ -52,14 +61,14 @@ export const NotificationSettingView = ({ permission, enabled, pending, onToggle
           </Track>
         </Switch>
       </Row>
-      <Guide>{GUIDE_TEXT[permission]}</Guide>
+      <Guide $align={guideAlign}>{GUIDE_TEXT[permission]}</Guide>
     </Wrapper>
   );
 };
 
 // 과제 승인/반려 알림 on/off. 켜면 이 기기의 FCM 토큰을 서버에 등록하고, 끄면 삭제한다.
 // 알림은 과제를 제출하는 아기사자에게만 발송되므로 다른 역할에는 노출하지 않는다.
-const NotificationSetting = () => {
+const NotificationSetting = ({ guideAlign }: { guideAlign?: GuideAlign }) => {
   const tokenState = useTokenStore((state) => state.token);
   const [permission, setPermission] = useState<NotificationPermissionState>('unsupported');
   const [enabled, setEnabled] = useState(false);
@@ -110,7 +119,13 @@ const NotificationSetting = () => {
   if (userProfile?.role !== 'BABY_LION') return null;
 
   return (
-    <NotificationSettingView permission={permission} enabled={enabled} pending={pending} onToggle={handleToggle} />
+    <NotificationSettingView
+      permission={permission}
+      enabled={enabled}
+      pending={pending}
+      onToggle={handleToggle}
+      guideAlign={guideAlign}
+    />
   );
 };
 
@@ -182,11 +197,11 @@ const Thumb = styled.span`
   background-color: ${BackgroundWhite.primary};
 `;
 
-const Guide = styled.p`
+const Guide = styled.p<{ $align: GuideAlign }>`
   margin: 0;
   width: 100%;
-  text-align: center;
-  white-space: pre-line;
+  text-align: ${(props) => props.$align};
+  white-space: ${(props) => (props.$align === 'center' ? 'pre-line' : 'normal')};
   color: ${Label.assistive};
   ${typographyCss(Typography.caption1.medium)}
 `;
