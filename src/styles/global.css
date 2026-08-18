@@ -88,7 +88,8 @@ a {
   border-radius: 30px;
   border: none;
   overflow: hidden;
-  @media (max-width: 900px) {
+
+  @media (max-width: 767px) {
     height: 30vh;
   }
 }

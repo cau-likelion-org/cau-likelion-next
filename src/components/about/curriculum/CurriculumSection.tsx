@@ -12,6 +12,7 @@ import { Typography, typographyCss } from '@utils/constant/typography';
 
 import CurriculumInfoCard from './component/CurriculumInfoCard';
 import WeekAccordion from './component/WeekAccordion';
+import { media } from '@utils/constant/breakpoint';
 
 const CurriculumSection = () => {
   const {
@@ -98,9 +99,8 @@ const Content = styled.div`
   gap: 20px;
   width: 100%;
 
-  @media (max-width: 900px) {
+  ${media.xs} {
     flex-direction: column;
-    /* 세로로 쌓일 때는 카드가 콘텐츠 폭으로 줄지 않고 전체 폭을 쓰도록 */
     align-items: stretch;
   }
 `;

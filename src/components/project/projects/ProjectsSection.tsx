@@ -20,7 +20,7 @@ import { isAdminRole, sortArchivingListDesc } from '@utils/index';
 import styled from 'styled-components';
 import ProjectCard from './ProjectCard';
 import ProjectFilterSelect from './ProjectFilterSelect';
-import { containerCss } from '@utils/constant/breakpoint';
+import { containerCss, media } from '@utils/constant/breakpoint';
 
 const ALL_OPTION = '전체';
 
@@ -232,7 +232,7 @@ const CardGrid = styled.div`
   gap: 40px 20px;
   width: 100%;
 
-  @media (max-width: 900px) {
+  ${media.xs} {
     grid-template-columns: repeat(2, 1fr);
   }
 

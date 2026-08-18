@@ -31,7 +31,7 @@ import ProjectUploadModal from './component/ProjectUploadModal';
 import SessionDetailModal from './component/SessionDetailModal';
 import SessionEditModal from './component/SessionEditModal';
 import SessionUploadModal from './component/SessionUploadModal';
-import { containerCss } from '@utils/constant/breakpoint';
+import { containerCss, media } from '@utils/constant/breakpoint';
 
 type GalleryTabKey = 'session' | 'project' | 'gallery';
 type FilterKey = 'generation' | 'track' | 'category';
@@ -632,7 +632,7 @@ const CardGrid = styled.div`
   column-gap: 20px;
   row-gap: 40px;
 
-  @media (max-width: 900px) {
+  ${media.xs} {
     grid-template-columns: repeat(2, 1fr);
   }
 
