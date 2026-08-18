@@ -445,6 +445,7 @@ const PostUploadModal = ({
               placeholder="메시지를 입력해 주세요."
               value={title}
               onChange={(event) => setTitle(event.target.value)}
+              maxLength={70}
               resize="fixed"
               bottomTrailingContent={<CharCount>{title.length}/70</CharCount>}
               status={showErrors && isUnfilled(title) ? 'negative' : 'normal'}
@@ -461,6 +462,7 @@ const PostUploadModal = ({
               placeholder={CONTENT_PLACEHOLDER}
               value={content}
               onChange={(event) => setContent(event.target.value)}
+              maxLength={300}
               resize="fixed"
               bottomTrailingContent={<CharCount>{content.length}/300</CharCount>}
               status={showErrors && isUnfilled(content) ? 'negative' : 'normal'}
