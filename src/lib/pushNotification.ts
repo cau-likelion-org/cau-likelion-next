@@ -99,10 +99,13 @@ const issueToken = async (): Promise<string | null> => {
 // 브라우저가 사용자 제스처 없이 호출하면 무시하거나 영구 차단하므로 반드시 클릭에서 호출할 것.
 export const requestFcmToken = async (): Promise<string | null> => {
   if (!isPushSupported()) return null;
-  if (!(await (await loadMessaging()).isSupported())) return null;
 
+  // firebase 청크를 먼저 내려받으면 그 사이 사용자 제스처가 만료돼
+  // 모바일 브라우저가 팝업 없이 바로 거부해버리기 때문에 권한 요청을 항상 제일 먼저 한다.
   const permission = await Notification.requestPermission();
   if (permission !== 'granted') return null;
+
+  if (!(await (await loadMessaging()).isSupported())) return null;
 
   return issueToken();
 };
