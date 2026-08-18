@@ -84,7 +84,7 @@ const Information = styled.div`
   display: flex;
   flex-direction: column;
   gap: 6px;
-  padding: 20px;
+  padding: 28px;
   word-break: break-word;
 `;
 
@@ -105,7 +105,7 @@ const Actions = styled.div`
   align-items: center;
   justify-content: flex-end;
   gap: 24px;
-  padding: 0 20px 12px;
+  padding: 0 28px 20px;
 `;
 
 const ActionButton = styled.button<{ color: string }>`
