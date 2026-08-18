@@ -54,7 +54,11 @@ import { Typography, typographyCss } from '@utils/constant/typography';
 
 const MAX_IMAGE_COUNT = 4;
 const MAX_BANNER_LENGTH = 15;
-const MAX_TITLE_LENGTH = 12;
+// 한글이 하나라도 섞이면 16자, 순수 영문·숫자면 20자 (모두 공백 포함)
+const MAX_TITLE_LENGTH_KO = 16;
+const MAX_TITLE_LENGTH_EN = 20;
+const HANGUL_REGEX = /[ㄱ-ㅎㅏ-ㅣ가-힣]/;
+const getMaxTitleLength = (value: string) => (HANGUL_REGEX.test(value) ? MAX_TITLE_LENGTH_KO : MAX_TITLE_LENGTH_EN);
 const LINK_TYPE_OPTIONS = ['Web', 'GitHub', 'Behance'];
 const CONTENT_PLACEHOLDER = '예시)이 서비스는 ~~한 서비스입니다\n서비스의 핵심기능\n\n· 이런거\n· 이\n· 이';
 const TAG_SEPARATOR_REGEX = /[\s,]+/;
@@ -308,7 +312,8 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
   // 저장에는 generationId가 필요하므로 목록을 못 받은 경우에도 제출은 막되, 원인은 구분해서 안내한다
   const isGenerationUnresolved = !isUnfilled(generation) && !matchedGeneration;
   const isGenerationInvalid = isGenerationUnresolved && !!generations;
-  const isTitleOverflow = title.length > MAX_TITLE_LENGTH;
+  const maxTitleLength = getMaxTitleLength(title);
+  const isTitleOverflow = title.length > maxTitleLength;
   const isSubtitleOverflow = subtitle.length > 80;
   const isDescriptionOverflow = description.length > 300;
   const hasError =
@@ -561,12 +566,12 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
         <TitleTextarea
           placeholder="메시지를 입력해 주세요."
           value={title}
-          onChange={(event) => setTitle(event.target.value.slice(0, MAX_TITLE_LENGTH))}
+          onChange={(event) => setTitle(event.target.value.slice(0, getMaxTitleLength(event.target.value)))}
           resize="fixed"
-          maxLength={MAX_TITLE_LENGTH}
+          maxLength={maxTitleLength}
           bottomTrailingContent={
             <CharCount>
-              {title.length}/{MAX_TITLE_LENGTH}
+              {title.length}/{maxTitleLength}
             </CharCount>
           }
           status={showErrors && (isUnfilled(title) || isTitleOverflow) ? 'negative' : 'normal'}
@@ -574,7 +579,7 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
             showErrors && isUnfilled(title)
               ? '서비스명을 입력해 주세요.'
               : showErrors && isTitleOverflow
-                ? `${MAX_TITLE_LENGTH}자 이내로 입력해 주세요.`
+                ? `${maxTitleLength}자 이내로 입력해 주세요.`
                 : undefined
           }
         />
