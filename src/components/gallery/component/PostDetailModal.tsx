@@ -99,7 +99,7 @@ const PostDetailModal = ({
             <Description>{description}</Description>
           </TextGroup>
 
-          {Array.isArray(date) ? (
+          {Array.isArray(date) && date[0] !== date[1] ? (
             <DateRangeRow>
               <Chip variant="filled" size="small">
                 {date[0]}
@@ -111,7 +111,7 @@ const PostDetailModal = ({
             </DateRangeRow>
           ) : (
             <Chip variant="filled" size="small">
-              {date}
+              {Array.isArray(date) ? date[0] : date}
             </Chip>
           )}
         </Information>
