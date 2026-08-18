@@ -99,10 +99,13 @@ const issueToken = async (): Promise<string | null> => {
 // 브라우저가 사용자 제스처 없이 호출하면 무시하거나 영구 차단하므로 반드시 클릭에서 호출할 것.
 export const requestFcmToken = async (): Promise<string | null> => {
   if (!isPushSupported()) return null;
-  if (!(await (await loadMessaging()).isSupported())) return null;
 
+  // firebase 청크를 먼저 내려받으면 그 사이 사용자 제스처가 만료돼
+  // 모바일 브라우저가 팝업 없이 바로 거부해버리기 때문에 권한 요청을 항상 제일 먼저 한다.
   const permission = await Notification.requestPermission();
   if (permission !== 'granted') return null;
+
+  if (!(await (await loadMessaging()).isSupported())) return null;
 
   return issueToken();
 };
@@ -110,6 +113,7 @@ export const requestFcmToken = async (): Promise<string | null> => {
 // 이미 허용한 기기에서만 조용히 토큰을 갱신한다 (권한 팝업을 띄우지 않음).
 // FCM 토큰은 브라우저가 주기적으로 재발급하므로 접속할 때마다 갱신해야 알림이 끊기지 않는다.
 export const refreshFcmTokenIfGranted = async (): Promise<string | null> => {
+  if (!getCachedFcmToken()) return null;
   if (!isPushSupported() || Notification.permission !== 'granted') return null;
   if (!(await (await loadMessaging()).isSupported())) return null;
 
