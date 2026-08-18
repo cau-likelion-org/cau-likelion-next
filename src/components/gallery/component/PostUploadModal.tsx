@@ -207,21 +207,23 @@ const PostUploadModal = ({
   };
 
   const handleRemoveImage = (index: number) => {
-    setImages((prev) => {
-      if (prev[index]) URL.revokeObjectURL(prev[index] as string);
-      const next = [...prev];
-      next[index] = null;
-      if (featuredIndex === index) {
-        const fallback = next.findIndex((image) => image !== null);
-        setFeaturedIndex(fallback === -1 ? 0 : fallback);
-      }
-      return next;
-    });
-    setImageFiles((prev) => {
-      const next = [...prev];
-      next[index] = null;
-      return next;
-    });
+    const removedUrl = images[index];
+    if (removedUrl) URL.revokeObjectURL(removedUrl);
+
+    const nextImages = images.filter((_, i) => i !== index);
+    while (nextImages.length < MAX_IMAGE_COUNT) nextImages.push(null);
+    const nextImageFiles = imageFiles.filter((_, i) => i !== index);
+    while (nextImageFiles.length < MAX_IMAGE_COUNT) nextImageFiles.push(null);
+
+    setImages(nextImages);
+    setImageFiles(nextImageFiles);
+
+    if (featuredIndex === index) {
+      const fallback = nextImages.findIndex((image) => image !== null);
+      setFeaturedIndex(fallback === -1 ? 0 : fallback);
+    } else if (featuredIndex > index) {
+      setFeaturedIndex((prev) => prev - 1);
+    }
   };
 
   const isDateInvalid = dateMode === 'single' ? isUnfilled(date) : isUnfilled(dateRange[0]) || isUnfilled(dateRange[1]);
