@@ -38,11 +38,7 @@ const TechStackInput = ({
     const newTags = Array.from(new Set(segments.filter((part) => !value.includes(part))));
     if (newTags.length > 0) {
       onChange([...value, ...newTags]);
-      setDraft(parts[parts.length - 1]);
-      return;
     }
-    // 입력한 항목이 전부 이미 추가된 태그면, 조용히 지우지 않고 그대로 남겨둔다
-    if (segments.length > 0) return;
     setDraft(parts[parts.length - 1]);
   };
 
