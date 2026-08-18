@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 import useFocusTrap from 'src/hooks/useFocusTrap';
 import { BackgroundColor, Label, Material, Orange } from '@utils/constant/color';
+import { media } from '@utils/constant/breakpoint';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 const EmailCopyModal = ({ email, onClose }: { email: string; onClose: () => void }) => {
