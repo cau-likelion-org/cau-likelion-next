@@ -286,7 +286,9 @@ const PostUploadModal = ({
     rowScrollDragRef.current = null;
   };
 
-  const isDateInvalid = dateMode === 'single' ? isUnfilled(date) : isUnfilled(dateRange[0]) || isUnfilled(dateRange[1]);
+  const isDateMissing = dateMode === 'single' ? isUnfilled(date) : isUnfilled(dateRange[0]) || isUnfilled(dateRange[1]);
+  const isDateOrderInvalid = dateMode === 'range' && !isDateMissing && dateRange[1] < dateRange[0];
+  const isDateInvalid = isDateMissing || isDateOrderInvalid;
   const hasError =
     isUnfilled(title) ||
     isUnfilled(content) ||
@@ -558,7 +560,10 @@ const PostUploadModal = ({
                 }
                 invalid={showErrors && isDateInvalid}
               />
-              {showErrors && isDateInvalid && <DateDescription>날짜를 선택해 주세요.</DateDescription>}
+              {showErrors && isDateMissing && <DateDescription>날짜를 선택해 주세요.</DateDescription>}
+              {showErrors && isDateOrderInvalid && (
+                <DateDescription>종료일은 시작일 이후로 선택해 주세요.</DateDescription>
+              )}
             </RowField>
           </Row>
         </Information>
