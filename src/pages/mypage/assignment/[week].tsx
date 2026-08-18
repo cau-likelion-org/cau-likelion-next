@@ -1,6 +1,6 @@
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
-import { useQueries, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import styled from 'styled-components';
 
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
@@ -12,9 +12,8 @@ import AssignmentSubmitCard, {
 } from '@mypage/component/AssignmentSubmitCard';
 import { IcChevronLeft } from '@assets/svg';
 import {
-  AssignmentSummaryWeekGroup,
-  getAssignment,
-  getMyAssignments,
+  MyAssignmentHistoryWeekGroup,
+  getMyAssignmentHistory,
   submitAssignment,
   uploadAssignmentFile,
 } from 'src/apis/assignment';
@@ -46,32 +45,19 @@ const AssignmentSubmit = () => {
     if (hasHydrated && !tokenState.access) router.push('/login');
   }, [hasHydrated, tokenState, router]);
 
-  // 한 주차의 과제는 마감일이 모두 같으므로 주차 단위로 묶어서 제출한다
-  const { data: weekGroups } = useQuery<AssignmentSummaryWeekGroup[]>({
-    queryKey: ['myAssignments'],
-    queryFn: () => getMyAssignments(tokenState),
-    enabled: !!tokenState.access,
+  const { data: weekGroups } = useQuery<MyAssignmentHistoryWeekGroup[]>({
+    queryKey: ['myAssignmentHistory', week],
+    queryFn: () => getMyAssignmentHistory(tokenState, week),
+    enabled: !!tokenState.access && Number.isFinite(week),
   });
   const weekGroup = weekGroups?.find((group) => group.week === week);
 
-  // 과제 설명·제출 형식은 목록 API에 없어 과제마다 단건 조회한다
-  const detailQueries = useQueries({
-    queries: (weekGroup?.assignments ?? []).map((assignment) => ({
-      queryKey: ['assignment', assignment.assignmentId],
-      queryFn: () => getAssignment(tokenState, assignment.assignmentId),
-      enabled: !!tokenState.access,
-    })),
-  });
-
-  const items: AssignmentSubmitItem[] = detailQueries
-    .map((query) => query.data)
-    .filter((detail): detail is NonNullable<typeof detail> => !!detail)
-    .map((detail) => ({
-      id: String(detail.id),
-      name: detail.title,
-      description: detail.detail,
-      format: detail.type === 'FILE' ? 'file' : 'link',
-    }));
+  const items: AssignmentSubmitItem[] = (weekGroup?.assignments ?? []).map((assignment) => ({
+    id: String(assignment.assignmentId),
+    name: assignment.title,
+    description: assignment.detail,
+    format: assignment.type === 'FILE' ? 'file' : 'link',
+  }));
 
   const handleClose = () => router.push('/mypage/assignment');
 
@@ -116,6 +102,7 @@ const AssignmentSubmit = () => {
 
     setIsSubmitting(false);
     queryClient.invalidateQueries({ queryKey: ['myAssignments'] });
+    queryClient.invalidateQueries({ queryKey: ['myAssignmentHistory'] });
 
     if (failed.length > 0) {
       setErrorMessage(`${failed.join(', ')} 제출에 실패했습니다. 다시 시도해 주세요.`);
