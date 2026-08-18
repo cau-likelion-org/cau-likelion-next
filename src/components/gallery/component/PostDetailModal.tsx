@@ -269,6 +269,7 @@ const Description = styled.p`
   ${typographyCss(Typography.heading2.medium)}
   color: ${Label.normal};
   margin: 0;
+  white-space: pre-line;
 `;
 
 const DateRangeRow = styled.div`
