@@ -20,6 +20,7 @@ import { isAdminRole, sortArchivingListDesc } from '@utils/index';
 import styled from 'styled-components';
 import ProjectCard from './ProjectCard';
 import ProjectFilterSelect from './ProjectFilterSelect';
+import { containerCss } from '@utils/constant/breakpoint';
 
 const ALL_OPTION = '전체';
 
@@ -180,9 +181,7 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 46px;
-  width: 100%;
-  max-width: 1100px;
-  padding: 0 20px;
+  ${containerCss}
 `;
 
 const ToastWrapper = styled.div`

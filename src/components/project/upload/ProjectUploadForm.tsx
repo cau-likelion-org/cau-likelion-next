@@ -51,6 +51,7 @@ import { NUMERIC_ONLY_REGEX, PROJECT_CATEGORY_OPTIONS } from '@utils/constant';
 import { AccentTint, BackgroundColor, Fill, Label, Line, Orange, State } from '@utils/constant/color';
 import { isUnfilled } from '@utils/index';
 import { Typography, typographyCss } from '@utils/constant/typography';
+import { containerCss } from '@utils/constant/breakpoint';
 
 const MAX_IMAGE_COUNT = 4;
 const MAX_BANNER_LENGTH = 15;
@@ -1025,10 +1026,9 @@ const Wrapper = styled.div`
   flex-direction: column;
   align-items: flex-start;
   gap: 46px;
-  width: 100%;
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 40px 20px 80px;
+  ${containerCss}
+  padding-top: 40px;
+  padding-bottom: 80px;
 `;
 
 const HeaderRow = styled.div`

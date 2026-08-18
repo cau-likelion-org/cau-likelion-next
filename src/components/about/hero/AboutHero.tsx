@@ -85,7 +85,6 @@ const Header = styled(PageHeader)`
       color: ${Orange.o500};
     }
 
-    /* PageHeader는 900px 이하에서 타이틀을 title2로 줄이지만, 모바일 시안은 display2를 유지한다 */
     p:first-of-type {
       ${typographyCss(Typography.display2.bold)}
     }

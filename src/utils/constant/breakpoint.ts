@@ -22,7 +22,7 @@ export const ContainerPadding = 20;
 // 좌우 패딩을 포함한 값
 export const ContainerMaxWidth = {
   lg: 1100,
-  xl: 1436,
+  xl: 1440,
 } as const;
 
 export const containerCss = `

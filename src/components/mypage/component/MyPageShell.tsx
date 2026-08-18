@@ -6,7 +6,7 @@ import Sidebar, { SidebarActive } from '@mypage/component/Sidebar';
 import { IcChevronRight } from '@assets/svg';
 import { Black, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
-import { media } from '@utils/constant/breakpoint';
+import { containerCss, media } from '@utils/constant/breakpoint';
 
 const BREADCRUMB_LABEL: Record<SidebarActive, string> = {
   home: '홈',
@@ -58,10 +58,9 @@ const Wrapper = styled.div`
   flex-direction: column;
   align-items: flex-start;
   gap: 52px;
-  width: 100%;
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 40px 20px 80px;
+  ${containerCss}
+  padding-top: 40px;
+  padding-bottom: 80px;
 
   ${media.xs} {
     gap: 0;
