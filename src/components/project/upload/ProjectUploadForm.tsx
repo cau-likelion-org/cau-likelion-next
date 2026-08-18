@@ -88,12 +88,13 @@ const CATEGORY_LABEL_TO_CODE: Record<string, ProjectCategoryCode> = {
   아이디어톤: 'IDEATHON',
   해커톤: 'HACKATHON',
   중커톤: 'CHUNGKATHON',
+  기타: 'ETC',
 };
-// ETC 프로젝트를 수정하려는 경우 category 값이 비워지고, 제출 시 검증 오류로 처리함
-const CATEGORY_CODE_TO_LABEL: Partial<Record<ProjectCategoryCode, string>> = {
+const CATEGORY_CODE_TO_LABEL: Record<ProjectCategoryCode, string> = {
   IDEATHON: '아이디어톤',
   HACKATHON: '해커톤',
   CHUNGKATHON: '중커톤',
+  ETC: '기타',
 };
 
 const PART_LABELS = {
@@ -269,7 +270,7 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
     NUMERIC_ONLY_REGEX,
   );
   const [category, setCategory] = useState(
-    initialData ? (CATEGORY_CODE_TO_LABEL[initialData.category] ?? '') : PROJECT_CATEGORY_OPTIONS[0],
+    initialData ? CATEGORY_CODE_TO_LABEL[initialData.category] : PROJECT_CATEGORY_OPTIONS[0],
   );
   const [teamName, setTeamName] = useState(initialData?.teamName ?? '');
   const [pmMembers, setPmMembers] = useState<string[]>(membersByPart(PART_LABELS.pm));

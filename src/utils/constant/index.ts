@@ -99,4 +99,4 @@ export const META_DESCRIPTION_HEAD = {
   [ARCHIVING.PROJECT]: '프로젝트 소개',
 };
 
-export const PROJECT_CATEGORY_OPTIONS = ['아이디어톤', '해커톤', '중커톤'];
+export const PROJECT_CATEGORY_OPTIONS = ['아이디어톤', '해커톤', '중커톤', '기타'];
