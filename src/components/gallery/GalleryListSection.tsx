@@ -69,7 +69,7 @@ const ALL_OPTION = '전체';
 
 const toDisplayDate = (isoDate: string | undefined) => (isoDate ?? '').split('T')[0].replaceAll('-', '/');
 const toPeriodDisplay = (startDate: string, endDate: string | null) =>
-  `${toDisplayDate(startDate)}${endDate ? `-${toDisplayDate(endDate)}` : ''}`;
+  `${toDisplayDate(startDate)}${endDate && endDate !== startDate ? `-${toDisplayDate(endDate)}` : ''}`;
 
 const GalleryListSection = () => {
   const router = useRouter();
