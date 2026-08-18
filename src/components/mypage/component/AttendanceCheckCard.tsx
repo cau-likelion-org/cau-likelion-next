@@ -99,7 +99,7 @@ const Wrapper = styled.div<{ $active: boolean }>`
   border: 1px solid ${(props) => (props.$active ? Orange.o500 : Line.subtle)};
   background-color: ${(props) => (props.$active ? Orange.o50 : BackgroundWhite.secondary)};
 
-  @media${media.xs} {
+  ${media.xs} {
     width: 100%;
   }
 `;

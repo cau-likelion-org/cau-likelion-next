@@ -220,7 +220,7 @@ const FilterRow = styled.div`
   gap: 20px;
   margin-top: 24px;
 
-  @media${media.xs} {
+  ${media.xs} {
     width: 100%;
   }
 `;
@@ -229,7 +229,7 @@ const SelectColumn = styled.div`
   position: relative;
   width: 160px;
 
-  @media${media.xs} {
+  ${media.xs} {
     flex: 1;
     min-width: 0;
     width: auto;
@@ -246,7 +246,7 @@ const Table = styled.div`
   margin-top: 40px;
 
   /* 좁은 화면에서는 컬럼을 줄이지 않고 표 전체를 가로로 스크롤한다 */
-  @media${media.xs} {
+  ${media.xs} {
     overflow-x: auto;
     /* 스크롤바가 마지막 행에 겹치지 않도록 아래 여백 확보 */
     padding-bottom: 16px;
@@ -267,7 +267,7 @@ const HeaderRow = styled.div`
 
 // 가로 스크롤 시 총점은 오른쪽에 고정하고, 왼쪽에 흰색 페이드를 둔다 (Figma)
 const stickyRightCss = `
-  @media${media.xs} {
+  ${media.xs} {
     position: sticky;
     right: 0;
     z-index: 1;

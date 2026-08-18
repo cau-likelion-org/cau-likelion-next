@@ -117,7 +117,7 @@ const DetailButton = styled.button`
   cursor: pointer;
   ${typographyCss(Typography.body1Normal.bold)}
 
-  @media${media.xs} {
+  ${media.xs} {
     ${typographyCss(Typography.label1Normal.bold)}
   }
 `;
@@ -134,7 +134,7 @@ const Rows = styled.div`
   width: 100%;
 
   /* Figma 모바일: 과제 사이 간격 22px + 구분선 */
-  @media${media.xs} {
+  ${media.xs} {
     gap: 22px;
   }
 `;
@@ -147,14 +147,14 @@ const Row = styled.div`
   justify-content: space-between;
   width: 100%;
 
-  @media${media.xs} {
+  ${media.xs} {
     flex-direction: column;
     align-items: stretch;
     gap: 16px;
   }
 
   & + & {
-    @media${media.xs} {
+    ${media.xs} {
       padding-top: 22px;
       border-top: 1px solid ${Line.subtle};
     }
@@ -164,7 +164,7 @@ const Row = styled.div`
 const TitleLine = styled.div`
   display: contents;
 
-  @media${media.xs} {
+  ${media.xs} {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -175,7 +175,7 @@ const TitleLine = styled.div`
 const Stats = styled.div`
   display: contents;
 
-  @media${media.xs} {
+  ${media.xs} {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -200,7 +200,7 @@ const AssignmentTitle = styled.p`
   color: ${TEXT_DARK};
   ${typographyCss(Typography.heading2.bold)}
 
-  @media${media.xs} {
+  ${media.xs} {
     flex: 1 0 0;
     min-width: 0;
     width: auto;
@@ -218,7 +218,7 @@ const Count = styled.p<{ $emphasis: 'orange' | 'dark' | 'muted'; $mobileOrder: n
   ${typographyCss(Typography.body1Normal.medium)}
 
   /* 모바일은 2열이라 승인 대기 · 지각 제출 / 승인 완료 · 제출 전 순으로 재배치 (Figma) */
-  @media${media.xs} {
+  ${media.xs} {
     order: ${(props) => props.$mobileOrder};
     ${typographyCss(Typography.body2Normal.medium)}
   }
@@ -234,7 +234,7 @@ const Deadline = styled.p`
   color: ${Label.alternative};
   ${typographyCss(Typography.body1Reading.regular)}
 
-  @media${media.xs} {
+  ${media.xs} {
     order: 0;
     ${typographyCss(Typography.label1Normal.regular)}
   }

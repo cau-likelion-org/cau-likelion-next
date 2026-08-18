@@ -35,7 +35,7 @@ const Wrapper = styled.div`
   border-radius: 14px;
   background-color: ${BackgroundWhite.secondary};
 
-  @media${media.xs} {
+  ${media.xs} {
     width: 100%;
   }
 `;

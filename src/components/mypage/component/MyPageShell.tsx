@@ -63,7 +63,7 @@ const Wrapper = styled.div`
   margin: 0 auto;
   padding: 40px 20px 80px;
 
-  @media${media.xs} {
+  ${media.xs} {
     gap: 0;
     padding: 0 20px 40px;
   }
@@ -74,7 +74,7 @@ const Header = styled.div`
   flex-direction: column;
   width: 100%;
 
-  @media${media.xs} {
+  ${media.xs} {
     gap: 24px;
     padding: 52px 0;
   }
@@ -96,7 +96,7 @@ const Title = styled.h1`
 const Breadcrumb = styled.nav`
   display: none;
 
-  @media${media.xs} {
+  ${media.xs} {
     display: flex;
     align-items: center;
     gap: 4px;
@@ -113,7 +113,7 @@ const Content = styled.div`
 `;
 
 const SidebarSlot = styled.div`
-  @media${media.xs} {
+  ${media.xs} {
     display: none;
   }
 `;
@@ -126,7 +126,7 @@ const Main = styled.div`
   flex: 1;
   min-width: 0;
 
-  @media${media.xs} {
+  ${media.xs} {
     gap: 32px;
   }
 `;

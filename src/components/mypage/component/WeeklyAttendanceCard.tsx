@@ -73,7 +73,7 @@ const Card = styled.div`
   padding: 20px;
   border: 1px solid ${Line.subtle};
 
-  @media${media.xs} {
+  ${media.xs} {
     align-items: flex-start;
     padding: 14px;
   }
@@ -86,7 +86,7 @@ const Left = styled.div`
   align-items: center;
   gap: 12px;
 
-  @media${media.xs} {
+  ${media.xs} {
     flex-direction: column;
     align-items: flex-start;
     gap: 2px;
@@ -97,7 +97,7 @@ const Week = styled.p`
   margin: 0;
   width: 120px;
 
-  @media${media.xs} {
+  ${media.xs} {
     width: auto;
   }
 
@@ -119,7 +119,7 @@ const Right = styled.div`
   gap: 12px;
   width: 312px;
 
-  @media${media.xs} {
+  ${media.xs} {
     flex-direction: column-reverse;
     align-items: flex-end;
     justify-content: center;

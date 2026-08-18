@@ -282,7 +282,7 @@ const Header = styled.div`
   justify-content: space-between;
   width: 100%;
 
-  @media${media.xs} {
+  ${media.xs} {
     align-items: flex-start;
   }
 `;
@@ -300,7 +300,7 @@ const CreateButton = styled.button`
   cursor: pointer;
   ${typographyCss(Typography.body2Normal.medium)}
 
-  @media${media.xs} {
+  ${media.xs} {
     padding: 7px 14px;
     border: none;
     background-color: ${Fill.normal};
@@ -315,7 +315,7 @@ const TitleRow = styled.div`
   gap: 18px;
   width: 100%;
 
-  @media${media.xs} {
+  ${media.xs} {
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;

@@ -137,7 +137,7 @@ const Header = styled.button`
   background-color: ${BackgroundWhite.secondary};
   cursor: pointer;
 
-  @media${media.xs} {
+  ${media.xs} {
     padding: 20px 26px;
   }
 `;
@@ -153,7 +153,7 @@ const HeaderRight = styled.div`
   align-items: center;
   gap: 18px;
 
-  @media${media.xs} {
+  ${media.xs} {
     gap: 8px;
   }
 `;
@@ -167,7 +167,7 @@ const Chevron = styled.span<{ $open: boolean }>`
   transition: transform 0.15s ease;
 
   /* Figma 모바일: 꺾쇠 24px */
-  @media${media.xs} {
+  ${media.xs} {
     svg {
       width: 24px;
       height: 24px;
@@ -185,7 +185,7 @@ const GroupCard = styled.div`
   border-radius: 14px;
   background-color: ${BackgroundWhite.tertiary};
 
-  @media${media.xs} {
+  ${media.xs} {
     padding: 20px 26px;
   }
 `;
@@ -197,12 +197,12 @@ const ItemRow = styled.div`
   width: 100%;
 
   /* Figma 모바일: 과제 사이 구분선 (위아래 16px) */
-  @media${media.xs} {
+  ${media.xs} {
     align-items: flex-start;
   }
 
   & + & {
-    @media${media.xs} {
+    ${media.xs} {
       padding-top: 16px;
       border-top: 1px solid ${Line.subtle};
     }
@@ -214,7 +214,7 @@ const ItemName = styled.p`
   color: ${Label.normal};
   ${typographyCss(Typography.heading2.bold)}
 
-  @media${media.xs} {
+  ${media.xs} {
     flex: 1 0 0;
     min-width: 0;
     overflow: hidden;
@@ -230,7 +230,7 @@ const ItemRight = styled.div`
   gap: 20px;
 
   /* Figma 모바일: 뱃지가 위, 제출 시각이 아래 (데스크톱 가로 순서와 반대라 column-reverse) */
-  @media${media.xs} {
+  ${media.xs} {
     flex-direction: column-reverse;
     align-items: flex-end;
     justify-content: center;
@@ -245,7 +245,7 @@ const SubmittedAt = styled.p`
   color: ${Label.assistive};
   ${typographyCss(Typography.body1Reading.regular)}
 
-  @media${media.xs} {
+  ${media.xs} {
     text-align: right;
     ${typographyCss(Typography.label1Normal.regular)}
   }
@@ -258,13 +258,13 @@ const FooterRow = styled.div`
   width: 100%;
 
   /* Figma 모바일: 과제 목록과 22px 간격 (컨테이너 gap 16 + 6) */
-  @media${media.xs} {
+  ${media.xs} {
     margin-top: 6px;
   }
 `;
 
 const DesktopAction = styled.div`
-  @media${media.xs} {
+  ${media.xs} {
     display: none;
   }
 `;
@@ -272,7 +272,7 @@ const DesktopAction = styled.div`
 const MobileAction = styled.div`
   display: none;
 
-  @media${media.xs} {
+  ${media.xs} {
     display: block;
   }
 `;

@@ -70,7 +70,7 @@ const Wrapper = styled.div<{ isLandingLayout: boolean }>`
   align-items: center;
   background-color: ${BackgroundLight.secondary};
   box-shadow: inset 0 1px 0 0 ${Line.subtle};
-  @media (min-width: 900px) {
+  ${media.sm} {
     scroll-snap-align: ${(props) => props.isLandingLayout && 'end'};
   }
 `;
@@ -81,7 +81,7 @@ const Container = styled.div`
   padding: 40px 20px 24px;
 
   /* 모바일은 홈 인디케이터(아이폰 세이프 에어리어)만큼 하단 여백을 더 준다 */
-  @media (max-width: 900px) {
+  ${media.xs} {
     padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
   }
   display: flex;
@@ -98,7 +98,7 @@ const Main = styled.div`
   align-items: flex-start;
   gap: 14px;
 
-  @media (max-width: 900px) {
+  ${media.xs} {
     padding: 0;
   }
 `;
@@ -138,7 +138,7 @@ const Copyright = styled.p`
 `;
 
 const DesktopOnly = styled.span`
-  @media (max-width: 900px) {
+  ${media.xs} {
     display: none;
   }
 `;

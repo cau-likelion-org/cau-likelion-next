@@ -512,7 +512,7 @@ const FilterRow = styled.div`
   gap: 18px;
   width: 100%;
 
-  @media${media.xs} {
+  ${media.xs} {
     flex-wrap: wrap;
   }
 `;

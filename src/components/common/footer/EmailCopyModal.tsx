@@ -67,7 +67,7 @@ const Modal = styled.div`
   outline: none;
   z-index: 10000;
 
-  @media (max-width: 900px) {
+  ${media.xs} {
     border-radius: 16px;
   }
 `;
@@ -80,7 +80,7 @@ const Information = styled.div`
   align-items: center;
   gap: 12px;
 
-  @media (max-width: 900px) {
+  ${media.xs} {
     padding: 28px;
     align-items: flex-start;
     gap: 8px;
@@ -92,7 +92,7 @@ const Title = styled.p`
   color: ${Label.normal};
   margin: 0;
 
-  @media (max-width: 900px) {
+  ${media.xs} {
     ${typographyCss(Typography.heading2.bold)}
     width: 100%;
   }
@@ -116,7 +116,7 @@ const Actions = styled.div`
   display: flex;
   justify-content: flex-end;
 
-  @media (max-width: 900px) {
+  ${media.xs} {
     padding: 0 28px 20px;
   }
 `;
@@ -128,7 +128,7 @@ const CloseButton = styled.button`
   border: none;
   cursor: pointer;
 
-  @media (max-width: 900px) {
+  ${media.xs} {
     padding: 4px 0;
   }
 `;

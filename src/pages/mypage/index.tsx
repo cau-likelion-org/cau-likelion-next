@@ -99,7 +99,7 @@ const CardRow = styled.div`
   gap: 20px;
   width: 100%;
 
-  @media${media.xs} {
+  ${media.xs} {
     flex-direction: column;
     align-items: stretch;
   }

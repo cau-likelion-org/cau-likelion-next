@@ -477,7 +477,7 @@ const EditButton = styled.button`
 const EditActions = styled.div`
   display: flex;
 
-  @media${media.xs} {
+  ${media.xs} {
     display: none;
   }
 `;
@@ -606,7 +606,7 @@ const TableRow = styled.div`
   gap: 20px;
   width: 100%;
 
-  @media${media.xs} {
+  ${media.xs} {
     gap: 12px;
   }
 `;
@@ -617,7 +617,7 @@ const FixedColumn = styled.div`
   flex-shrink: 0;
   width: 160px;
 
-  @media${media.xs} {
+  ${media.xs} {
     width: 100px;
   }
 
@@ -663,7 +663,7 @@ const WeekColumn = styled.div`
   flex-shrink: 0;
   width: 120px;
 
-  @media${media.xs} {
+  ${media.xs} {
     width: 100px;
   }
 
@@ -678,7 +678,7 @@ const PenaltyColumn = styled.div`
   flex-shrink: 0;
   width: 160px;
 
-  @media${media.xs} {
+  ${media.xs} {
     width: 100px;
   }
 
@@ -720,7 +720,7 @@ const HeadCell = styled.div<{ $penalty?: boolean }>`
   border-bottom: 1px solid ${(props) => (props.$penalty ? PENALTY_BORDER : GRID_BORDER)};
   ${typographyCss(Typography.heading2.bold)}
 
-  @media${media.xs} {
+  ${media.xs} {
     ${typographyCss(Typography.headline1.bold)}
   }
 `;
@@ -729,7 +729,7 @@ const ValueCell = styled.div<{ $penalty?: boolean }>`
   ${cellBase}
   height: ${ROW_HEIGHT}px;
 
-  @media${media.xs} {
+  ${media.xs} {
     height: ${MOBILE_ROW_HEIGHT}px;
   }
   color: #121212;
@@ -741,7 +741,7 @@ const ValueCell = styled.div<{ $penalty?: boolean }>`
 
   ${typographyCss(Typography.heading1.bold)}
 
-  @media${media.xs} {
+  ${media.xs} {
     ${typographyCss(Typography.headline1.bold)}
   }
 `;
@@ -750,7 +750,7 @@ const StatusCell = styled.div`
   ${cellBase}
   height: ${ROW_HEIGHT}px;
 
-  @media${media.xs} {
+  ${media.xs} {
     height: ${MOBILE_ROW_HEIGHT}px;
   }
   color: ${Label.strong};

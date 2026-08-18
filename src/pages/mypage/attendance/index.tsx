@@ -210,7 +210,7 @@ const TitleRow = styled.div`
   gap: 18px;
   width: 100%;
 
-  @media${media.xs} {
+  ${media.xs} {
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;

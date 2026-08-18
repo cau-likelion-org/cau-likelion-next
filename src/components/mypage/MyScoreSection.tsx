@@ -103,7 +103,7 @@ const CardRow = styled.div`
   gap: 20px;
   width: 100%;
 
-  @media${media.xs} {
+  ${media.xs} {
     flex-direction: column;
     align-items: stretch;
   }
@@ -137,7 +137,7 @@ const StatCardWrapper = styled.div`
   flex-shrink: 0;
   width: 340px;
 
-  @media${media.xs} {
+  ${media.xs} {
     width: 100%;
   }
 `;
@@ -201,7 +201,7 @@ const TotalCardWrapper = styled.div`
   width: 160px;
   height: 164px;
 
-  @media${media.xs} {
+  ${media.xs} {
     width: 100%;
   }
 `;
