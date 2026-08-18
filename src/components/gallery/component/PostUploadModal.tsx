@@ -488,7 +488,7 @@ const PostUploadModal = ({
                 options={categoryOptions}
                 value={category}
                 onChange={setCategory}
-                disabled={postType === 'session' && !!generationError}
+                disabled={postType === 'session' && (isUnfilled(generation) || !!generationError)}
                 status={showErrors && isUnfilled(category) ? 'negative' : 'normal'}
                 description={
                   showErrors && isUnfilled(category) ? `${categoryConfig.label}을 선택해 주세요.` : undefined
