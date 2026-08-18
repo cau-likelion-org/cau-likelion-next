@@ -13,6 +13,7 @@ import { getUserProfile } from 'src/apis/account';
 import useTokenStore from 'src/store/useTokenStore';
 import { canManageSitePages } from '@utils/index';
 import { BackgroundColor, Black, Line } from '@utils/constant/color';
+import { media } from '@utils/constant/breakpoint';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 const SITE_MENU = [
@@ -123,7 +124,7 @@ const Wrapper = styled.div<{ $open: boolean }>`
     opacity 0.3s ease,
     visibility 0.3s ease;
 
-  @media (min-width: 900px) {
+  ${media.sm} {
     display: none;
   }
 `;
