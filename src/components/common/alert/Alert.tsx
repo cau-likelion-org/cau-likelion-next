@@ -1,5 +1,7 @@
+import { useRef } from 'react';
 import styled from 'styled-components';
 
+import useFocusTrap from 'src/hooks/useFocusTrap';
 import { BackgroundColor, Label, Material, Orange, Status } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
@@ -26,10 +28,13 @@ const actionColor: Record<AlertActionVariant, string> = {
 };
 
 const Alert = ({ className, heading, body, actions, onDimmerClick }: AlertProps) => {
+  const modalRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(modalRef, onDimmerClick ?? (() => {}));
+
   return (
     <Overlay className={className} role="dialog" aria-modal="true">
       <Dimmer onClick={onDimmerClick} />
-      <Modal>
+      <Modal ref={modalRef} tabIndex={-1}>
         <Information>
           {heading && <Heading>{heading}</Heading>}
           {body && <Body>{body}</Body>}
