@@ -804,6 +804,12 @@ const RemoveThumbnailButton = styled.button`
   color: ${Orange.o500};
   padding: 0;
   cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+
+  ${ThumbnailSlot}:hover & {
+    opacity: 1;
+  }
 `;
 
 const FieldGroup = styled.div`
