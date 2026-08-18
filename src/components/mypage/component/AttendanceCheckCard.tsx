@@ -92,15 +92,15 @@ const Wrapper = styled.div<{ $active: boolean }>`
   flex-direction: column;
   flex-shrink: 0;
   gap: 13px;
-  width: 520px;
+  width: 100%;
   min-height: 152px;
   padding: 20px;
   border-radius: 14px;
   border: 1px solid ${(props) => (props.$active ? Orange.o500 : Line.subtle)};
   background-color: ${(props) => (props.$active ? Orange.o50 : BackgroundWhite.secondary)};
 
-  ${media.xs} {
-    width: 100%;
+  ${media.lg} {
+    width: 520px;
   }
 `;
 

@@ -29,14 +29,14 @@ const Wrapper = styled.div`
   align-items: flex-start;
   flex-shrink: 0;
   gap: 14px;
-  width: 340px;
+  width: 100%;
   padding: 20px;
   border: 1px solid ${Line.subtle};
   border-radius: 14px;
   background-color: ${BackgroundWhite.secondary};
 
-  ${media.xs} {
-    width: 100%;
+  ${media.lg} {
+    width: 340px;
   }
 `;
 

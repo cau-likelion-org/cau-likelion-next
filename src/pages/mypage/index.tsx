@@ -95,12 +95,13 @@ const ToastWrapper = styled.div`
 
 const CardRow = styled.div`
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
   gap: 20px;
   width: 100%;
 
-  ${media.xs} {
-    flex-direction: column;
-    align-items: stretch;
+  ${media.lg} {
+    flex-direction: row;
+    align-items: center;
   }
 `;

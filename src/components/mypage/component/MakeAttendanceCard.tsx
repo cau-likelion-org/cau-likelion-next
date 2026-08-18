@@ -133,11 +133,11 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
-  width: 520px;
+  width: 100%;
   min-height: 152px;
 
-  ${media.xs} {
-    width: 100%;
+  ${media.lg} {
+    width: 520px;
   }
   padding: 20px;
   border-radius: 14px;
