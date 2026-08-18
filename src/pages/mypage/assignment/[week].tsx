@@ -52,6 +52,9 @@ const AssignmentSubmit = () => {
   });
   const weekGroup = weekGroups?.find((group) => group.week === week);
 
+  const dueDates = (weekGroup?.assignments ?? []).map((assignment) => formatDueDate(assignment.endDate));
+  const sharedDueDate = dueDates.length > 0 && dueDates.every((date) => date === dueDates[0]) ? dueDates[0] : null;
+
   const items: AssignmentSubmitItem[] = (weekGroup?.assignments ?? []).map((assignment) => ({
     id: String(assignment.assignmentId),
     name: assignment.title,
@@ -128,9 +131,9 @@ const AssignmentSubmit = () => {
       <Content>
         <SessionRow>
           <SessionTitle>{week}주차 세션 과제</SessionTitle>
-          {weekGroup && weekGroup.assignments.length > 0 && (
+          {sharedDueDate && (
             <DueDate>
-              마감일 <span>ㅣ</span> {formatDueDate(weekGroup.assignments[0].endDate)}
+              마감일 <span>ㅣ</span> {sharedDueDate}
             </DueDate>
           )}
         </SessionRow>
