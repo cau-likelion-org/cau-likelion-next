@@ -78,7 +78,6 @@ const AssignmentSubmissionTable = ({
               >
                 {isFirstRow ? (
                   <NameCell>
-                    {/* 마감일을 개별 연장한 아기사자만 주황색 밑줄로 구분하고, 눌렀을 때 연장된 마감일을 보여준다 */}
                     <Name $extended={hasExtendedDeadline(member.deadline)} tabIndex={0}>
                       {member.memberName}
                     </Name>
@@ -192,13 +191,11 @@ const NameCell = styled.div`
   align-items: center;
 `;
 
-// 개별 마감일 툴팁: 이름에 hover/focus 했을 때만 노출
 const TooltipSlot = styled.div`
   position: absolute;
   top: 100%;
   left: 0;
   z-index: 10;
-  /* 이름 칸(90px) 폭에 맞춰 줄바꿈되지 않도록 한 줄로 펼친다 */
   white-space: nowrap;
   opacity: 0;
   visibility: hidden;
@@ -211,7 +208,6 @@ const Name = styled.span<{ $extended: boolean }>`
   cursor: ${(props) => (props.$extended ? 'pointer' : 'default')};
   ${typographyCss(Typography.title3.bold)}
 
-  /* Figma: 밑줄은 폰트 자체 위치를 쓰고 글자 아래를 파고들지 않는다 */
   ${(props) =>
     props.$extended &&
     `
@@ -220,7 +216,6 @@ const Name = styled.span<{ $extended: boolean }>`
     text-underline-position: from-font;
   `}
 
-  /* 클릭(focus)으로도 열리도록 focus-visible이 아니라 focus를 쓴다 */
   &:hover + ${TooltipSlot}, &:focus + ${TooltipSlot} {
     opacity: 1;
     visibility: visible;
