@@ -13,6 +13,7 @@ import AssignmentSubmitCard, {
 import { IcChevronLeft } from '@assets/svg';
 import {
   MyAssignmentHistoryWeekGroup,
+  canSubmitAssignment,
   getMyAssignmentHistory,
   submitAssignment,
   uploadAssignmentFile,
@@ -63,10 +64,14 @@ const AssignmentSubmit = () => {
   });
   const weekGroup = weekGroups?.find((group) => group.week === week);
 
-  const dueDates = (weekGroup?.assignments ?? []).map((assignment) => formatDueDate(assignment.endDate));
+  const submittableAssignments = (weekGroup?.assignments ?? []).filter((assignment) =>
+    canSubmitAssignment(assignment.submissions[0]?.displayStatus ?? 'BEFORE_SUBMISSION', assignment.endDate),
+  );
+
+  const dueDates = submittableAssignments.map((assignment) => formatDueDate(assignment.endDate));
   const sharedDueDate = dueDates.length > 0 && dueDates.every((date) => date === dueDates[0]) ? dueDates[0] : null;
 
-  const items: AssignmentSubmitItem[] = (weekGroup?.assignments ?? []).map((assignment) => ({
+  const items: AssignmentSubmitItem[] = submittableAssignments.map((assignment) => ({
     id: String(assignment.assignmentId),
     name: assignment.title,
     description: assignment.detail,

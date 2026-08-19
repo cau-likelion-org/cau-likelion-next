@@ -170,6 +170,16 @@ export type SubmissionStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
 export type AssignmentDisplayStatus =
   'BEFORE_SUBMISSION' | 'MISSED' | 'PENDING_REVIEW' | 'LATE_SUBMITTED' | 'APPROVED' | 'REJECTED';
 
+// 아기사자가 지금 제출/재제출할 수 있는 과제인지 판정
+// 반려는 운영진 검토가 보통 마감 후라서 마감과 무관하게 다시 제출할 수 있어야 하고,
+// 승인이 끝난 건(승인 완료·지각 제출)은 더 제출할 수 없는게 맞음
+export function canSubmitAssignment(status: AssignmentDisplayStatus, endDate: string) {
+  if (status === 'REJECTED') return true;
+  if (status === 'APPROVED' || status === 'LATE_SUBMITTED' || status === 'MISSED') return false;
+  // 제출 전·승인 대기는 아직 판정 전이므로 마감 전까지만 허용
+  return new Date(endDate).getTime() >= Date.now();
+}
+
 export interface AssignmentFile {
   id: number;
   fileUrl: string;

@@ -17,8 +17,10 @@ import StaffAssignmentCard from '@mypage/component/StaffAssignmentCard';
 import WeeklyAssignmentCard, { WeeklyAssignmentGroup } from '@mypage/component/WeeklyAssignmentCard';
 import { getGenerations, getUserProfile } from 'src/apis/account';
 import {
+  AssignmentSummary,
   AssignmentSummaryWeekGroup,
   AssignmentWeekGroup,
+  canSubmitAssignment,
   getMyAssignments,
   getPresidentAssignments,
   getStaffAssignments,
@@ -46,10 +48,10 @@ const formatSubmittedAt = (value: string) => {
   return `${formatDueDate(value)} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
 };
 
-// 마감이 지났으면 버튼을 숨기고, 한 건도 제출하지 않았으면 제출하기로 보여준다
-const resolveActionLabel = (endDate: string, assignments: { submittedAt: string | null }[]) => {
-  if (new Date(endDate).getTime() < Date.now()) return undefined;
-  return assignments.every((assignment) => !assignment.submittedAt) ? '제출하기' : '수정하기';
+const resolveActionLabel = (assignments: AssignmentSummary[]) => {
+  const submittable = assignments.filter((assignment) => canSubmitAssignment(assignment.status, assignment.endDate));
+  if (submittable.length === 0) return undefined;
+  return submittable.every((assignment) => !assignment.submittedAt) ? '제출하기' : '수정하기';
 };
 
 const MyPageAssignment = () => {
@@ -173,7 +175,7 @@ const MyPageAssignment = () => {
                 submittedAt: assignment.submittedAt ? formatSubmittedAt(assignment.submittedAt) : undefined,
               })),
               dueDate: formatDueDate(group.assignments[0].endDate),
-              actionLabel: resolveActionLabel(group.assignments[0].endDate, group.assignments),
+              actionLabel: resolveActionLabel(group.assignments),
             },
           ],
   }));
