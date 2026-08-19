@@ -55,6 +55,7 @@ const Select = forwardRef<HTMLDivElement, SelectProps & { id?: string }>(functio
     hideValue = false,
     onClick,
     id,
+    'aria-expanded': ariaExpanded,
     ...rest
   },
   ref,
@@ -98,6 +99,7 @@ const Select = forwardRef<HTMLDivElement, SelectProps & { id?: string }>(functio
         }}
         aria-disabled={disabled || readOnly}
         aria-haspopup="listbox"
+        aria-expanded={ariaExpanded}
         aria-describedby={descriptionId}
         $status={status}
         $disabled={disabled}
@@ -122,9 +124,11 @@ const Select = forwardRef<HTMLDivElement, SelectProps & { id?: string }>(functio
           !hideValue && <Text $placeholder={!value}>{value || placeholder}</Text>
         )}
         {statusIcon}
-        <IconSlot $color={Label.normal}>
-          <IcChevronDown width={16} height={16} />
-        </IconSlot>
+        {!readOnly && (
+          <ChevronIconSlot $color={Label.normal} $open={!!ariaExpanded}>
+            <IcChevronDown width={16} height={16} />
+          </ChevronIconSlot>
+        )}
       </Trigger>
       {description && (
         <Description id={descriptionId} $status={status}>
@@ -214,6 +218,11 @@ const IconSlot = styled.span<{ $color: string }>`
   display: flex;
   flex-shrink: 0;
   color: ${(props) => props.$color};
+`;
+
+const ChevronIconSlot = styled(IconSlot)<{ $open: boolean }>`
+  transform: rotate(${(props) => (props.$open ? '180deg' : '0deg')});
+  transition: transform 0.2s ease;
 `;
 
 const Description = styled.p<{ $status: SelectStatus }>`

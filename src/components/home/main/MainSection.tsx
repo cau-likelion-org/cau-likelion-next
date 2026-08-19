@@ -13,10 +13,10 @@ import useRecruitModalStore from 'src/store/useRecruitModalStore';
 import { MOBILE } from '@home/common/responsive';
 
 const DESCRIPTION =
-  '중앙대학교 멋쟁이사자처럼은 중앙대 학생들로 이루어진 IT 창업 동아리입니다\n아이디어를 현실로 만들고, 세계를 향한 첫 발자국을 멋쟁이사자처럼에서 내딛어보세요';
+  '중앙대학교 멋쟁이사자처럼은 중앙대학교 학생들로 구성된 IT 창업 동아리입니다.\n세상에 필요한 아이디어를 현실로 만들 첫 발자국을 멋쟁이사자처럼에서 내딛어보세요.';
 
 const MOBILE_DESCRIPTION =
-  '중앙대학교 멋쟁이사자처럼은 중앙대 학생들로 이루어진\nIT 창업 동아리입니다 아이디어를 현실로 만들고,\n세계를 향한 첫 발자국을 멋쟁이사자처럼에서 내딛어보세요';
+  '중앙대학교 멋쟁이사자처럼은\n중앙대학교 학생들로 구성된 IT 창업 동아리입니다.\n세상에 필요한 아이디어를 현실로 만들\n첫 발자국을 멋쟁이사자처럼에서 내딛어보세요.';
 
 const BUTTON_LABEL = '다음 기수 모집 알림받기';
 

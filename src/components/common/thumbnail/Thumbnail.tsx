@@ -23,8 +23,8 @@ const Thumbnail = ({
   overlay,
 }: ThumbnailProps) => {
   return (
-    <Wrapper className={className} ratio={ratio} radius={radius} border={border}>
-      <Image src={src} alt={alt} />
+    <Wrapper className={className} $ratio={ratio} $radius={radius} $border={border}>
+      <Image src={src} alt={alt} referrerPolicy="no-referrer" />
       {overlay && <Overlay>{overlay}</Overlay>}
     </Wrapper>
   );
@@ -32,13 +32,13 @@ const Thumbnail = ({
 
 export default Thumbnail;
 
-const Wrapper = styled.div<{ ratio: number; radius: boolean; border: boolean }>`
+const Wrapper = styled.div<{ $ratio: number; $radius: boolean; $border: boolean }>`
   position: relative;
   width: 100%;
-  aspect-ratio: ${(props) => props.ratio};
+  aspect-ratio: ${(props) => props.$ratio};
   overflow: hidden;
-  border-radius: ${(props) => (props.radius ? '12px' : '0')};
-  border: ${(props) => (props.border ? `1px solid ${Line.normal}` : 'none')};
+  border-radius: ${(props) => (props.$radius ? '12px' : '0')};
+  border: ${(props) => (props.$border ? `1px solid ${Line.normal}` : 'none')};
 `;
 
 const Image = styled.img`

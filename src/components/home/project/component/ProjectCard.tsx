@@ -1,10 +1,12 @@
 import Link from 'next/link';
+import { useState } from 'react';
 import styled from 'styled-components';
 
 import ContentBadge from '@common/badge/ContentBadge';
+import ThumbnailPlaceholder from '@common/thumbnail/ThumbnailPlaceholder';
 import { IcTrophy } from '@assets/svg';
 import { ProjectCategory } from 'src/apis/project';
-import { Black, Fill, Label, Line, Orange } from '@utils/constant/color';
+import { Black, Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { MOBILE } from '@home/common/responsive';
 
@@ -20,13 +22,23 @@ export interface IProject {
   generationNumber: number;
   category: ProjectCategory;
   banner: string;
+  thumbnail: string;
 }
 
-const ProjectCard = ({ title, generationNumber, category, banner, href }: IProject & { href: string }) => {
+const ProjectCard = ({ title, generationNumber, category, banner, thumbnail, href }: IProject & { href: string }) => {
+  // 실패한 src를 기억해두면 thumbnail이 바뀔 때 자동으로 다시 시도하게 된다
+  const [failedThumbnail, setFailedThumbnail] = useState<string | null>(null);
+  const showThumbnail = !!thumbnail && failedThumbnail !== thumbnail;
+
   return (
     <Link href={href}>
       <Wrapper>
         <ThumbnailArea>
+          {showThumbnail ? (
+            <img key={thumbnail} src={thumbnail} alt={title} onError={() => setFailedThumbnail(thumbnail)} />
+          ) : (
+            <ThumbnailPlaceholder />
+          )}
           {banner && (
             <AwardBanner>
               <IcTrophy width={24} height={24} />
@@ -66,9 +78,14 @@ const ThumbnailArea = styled.div`
   width: 100%;
   aspect-ratio: 340 / 191.25;
   border-radius: 12px;
-  background-color: ${Fill.normal};
   box-shadow: inset 0 0 0 1px ${Line.subtle};
   overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 `;
 
 const AwardBanner = styled.div`

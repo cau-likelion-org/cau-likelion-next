@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import styled from 'styled-components';
 
+import Alert from '@common/alert/Alert';
 import Textarea from '@common/textarea/Textarea';
 import TextField from '@common/textField/TextField';
 import AddCardButton from '@mypage/admin/component/AddCardButton';
@@ -41,6 +43,9 @@ const TrackSection = ({
   showErrors: boolean;
   disabled?: boolean;
 }) => {
+  const [pendingRemoveId, setPendingRemoveId] = useState<string | null>(null);
+  const [isAddAlertOpen, setIsAddAlertOpen] = useState(false);
+
   const updateItem = (id: string, patch: Partial<TrackIntroItem>) => {
     onChange(items.map((item) => (item.id === id ? { ...item, ...patch } : item)));
   };
@@ -99,11 +104,47 @@ const TrackSection = ({
               />
               {showErrors && item.techStack.length === 0 && <ErrorText>기술 스택을 입력해 주세요.</ErrorText>}
             </StackField>
-            {!disabled && <RemoveCardButton onClick={() => removeItem(item.id)} />}
+            {!disabled && <RemoveCardButton onClick={() => setPendingRemoveId(item.id)} />}
           </StackRow>
         </Card>
       ))}
-      {!disabled && <AddCardButton onClick={addItem} ariaLabel="트랙 소개 추가" />}
+      {!disabled && <AddCardButton onClick={() => setIsAddAlertOpen(true)} ariaLabel="트랙 소개 추가" />}
+
+      {isAddAlertOpen && (
+        <Alert
+          heading="파트 추가 시, 소개 페이지의 커리큘럼 영역에도 해당 파트가 추가됩니다."
+          onDimmerClick={() => setIsAddAlertOpen(false)}
+          actions={[
+            { label: '취소', variant: 'assistive', onClick: () => setIsAddAlertOpen(false) },
+            {
+              label: '확인',
+              variant: 'primary',
+              onClick: () => {
+                addItem();
+                setIsAddAlertOpen(false);
+              },
+            },
+          ]}
+        />
+      )}
+
+      {pendingRemoveId && (
+        <Alert
+          heading="파트 삭제 시, 소개 페이지의 커리큘럼 영역에도 해당 내용이 전체 삭제됩니다."
+          onDimmerClick={() => setPendingRemoveId(null)}
+          actions={[
+            { label: '취소', variant: 'assistive', onClick: () => setPendingRemoveId(null) },
+            {
+              label: '확인',
+              variant: 'primary',
+              onClick: () => {
+                removeItem(pendingRemoveId);
+                setPendingRemoveId(null);
+              },
+            },
+          ]}
+        />
+      )}
     </Section>
   );
 };

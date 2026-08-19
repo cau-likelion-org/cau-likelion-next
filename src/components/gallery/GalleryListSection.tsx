@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import Button from '@common/button/Button';
@@ -36,6 +37,9 @@ import { containerCss, media } from '@utils/constant/breakpoint';
 type GalleryTabKey = 'session' | 'project' | 'gallery';
 type FilterKey = 'generation' | 'track' | 'category';
 
+const isGalleryTabKey = (value: unknown): value is GalleryTabKey =>
+  value === 'session' || value === 'project' || value === 'gallery';
+
 const UPLOAD_MODAL_BY_TAB: Record<GalleryTabKey, typeof SessionUploadModal> = {
   session: SessionUploadModal,
   project: ProjectUploadModal,
@@ -66,9 +70,10 @@ const ALL_OPTION = '전체';
 
 const toDisplayDate = (isoDate: string | undefined) => (isoDate ?? '').split('T')[0].replaceAll('-', '/');
 const toPeriodDisplay = (startDate: string, endDate: string | null) =>
-  `${toDisplayDate(startDate)}${endDate ? `-${toDisplayDate(endDate)}` : ''}`;
+  `${toDisplayDate(startDate)}${endDate && endDate !== startDate ? `-${toDisplayDate(endDate)}` : ''}`;
 
 const GalleryListSection = () => {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<GalleryTabKey>('session');
   const [generation, setGeneration] = useState(ALL_OPTION);
   const [track, setTrack] = useState(ALL_OPTION);
@@ -80,6 +85,13 @@ const GalleryListSection = () => {
   const [toastText, setToastText] = useState('');
   const [isToastOpen, setIsToastOpen] = useState(false);
   const queryClient = useQueryClient();
+
+  const queryTab = router.isReady && isGalleryTabKey(router.query.tab) ? router.query.tab : null;
+  const [syncedQueryTab, setSyncedQueryTab] = useState<GalleryTabKey | null>(null);
+  if (queryTab !== null && queryTab !== syncedQueryTab) {
+    setSyncedQueryTab(queryTab);
+    setActiveTab(queryTab);
+  }
 
   const tokenState = useTokenStore((state) => state.token);
   const { data: userProfile } = useQuery({
@@ -300,7 +312,7 @@ const GalleryListSection = () => {
   return (
     <Wrapper>
       <Header>
-        <Intro title="갤러리" subtitle="페이지 소개 글 페이지 소개 글 페이지 소개 글 페이지 소개 글" />
+        <Intro title="갤러리" subtitle="멋사 중앙대의 성장과 추억의 기록" />
         <GalleryTab items={TABS} activeKey={activeTab} onChange={handleTabChange} size="medium" />
         <FilterRow>
           <FilterGroup>

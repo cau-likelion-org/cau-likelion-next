@@ -179,12 +179,17 @@ export interface ProjectListItem {
   category: ProjectCategory;
   banner: string;
   isExposed: boolean;
+  thumbnail: string;
+}
+
+interface ProjectListResponseItem extends Omit<ProjectListItem, 'thumbnail'> {
+  images: ProjectImageDto[];
 }
 
 // 랜딩페이지 프로젝트 캐러셀 전용 — GET /api/projects 응답 중 캐러셀에 필요한 필드만 사용
-export async function getProjectList() {
-  const { data } = await axios.get<ProjectListItem[]>(`${url}/api/projects`);
-  return data;
+export async function getProjectList(): Promise<ProjectListItem[]> {
+  const { data } = await axios.get<ProjectListResponseItem[]>(`${url}/api/projects`);
+  return data.map(({ images, ...rest }) => ({ ...rest, thumbnail: getProjectThumbnail(images) }));
 }
 
 export interface AdminProjectListItem {
@@ -193,10 +198,17 @@ export interface AdminProjectListItem {
   generationNumber: number;
   category: ProjectCategory;
   isExposed: boolean;
+  thumbnail: string;
+}
+
+interface AdminProjectListResponseItem extends Omit<AdminProjectListItem, 'thumbnail'> {
+  images: ProjectImageDto[];
 }
 
 export const getAdminProjectList = () => {
-  return axios.get<AdminProjectListItem[]>(`${url}/api/projects`).then((res) => res.data);
+  return axios
+    .get<AdminProjectListResponseItem[]>(`${url}/api/projects`)
+    .then((res) => res.data.map(({ images, ...rest }) => ({ ...rest, thumbnail: getProjectThumbnail(images) })));
 };
 
 export const updateProjectExposure = (token: IToken, exposedProjectIds: number[]) => {
