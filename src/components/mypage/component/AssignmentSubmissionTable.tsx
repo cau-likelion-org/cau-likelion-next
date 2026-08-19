@@ -2,6 +2,7 @@ import styled from 'styled-components';
 
 import ContentBadge from '@common/badge/ContentBadge';
 import Button from '@common/button/Button';
+import EmptyState from '@common/emptyState/EmptyState';
 import SegmentedControl from '@common/segmentedControl/SegmentedControl';
 import Tooltip from '@common/tooltip/Tooltip';
 import { AssignmentDisplayStatus, AssignmentMemberSubmission, AssignmentSubmission } from 'src/apis/assignment';
@@ -48,6 +49,8 @@ const AssignmentSubmissionTable = ({
         <HeadCell>확인자</HeadCell>
         <HeadCell>상태</HeadCell>
       </HeaderRow>
+
+      {members.length === 0 && <Empty message="아직 제출한 아기사자가 없습니다." />}
 
       <Body>
         {members.map((member, memberIndex) => {
@@ -141,6 +144,10 @@ const HeaderRow = styled.div`
 const HeadCell = styled.span`
   color: ${Label.assistive};
   ${typographyCss(Typography.body1Reading.regular)}
+`;
+
+const Empty = styled(EmptyState)`
+  min-height: 240px;
 `;
 
 const Body = styled.div`

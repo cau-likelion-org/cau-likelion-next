@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 import TextButton from '@common/textButton/TextButton';
-import { AssignmentSubmission } from 'src/apis/assignment';
+import { AssignmentFile, AssignmentSubmission } from 'src/apis/assignment';
 import { IcDocument, IcDownload, IcLink } from '@assets/svg';
 import { BackgroundColor, Label, Line, Material } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -10,6 +10,25 @@ interface AssignmentSubmissionModalProps {
   submission: AssignmentSubmission;
   onClose: () => void;
 }
+
+const downloadFile = async (file: AssignmentFile) => {
+  try {
+    const response = await fetch(file.fileUrl);
+    if (!response.ok) throw new Error(`파일 응답 ${response.status}`);
+    const objectUrl = URL.createObjectURL(await response.blob());
+    const anchor = document.createElement('a');
+    anchor.href = objectUrl;
+    anchor.download = file.originalFilename;
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+
+    setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+  } catch (error) {
+    console.warn('파일 다운로드 실패, 새 탭으로 엽니다.', error);
+    window.open(file.fileUrl, '_blank', 'noopener,noreferrer');
+  }
+};
 
 const AssignmentSubmissionModal = ({ submission, onClose }: AssignmentSubmissionModalProps) => {
   return (
@@ -37,9 +56,13 @@ const AssignmentSubmissionModal = ({ submission, onClose }: AssignmentSubmission
                   <IcDocument width={22} height={22} />
                   <ResourceText>{file.originalFilename}</ResourceText>
                 </Resource>
-                <DownloadLink href={file.fileUrl} download aria-label={`${file.originalFilename} 다운로드`}>
+                <DownloadButton
+                  type="button"
+                  aria-label={`${file.originalFilename} 다운로드`}
+                  onClick={() => downloadFile(file)}
+                >
                   <IcDownload width={22} height={22} />
-                </DownloadLink>
+                </DownloadButton>
               </ResourceRow>
             ))}
           </Resources>
@@ -158,12 +181,16 @@ const ResourceText = styled.span`
   ${typographyCss(Typography.body1Normal.regular)}
 `;
 
-const DownloadLink = styled.a`
+const DownloadButton = styled.button`
   display: inline-flex;
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
+  padding: 0;
+  border: none;
+  background: none;
   color: ${Label.normal};
+  cursor: pointer;
 `;
 
 const Actions = styled.div`
