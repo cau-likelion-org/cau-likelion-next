@@ -11,6 +11,7 @@ import NotificationSetting from '@mypage/component/NotificationSetting';
 import MobileUnsupportedModal from '@common/modal/MobileUnsupportedModal';
 import { getUserProfile } from 'src/apis/account';
 import useTokenStore from 'src/store/useTokenStore';
+import useRecruitModalStore from 'src/store/useRecruitModalStore';
 import { canManageSitePages } from '@utils/index';
 import { BackgroundColor, Black, Line } from '@utils/constant/color';
 import { media } from '@utils/constant/breakpoint';
@@ -37,6 +38,7 @@ const MobileNavModal = ({ isModalOn, onClose }: { isModalOn: boolean; onClose?: 
   const isLogin = hasHydrated && !!access;
 
   const [isUnsupportedOpen, setIsUnsupportedOpen] = useState(false);
+  const openRecruitClosedAlert = useRecruitModalStore((state) => state.openClosedAlert);
 
   const { data: userProfile } = useQuery<UserProfile>({
     queryKey: ['userProfile'],
@@ -47,7 +49,11 @@ const MobileNavModal = ({ isModalOn, onClose }: { isModalOn: boolean; onClose?: 
 
   const handleNavigate = (routing: string) => {
     onClose?.();
-    if (routing !== '#') router.push(routing);
+    if (routing === '#') {
+      openRecruitClosedAlert();
+      return;
+    }
+    router.push(routing);
   };
 
   // 관리자 페이지는 데스크톱 전용이라 모바일에서는 이동 대신 안내 모달을 띄운다
