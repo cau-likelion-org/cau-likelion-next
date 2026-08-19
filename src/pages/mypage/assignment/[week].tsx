@@ -71,20 +71,25 @@ const AssignmentSubmit = () => {
     (assignment) => !idsParam || idsParam.includes(String(assignment.assignmentId)),
   );
 
-  const submittableAssignments = cardAssignments.filter((assignment) =>
-    canSubmitAssignment(assignment.submissions[0]?.displayStatus ?? 'BEFORE_SUBMISSION', assignment.endDate),
-  );
-
-  const dueDate = submittableAssignments[0]?.endDate ?? null;
-
-  const items: AssignmentSubmitItem[] = submittableAssignments
+  const entries = cardAssignments
     .filter((assignment) => !retryIds || retryIds.includes(String(assignment.assignmentId)))
-    .map((assignment) => ({
-      id: String(assignment.assignmentId),
-      name: assignment.title,
-      description: assignment.detail,
-      format: assignment.type === 'FILE' ? 'file' : 'link',
-    }));
+    .map((assignment) => {
+      const latestSubmission = assignment.submissions[0];
+      return {
+        item: {
+          id: String(assignment.assignmentId),
+          name: assignment.title,
+          description: assignment.detail,
+          format: assignment.type === 'FILE' ? 'file' : 'link',
+        } as AssignmentSubmitItem,
+        submission: latestSubmission,
+        canSubmit: canSubmitAssignment(latestSubmission?.displayStatus ?? 'BEFORE_SUBMISSION', assignment.endDate),
+      };
+    });
+
+  const submittableEntries = entries.filter((entry) => entry.canSubmit);
+
+  const dueDate = cardAssignments[0]?.endDate ?? null;
 
   const handleClose = () => router.push('/mypage/assignment');
 
@@ -96,15 +101,15 @@ const AssignmentSubmit = () => {
     valueMapRef.current[itemId] = value;
   }, []);
 
-  const canSubmit = items.length > 0 && items.every((item) => validityMap[item.id]);
+  const isSubmitEnabled =
+    submittableEntries.length > 0 && submittableEntries.every((entry) => validityMap[entry.item.id]);
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
     setSubmitErrors({});
 
-    // 되돌리는 API가 없어 일부만 성공할 수 있다. 실패한 과제만 사용자에게 알린다
     const failed: Record<string, string> = {};
-    for (const item of items) {
+    for (const { item } of submittableEntries) {
       const value = valueMapRef.current[item.id];
       if (!value) continue;
       try {
@@ -163,10 +168,12 @@ const AssignmentSubmit = () => {
             </DueDate>
           )}
         </SessionRow>
-        {items.map((item) => (
+        {entries.map(({ item, submission, canSubmit }) => (
           <AssignmentSubmitCard
             key={item.id}
             item={item}
+            submission={submission}
+            canSubmit={canSubmit}
             errorMessage={submitErrors[item.id]}
             onValidityChange={handleValidityChange}
             onValueChange={handleValueChange}
@@ -174,11 +181,14 @@ const AssignmentSubmit = () => {
         ))}
       </Content>
 
-      <SubmitButtonWrapper>
-        <Button size="large" disabled={!canSubmit || isSubmitting} onClick={handleSubmit}>
-          제출하기
-        </Button>
-      </SubmitButtonWrapper>
+      {/* 제출 가능한 과제가 하나도 없으면(승인 대기·제출 완료) 제출 내역만 보여준다 */}
+      {submittableEntries.length > 0 && (
+        <SubmitButtonWrapper>
+          <Button size="large" disabled={!isSubmitEnabled || isSubmitting} onClick={handleSubmit}>
+            제출하기
+          </Button>
+        </SubmitButtonWrapper>
+      )}
     </Wrapper>
   );
 };

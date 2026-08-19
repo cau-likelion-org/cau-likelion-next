@@ -41,7 +41,7 @@ const WEEK_BADGE_CONFIG: Record<AssignmentDisplayStatus, { label: string; color:
   REJECTED: { label: '승인 반려', color: 'neutral' },
 };
 
-const ITEM_BADGE_CONFIG: Record<AssignmentDisplayStatus, { label: string; color: 'neutral' | 'accent' }> = {
+export const ITEM_BADGE_CONFIG: Record<AssignmentDisplayStatus, { label: string; color: 'neutral' | 'accent' }> = {
   BEFORE_SUBMISSION: { label: '제출 전', color: 'neutral' },
   MISSED: { label: '미제출', color: 'neutral' },
   PENDING_REVIEW: { label: '승인 대기', color: 'neutral' },
@@ -56,8 +56,7 @@ const WeeklyAssignmentCard = ({ group }: { group: WeeklyAssignmentGroup }) => {
   const [isUnsupportedOpen, setIsUnsupportedOpen] = useState(false);
   const weekBadge = WEEK_BADGE_CONFIG[group.status];
 
-  // 제출·수정은 데스크톱 전용이라 모바일에서는 안내 모달을 띄운다
-  const handleAction = (card: AssignmentCard) => {
+  const handleOpenDetail = (card: AssignmentCard) => {
     if (typeof window !== 'undefined' && window.matchMedia(XS_MEDIA_QUERY).matches) {
       setIsUnsupportedOpen(true);
       return;
@@ -82,7 +81,17 @@ const WeeklyAssignmentCard = ({ group }: { group: WeeklyAssignmentGroup }) => {
       </Header>
       {isOpen &&
         group.cards.map((card, cardIndex) => (
-          <GroupCard key={cardIndex}>
+          <GroupCard
+            key={cardIndex}
+            role="button"
+            tabIndex={0}
+            onClick={() => handleOpenDetail(card)}
+            onKeyDown={(event) => {
+              if (event.key !== 'Enter' && event.key !== ' ') return;
+              event.preventDefault();
+              handleOpenDetail(card);
+            }}
+          >
             {card.items.map((item, itemIndex) => {
               const itemBadge = ITEM_BADGE_CONFIG[item.status];
               return (
@@ -101,13 +110,13 @@ const WeeklyAssignmentCard = ({ group }: { group: WeeklyAssignmentGroup }) => {
               </DueDate>
               {card.actionLabel && (
                 <>
-                  <DesktopAction>
-                    <Button size="large" onClick={() => handleAction(card)}>
+                  <DesktopAction onClick={(event) => event.stopPropagation()}>
+                    <Button size="large" onClick={() => handleOpenDetail(card)}>
                       {card.actionLabel}
                     </Button>
                   </DesktopAction>
-                  <MobileAction>
-                    <Button size="small" onClick={() => handleAction(card)}>
+                  <MobileAction onClick={(event) => event.stopPropagation()}>
+                    <Button size="small" onClick={() => handleOpenDetail(card)}>
                       {card.actionLabel}
                     </Button>
                   </MobileAction>
@@ -186,6 +195,7 @@ const GroupCard = styled.div`
   gap: 16px;
   width: 100%;
   padding: 20px;
+  cursor: pointer;
   border: 1px solid ${Line.subtle};
   border-radius: 14px;
   background-color: ${BackgroundWhite.tertiary};
