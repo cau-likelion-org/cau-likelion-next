@@ -32,10 +32,14 @@ const MakeAttendanceCard = () => {
   const [isToastOpen, setIsToastOpen] = useState(false);
   const [submitError, setSubmitError] = useState('');
 
-  // 오늘 출석부가 이미 있으면 생성 영역을 잠근다. 조회에 실패하면 잠그지 않는다(생성 자체를 막으면 안 되므로)
-  const { data: todayAttendance } = useQuery<WeeklyAttendanceResponse | null>({
-    queryKey: ['weeklyAttendance', today],
-    queryFn: () => getWeeklyAttendanceByDate(tokenState, today),
+  // 날짜를 고르기 전에는 오늘 기준으로 본다
+  const targetDate = date || today;
+
+  // 해당 날짜에 출석부가 이미 있으면 그 내용을 보여주고 생성 영역을 잠근다.
+  // 조회에 실패하면 잠그지 않는다(생성 자체를 막으면 안 되므로)
+  const { data: existingAttendance } = useQuery<WeeklyAttendanceResponse | null>({
+    queryKey: ['weeklyAttendance', targetDate],
+    queryFn: () => getWeeklyAttendanceByDate(tokenState, targetDate),
     retry: false,
     enabled: !!tokenState.access,
   });
@@ -44,7 +48,7 @@ const MakeAttendanceCard = () => {
     mutationFn: (payload: WeeklyAttendanceCreatePayload) => createWeeklyAttendance(tokenState, payload),
     onSuccess: () => {
       setIsToastOpen(true);
-      queryClient.invalidateQueries({ queryKey: ['weeklyAttendance', today] });
+      queryClient.invalidateQueries({ queryKey: ['weeklyAttendance', targetDate] });
     },
     onError: (error: unknown) => {
       const status = (error as { response?: { status?: number } })?.response?.status;
@@ -52,16 +56,16 @@ const MakeAttendanceCard = () => {
     },
   });
 
-  // 비밀번호를 실제로 받아왔을 때만 잠근다 (보여줄 값이 없으면 잠가도 회장이 확인할 방법이 없다)
-  const isLockedByToday = !!todayAttendance?.password && new Date().getHours() < CREATE_LOCK_UNTIL_HOUR;
-  const isCreated = createMutation.isSuccess || isLockedByToday;
+  const isLockedByExisting =
+    !!existingAttendance?.password && (targetDate !== today || new Date().getHours() < CREATE_LOCK_UNTIL_HOUR);
+  const isCreated = createMutation.isSuccess || isLockedByExisting;
   const hasPassword = !!password;
   const canSave = !!date && !!weekNumber && hasPassword && !createMutation.isPending && !isCreated;
   const buttonDisabled = isCreated ? true : hasPassword ? !canSave : false;
 
-  const displayDate = isLockedByToday ? todayAttendance.date : date;
-  const displayWeek = isLockedByToday ? String(todayAttendance.weekNumber) : weekNumber;
-  const displayPassword = isLockedByToday ? todayAttendance.password : password;
+  const displayDate = isLockedByExisting ? existingAttendance.date : date;
+  const displayWeek = isLockedByExisting ? String(existingAttendance.weekNumber) : weekNumber;
+  const displayPassword = isLockedByExisting ? existingAttendance.password : password;
 
   const handleWeekChange = (value: string) => setWeekNumber(value.replace(/\D/g, '').slice(0, 2));
 
