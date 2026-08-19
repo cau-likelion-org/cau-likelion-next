@@ -25,6 +25,13 @@ export function createWeeklyAttendance(token: IToken, payload: WeeklyAttendanceC
   return authAxios.post<WeeklyAttendanceResponse>('/api/attendances/password', payload).then((res) => res.data);
 }
 
+export async function getWeeklyAttendanceByDate(token: IToken, date: string) {
+  const { data } = await getAuthAxios(token).get<WeeklyAttendanceResponse[]>('/api/attendances/password', {
+    params: { date },
+  });
+  return data.find((attendance) => attendance.date === date) ?? null;
+}
+
 export type AttendanceStatus = 'BEFORE' | 'PRESENT' | 'LATE' | 'ABSENT' | 'UNAUTHORIZED_ABSENT' | 'EXCUSED';
 
 export interface AttendanceStatusResponse {

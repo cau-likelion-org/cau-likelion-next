@@ -1,10 +1,15 @@
 import { useRef, useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import styled from 'styled-components';
 
 import Toast from '@common/toast/Toast';
 import { IcCalendar, IcRefresh } from '@assets/svg';
-import { WeeklyAttendanceCreatePayload, createWeeklyAttendance } from 'src/apis/attendance';
+import {
+  WeeklyAttendanceCreatePayload,
+  WeeklyAttendanceResponse,
+  createWeeklyAttendance,
+  getWeeklyAttendanceByDate,
+} from 'src/apis/attendance';
 import useTokenStore from 'src/store/useTokenStore';
 import { toDateString } from '@utils/index';
 import { BackgroundWhite, Black, Label, Line, State } from '@utils/constant/color';
@@ -13,8 +18,11 @@ import { media } from '@utils/constant/breakpoint';
 
 const generatePassword = () => String(Math.floor(1000 + Math.random() * 9000));
 
+const CREATE_LOCK_UNTIL_HOUR = 22;
+
 const MakeAttendanceCard = () => {
   const tokenState = useTokenStore((state) => state.token);
+  const queryClient = useQueryClient();
   const dateInputRef = useRef<HTMLInputElement>(null);
 
   const today = toDateString(new Date());
@@ -24,19 +32,40 @@ const MakeAttendanceCard = () => {
   const [isToastOpen, setIsToastOpen] = useState(false);
   const [submitError, setSubmitError] = useState('');
 
+  // 날짜를 고르기 전에는 오늘 기준으로 본다
+  const targetDate = date || today;
+
+  // 해당 날짜에 출석부가 이미 있으면 그 내용을 보여주고 생성 영역을 잠근다.
+  // 조회에 실패하면 잠그지 않는다(생성 자체를 막으면 안 되므로)
+  const { data: existingAttendance } = useQuery<WeeklyAttendanceResponse | null>({
+    queryKey: ['weeklyAttendance', targetDate],
+    queryFn: () => getWeeklyAttendanceByDate(tokenState, targetDate),
+    retry: false,
+    enabled: !!tokenState.access,
+  });
+
   const createMutation = useMutation({
     mutationFn: (payload: WeeklyAttendanceCreatePayload) => createWeeklyAttendance(tokenState, payload),
-    onSuccess: () => setIsToastOpen(true),
+    onSuccess: () => {
+      setIsToastOpen(true);
+      queryClient.invalidateQueries({ queryKey: ['weeklyAttendance', targetDate] });
+    },
     onError: (error: unknown) => {
       const status = (error as { response?: { status?: number } })?.response?.status;
-      setSubmitError(status === 400 ? '해당 일자의 출석부가 이미 존재해요.' : '출석부 생성에 실패했어요.');
+      setSubmitError(status === 400 ? '해당 날짜에 이미 출석부가 존재합니다.' : '출석부 생성에 실패했어요.');
     },
   });
 
-  const isCreated = createMutation.isSuccess;
+  const isLockedByExisting =
+    !!existingAttendance?.password && (targetDate !== today || new Date().getHours() < CREATE_LOCK_UNTIL_HOUR);
+  const isCreated = createMutation.isSuccess || isLockedByExisting;
   const hasPassword = !!password;
   const canSave = !!date && !!weekNumber && hasPassword && !createMutation.isPending && !isCreated;
   const buttonDisabled = isCreated ? true : hasPassword ? !canSave : false;
+
+  const displayDate = isLockedByExisting ? existingAttendance.date : date;
+  const displayWeek = isLockedByExisting ? String(existingAttendance.weekNumber) : weekNumber;
+  const displayPassword = isLockedByExisting ? existingAttendance.password : password;
 
   const handleWeekChange = (value: string) => setWeekNumber(value.replace(/\D/g, '').slice(0, 2));
 
@@ -61,7 +90,9 @@ const MakeAttendanceCard = () => {
             <FieldLabel>출석 일자 설정</FieldLabel>
             <DateInputWrapper $disabled={isCreated} onClick={() => dateInputRef.current?.showPicker?.()}>
               <IcCalendar width={22} height={22} />
-              <DateValue $placeholder={!date}>{date ? date.replace(/-/g, '/') : '캘린더 선택'}</DateValue>
+              <DateValue $placeholder={!displayDate}>
+                {displayDate ? displayDate.replace(/-/g, '/') : '캘린더 선택'}
+              </DateValue>
               <HiddenDateInput
                 ref={dateInputRef}
                 type="date"
@@ -80,7 +111,7 @@ const MakeAttendanceCard = () => {
               <TextInput
                 inputMode="numeric"
                 placeholder="숫자 입력"
-                value={weekNumber}
+                value={displayWeek}
                 disabled={isCreated}
                 onChange={(event) => handleWeekChange(event.target.value)}
                 aria-label="주차 구분"
@@ -92,8 +123,8 @@ const MakeAttendanceCard = () => {
             <FieldLabel>비밀번호 생성</FieldLabel>
             <PasswordRow>
               <PasswordInputBox $disabled={isCreated}>
-                <TextInput as="span" $placeholder={!password}>
-                  {password || '랜덤 생성'}
+                <TextInput as="span" $placeholder={!displayPassword}>
+                  {displayPassword || '랜덤 생성'}
                 </TextInput>
                 {hasPassword && (
                   <RefreshButton
@@ -107,7 +138,7 @@ const MakeAttendanceCard = () => {
                 )}
               </PasswordInputBox>
               <GenerateButton type="button" disabled={buttonDisabled} onClick={handleButtonClick}>
-                {hasPassword ? '저장' : '생성'}
+                {displayPassword ? '저장' : '생성'}
               </GenerateButton>
             </PasswordRow>
           </Field>
