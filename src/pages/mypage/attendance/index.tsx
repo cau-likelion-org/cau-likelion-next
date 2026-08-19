@@ -120,7 +120,8 @@ const MyPageAttendance = () => {
     queryFn: () => getMyAttendances(tokenState),
     enabled: !!userProfile && !isStaff && userProfile.role !== 'ADULT_LION',
   });
-  const myRecords = (myAttendances ?? []).map(toWeeklyRecord);
+
+  const myRecords = [...(myAttendances ?? [])].sort((a, b) => b.weekNumber - a.weekNumber).map(toWeeklyRecord);
 
   const members =
     isPresident && selectedPart !== ALL_PART
