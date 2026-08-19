@@ -41,7 +41,7 @@ const WEEK_BADGE_CONFIG: Record<AssignmentDisplayStatus, { label: string; color:
   REJECTED: { label: '승인 반려', color: 'neutral' },
 };
 
-const ITEM_BADGE_CONFIG: Record<AssignmentDisplayStatus, { label: string; color: 'neutral' | 'accent' }> = {
+export const ITEM_BADGE_CONFIG: Record<AssignmentDisplayStatus, { label: string; color: 'neutral' | 'accent' }> = {
   BEFORE_SUBMISSION: { label: '제출 전', color: 'neutral' },
   MISSED: { label: '미제출', color: 'neutral' },
   PENDING_REVIEW: { label: '승인 대기', color: 'neutral' },
@@ -56,8 +56,7 @@ const WeeklyAssignmentCard = ({ group }: { group: WeeklyAssignmentGroup }) => {
   const [isUnsupportedOpen, setIsUnsupportedOpen] = useState(false);
   const weekBadge = WEEK_BADGE_CONFIG[group.status];
 
-  // 제출·수정은 데스크톱 전용이라 모바일에서는 안내 모달을 띄운다
-  const handleAction = (card: AssignmentCard) => {
+  const handleOpenDetail = (card: AssignmentCard) => {
     if (typeof window !== 'undefined' && window.matchMedia(XS_MEDIA_QUERY).matches) {
       setIsUnsupportedOpen(true);
       return;
@@ -81,41 +80,60 @@ const WeeklyAssignmentCard = ({ group }: { group: WeeklyAssignmentGroup }) => {
         </HeaderRight>
       </Header>
       {isOpen &&
-        group.cards.map((card, cardIndex) => (
-          <GroupCard key={cardIndex}>
-            {card.items.map((item, itemIndex) => {
-              const itemBadge = ITEM_BADGE_CONFIG[item.status];
-              return (
-                <ItemRow key={itemIndex}>
-                  <ItemName>{item.name}</ItemName>
-                  <ItemRight>
-                    {item.submittedAt && <SubmittedAt>{item.submittedAt}</SubmittedAt>}
-                    <ContentBadge text={itemBadge.label} color={itemBadge.color} variant="solid" size="medium" />
-                  </ItemRight>
-                </ItemRow>
-              );
-            })}
-            <FooterRow>
-              <DueDate>
-                마감일 <span>ㅣ</span> {card.dueDate}
-              </DueDate>
-              {card.actionLabel && (
-                <>
-                  <DesktopAction>
-                    <Button size="large" onClick={() => handleAction(card)}>
-                      {card.actionLabel}
-                    </Button>
-                  </DesktopAction>
-                  <MobileAction>
-                    <Button size="small" onClick={() => handleAction(card)}>
-                      {card.actionLabel}
-                    </Button>
-                  </MobileAction>
-                </>
-              )}
-            </FooterRow>
-          </GroupCard>
-        ))}
+        group.cards.map((card, cardIndex) => {
+          const isClickable = !card.actionLabel;
+
+          return (
+            <GroupCard
+              key={cardIndex}
+              $clickable={isClickable}
+              role={isClickable ? 'button' : undefined}
+              tabIndex={isClickable ? 0 : undefined}
+              onClick={isClickable ? () => handleOpenDetail(card) : undefined}
+              onKeyDown={
+                isClickable
+                  ? (event) => {
+                      if (event.key !== 'Enter' && event.key !== ' ') return;
+                      event.preventDefault();
+                      handleOpenDetail(card);
+                    }
+                  : undefined
+              }
+            >
+              {card.items.map((item, itemIndex) => {
+                const itemBadge = ITEM_BADGE_CONFIG[item.status];
+                return (
+                  <ItemRow key={itemIndex}>
+                    <ItemName>{item.name}</ItemName>
+                    <ItemRight>
+                      {item.submittedAt && <SubmittedAt>{item.submittedAt}</SubmittedAt>}
+                      <ContentBadge text={itemBadge.label} color={itemBadge.color} variant="solid" size="medium" />
+                    </ItemRight>
+                  </ItemRow>
+                );
+              })}
+              <FooterRow>
+                <DueDate>
+                  마감일 <span>ㅣ</span> {card.dueDate}
+                </DueDate>
+                {card.actionLabel && (
+                  <>
+                    <DesktopAction>
+                      <Button size="large" onClick={() => handleOpenDetail(card)}>
+                        {card.actionLabel}
+                      </Button>
+                    </DesktopAction>
+                    <MobileAction>
+                      <Button size="small" onClick={() => handleOpenDetail(card)}>
+                        {card.actionLabel}
+                      </Button>
+                    </MobileAction>
+                  </>
+                )}
+              </FooterRow>
+            </GroupCard>
+          );
+        })}
       {isUnsupportedOpen && <MobileUnsupportedModal onClose={() => setIsUnsupportedOpen(false)} />}
     </Wrapper>
   );
@@ -180,12 +198,13 @@ const Chevron = styled.span<{ $open: boolean }>`
   }
 `;
 
-const GroupCard = styled.div`
+const GroupCard = styled.div<{ $clickable: boolean }>`
   display: flex;
   flex-direction: column;
   gap: 16px;
   width: 100%;
   padding: 20px;
+  cursor: ${(props) => (props.$clickable ? 'pointer' : 'default')};
   border: 1px solid ${Line.subtle};
   border-radius: 14px;
   background-color: ${BackgroundWhite.tertiary};

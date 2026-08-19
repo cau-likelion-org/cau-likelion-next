@@ -61,7 +61,7 @@ const MAX_TITLE_LENGTH_EN = 20;
 const HANGUL_REGEX = /[ㄱ-ㅎㅏ-ㅣ가-힣]/;
 const getMaxTitleLength = (value: string) => (HANGUL_REGEX.test(value) ? MAX_TITLE_LENGTH_KO : MAX_TITLE_LENGTH_EN);
 const LINK_TYPE_OPTIONS = ['Web', 'GitHub', 'Behance'];
-const CONTENT_PLACEHOLDER = '예시)이 서비스는 ~~한 서비스입니다\n서비스의 핵심기능\n\n· 이런거\n· 이\n· 이';
+const CONTENT_PLACEHOLDER = '서비스 기획 배경, 핵심 기능 등을 자유롭게 입력해주세요.';
 const TAG_SEPARATOR_REGEX = /[\s,]+/;
 
 const LINK_TYPE_TO_PLATFORM: Record<string, LinkPlatform> = {
@@ -330,6 +330,14 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
     isUnfilled(teamName) ||
     isDateInvalid;
 
+  // 영문만 있을 땐 20자지만 한글이 섞이는 순간 한도가 16자로 줄어든다. 한도를 넘기는 입력은 막되,
+  // 이미 입력된 글자를 잘라내지는 않는다(지우는 방향은 항상 허용).
+  const handleTitleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
+    const next = event.target.value;
+    if (next.length > title.length && next.length > getMaxTitleLength(next)) return;
+    setTitle(next);
+  };
+
   const handleAddPart = () => {
     setExtraParts((prev) => [...prev, { id: nextId(), name: '', members: [] }]);
   };
@@ -565,13 +573,15 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
           <Required>*</Required>
         </FieldHeading>
         <TitleTextarea
-          placeholder="메시지를 입력해 주세요."
+          placeholder={`서비스명을 입력해주세요. (국문 포함 ${MAX_TITLE_LENGTH_KO}자/영문 ${MAX_TITLE_LENGTH_EN}자)`}
           value={title}
-          onChange={(event) => setTitle(event.target.value.slice(0, getMaxTitleLength(event.target.value)))}
+          onChange={handleTitleChange}
           resize="fixed"
           maxLength={maxTitleLength}
           bottomTrailingContent={
-            <TitleLengthGuide>{`공백포함 국문 ${MAX_TITLE_LENGTH_KO}자/영문 ${MAX_TITLE_LENGTH_EN}자`}</TitleLengthGuide>
+            <CharCount>
+              {title.length}/{maxTitleLength}
+            </CharCount>
           }
           status={showErrors && (isUnfilled(title) || isTitleOverflow) ? 'negative' : 'normal'}
           description={
@@ -590,7 +600,7 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
           <Required>*</Required>
         </FieldHeading>
         <TitleTextarea
-          placeholder="메시지를 입력해 주세요."
+          placeholder="서비스 한줄소개를 입력해주세요."
           value={subtitle}
           onChange={(event) => setSubtitle(event.target.value.slice(0, 80))}
           resize="fixed"
@@ -672,22 +682,27 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
             status={showErrors && isUnfilled(teamName) ? 'negative' : 'normal'}
             description={showErrors && isUnfilled(teamName) ? '팀명을 입력해 주세요.' : undefined}
           />
-          <TagChipInput heading="기획" placeholder="이름을 입력해 주세요." values={pmMembers} onChange={setPmMembers} />
+          <TagChipInput
+            heading="기획"
+            placeholder="텍스트 입력 후 띄어쓰기"
+            values={pmMembers}
+            onChange={setPmMembers}
+          />
           <TagChipInput
             heading="디자인"
-            placeholder="이름을 입력해 주세요."
+            placeholder="텍스트 입력 후 띄어쓰기"
             values={designMembers}
             onChange={setDesignMembers}
           />
           <TagChipInput
             heading="프론트엔드"
-            placeholder="이름을 입력해 주세요."
+            placeholder="텍스트 입력 후 띄어쓰기"
             values={frontendMembers}
             onChange={setFrontendMembers}
           />
           <TagChipInput
             heading="백엔드"
-            placeholder="이름을 입력해 주세요."
+            placeholder="텍스트 입력 후 띄어쓰기"
             values={backendMembers}
             onChange={setBackendMembers}
           />
@@ -708,7 +723,7 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
                 </TextButton>
               </ExtraPartHeaderRow>
               <TagChipInput
-                placeholder="이름을 입력해 주세요."
+                placeholder="텍스트 입력 후 띄어쓰기"
                 values={part.members}
                 onChange={(members) =>
                   setExtraParts((prev) => prev.map((p) => (p.id === part.id ? { ...p, members } : p)))
@@ -757,13 +772,13 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
           </DateFieldGroup>
           <TagChipInput
             heading="기술스택"
-            placeholder="항목을 입력해 주세요."
+            placeholder="텍스트 입력 후 띄어쓰기"
             values={techStackItems}
             onChange={setTechStackItems}
           />
           <TextField
             heading="배너 추가하기"
-            placeholder="예시)2026해커톤본선진출작"
+            placeholder="예시) 2026 해커톤 본선진출작"
             value={banner}
             onChange={(event) => setBanner(event.target.value.slice(0, MAX_BANNER_LENGTH))}
             maxLength={MAX_BANNER_LENGTH}
@@ -786,7 +801,7 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
               onChange={(type) => setLinkRows((prev) => prev.map((r) => (r.id === row.id ? { ...r, type } : r)))}
             />
             <TextField
-              placeholder="링크를 복붙해주세요."
+              placeholder="복사한 링크를 붙여넣어 주세요."
               value={row.url}
               onChange={(event) =>
                 setLinkRows((prev) => prev.map((r) => (r.id === row.id ? { ...r, url: event.target.value } : r)))
@@ -807,17 +822,31 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
       <ActionArea>
         {isEditMode ? (
           <EditActionGroup>
-            <Button variant="solid" color="primary" size="large" onClick={handleSubmit} disabled={isSubmitting}>
+            <Button
+              variant="solid"
+              color="primary"
+              size="large"
+              onClick={handleSubmit}
+              loading={isSubmitting}
+              disabled={deleteMutation.isPending}
+            >
               수정하기
             </Button>
-            <Button variant="outlined" color="assistive" size="large" onClick={handleDelete}>
+            <Button
+              variant="outlined"
+              color="assistive"
+              size="large"
+              onClick={handleDelete}
+              loading={deleteMutation.isPending}
+              disabled={isSubmitting}
+            >
               삭제하기
             </Button>
           </EditActionGroup>
         ) : (
           <>
             <ActionDescription>등록 후 수정할 수 있어요</ActionDescription>
-            <Button variant="solid" color="primary" size="large" onClick={handleSubmit} disabled={isSubmitting}>
+            <Button variant="solid" color="primary" size="large" onClick={handleSubmit} loading={isSubmitting}>
               등록하기
             </Button>
           </>
@@ -1247,13 +1276,6 @@ const TitleTextarea = styled(Textarea)`
   textarea {
     min-height: 26px;
   }
-`;
-
-const TitleLengthGuide = styled.span`
-  padding: 0 4px;
-  opacity: 0.74;
-  color: ${Label.alternative};
-  ${typographyCss({ ...Typography.label2.bold, fontWeight: 500 })}
 `;
 
 const ContentTextarea = styled(Textarea)`
