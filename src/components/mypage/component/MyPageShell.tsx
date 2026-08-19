@@ -1,10 +1,12 @@
-import { ReactNode } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
+import { Router } from 'next/router';
 import { useQuery } from '@tanstack/react-query';
 import styled from 'styled-components';
 
 import { UserProfile } from '@@types/request';
 import LogoutButton from '@mypage/component/LogoutButton';
 import Sidebar, { SidebarActive } from '@mypage/component/Sidebar';
+import PageLoadingGate from '@common/pageGate/PageLoadingGate';
 import { IcChevronRight } from '@assets/svg';
 import { getUserProfile } from 'src/apis/account';
 import useTokenStore from 'src/store/useTokenStore';
@@ -45,6 +47,22 @@ const MyPageShell = ({
   });
   const showAdminMenu = isAdmin ?? (!!userProfile && canManageSitePages(userProfile.role));
 
+  const [isRouting, setIsRouting] = useState(false);
+  useEffect(() => {
+    const start = (url: string) => setIsRouting(url.startsWith('/mypage'));
+    const end = () => setIsRouting(false);
+
+    Router.events.on('routeChangeStart', start);
+    Router.events.on('routeChangeComplete', end);
+    Router.events.on('routeChangeError', end);
+
+    return () => {
+      Router.events.off('routeChangeStart', start);
+      Router.events.off('routeChangeComplete', end);
+      Router.events.off('routeChangeError', end);
+    };
+  }, []);
+
   return (
     <Wrapper>
       <Header>
@@ -62,7 +80,7 @@ const MyPageShell = ({
         <SidebarSlot>
           <Sidebar active={active} isAdmin={showAdminMenu} />
         </SidebarSlot>
-        <Main>{children}</Main>
+        <Main>{isRouting ? <PageLoadingGate /> : children}</Main>
       </Content>
     </Wrapper>
   );
