@@ -20,10 +20,15 @@ export type SidebarActive =
 const Sidebar = ({ active, isAdmin = false }: { active: SidebarActive; isAdmin?: boolean }) => {
   const router = useRouter();
   const isAdminSection = active.startsWith('admin-');
-  // 관리자 화면에 있을 때는 펼친 상태로 시작하고, 그 외에는 눌러서 펼친다
+
   const [isAdminOpen, setIsAdminOpen] = useState(isAdminSection);
 
-  // 관리자 화면 밖에서 '관리자'를 펼치면 기본 화면인 랜딩페이지 관리로 이동한다
+  const [wasAdminSection, setWasAdminSection] = useState(isAdminSection);
+  if (wasAdminSection !== isAdminSection) {
+    setWasAdminSection(isAdminSection);
+    setIsAdminOpen(isAdminSection);
+  }
+
   const handleAdminToggle = () => {
     const willOpen = !isAdminOpen;
     setIsAdminOpen(willOpen);
