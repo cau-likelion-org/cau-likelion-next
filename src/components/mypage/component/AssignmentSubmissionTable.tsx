@@ -28,8 +28,9 @@ const APPROVAL_OPTIONS = [
 
 interface AssignmentSubmissionTableProps {
   members: AssignmentMemberSubmission[];
-  onApprove: (submitId: number) => void;
-  onReject: (submitId: number) => void;
+  // 마감일은 아기사자마다 다를 수 있어(개별 마감일) 해당 행의 마감일을 함께 넘긴다
+  onApprove: (submitId: number, deadline: string) => void;
+  onReject: (submitId: number, deadline: string) => void;
   onViewSubmission: (submission: AssignmentSubmission) => void;
 }
 
@@ -103,8 +104,8 @@ const AssignmentSubmissionTable = ({
                   disabled={!hasSubmission}
                   onChange={(value) => {
                     if (!submission) return;
-                    if (value === 'APPROVED') onApprove(submission.id);
-                    else onReject(submission.id);
+                    if (value === 'APPROVED') onApprove(submission.id, member.deadline);
+                    else onReject(submission.id, member.deadline);
                   }}
                 />
 

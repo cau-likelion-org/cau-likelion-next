@@ -108,7 +108,22 @@ const MyPageAssignmentDetail = () => {
   const [viewTarget, setViewTarget] = useState<AssignmentSubmission | null>(null);
   const [rejectTarget, setRejectTarget] = useState<number | null>(null);
 
-  const handleApprove = (submitId: number) => evaluateMutation.mutate({ submitId, payload: { status: 'APPROVED' } });
+  const blockBeforeDeadline = (deadline: string) => {
+    if (Date.now() >= new Date(deadline).getTime()) return false;
+    showToast('negative', '과제 마감일 이전 승인/반려 처리는 불가능합니다.');
+    return true;
+  };
+
+  const handleApprove = (submitId: number, deadline: string) => {
+    if (blockBeforeDeadline(deadline)) return;
+    evaluateMutation.mutate({ submitId, payload: { status: 'APPROVED' } });
+  };
+
+  const handleReject = (submitId: number, deadline: string) => {
+    if (blockBeforeDeadline(deadline)) return;
+    setRejectTarget(submitId);
+  };
+
   const confirmReject = (reason: string) => {
     if (rejectTarget == null) return;
     evaluateMutation.mutate(
@@ -187,7 +202,7 @@ const MyPageAssignmentDetail = () => {
       <AssignmentSubmissionTable
         members={members}
         onApprove={handleApprove}
-        onReject={setRejectTarget}
+        onReject={handleReject}
         onViewSubmission={setViewTarget}
       />
 
