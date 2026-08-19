@@ -23,7 +23,19 @@ import { isUnfilled } from '@utils/index';
 import { resizeImageFile } from '@utils/resizeImage';
 import { Typography, typographyCss } from '@utils/constant/typography';
 const MAX_IMAGE_COUNT = 10;
-const CONTENT_PLACEHOLDER = '예시)이 서비스는 ~~한 서비스입니다\n서비스의 핵심기능\n\n· 이런거\n· 이\n· 이';
+// 백엔드에 별도 파트로 등록되어 있지 않은, 특정 파트에 한정되지 않는 세션을 위한 옵션.
+// partName은 자유 문자열이라 백엔드 반영 없이 프론트에서만 추가.
+export const COMMON_PART_NAME = '공통';
+const TITLE_PLACEHOLDER: Record<PostType, string> = {
+  session: '세션명을 입력해주세요.',
+  project: '게시물 제목을 입력해주세요.',
+  gallery: '게시물 제목을 입력해주세요.',
+};
+const CONTENT_PLACEHOLDER: Record<PostType, string> = {
+  session: '세션 내용을 입력해주세요.',
+  project: '사진에 대한 설명을 입력해주세요.',
+  gallery: '사진에 대한 설명을 입력해주세요.',
+};
 // 두 자리 기수를 입력하는 도중(예: "1" → "13") 검증이 앞서 트리거되지 않도록 입력이 멈춘 뒤에만 검증
 const GENERATION_VALIDATION_DELAY = 1500;
 // 2021년(9기)부터의 활동만 아카이빙 대상
@@ -113,6 +125,9 @@ const PostUploadModal = ({
   const [showErrors, setShowErrors] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorToast, setErrorToast] = useState('');
+  // 같은 문구를 다시 setErrorToast로 넘기면 값이 동일해 리렌더가 스킵되어 토스트가
+  // 다시 뜨지 않는다. key를 바꿔 Toast를 강제로 새로 마운트시켜 항상 다시 노출되게 한다.
+  const [toastKey, setToastKey] = useState(0);
 
   const { data: generations } = useQuery({ queryKey: ['generations'], queryFn: getGenerations });
 
@@ -133,15 +148,20 @@ const PostUploadModal = ({
       ? GENERATION_NOT_FOUND_MESSAGE
       : '';
 
-  const [prevGenerationError, setPrevGenerationError] = useState(generationError);
-  if (generationError !== prevGenerationError) {
-    setPrevGenerationError(generationError);
-    if (generationError) setErrorToast(generationError);
+  const [prevDebouncedGeneration, setPrevDebouncedGeneration] = useState(debouncedGeneration);
+  if (debouncedGeneration !== prevDebouncedGeneration) {
+    setPrevDebouncedGeneration(debouncedGeneration);
+    if (generationError) {
+      setErrorToast(generationError);
+      setToastKey((prev) => prev + 1);
+    }
   }
 
   const categoryOptions =
     postType === 'session'
-      ? (matchedGeneration?.parts.map((part) => part.name) ?? [])
+      ? matchedGeneration
+        ? [COMMON_PART_NAME, ...matchedGeneration.parts.map((part) => part.name)]
+        : []
       : (categoryConfig?.options ?? []);
   const categoryOptionsKey = categoryOptions.join(' ');
   const [prevCategoryOptionsKey, setPrevCategoryOptionsKey] = useState(categoryOptionsKey);
@@ -444,7 +464,7 @@ const PostUploadModal = ({
               <Required>*</Required>
             </FieldHeading>
             <TitleTextarea
-              placeholder="메시지를 입력해 주세요."
+              placeholder={TITLE_PLACEHOLDER[postType]}
               value={title}
               onChange={(event) => setTitle(event.target.value)}
               maxLength={70}
@@ -461,7 +481,7 @@ const PostUploadModal = ({
               <Required>*</Required>
             </FieldHeading>
             <ContentTextarea
-              placeholder={CONTENT_PLACEHOLDER}
+              placeholder={CONTENT_PLACEHOLDER[postType]}
               value={content}
               onChange={(event) => setContent(event.target.value)}
               maxLength={300}
@@ -604,7 +624,13 @@ const PostUploadModal = ({
         </Actions>
       </Modal>
       <ToastWrapper>
-        <Toast variant="negative" text={errorToast} show={!!errorToast} onHidden={() => setErrorToast('')} />
+        <Toast
+          key={toastKey}
+          variant="negative"
+          text={errorToast}
+          show={!!errorToast}
+          onHidden={() => setErrorToast('')}
+        />
       </ToastWrapper>
     </Backdrop>
   );
@@ -721,7 +747,7 @@ const DateField = ({
   if (mode === 'single') {
     return (
       <SingleDateInput
-        placeholder="캘린더 선택"
+        placeholder="날짜 선택"
         ariaLabel="일자"
         value={value ?? ''}
         onChange={(next) => onChange?.(next)}
@@ -734,7 +760,7 @@ const DateField = ({
     <DateRangeRow>
       <DateRangeItem>
         <SingleDateInput
-          placeholder="캘린더 선택"
+          placeholder="날짜 선택"
           ariaLabel="시작일"
           value={rangeValue?.[0] ?? ''}
           onChange={(next) => onRangeChange?.(0, next)}
@@ -744,7 +770,7 @@ const DateField = ({
       <DateRangeDivider width={16} height={16} />
       <DateRangeItem>
         <SingleDateInput
-          placeholder="캘린더 선택"
+          placeholder="날짜 선택"
           ariaLabel="종료일"
           value={rangeValue?.[1] ?? ''}
           onChange={(next) => onRangeChange?.(1, next)}
