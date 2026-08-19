@@ -69,11 +69,11 @@ const AttendanceCheckCard = ({ isTarget = true }: { isTarget?: boolean }) => {
     if (isLoading) return '';
     if (isError) return '출석 정보를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.';
     if (isAvailable) return '비밀번호를 입력해 주세요.';
-    if (todayRecord?.status === 'UNAUTHORIZED_ABSENT') return '출석체크가 마감되어 무단결석으로 처리되었어요';
+    if (todayRecord?.status === 'UNAUTHORIZED_ABSENT') return '아직 출석체크 시간이 아니에요';
     if (todayRecord)
       return todayRecord.statusDescription
         ? `이미 ${todayRecord.statusDescription} 처리된 세션이에요`
-        : '오늘 출석체크는 마감되었어요';
+        : '아직 출석체크 시간이 아니에요';
     return '아직 오늘의 출석체크가 열리지 않았어요';
   })();
 
