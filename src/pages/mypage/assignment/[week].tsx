@@ -74,16 +74,13 @@ const AssignmentSubmit = () => {
     canSubmitAssignment(assignment.submissions[0]?.displayStatus ?? 'BEFORE_SUBMISSION', assignment.endDate),
   );
 
-  const dueDates = submittableAssignments.map((assignment) => formatDueDate(assignment.endDate));
-  const sharedDueDate = dueDates.length > 0 && dueDates.every((date) => date === dueDates[0]) ? dueDates[0] : null;
+  const dueDate = submittableAssignments[0]?.endDate ?? null;
 
-  const items: AssignmentSubmitItem[] = submittableAssignments.map((assignment, index) => ({
+  const items: AssignmentSubmitItem[] = submittableAssignments.map((assignment) => ({
     id: String(assignment.assignmentId),
     name: assignment.title,
     description: assignment.detail,
     format: assignment.type === 'FILE' ? 'file' : 'link',
-    // 개별 마감일 변경으로 과제마다 마감일이 다르면 주차 마감일 대신 과제별로 보여준다
-    dueDate: sharedDueDate ? undefined : dueDates[index],
   }));
 
   const handleClose = () => router.push('/mypage/assignment');
@@ -155,9 +152,9 @@ const AssignmentSubmit = () => {
       <Content>
         <SessionRow>
           <SessionTitle>{week}주차 세션 과제</SessionTitle>
-          {sharedDueDate && (
+          {dueDate && (
             <DueDate>
-              마감일 <span>ㅣ</span> {sharedDueDate}
+              마감일 <span>ㅣ</span> {formatDueDate(dueDate)}
             </DueDate>
           )}
         </SessionRow>
