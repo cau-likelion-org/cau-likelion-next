@@ -144,15 +144,7 @@ const MyPageAssignment = () => {
 
   const isPartResolving = isPresident && presidentPartId == null && !generations;
 
-  const weeks = (() => {
-    const groups = weekGroups ?? [];
-    const maxWeek = groups.reduce((max, group) => Math.max(max, group.week), 0);
-    const byWeek = new Map(groups.map((group) => [group.week, group.assignments]));
-    return Array.from({ length: maxWeek }, (_, index) => {
-      const week = maxWeek - index;
-      return { week, assignments: byWeek.get(week) ?? [] };
-    });
-  })();
+  const weeks = [...(weekGroups ?? [])].sort((a, b) => b.week - a.week);
 
   // 아기사자: 본인 과제 목록 (마감일이 같은 과제끼리 한 카드로 묶는다)
   const {
