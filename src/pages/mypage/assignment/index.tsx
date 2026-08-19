@@ -169,22 +169,23 @@ const MyPageAssignment = () => {
     enabled: !!userProfile && !isStaffOrAdmin && userProfile.role !== 'ADULT_LION',
   });
 
-  // 아기사자: 마감일이 같은 과제는 한 카드, 다르면 마감일 순으로 카드를 나눈다
-  const myGroups: WeeklyAssignmentGroup[] = (myWeekGroups ?? []).map((group) => ({
-    week: group.week,
-    status: group.weeklyStatus,
-    cards: groupByDeadline(group.assignments).map(([endDate, assignments]) => ({
-      id: String(group.week),
-      assignmentIds: assignments.map((assignment) => assignment.assignmentId),
-      items: assignments.map((assignment) => ({
-        name: assignment.title,
-        status: assignment.status,
-        submittedAt: assignment.submittedAt ? formatSubmittedAt(assignment.submittedAt) : undefined,
+  const myGroups: WeeklyAssignmentGroup[] = [...(myWeekGroups ?? [])]
+    .sort((a, b) => b.week - a.week)
+    .map((group) => ({
+      week: group.week,
+      status: group.weeklyStatus,
+      cards: groupByDeadline(group.assignments).map(([endDate, assignments]) => ({
+        id: String(group.week),
+        assignmentIds: assignments.map((assignment) => assignment.assignmentId),
+        items: assignments.map((assignment) => ({
+          name: assignment.title,
+          status: assignment.status,
+          submittedAt: assignment.submittedAt ? formatSubmittedAt(assignment.submittedAt) : undefined,
+        })),
+        dueDate: formatDueDate(endDate),
+        actionLabel: resolveActionLabel(assignments),
       })),
-      dueDate: formatDueDate(endDate),
-      actionLabel: resolveActionLabel(assignments),
-    })),
-  }));
+    }));
 
   return (
     <>
