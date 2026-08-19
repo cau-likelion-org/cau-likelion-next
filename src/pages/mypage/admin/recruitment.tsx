@@ -27,7 +27,7 @@ import {
   RecruitmentTextResponse,
 } from 'src/apis/recruitment';
 import useTokenStore from 'src/store/useTokenStore';
-import { isAdminRole, canManageSitePages } from '@utils/index';
+import { isAdminRole } from '@utils/index';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
@@ -171,36 +171,34 @@ const MyPageAdminRecruitment = () => {
       <ToastWrapper>
         <Toast variant={toastVariant} text={toastMessage} show={!!toastMessage} onHidden={() => setToastMessage('')} />
       </ToastWrapper>
-      <MyPageShell active="admin-recruit" isAdmin={!!userProfile && canManageSitePages(userProfile.role)}>
-        {!isAuthorized ? (
-          <PageLoadingGate isError={isUserProfileError} />
-        ) : (
-          <>
-            <TitleRow>
-              <PageTitle>리크루팅 사전 알림 발송</PageTitle>
-              <Button size="small" color="assistive" onClick={() => setIsComposeOpen(true)}>
-                메일 작성
-              </Button>
-            </TitleRow>
-            <RecruitmentSubscriberSection
-              subscribers={subscribers ?? []}
-              isLoading={isSubscribersLoading}
-              isError={isSubscribersError}
-              interestPartOptions={interestPartOptions ?? []}
-              interestPartFilter={interestPartFilter}
-              onInterestPartFilterChange={setInterestPartFilter}
-              selectedIds={selectedIds}
-              onToggleSelect={toggleSelect}
-            />
-            <RecruitmentTextSection
-              texts={texts ?? []}
-              isLoading={isTextsLoading}
-              isError={isTextsError}
-              onSelect={setSelectedText}
-            />
-          </>
-        )}
-      </MyPageShell>
+      {!isAuthorized ? (
+        <PageLoadingGate isError={isUserProfileError} />
+      ) : (
+        <>
+          <TitleRow>
+            <PageTitle>리크루팅 사전 알림 발송</PageTitle>
+            <Button size="small" color="assistive" onClick={() => setIsComposeOpen(true)}>
+              메일 작성
+            </Button>
+          </TitleRow>
+          <RecruitmentSubscriberSection
+            subscribers={subscribers ?? []}
+            isLoading={isSubscribersLoading}
+            isError={isSubscribersError}
+            interestPartOptions={interestPartOptions ?? []}
+            interestPartFilter={interestPartFilter}
+            onInterestPartFilterChange={setInterestPartFilter}
+            selectedIds={selectedIds}
+            onToggleSelect={toggleSelect}
+          />
+          <RecruitmentTextSection
+            texts={texts ?? []}
+            isLoading={isTextsLoading}
+            isError={isTextsError}
+            onSelect={setSelectedText}
+          />
+        </>
+      )}
       {isComposeOpen && (
         <RecruitmentComposeModal
           recipients={(subscribers ?? [])
@@ -276,7 +274,11 @@ const MyPageAdminRecruitment = () => {
 };
 
 MyPageAdminRecruitment.getLayout = function getLayout(page: ReactElement) {
-  return <LayoutFullWidth>{page}</LayoutFullWidth>;
+  return (
+    <LayoutFullWidth>
+      <MyPageShell active="admin-recruit">{page}</MyPageShell>
+    </LayoutFullWidth>
+  );
 };
 
 export default MyPageAdminRecruitment;

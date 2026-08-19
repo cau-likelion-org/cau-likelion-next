@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import styled from 'styled-components';
 
 import NotificationSetting from '@mypage/component/NotificationSetting';
@@ -17,9 +18,17 @@ export type SidebarActive =
   | 'admin-recruit';
 
 const Sidebar = ({ active, isAdmin = false }: { active: SidebarActive; isAdmin?: boolean }) => {
+  const router = useRouter();
   const isAdminSection = active.startsWith('admin-');
   // 관리자 화면에 있을 때는 펼친 상태로 시작하고, 그 외에는 눌러서 펼친다
   const [isAdminOpen, setIsAdminOpen] = useState(isAdminSection);
+
+  // 관리자 화면 밖에서 '관리자'를 펼치면 기본 화면인 랜딩페이지 관리로 이동한다
+  const handleAdminToggle = () => {
+    const willOpen = !isAdminOpen;
+    setIsAdminOpen(willOpen);
+    if (willOpen && !isAdminSection) router.push('/mypage/admin/landing');
+  };
 
   return (
     <Wrapper>
@@ -35,12 +44,7 @@ const Sidebar = ({ active, isAdmin = false }: { active: SidebarActive; isAdmin?:
       <NotificationSetting />
       {isAdmin && (
         <AdminGroup>
-          <GroupToggle
-            type="button"
-            aria-expanded={isAdminOpen}
-            $active={isAdminSection}
-            onClick={() => setIsAdminOpen((prev) => !prev)}
-          >
+          <GroupToggle type="button" aria-expanded={isAdminOpen} $active={isAdminSection} onClick={handleAdminToggle}>
             관리자
           </GroupToggle>
           {isAdminOpen && (

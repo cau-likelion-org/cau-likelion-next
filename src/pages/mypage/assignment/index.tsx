@@ -27,7 +27,7 @@ import {
 } from 'src/apis/assignment';
 import useTokenStore from 'src/store/useTokenStore';
 import { INACTIVE_MEMBER_NOTICE_KEY, TRACK_OPTIONS } from '@utils/constant';
-import { isAdminRole, isFullAdminRole, canManageSitePages } from '@utils/index';
+import { isAdminRole, isFullAdminRole } from '@utils/index';
 import { IcPlus } from '@assets/svg';
 import { Fill, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -188,71 +188,69 @@ const MyPageAssignment = () => {
 
   return (
     <>
-      <MyPageShell active="assignment" isAdmin={!!userProfile && canManageSitePages(userProfile.role)}>
-        {!userProfile || userProfile.role === 'ADULT_LION' ? (
-          <PageLoadingGate isError={isUserProfileError} />
-        ) : isStaffOrAdmin ? (
-          <>
-            <Header>
-              <TitleRow>
-                <SectionTitle>주차별 과제 현황</SectionTitle>
-                {isPresident ? (
-                  <PartSelect value={currentPartName} options={partOptions} onChange={setSelectedPartName} />
-                ) : (
-                  userProfile.partName && <TrackName>{userProfile.partName} 파트</TrackName>
-                )}
-              </TitleRow>
-              <CreateButton type="button" onClick={handleCreate}>
-                과제 생성
-                <IcPlus width={16} height={16} />
-              </CreateButton>
-            </Header>
-            {isWeekGroupsLoading || isPartResolving ? (
-              <LoadingWrapper>
-                <CircularLoading size={32} />
-              </LoadingWrapper>
-            ) : isWeekGroupsError ? (
-              <EmptyState variant="error" />
-            ) : weeks.length === 0 ? (
-              <EmptyState message="등록된 과제가 없습니다." />
-            ) : (
-              <List>
-                {weeks.map((group) => (
-                  <StaffAssignmentCard
-                    key={group.week}
-                    week={group.week}
-                    assignments={group.assignments}
-                    onDetail={() => handleDetail(group.week)}
-                  />
-                ))}
-              </List>
-            )}
-          </>
-        ) : (
-          <>
+      {!userProfile || userProfile.role === 'ADULT_LION' ? (
+        <PageLoadingGate isError={isUserProfileError} />
+      ) : isStaffOrAdmin ? (
+        <>
+          <Header>
             <TitleRow>
               <SectionTitle>주차별 과제 현황</SectionTitle>
-              {/* 소속 파트가 해제된 계정은 partName이 비어 오므로 ' 파트'만 남지 않게 감춘다 */}
-              {userProfile.partName && <TrackName>{userProfile.partName} 파트</TrackName>}
+              {isPresident ? (
+                <PartSelect value={currentPartName} options={partOptions} onChange={setSelectedPartName} />
+              ) : (
+                userProfile.partName && <TrackName>{userProfile.partName} 파트</TrackName>
+              )}
             </TitleRow>
-            {isMyWeekGroupsLoading ? (
-              <LoadingWrapper>
-                <CircularLoading size={32} />
-              </LoadingWrapper>
-            ) : isMyWeekGroupsError ? (
-              <EmptyState variant="error" />
-            ) : myGroups.length === 0 ? (
-              <EmptyState message="등록된 과제가 없습니다." />
-            ) : (
-              <List>
-                {myGroups.map((group) => (
-                  <WeeklyAssignmentCard key={group.week} group={group} />
-                ))}
-              </List>
-            )}
-          </>
-        )}
-      </MyPageShell>
+            <CreateButton type="button" onClick={handleCreate}>
+              과제 생성
+              <IcPlus width={16} height={16} />
+            </CreateButton>
+          </Header>
+          {isWeekGroupsLoading || isPartResolving ? (
+            <LoadingWrapper>
+              <CircularLoading size={32} />
+            </LoadingWrapper>
+          ) : isWeekGroupsError ? (
+            <EmptyState variant="error" />
+          ) : weeks.length === 0 ? (
+            <EmptyState message="등록된 과제가 없습니다." />
+          ) : (
+            <List>
+              {weeks.map((group) => (
+                <StaffAssignmentCard
+                  key={group.week}
+                  week={group.week}
+                  assignments={group.assignments}
+                  onDetail={() => handleDetail(group.week)}
+                />
+              ))}
+            </List>
+          )}
+        </>
+      ) : (
+        <>
+          <TitleRow>
+            <SectionTitle>주차별 과제 현황</SectionTitle>
+            {/* 소속 파트가 해제된 계정은 partName이 비어 오므로 ' 파트'만 남지 않게 감춘다 */}
+            {userProfile.partName && <TrackName>{userProfile.partName} 파트</TrackName>}
+          </TitleRow>
+          {isMyWeekGroupsLoading ? (
+            <LoadingWrapper>
+              <CircularLoading size={32} />
+            </LoadingWrapper>
+          ) : isMyWeekGroupsError ? (
+            <EmptyState variant="error" />
+          ) : myGroups.length === 0 ? (
+            <EmptyState message="등록된 과제가 없습니다." />
+          ) : (
+            <List>
+              {myGroups.map((group) => (
+                <WeeklyAssignmentCard key={group.week} group={group} />
+              ))}
+            </List>
+          )}
+        </>
+      )}
       <ToastWrapper>
         <Toast variant="positive" text={toastMessage} show={!!toastMessage} onHidden={() => setToastMessage('')} />
       </ToastWrapper>
@@ -262,7 +260,11 @@ const MyPageAssignment = () => {
 };
 
 MyPageAssignment.getLayout = function getLayout(page: ReactElement) {
-  return <LayoutFullWidth>{page}</LayoutFullWidth>;
+  return (
+    <LayoutFullWidth>
+      <MyPageShell active="assignment">{page}</MyPageShell>
+    </LayoutFullWidth>
+  );
 };
 
 export default MyPageAssignment;

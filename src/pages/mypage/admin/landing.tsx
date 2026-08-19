@@ -32,7 +32,7 @@ import { getIntroduce, updateIntroduce, IntroduceResponse } from 'src/apis/intro
 import { getAdminProjectList, updateProjectExposure, AdminProjectListItem } from 'src/apis/project';
 import { PROJECT_CATEGORY_LABEL } from '@home/project/component/ProjectCard';
 import useTokenStore from 'src/store/useTokenStore';
-import { isAdminRole, canManageSitePages } from '@utils/index';
+import { isAdminRole } from '@utils/index';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
@@ -277,61 +277,54 @@ const MyPageAdminLanding = () => {
 
   return (
     <>
-      <MyPageShell active="admin-landing" isAdmin={!!userProfile && canManageSitePages(userProfile.role)}>
-        {!isAuthorized ? (
-          <PageLoadingGate isError={isUserProfileError} />
-        ) : (
-          <>
-            <TitleRow>
-              <PageTitle>랜딩페이지 관리</PageTitle>
-              <ButtonRow>
-                {isEditing ? (
-                  <>
-                    <Button variant="outlined" color="assistive" size="small" onClick={handleCancel}>
-                      취소
-                    </Button>
-                    <Button size="small" onClick={handleSave} loading={isSaving}>
-                      저장
-                    </Button>
-                  </>
-                ) : (
-                  <EditButton onClick={() => setIsEditing(true)} />
-                )}
-              </ButtonRow>
-            </TitleRow>
-            {isDataError ? (
-              <EmptyState variant="error" />
-            ) : !isDataLoaded ? (
-              <LoadingWrapper>
-                <LinearLoading progress={dataLoadProgress} />
-              </LoadingWrapper>
-            ) : (
-              <>
-                <IntroduceSection
-                  metrics={introduceMetrics}
-                  onChange={setIntroduceMetrics}
-                  showErrors={showErrors}
-                  disabled={!isEditing}
-                />
-                <TrackSection
-                  items={trackItems}
-                  onChange={setTrackItems}
-                  showErrors={showErrors}
-                  disabled={!isEditing}
-                />
-                <ActivitySection
-                  items={activityItems}
-                  onChange={setActivityItems}
-                  showErrors={showErrors}
-                  disabled={!isEditing}
-                />
-                <ProjectSection projects={projectItems} onChange={setProjectItems} disabled={!isEditing} />
-                <FAQSection items={faqItems} onChange={setFaqItems} showErrors={showErrors} disabled={!isEditing} />
-              </>
-            )}
-          </>
-        )}
-      </MyPageShell>
+      {!isAuthorized ? (
+        <PageLoadingGate isError={isUserProfileError} />
+      ) : (
+        <>
+          <TitleRow>
+            <PageTitle>랜딩페이지 관리</PageTitle>
+            <ButtonRow>
+              {isEditing ? (
+                <>
+                  <Button variant="outlined" color="assistive" size="small" onClick={handleCancel}>
+                    취소
+                  </Button>
+                  <Button size="small" onClick={handleSave} loading={isSaving}>
+                    저장
+                  </Button>
+                </>
+              ) : (
+                <EditButton onClick={() => setIsEditing(true)} />
+              )}
+            </ButtonRow>
+          </TitleRow>
+          {isDataError ? (
+            <EmptyState variant="error" />
+          ) : !isDataLoaded ? (
+            <LoadingWrapper>
+              <LinearLoading progress={dataLoadProgress} />
+            </LoadingWrapper>
+          ) : (
+            <>
+              <IntroduceSection
+                metrics={introduceMetrics}
+                onChange={setIntroduceMetrics}
+                showErrors={showErrors}
+                disabled={!isEditing}
+              />
+              <TrackSection items={trackItems} onChange={setTrackItems} showErrors={showErrors} disabled={!isEditing} />
+              <ActivitySection
+                items={activityItems}
+                onChange={setActivityItems}
+                showErrors={showErrors}
+                disabled={!isEditing}
+              />
+              <ProjectSection projects={projectItems} onChange={setProjectItems} disabled={!isEditing} />
+              <FAQSection items={faqItems} onChange={setFaqItems} showErrors={showErrors} disabled={!isEditing} />
+            </>
+          )}
+        </>
+      )}
       <ToastWrapper>
         <Toast variant="positive" text={toastMessage} show={!!toastMessage} onHidden={() => setToastMessage('')} />
       </ToastWrapper>
@@ -340,7 +333,11 @@ const MyPageAdminLanding = () => {
 };
 
 MyPageAdminLanding.getLayout = function getLayout(page: ReactElement) {
-  return <LayoutFullWidth>{page}</LayoutFullWidth>;
+  return (
+    <LayoutFullWidth>
+      <MyPageShell active="admin-landing">{page}</MyPageShell>
+    </LayoutFullWidth>
+  );
 };
 
 export default MyPageAdminLanding;

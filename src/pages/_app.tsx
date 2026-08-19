@@ -10,7 +10,6 @@ import LayoutDefault from '@common/layout/LayoutDefault';
 import RecruitModalRoot from '@home/main/RecruitModalRoot';
 import { useState, useEffect, useRef } from 'react';
 import NextRouter, { Router, useRouter } from 'next/router';
-import Loading from '@common/loading/Loading';
 import ErrorBoundary from '@common/errorBoundary/ErrorBoundary';
 import { sendPageView } from 'src/lib/ga';
 import useTokenStore from 'src/store/useTokenStore';
@@ -30,7 +29,6 @@ type AppPropsWithLayout = AppProps & {
 };
 
 function AppContent({ Component, pageProps }: AppPropsWithLayout) {
-  const [loading, setLoading] = useState(false);
   const router = useRouter();
   // 프로필 조회가 인증 문제로 실패하면 화면들이 아무것도 렌더링하지 않으므로(빈 화면),
   // 세션을 정리하고 로그인으로 보낸다
@@ -93,12 +91,7 @@ function AppContent({ Component, pageProps }: AppPropsWithLayout) {
     });
     previousPathRef.current = router.asPath;
 
-    const start = () => {
-      setLoading(true);
-    };
-
     const end = (url: string) => {
-      setLoading(false);
       sendPageView(url);
       markPageEntry();
       track('Page Viewed', {
@@ -109,18 +102,10 @@ function AppContent({ Component, pageProps }: AppPropsWithLayout) {
       previousPathRef.current = url;
     };
 
-    const error = () => {
-      setLoading(false);
-    };
-
-    Router.events.on('routeChangeStart', start);
     Router.events.on('routeChangeComplete', end);
-    Router.events.on('routeChangeError', error);
 
     return () => {
-      Router.events.off('routeChangeStart', start);
       Router.events.off('routeChangeComplete', end);
-      Router.events.off('routeChangeError', error);
     };
   }, [tokenState.access]);
 
@@ -130,14 +115,10 @@ function AppContent({ Component, pageProps }: AppPropsWithLayout) {
         <title>LikeLionCAU</title>
       </Head>
       {/* 레이아웃 안쪽을 감싸서, 페이지가 죽어도 네비게이션으로 빠져나갈 수 있게 한다 */}
-      {loading ? (
-        <Loading />
-      ) : (
-        getLayout(
-          <ErrorBoundary>
-            <Component {...pageProps} />
-          </ErrorBoundary>,
-        )
+      {getLayout(
+        <ErrorBoundary>
+          <Component {...pageProps} />
+        </ErrorBoundary>,
       )}
       <RecruitModalRoot />
     </QueryClientProvider>
