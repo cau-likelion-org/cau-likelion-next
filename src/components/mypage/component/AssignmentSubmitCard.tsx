@@ -20,6 +20,7 @@ export interface AssignmentSubmitItem {
   name: string;
   description: string;
   format: SubmissionFormat;
+  dueDate?: string;
 }
 
 // 제출에 필요한 입력값 — 파일은 업로드해야 하므로 File 객체 그대로 들고 있는다
@@ -65,7 +66,14 @@ const AssignmentSubmitCard = ({ item, errorMessage, onValidityChange, onValueCha
   return (
     <Card>
       <Header>
-        <ItemName>{item.name}</ItemName>
+        <TitleRow>
+          <ItemName>{item.name}</ItemName>
+          {item.dueDate && (
+            <DueDate>
+              마감일 <span>ㅣ</span> {item.dueDate}
+            </DueDate>
+          )}
+        </TitleRow>
         <ItemDescription>{item.description}</ItemDescription>
         <FormatFieldWrapper>
           <FormatHeading>제출 형식</FormatHeading>
@@ -166,10 +174,29 @@ const Header = styled.div`
   width: 100%;
 `;
 
+const TitleRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  width: 100%;
+`;
+
 const ItemName = styled.p`
   margin: 0;
   color: ${Label.normal};
   ${typographyCss(Typography.title2.bold)}
+`;
+
+/* 주차 헤더의 마감일과 같은 표기 (16px regular, label/alternative) */
+const DueDate = styled.p`
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  color: ${Label.alternative};
+  ${typographyCss(Typography.body1Reading.regular)}
 `;
 
 const ItemDescription = styled.p`

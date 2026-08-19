@@ -64,18 +64,26 @@ const AssignmentSubmit = () => {
   });
   const weekGroup = weekGroups?.find((group) => group.week === week);
 
-  const submittableAssignments = (weekGroup?.assignments ?? []).filter((assignment) =>
+  // 목록에서 마감일이 같은 과제끼리 묶어 넘어오므로 그 카드에 속한 과제만 다룬다 (ids가 없으면 주차 전체)
+  const idsParam = typeof router.query.ids === 'string' ? router.query.ids.split(',') : null;
+  const cardAssignments = (weekGroup?.assignments ?? []).filter(
+    (assignment) => !idsParam || idsParam.includes(String(assignment.assignmentId)),
+  );
+
+  const submittableAssignments = cardAssignments.filter((assignment) =>
     canSubmitAssignment(assignment.submissions[0]?.displayStatus ?? 'BEFORE_SUBMISSION', assignment.endDate),
   );
 
   const dueDates = submittableAssignments.map((assignment) => formatDueDate(assignment.endDate));
   const sharedDueDate = dueDates.length > 0 && dueDates.every((date) => date === dueDates[0]) ? dueDates[0] : null;
 
-  const items: AssignmentSubmitItem[] = submittableAssignments.map((assignment) => ({
+  const items: AssignmentSubmitItem[] = submittableAssignments.map((assignment, index) => ({
     id: String(assignment.assignmentId),
     name: assignment.title,
     description: assignment.detail,
     format: assignment.type === 'FILE' ? 'file' : 'link',
+    // 개별 마감일 변경으로 과제마다 마감일이 다르면 주차 마감일 대신 과제별로 보여준다
+    dueDate: sharedDueDate ? undefined : dueDates[index],
   }));
 
   const handleClose = () => router.push('/mypage/assignment');

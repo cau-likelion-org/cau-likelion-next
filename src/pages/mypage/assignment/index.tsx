@@ -48,6 +48,16 @@ const formatSubmittedAt = (value: string) => {
   return `${formatDueDate(value)} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
 };
 
+const groupByDeadline = (assignments: AssignmentSummary[]) => {
+  const buckets = new Map<string, AssignmentSummary[]>();
+  assignments.forEach((assignment) => {
+    const bucket = buckets.get(assignment.endDate);
+    if (bucket) bucket.push(assignment);
+    else buckets.set(assignment.endDate, [assignment]);
+  });
+  return [...buckets.entries()].sort(([a], [b]) => new Date(a).getTime() - new Date(b).getTime());
+};
+
 const resolveActionLabel = (assignments: AssignmentSummary[]) => {
   const submittable = assignments.filter((assignment) => canSubmitAssignment(assignment.status, assignment.endDate));
   if (submittable.length === 0) return undefined;
@@ -159,25 +169,21 @@ const MyPageAssignment = () => {
     enabled: !!userProfile && !isStaffOrAdmin && userProfile.role !== 'ADULT_LION',
   });
 
-  // 한 주차의 과제는 마감일이 모두 같으므로 주차당 카드 하나로 묶는다
+  // 아기사자: 마감일이 같은 과제는 한 카드, 다르면 마감일 순으로 카드를 나눈다
   const myGroups: WeeklyAssignmentGroup[] = (myWeekGroups ?? []).map((group) => ({
     week: group.week,
     status: group.weeklyStatus,
-    cards:
-      group.assignments.length === 0
-        ? []
-        : [
-            {
-              id: String(group.week),
-              items: group.assignments.map((assignment) => ({
-                name: assignment.title,
-                status: assignment.status,
-                submittedAt: assignment.submittedAt ? formatSubmittedAt(assignment.submittedAt) : undefined,
-              })),
-              dueDate: formatDueDate(group.assignments[0].endDate),
-              actionLabel: resolveActionLabel(group.assignments),
-            },
-          ],
+    cards: groupByDeadline(group.assignments).map(([endDate, assignments]) => ({
+      id: String(group.week),
+      assignmentIds: assignments.map((assignment) => assignment.assignmentId),
+      items: assignments.map((assignment) => ({
+        name: assignment.title,
+        status: assignment.status,
+        submittedAt: assignment.submittedAt ? formatSubmittedAt(assignment.submittedAt) : undefined,
+      })),
+      dueDate: formatDueDate(endDate),
+      actionLabel: resolveActionLabel(assignments),
+    })),
   }));
 
   return (
