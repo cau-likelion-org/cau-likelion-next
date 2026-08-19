@@ -227,14 +227,11 @@ const PartAttendanceTable = ({
     status: AttendanceStatus;
   } | null>(null);
 
-  // 최신 주차부터 1주차까지 연속으로 표시 (예: 최신 18주차면 18 → 1)
   const { weeks, recordMaps } = useMemo(() => {
-    const maxWeek = members.reduce(
-      (max, member) => member.attendances.reduce((acc, a) => Math.max(acc, a.weekNumber), max),
-      0,
-    );
+    const weekNumbers = new Set<number>();
+    members.forEach((member) => member.attendances.forEach((a) => weekNumbers.add(a.weekNumber)));
     return {
-      weeks: Array.from({ length: maxWeek }, (_, index) => maxWeek - index),
+      weeks: Array.from(weekNumbers).sort((a, b) => b - a),
       recordMaps: members.map((member) => new Map(member.attendances.map((a) => [a.weekNumber, a]))),
     };
   }, [members]);
