@@ -1,4 +1,7 @@
 import { ReactElement, ReactNode, useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
+import { useMutation } from '@tanstack/react-query';
+import axios from 'axios';
 import styled from 'styled-components';
 
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
@@ -6,9 +9,13 @@ import PageHeader from '@common/pageHeader/PageHeader';
 import Toast from '@common/toast/Toast';
 import LoginButton from 'src/components/login/component/LoginButton';
 import useAuthRedirect from 'src/hooks/useAuthRedirect';
-import { SIGNUP_UNAPPROVED_EMAIL_FLAG_KEY } from 'src/apis/signUp';
+import useTokenStore from 'src/store/useTokenStore';
+import { googleLogin } from 'src/apis/account';
+import { SIGNUP_UNAPPROVED_EMAIL_FLAG_KEY, PENDING_SIGNUP_TOKEN_KEY } from 'src/apis/signUp';
+import { consumeGoogleLoginRedirect, redirectToGoogleLogin } from '@utils/googleOAuth';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
+import { media } from '@utils/constant/breakpoint';
 
 const TOAST_MESSAGE_BY_FLAG: Record<string, ReactNode> = {
   [SIGNUP_UNAPPROVED_EMAIL_FLAG_KEY]: (
@@ -25,9 +32,14 @@ const GOOGLE_LOGIN_FAILED_MESSAGE = '로그인에 실패했어요. 새로고침 
 
 const Login = () => {
   useAuthRedirect();
+  const router = useRouter();
+  const setToken = useTokenStore((state) => state.setToken);
+
+  const [redirectResult] = useState(() => (typeof window === 'undefined' ? null : consumeGoogleLoginRedirect()));
 
   const [toastMessage, setToastMessage] = useState<ReactNode>(() => {
     if (typeof window === 'undefined') return '';
+    if (redirectResult && 'error' in redirectResult) return GOOGLE_LOGIN_FAILED_MESSAGE;
     const activeKey = TOAST_FLAG_KEYS.find((key) => sessionStorage.getItem(key) === 'true');
     return activeKey ? TOAST_MESSAGE_BY_FLAG[activeKey] : '';
   });
@@ -36,6 +48,32 @@ const Login = () => {
     if (!toastMessage) return;
     TOAST_FLAG_KEYS.forEach((key) => sessionStorage.removeItem(key));
   }, [toastMessage]);
+
+  const loginMutation = useMutation({
+    mutationFn: (idToken: string) => googleLogin(idToken),
+    onSuccess: (res) => {
+      if (res.status === 'SIGNUP_REQUIRED') {
+        sessionStorage.setItem(PENDING_SIGNUP_TOKEN_KEY, res.signupToken);
+        router.push('/signup');
+        return;
+      }
+      setToken({ access: res.tokens.accessToken, refresh: res.tokens.refreshToken });
+    },
+    onError: (error) => {
+      const status = axios.isAxiosError(error) ? error.response?.status : undefined;
+      // 4xx(EMAIL_NOT_ALLOWED)만 "미가입 이메일" 업무 오류로 간주. 5xx·네트워크 오류는 조용히 무시
+      if (status !== undefined && status >= 400 && status < 500) {
+        setToastMessage(TOAST_MESSAGE_BY_FLAG[SIGNUP_UNAPPROVED_EMAIL_FLAG_KEY]);
+      }
+    },
+  });
+
+  useEffect(() => {
+    if (redirectResult && 'idToken' in redirectResult) {
+      loginMutation.mutate(redirectResult.idToken);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Wrapper>
@@ -59,10 +97,7 @@ const Login = () => {
           </>
         }
       />
-      <LoginButton
-        onUnregistered={() => setToastMessage(TOAST_MESSAGE_BY_FLAG[SIGNUP_UNAPPROVED_EMAIL_FLAG_KEY])}
-        onGoogleUnavailable={() => setToastMessage(GOOGLE_LOGIN_FAILED_MESSAGE)}
-      />
+      <LoginButton onClick={redirectToGoogleLogin} loading={loginMutation.isPending} />
       <GuideText>
         <p>처음 이용하는 아기사자의 경우</p>
         <p>‘구글로 로그인하기’를 눌러 회원가입을 진행해 주세요.</p>
@@ -90,7 +125,7 @@ const TextGroup = styled(PageHeader)`
   gap: 24px;
   padding-bottom: 52px;
 
-  @media (max-width: 900px) {
+  ${media.xs} {
     padding-top: 40px;
   }
 `;

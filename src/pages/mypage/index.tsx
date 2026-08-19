@@ -3,10 +3,9 @@ import { AxiosError } from 'axios';
 import { ReactElement, useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import useTokenStore from 'src/store/useTokenStore';
-import useProfileChangedStore from 'src/store/useProfileChangedStore';
 import { getUserProfile } from 'src/apis/account';
 import { INACTIVE_MEMBER_NOTICE_KEY } from '@utils/constant';
-import { canCreateAttendance, isAdminRole, isAttendanceTarget, canManageSitePages } from '@utils/index';
+import { canCreateAttendance, isAdminRole, isAttendanceTarget } from '@utils/index';
 import styled from 'styled-components';
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import Toast from '@common/toast/Toast';
@@ -18,15 +17,15 @@ import MakeAttendanceCard from '@mypage/component/MakeAttendanceCard';
 import MyScoreSection from '@mypage/MyScoreSection';
 import MemberScoreSection from '@mypage/MemberScoreSection';
 import { useRouter } from 'next/router';
+import { media } from '@utils/constant/breakpoint';
 
 const MyPage = () => {
   const tokenState = useTokenStore((state) => state.token);
   const hasHydrated = useTokenStore((state) => state.hasHydrated);
-  const profileChanged = useProfileChangedStore((state) => state.profileChanged);
   const router = useRouter();
 
   const { data: userProfile, isError: isUserProfileError } = useQuery<UserProfile, AxiosError>({
-    queryKey: ['userProfile', profileChanged],
+    queryKey: ['userProfile'],
     queryFn: () => getUserProfile(tokenState),
     retry: false,
     enabled: !!tokenState.access,
@@ -52,33 +51,35 @@ const MyPage = () => {
       <ToastWrapper>
         <Toast variant="negative" text={toastMessage} show={!!toastMessage} onHidden={() => setToastMessage('')} />
       </ToastWrapper>
-      <MyPageShell active="home" isAdmin={!!userProfile && canManageSitePages(userProfile.role)}>
-        {!userProfile ? (
-          <PageLoadingGate isError={isUserProfileError} />
-        ) : (
-          <>
-            <CardRow>
-              <ProfileCard user={userProfile} />
-              {canCreateAttendance(userProfile.role) ? (
-                <MakeAttendanceCard />
-              ) : (
-                <AttendanceCheckCard isTarget={isAttendanceTarget(userProfile.role)} />
-              )}
-            </CardRow>
-            {isAdminRole(userProfile.role) ? (
-              <MemberScoreSection userProfile={userProfile} />
+      {!userProfile ? (
+        <PageLoadingGate isError={isUserProfileError} />
+      ) : (
+        <>
+          <CardRow>
+            <ProfileCard user={userProfile} />
+            {canCreateAttendance(userProfile.role) ? (
+              <MakeAttendanceCard />
             ) : (
-              <MyScoreSection userProfile={userProfile} />
+              <AttendanceCheckCard isTarget={isAttendanceTarget(userProfile.role)} />
             )}
-          </>
-        )}
-      </MyPageShell>
+          </CardRow>
+          {isAdminRole(userProfile.role) ? (
+            <MemberScoreSection userProfile={userProfile} />
+          ) : (
+            <MyScoreSection userProfile={userProfile} />
+          )}
+        </>
+      )}
     </>
   );
 };
 
 MyPage.getLayout = function getLayout(page: ReactElement) {
-  return <LayoutFullWidth>{page}</LayoutFullWidth>;
+  return (
+    <LayoutFullWidth>
+      <MyPageShell active="home">{page}</MyPageShell>
+    </LayoutFullWidth>
+  );
 };
 
 export default MyPage;
@@ -94,12 +95,13 @@ const ToastWrapper = styled.div`
 
 const CardRow = styled.div`
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
   gap: 20px;
   width: 100%;
 
-  @media (max-width: 900px) {
-    flex-direction: column;
-    align-items: stretch;
+  ${media.lg} {
+    flex-direction: row;
+    align-items: center;
   }
 `;

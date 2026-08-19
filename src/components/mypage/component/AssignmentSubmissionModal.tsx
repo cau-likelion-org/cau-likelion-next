@@ -37,7 +37,12 @@ const AssignmentSubmissionModal = ({ submission, onClose }: AssignmentSubmission
                   <IcDocument width={22} height={22} />
                   <ResourceText>{file.originalFilename}</ResourceText>
                 </Resource>
-                <DownloadLink href={file.fileUrl} download aria-label={`${file.originalFilename} 다운로드`}>
+                {/* 서버가 Content-Disposition: attachment로 내려주므로 링크를 여는 것만으로 내려받는다 */}
+                <DownloadLink
+                  href={file.fileUrl}
+                  download={file.originalFilename}
+                  aria-label={`${file.originalFilename} 다운로드`}
+                >
                   <IcDownload width={22} height={22} />
                 </DownloadLink>
               </ResourceRow>

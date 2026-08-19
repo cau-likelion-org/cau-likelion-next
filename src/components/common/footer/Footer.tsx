@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 import { IcKakaotalk, IcInstagram, IcEmail } from '@assets/svg';
 import { BackgroundLight, Label, Line } from '@utils/constant/color';
+import { media } from '@utils/constant/breakpoint';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import LikelionCAULogo from 'src/assets/svg/logo/logo-likelion-chungang.svg';
 
@@ -70,7 +71,7 @@ const Wrapper = styled.div<{ isLandingLayout: boolean }>`
   align-items: center;
   background-color: ${BackgroundLight.secondary};
   box-shadow: inset 0 1px 0 0 ${Line.subtle};
-  @media (min-width: 900px) {
+  ${media.md} {
     scroll-snap-align: ${(props) => props.isLandingLayout && 'end'};
   }
 `;
@@ -78,27 +79,29 @@ const Wrapper = styled.div<{ isLandingLayout: boolean }>`
 const Container = styled.div`
   width: 100%;
   max-width: 1440px;
-  padding: 40px 20px 24px;
-
-  /* 모바일은 홈 인디케이터(아이폰 세이프 에어리어)만큼 하단 여백을 더 준다 */
-  @media (max-width: 900px) {
-    padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
-  }
+  padding: 40px 20px calc(24px + env(safe-area-inset-bottom, 0px));
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  ${media.md} {
+    padding-bottom: 24px;
+  }
 `;
 
 const Main = styled.div`
   width: 100%;
-  max-width: 1100px;
-  padding: 0 20px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 14px;
 
-  @media (max-width: 900px) {
+  ${media.md} {
+    max-width: 1100px;
+    padding: 0 20px;
+  }
+  ${media.xl} {
+    max-width: none;
     padding: 0;
   }
 `;
@@ -138,8 +141,10 @@ const Copyright = styled.p`
 `;
 
 const DesktopOnly = styled.span`
-  @media (max-width: 900px) {
-    display: none;
+  display: none;
+
+  ${media.md} {
+    display: inline;
   }
 `;
 

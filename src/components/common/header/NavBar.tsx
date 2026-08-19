@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Button from '@common/button/Button';
 import { Label, Line } from '@utils/constant/color';
+import { ContainerMaxWidth, media } from '@utils/constant/breakpoint';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -33,11 +34,7 @@ const NavBar = () => {
   const openRecruitClosedAlert = useRecruitModalStore((state) => state.openClosedAlert);
   const [isScrolled, setIsScrolled] = useState(false);
 
-  // 지원하기는 어느 페이지에서 눌러도 랜딩(홈) 화면을 배경으로 모달이 뜨도록 홈으로 이동 후 연다
   const handleRecruitClick = () => {
-    if (router.pathname !== '/') {
-      router.push('/');
-    }
     openRecruitClosedAlert();
   };
 
@@ -100,15 +97,23 @@ const Wrapper = styled.div<{ $isScrolled: boolean }>`
   background-color: ${(props) => (props.$isScrolled ? 'rgba(255, 255, 255, 0.88)' : 'transparent')};
   backdrop-filter: ${(props) => (props.$isScrolled ? 'blur(32px)' : 'none')};
   border-bottom: 1px solid ${(props) => (props.$isScrolled ? Line.normal : 'transparent')};
+
+  ${media.xs} {
+    display: none;
+  }
 `;
 
 const Content = styled.div`
   width: 100%;
-  max-width: 1100px;
+  max-width: ${ContainerMaxWidth.lg}px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 14px 20px;
+
+  ${media.xl} {
+    max-width: ${ContainerMaxWidth.xl}px;
+  }
 `;
 
 const LogoImage = styled.div`

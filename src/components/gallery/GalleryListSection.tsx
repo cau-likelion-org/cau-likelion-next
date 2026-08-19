@@ -15,7 +15,7 @@ import { IcAdd } from '@assets/svg';
 import PageHeader from '@common/pageHeader/PageHeader';
 import useListboxSelect from 'src/hooks/useListboxSelect';
 import useTokenStore from 'src/store/useTokenStore';
-import { getUserProfile } from 'src/apis/account';
+import { getUserProfile, getGenerations } from 'src/apis/account';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { isAdminRole } from '@utils/index';
@@ -29,9 +29,11 @@ import HistoryUploadModal from './component/HistoryUploadModal';
 import ProjectDetailModal from './component/ProjectDetailModal';
 import ProjectEditModal from './component/ProjectEditModal';
 import ProjectUploadModal from './component/ProjectUploadModal';
+import { COMMON_PART_NAME } from './component/PostUploadModal';
 import SessionDetailModal from './component/SessionDetailModal';
 import SessionEditModal from './component/SessionEditModal';
 import SessionUploadModal from './component/SessionUploadModal';
+import { containerCss, media } from '@utils/constant/breakpoint';
 
 type GalleryTabKey = 'session' | 'project' | 'gallery';
 type FilterKey = 'generation' | 'track' | 'category';
@@ -65,11 +67,19 @@ const LIST_QUERY_KEY_BY_TAB: Record<GalleryTabKey, string> = {
 
 const PROJECT_CATEGORY_FILTER_OPTIONS = ['전체', ...Object.values(GALLERY_PROJECT_CATEGORY_LABEL)];
 const ALL_OPTION = '전체';
+// 기수 필터가 "전체"일 때, 기수별로 파트명 체계가 달라도(기획디자인 vs 기획+디자인)
+// 하나의 목록에서 항상 이 순서로 보여주기 위한 기준
+const ALL_GENERATIONS_PART_ORDER = [COMMON_PART_NAME, '기획디자인', '기획', '디자인', '프론트엔드', '백엔드'];
+const sortByAllGenerationsPartOrder = (a: string, b: string) => {
+  const indexA = ALL_GENERATIONS_PART_ORDER.indexOf(a);
+  const indexB = ALL_GENERATIONS_PART_ORDER.indexOf(b);
+  return (indexA === -1 ? Infinity : indexA) - (indexB === -1 ? Infinity : indexB);
+};
 // const WIKI_URL = 'https://wiki.cau-likelion.org';
 
 const toDisplayDate = (isoDate: string | undefined) => (isoDate ?? '').split('T')[0].replaceAll('-', '/');
 const toPeriodDisplay = (startDate: string, endDate: string | null) =>
-  `${toDisplayDate(startDate)}${endDate ? `-${toDisplayDate(endDate)}` : ''}`;
+  `${toDisplayDate(startDate)}${endDate && endDate !== startDate ? `-${toDisplayDate(endDate)}` : ''}`;
 
 const GalleryListSection = () => {
   const router = useRouter();
@@ -116,6 +126,7 @@ const GalleryListSection = () => {
     isLoading: isHistoriesLoading,
     isError: isHistoriesError,
   } = useQuery({ queryKey: ['galleryHistories'], queryFn: getHistoryList });
+  const { data: generations } = useQuery({ queryKey: ['generations'], queryFn: getGenerations });
 
   const { data: sessionDetail } = useQuery({
     queryKey: ['gallerySessionDetail', selectedId],
@@ -178,9 +189,17 @@ const GalleryListSection = () => {
   }, [activeTab, sessions, projects, histories]);
 
   const partOptions = useMemo(() => {
-    const parts = Array.from(new Set((sessions ?? []).map((item) => item.partName)));
-    return [ALL_OPTION, ...parts];
-  }, [sessions]);
+    if (!generations) return [ALL_OPTION];
+    if (generation === ALL_OPTION) {
+      const parts = Array.from(
+        new Set([...generations.flatMap((item) => item.parts.map((part) => part.name)), COMMON_PART_NAME]),
+      ).sort(sortByAllGenerationsPartOrder);
+      return [ALL_OPTION, ...parts];
+    }
+    const generationNumber = Number(generation.replace('기', ''));
+    const matched = generations.find((item) => item.number === generationNumber);
+    return [ALL_OPTION, COMMON_PART_NAME, ...(matched?.parts.map((part) => part.name) ?? [])];
+  }, [generations, generation]);
 
   const sessionCards = (sessions ?? []).filter(
     (item) =>
@@ -324,6 +343,7 @@ const GalleryListSection = () => {
               onClose={() => setOpenFilter(null)}
               onSelect={(option) => {
                 setGeneration(option);
+                setTrack(ALL_OPTION);
                 setOpenFilter(null);
               }}
             />
@@ -535,9 +555,7 @@ const FilterSelect = ({
 };
 
 const Wrapper = styled.div`
-  width: 100%;
-  max-width: 1100px;
-  padding: 0 20px;
+  ${containerCss}
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -559,7 +577,6 @@ const Intro = styled(PageHeader)`
   @media (max-width: 600px) {
     padding-top: 52px;
 
-    /* PageHeader는 900px 이하에서 타이틀을 title2로 줄이지만, 모바일 시안은 display2를 유지한다 */
     p:first-of-type {
       ${typographyCss(Typography.display2.bold)}
     }
@@ -646,12 +663,20 @@ const CardGrid = styled.div`
   column-gap: 20px;
   row-gap: 40px;
 
-  @media (max-width: 900px) {
+  ${media.xs} {
     grid-template-columns: repeat(2, 1fr);
   }
 
   @media (max-width: 600px) {
     grid-template-columns: 1fr;
+  }
+
+  ${media.md} {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  ${media.xl} {
+    grid-template-columns: repeat(5, 1fr);
   }
 `;
 

@@ -15,6 +15,7 @@ import { isUnfilled } from '@utils/index';
 import { IcCalendar, IcChevronLeft, IcCircleExclamation } from '@assets/svg';
 import { BackgroundWhite, Fill, Label, Line, Material, Orange, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
+import { containerCss } from '@utils/constant/breakpoint';
 
 const TITLE_MAX = 12;
 const DETAIL_MAX = 300;
@@ -400,10 +401,9 @@ const Page = styled.div`
   display: flex;
   flex-direction: column;
   gap: 24px;
-  width: 100%;
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 40px 20px 80px;
+  ${containerCss}
+  padding-top: 40px;
+  padding-bottom: 80px;
 `;
 
 const TopBar = styled.div`

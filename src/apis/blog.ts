@@ -15,6 +15,7 @@ export interface BlogResponse {
   summary: string;
   writer: string;
   url: string;
+  publishedDate: string | null;
   createdAt: string;
 }
 

@@ -140,40 +140,38 @@ const MyPageAdminBlog = () => {
 
   return (
     <>
-      <MyPageShell active="admin-blog" isAdmin={isAuthorized}>
-        {!isAuthorized ? (
-          <PageLoadingGate isError={isUserProfileError} />
-        ) : (
-          <>
-            <TitleRow>
-              <PageTitle>블로그 페이지 관리</PageTitle>
-              <ButtonRow>
-                {isEditing ? (
-                  <>
-                    <Button variant="outlined" color="assistive" size="small" onClick={handleCancel}>
-                      취소
-                    </Button>
-                    <Button size="small" onClick={handleSave} loading={isSaving}>
-                      저장
-                    </Button>
-                  </>
-                ) : (
-                  <EditButton onClick={() => setIsEditing(true)} />
-                )}
-              </ButtonRow>
-            </TitleRow>
-            {isDataError ? (
-              <EmptyState variant="error" />
-            ) : !isDataLoaded ? (
-              <LoadingWrapper>
-                <CircularLoading size={32} />
-              </LoadingWrapper>
-            ) : (
-              <BlogSection items={blogItems} onChange={setBlogItems} showErrors={showErrors} disabled={!isEditing} />
-            )}
-          </>
-        )}
-      </MyPageShell>
+      {!isAuthorized ? (
+        <PageLoadingGate isError={isUserProfileError} />
+      ) : (
+        <>
+          <TitleRow>
+            <PageTitle>블로그 페이지 관리</PageTitle>
+            <ButtonRow>
+              {isEditing ? (
+                <>
+                  <Button variant="outlined" color="assistive" size="small" onClick={handleCancel}>
+                    취소
+                  </Button>
+                  <Button size="small" onClick={handleSave} loading={isSaving}>
+                    저장
+                  </Button>
+                </>
+              ) : (
+                <EditButton onClick={() => setIsEditing(true)} />
+              )}
+            </ButtonRow>
+          </TitleRow>
+          {isDataError ? (
+            <EmptyState variant="error" />
+          ) : !isDataLoaded ? (
+            <LoadingWrapper>
+              <CircularLoading size={32} />
+            </LoadingWrapper>
+          ) : (
+            <BlogSection items={blogItems} onChange={setBlogItems} showErrors={showErrors} disabled={!isEditing} />
+          )}
+        </>
+      )}
       <ToastWrapper>
         <Toast variant="positive" text={toastMessage} show={!!toastMessage} onHidden={() => setToastMessage('')} />
       </ToastWrapper>
@@ -182,7 +180,11 @@ const MyPageAdminBlog = () => {
 };
 
 MyPageAdminBlog.getLayout = function getLayout(page: ReactElement) {
-  return <LayoutFullWidth>{page}</LayoutFullWidth>;
+  return (
+    <LayoutFullWidth>
+      <MyPageShell active="admin-blog">{page}</MyPageShell>
+    </LayoutFullWidth>
+  );
 };
 
 export default MyPageAdminBlog;

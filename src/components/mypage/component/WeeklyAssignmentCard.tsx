@@ -9,6 +9,7 @@ import { AssignmentDisplayStatus } from 'src/apis/assignment';
 import { IcChevronDown } from '@assets/svg';
 import { BackgroundWhite, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
+import { XS_MEDIA_QUERY, media } from '@utils/constant/breakpoint';
 
 export interface AssignmentItem {
   name: string;
@@ -18,6 +19,7 @@ export interface AssignmentItem {
 
 export interface AssignmentCard {
   id?: string;
+  assignmentIds?: number[];
   items: AssignmentItem[];
   dueDate: string;
   actionLabel?: '수정하기' | '제출하기';
@@ -39,7 +41,7 @@ const WEEK_BADGE_CONFIG: Record<AssignmentDisplayStatus, { label: string; color:
   REJECTED: { label: '승인 반려', color: 'neutral' },
 };
 
-const ITEM_BADGE_CONFIG: Record<AssignmentDisplayStatus, { label: string; color: 'neutral' | 'accent' }> = {
+export const ITEM_BADGE_CONFIG: Record<AssignmentDisplayStatus, { label: string; color: 'neutral' | 'accent' }> = {
   BEFORE_SUBMISSION: { label: '제출 전', color: 'neutral' },
   MISSED: { label: '미제출', color: 'neutral' },
   PENDING_REVIEW: { label: '승인 대기', color: 'neutral' },
@@ -54,13 +56,16 @@ const WeeklyAssignmentCard = ({ group }: { group: WeeklyAssignmentGroup }) => {
   const [isUnsupportedOpen, setIsUnsupportedOpen] = useState(false);
   const weekBadge = WEEK_BADGE_CONFIG[group.status];
 
-  // 제출·수정은 데스크톱 전용이라 모바일에서는 안내 모달을 띄운다
-  const handleAction = (card: AssignmentCard) => {
-    if (typeof window !== 'undefined' && window.matchMedia('(max-width: 900px)').matches) {
+  const handleOpenDetail = (card: AssignmentCard) => {
+    if (typeof window !== 'undefined' && window.matchMedia(XS_MEDIA_QUERY).matches) {
       setIsUnsupportedOpen(true);
       return;
     }
-    if (card.id) router.push(`/mypage/assignment/${card.id}`);
+    if (!card.id) return;
+    router.push({
+      pathname: `/mypage/assignment/${card.id}`,
+      query: card.assignmentIds?.length ? { ids: card.assignmentIds.join(',') } : undefined,
+    });
   };
 
   return (
@@ -75,41 +80,60 @@ const WeeklyAssignmentCard = ({ group }: { group: WeeklyAssignmentGroup }) => {
         </HeaderRight>
       </Header>
       {isOpen &&
-        group.cards.map((card, cardIndex) => (
-          <GroupCard key={cardIndex}>
-            {card.items.map((item, itemIndex) => {
-              const itemBadge = ITEM_BADGE_CONFIG[item.status];
-              return (
-                <ItemRow key={itemIndex}>
-                  <ItemName>{item.name}</ItemName>
-                  <ItemRight>
-                    {item.submittedAt && <SubmittedAt>{item.submittedAt}</SubmittedAt>}
-                    <ContentBadge text={itemBadge.label} color={itemBadge.color} variant="solid" size="medium" />
-                  </ItemRight>
-                </ItemRow>
-              );
-            })}
-            <FooterRow>
-              <DueDate>
-                마감일 <span>ㅣ</span> {card.dueDate}
-              </DueDate>
-              {card.actionLabel && (
-                <>
-                  <DesktopAction>
-                    <Button size="large" onClick={() => handleAction(card)}>
-                      {card.actionLabel}
-                    </Button>
-                  </DesktopAction>
-                  <MobileAction>
-                    <Button size="small" onClick={() => handleAction(card)}>
-                      {card.actionLabel}
-                    </Button>
-                  </MobileAction>
-                </>
-              )}
-            </FooterRow>
-          </GroupCard>
-        ))}
+        group.cards.map((card, cardIndex) => {
+          const isClickable = !card.actionLabel;
+
+          return (
+            <GroupCard
+              key={cardIndex}
+              $clickable={isClickable}
+              role={isClickable ? 'button' : undefined}
+              tabIndex={isClickable ? 0 : undefined}
+              onClick={isClickable ? () => handleOpenDetail(card) : undefined}
+              onKeyDown={
+                isClickable
+                  ? (event) => {
+                      if (event.key !== 'Enter' && event.key !== ' ') return;
+                      event.preventDefault();
+                      handleOpenDetail(card);
+                    }
+                  : undefined
+              }
+            >
+              {card.items.map((item, itemIndex) => {
+                const itemBadge = ITEM_BADGE_CONFIG[item.status];
+                return (
+                  <ItemRow key={itemIndex}>
+                    <ItemName>{item.name}</ItemName>
+                    <ItemRight>
+                      {item.submittedAt && <SubmittedAt>{item.submittedAt}</SubmittedAt>}
+                      <ContentBadge text={itemBadge.label} color={itemBadge.color} variant="solid" size="medium" />
+                    </ItemRight>
+                  </ItemRow>
+                );
+              })}
+              <FooterRow>
+                <DueDate>
+                  마감일 <span>ㅣ</span> {card.dueDate}
+                </DueDate>
+                {card.actionLabel && (
+                  <>
+                    <DesktopAction>
+                      <Button size="large" onClick={() => handleOpenDetail(card)}>
+                        {card.actionLabel}
+                      </Button>
+                    </DesktopAction>
+                    <MobileAction>
+                      <Button size="small" onClick={() => handleOpenDetail(card)}>
+                        {card.actionLabel}
+                      </Button>
+                    </MobileAction>
+                  </>
+                )}
+              </FooterRow>
+            </GroupCard>
+          );
+        })}
       {isUnsupportedOpen && <MobileUnsupportedModal onClose={() => setIsUnsupportedOpen(false)} />}
     </Wrapper>
   );
@@ -136,7 +160,7 @@ const Header = styled.button`
   background-color: ${BackgroundWhite.secondary};
   cursor: pointer;
 
-  @media (max-width: 900px) {
+  ${media.xs} {
     padding: 20px 26px;
   }
 `;
@@ -152,7 +176,7 @@ const HeaderRight = styled.div`
   align-items: center;
   gap: 18px;
 
-  @media (max-width: 900px) {
+  ${media.xs} {
     gap: 8px;
   }
 `;
@@ -166,7 +190,7 @@ const Chevron = styled.span<{ $open: boolean }>`
   transition: transform 0.15s ease;
 
   /* Figma 모바일: 꺾쇠 24px */
-  @media (max-width: 900px) {
+  ${media.xs} {
     svg {
       width: 24px;
       height: 24px;
@@ -174,17 +198,18 @@ const Chevron = styled.span<{ $open: boolean }>`
   }
 `;
 
-const GroupCard = styled.div`
+const GroupCard = styled.div<{ $clickable: boolean }>`
   display: flex;
   flex-direction: column;
   gap: 16px;
   width: 100%;
   padding: 20px;
+  cursor: ${(props) => (props.$clickable ? 'pointer' : 'default')};
   border: 1px solid ${Line.subtle};
   border-radius: 14px;
   background-color: ${BackgroundWhite.tertiary};
 
-  @media (max-width: 900px) {
+  ${media.xs} {
     padding: 20px 26px;
   }
 `;
@@ -196,12 +221,12 @@ const ItemRow = styled.div`
   width: 100%;
 
   /* Figma 모바일: 과제 사이 구분선 (위아래 16px) */
-  @media (max-width: 900px) {
+  ${media.xs} {
     align-items: flex-start;
   }
 
   & + & {
-    @media (max-width: 900px) {
+    ${media.xs} {
       padding-top: 16px;
       border-top: 1px solid ${Line.subtle};
     }
@@ -213,7 +238,7 @@ const ItemName = styled.p`
   color: ${Label.normal};
   ${typographyCss(Typography.heading2.bold)}
 
-  @media (max-width: 900px) {
+  ${media.xs} {
     flex: 1 0 0;
     min-width: 0;
     overflow: hidden;
@@ -229,7 +254,7 @@ const ItemRight = styled.div`
   gap: 20px;
 
   /* Figma 모바일: 뱃지가 위, 제출 시각이 아래 (데스크톱 가로 순서와 반대라 column-reverse) */
-  @media (max-width: 900px) {
+  ${media.xs} {
     flex-direction: column-reverse;
     align-items: flex-end;
     justify-content: center;
@@ -244,7 +269,7 @@ const SubmittedAt = styled.p`
   color: ${Label.assistive};
   ${typographyCss(Typography.body1Reading.regular)}
 
-  @media (max-width: 900px) {
+  ${media.xs} {
     text-align: right;
     ${typographyCss(Typography.label1Normal.regular)}
   }
@@ -257,13 +282,13 @@ const FooterRow = styled.div`
   width: 100%;
 
   /* Figma 모바일: 과제 목록과 22px 간격 (컨테이너 gap 16 + 6) */
-  @media (max-width: 900px) {
+  ${media.xs} {
     margin-top: 6px;
   }
 `;
 
 const DesktopAction = styled.div`
-  @media (max-width: 900px) {
+  ${media.xs} {
     display: none;
   }
 `;
@@ -271,7 +296,7 @@ const DesktopAction = styled.div`
 const MobileAction = styled.div`
   display: none;
 
-  @media (max-width: 900px) {
+  ${media.xs} {
     display: block;
   }
 `;

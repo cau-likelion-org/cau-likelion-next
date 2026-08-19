@@ -24,15 +24,22 @@ const GUIDE_TEXT: Record<NotificationPermissionState, string> = {
   unsupported: '이 브라우저에서는\n알림을 받을 수 없어요.',
 };
 
+type GuideAlign = 'center' | 'left';
+
 interface NotificationSettingViewProps {
   permission: NotificationPermissionState;
   enabled: boolean;
-  pending?: boolean;
   onToggle?: () => void;
+  guideAlign?: GuideAlign;
 }
 
-export const NotificationSettingView = ({ permission, enabled, pending, onToggle }: NotificationSettingViewProps) => {
-  const isDisabled = !!pending || permission === 'unsupported' || permission === 'denied';
+export const NotificationSettingView = ({
+  permission,
+  enabled,
+  onToggle,
+  guideAlign = 'center',
+}: NotificationSettingViewProps) => {
+  const isDisabled = permission === 'unsupported' || permission === 'denied';
 
   return (
     <Wrapper>
@@ -52,14 +59,14 @@ export const NotificationSettingView = ({ permission, enabled, pending, onToggle
           </Track>
         </Switch>
       </Row>
-      <Guide>{GUIDE_TEXT[permission]}</Guide>
+      <Guide $align={guideAlign}>{GUIDE_TEXT[permission]}</Guide>
     </Wrapper>
   );
 };
 
 // 과제 승인/반려 알림 on/off. 켜면 이 기기의 FCM 토큰을 서버에 등록하고, 끄면 삭제한다.
 // 알림은 과제를 제출하는 아기사자에게만 발송되므로 다른 역할에는 노출하지 않는다.
-const NotificationSetting = () => {
+const NotificationSetting = ({ guideAlign }: { guideAlign?: GuideAlign }) => {
   const tokenState = useTokenStore((state) => state.token);
   const [permission, setPermission] = useState<NotificationPermissionState>('unsupported');
   const [enabled, setEnabled] = useState(false);
@@ -80,28 +87,33 @@ const NotificationSetting = () => {
     setEnabled(current === 'granted' && !!getCachedFcmToken());
   }, []);
 
+  // 토큰 발급이 안되어도 일단 스위치 토글은 ON으로
   const handleToggle = async () => {
     if (pending) return;
+    const next = !enabled;
+    setEnabled(next);
     setPending(true);
 
     try {
-      if (enabled) {
+      if (!next) {
         const fcmToken = getCachedFcmToken();
         if (fcmToken) await deleteFcmToken(tokenState, fcmToken);
         clearCachedFcmToken();
+        return;
+      }
+
+      const fcmToken = await requestFcmToken();
+      setPermission(getNotificationPermission());
+      // 권한을 거부했거나 토큰 발급에 실패하면 켜진 상태를 되돌리기
+      if (!fcmToken) {
         setEnabled(false);
         return;
       }
 
-      // 권한 팝업은 이 클릭 안에서 떠야 브라우저가 무시하지 않는다
-      const fcmToken = await requestFcmToken();
-      setPermission(getNotificationPermission());
-      if (!fcmToken) return;
-
       await updateFcmToken(tokenState, fcmToken);
-      setEnabled(true);
     } catch (error) {
       console.error('[push] 알림 설정 변경 실패', error);
+      setEnabled(!next);
     } finally {
       setPending(false);
     }
@@ -110,7 +122,12 @@ const NotificationSetting = () => {
   if (userProfile?.role !== 'BABY_LION') return null;
 
   return (
-    <NotificationSettingView permission={permission} enabled={enabled} pending={pending} onToggle={handleToggle} />
+    <NotificationSettingView
+      permission={permission}
+      enabled={enabled}
+      onToggle={handleToggle}
+      guideAlign={guideAlign}
+    />
   );
 };
 
@@ -182,11 +199,11 @@ const Thumb = styled.span`
   background-color: ${BackgroundWhite.primary};
 `;
 
-const Guide = styled.p`
+const Guide = styled.p<{ $align: GuideAlign }>`
   margin: 0;
   width: 100%;
-  text-align: center;
-  white-space: pre-line;
+  text-align: ${(props) => props.$align};
+  white-space: ${(props) => (props.$align === 'center' ? 'pre-line' : 'normal')};
   color: ${Label.assistive};
   ${typographyCss(Typography.caption1.medium)}
 `;

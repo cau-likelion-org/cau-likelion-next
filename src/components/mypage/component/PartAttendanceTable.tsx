@@ -17,6 +17,7 @@ import useListboxSelect from 'src/hooks/useListboxSelect';
 import { IcCaretDown, IcCaretUp } from '@assets/svg';
 import { BackgroundColor, Fill, Inverse, Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
+import { media } from '@utils/constant/breakpoint';
 
 const STATUS_LABEL: Record<AttendanceStatus, string> = {
   BEFORE: '출석 전',
@@ -226,14 +227,11 @@ const PartAttendanceTable = ({
     status: AttendanceStatus;
   } | null>(null);
 
-  // 최신 주차부터 1주차까지 연속으로 표시 (예: 최신 18주차면 18 → 1)
   const { weeks, recordMaps } = useMemo(() => {
-    const maxWeek = members.reduce(
-      (max, member) => member.attendances.reduce((acc, a) => Math.max(acc, a.weekNumber), max),
-      0,
-    );
+    const weekNumbers = new Set<number>();
+    members.forEach((member) => member.attendances.forEach((a) => weekNumbers.add(a.weekNumber)));
     return {
-      weeks: Array.from({ length: maxWeek }, (_, index) => maxWeek - index),
+      weeks: Array.from(weekNumbers).sort((a, b) => b - a),
       recordMaps: members.map((member) => new Map(member.attendances.map((a) => [a.weekNumber, a]))),
     };
   }, [members]);
@@ -329,6 +327,8 @@ const PartAttendanceTable = ({
         <AttendanceEmptyState variant="error" />
       ) : members.length === 0 ? (
         <AttendanceEmptyState message="출결 정보가 없습니다." />
+      ) : weeks.length === 0 ? (
+        <AttendanceEmptyState message="아직 출결 기록이 없습니다." />
       ) : (
         <TableRow>
           <FixedColumn>
@@ -474,7 +474,7 @@ const EditButton = styled.button`
 const EditActions = styled.div`
   display: flex;
 
-  @media (max-width: 900px) {
+  ${media.xs} {
     display: none;
   }
 `;
@@ -603,7 +603,7 @@ const TableRow = styled.div`
   gap: 20px;
   width: 100%;
 
-  @media (max-width: 900px) {
+  ${media.xs} {
     gap: 12px;
   }
 `;
@@ -614,7 +614,7 @@ const FixedColumn = styled.div`
   flex-shrink: 0;
   width: 160px;
 
-  @media (max-width: 900px) {
+  ${media.xs} {
     width: 100px;
   }
 
@@ -660,7 +660,7 @@ const WeekColumn = styled.div`
   flex-shrink: 0;
   width: 120px;
 
-  @media (max-width: 900px) {
+  ${media.xs} {
     width: 100px;
   }
 
@@ -675,7 +675,7 @@ const PenaltyColumn = styled.div`
   flex-shrink: 0;
   width: 160px;
 
-  @media (max-width: 900px) {
+  ${media.xs} {
     width: 100px;
   }
 
@@ -717,7 +717,7 @@ const HeadCell = styled.div<{ $penalty?: boolean }>`
   border-bottom: 1px solid ${(props) => (props.$penalty ? PENALTY_BORDER : GRID_BORDER)};
   ${typographyCss(Typography.heading2.bold)}
 
-  @media (max-width: 900px) {
+  ${media.xs} {
     ${typographyCss(Typography.headline1.bold)}
   }
 `;
@@ -726,7 +726,7 @@ const ValueCell = styled.div<{ $penalty?: boolean }>`
   ${cellBase}
   height: ${ROW_HEIGHT}px;
 
-  @media (max-width: 900px) {
+  ${media.xs} {
     height: ${MOBILE_ROW_HEIGHT}px;
   }
   color: #121212;
@@ -738,7 +738,7 @@ const ValueCell = styled.div<{ $penalty?: boolean }>`
 
   ${typographyCss(Typography.heading1.bold)}
 
-  @media (max-width: 900px) {
+  ${media.xs} {
     ${typographyCss(Typography.headline1.bold)}
   }
 `;
@@ -747,7 +747,7 @@ const StatusCell = styled.div`
   ${cellBase}
   height: ${ROW_HEIGHT}px;
 
-  @media (max-width: 900px) {
+  ${media.xs} {
     height: ${MOBILE_ROW_HEIGHT}px;
   }
   color: ${Label.strong};

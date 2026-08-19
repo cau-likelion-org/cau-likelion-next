@@ -28,9 +28,10 @@ import {
 } from 'src/apis/attendance';
 import useTokenStore from 'src/store/useTokenStore';
 import { INACTIVE_MEMBER_NOTICE_KEY, TRACK_OPTIONS } from '@utils/constant';
-import { isAdminRole, isFullAdminRole, canManageSitePages } from '@utils/index';
+import { isAdminRole, isFullAdminRole } from '@utils/index';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
+import { media } from '@utils/constant/breakpoint';
 
 // 회장/관리자 파트 필터의 '전체' 옵션 (나머지는 현재 활동 기수의 파트 목록에서 가져옴)
 const ALL_PART = '전체';
@@ -119,7 +120,8 @@ const MyPageAttendance = () => {
     queryFn: () => getMyAttendances(tokenState),
     enabled: !!userProfile && !isStaff && userProfile.role !== 'ADULT_LION',
   });
-  const myRecords = (myAttendances ?? []).map(toWeeklyRecord);
+
+  const myRecords = [...(myAttendances ?? [])].sort((a, b) => b.weekNumber - a.weekNumber).map(toWeeklyRecord);
 
   const members =
     isPresident && selectedPart !== ALL_PART
@@ -145,51 +147,53 @@ const MyPageAttendance = () => {
       <ToastWrapper>
         <Toast variant="negative" text={errorMessage} show={!!errorMessage} onHidden={() => setErrorMessage('')} />
       </ToastWrapper>
-      <MyPageShell active="attendance" isAdmin={!!userProfile && canManageSitePages(userProfile.role)}>
-        {!userProfile || userProfile.role === 'ADULT_LION' ? (
-          <PageLoadingGate isError={isUserProfileError} />
-        ) : isStaff ? (
-          <PartAttendanceTable
-            members={members}
-            partName={isPresident ? undefined : userProfile.partName}
-            partFilter={
-              isPresident ? { value: selectedPart, options: partOptions, onChange: setSelectedPart } : undefined
-            }
-            onSave={handleSave}
-            isSaving={saveMutation.isPending}
-            isLoading={isAttendanceLoading}
-            isError={isAttendanceError}
-          />
-        ) : (
-          <>
-            <TitleRow>
-              <SectionTitle>주차별 출결 현황</SectionTitle>
-              <TrackName>{userProfile.partName} 파트</TrackName>
-            </TitleRow>
-            {isMyAttendancesLoading ? (
-              <LoadingWrapper>
-                <CircularLoading size={32} />
-              </LoadingWrapper>
-            ) : isMyAttendancesError ? (
-              <EmptyState variant="error" />
-            ) : myRecords.length === 0 ? (
-              <EmptyState message="출결 정보가 없습니다." />
-            ) : (
-              <List>
-                {myRecords.map((record) => (
-                  <WeeklyAttendanceCard key={record.week} record={record} />
-                ))}
-              </List>
-            )}
-          </>
-        )}
-      </MyPageShell>
+      {!userProfile || userProfile.role === 'ADULT_LION' ? (
+        <PageLoadingGate isError={isUserProfileError} />
+      ) : isStaff ? (
+        <PartAttendanceTable
+          members={members}
+          partName={isPresident ? undefined : userProfile.partName}
+          partFilter={
+            isPresident ? { value: selectedPart, options: partOptions, onChange: setSelectedPart } : undefined
+          }
+          onSave={handleSave}
+          isSaving={saveMutation.isPending}
+          isLoading={isAttendanceLoading}
+          isError={isAttendanceError}
+        />
+      ) : (
+        <>
+          <TitleRow>
+            <SectionTitle>주차별 출결 현황</SectionTitle>
+            <TrackName>{userProfile.partName} 파트</TrackName>
+          </TitleRow>
+          {isMyAttendancesLoading ? (
+            <LoadingWrapper>
+              <CircularLoading size={32} />
+            </LoadingWrapper>
+          ) : isMyAttendancesError ? (
+            <EmptyState variant="error" />
+          ) : myRecords.length === 0 ? (
+            <EmptyState message="출결 정보가 없습니다." />
+          ) : (
+            <List>
+              {myRecords.map((record) => (
+                <WeeklyAttendanceCard key={record.week} record={record} />
+              ))}
+            </List>
+          )}
+        </>
+      )}
     </>
   );
 };
 
 MyPageAttendance.getLayout = function getLayout(page: ReactElement) {
-  return <LayoutFullWidth>{page}</LayoutFullWidth>;
+  return (
+    <LayoutFullWidth>
+      <MyPageShell active="attendance">{page}</MyPageShell>
+    </LayoutFullWidth>
+  );
 };
 
 export default MyPageAttendance;
@@ -209,7 +213,7 @@ const TitleRow = styled.div`
   gap: 18px;
   width: 100%;
 
-  @media (max-width: 900px) {
+  ${media.xs} {
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;

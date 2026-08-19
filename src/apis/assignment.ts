@@ -64,16 +64,40 @@ export function getMyAssignments(token: IToken) {
   return authAxios.get<AssignmentSummaryWeekGroup[]>('/api/assignments/me').then((res) => res.data);
 }
 
+export interface MyAssignmentSubmissionHistory {
+  assignmentId: number;
+  title: string;
+  detail: string;
+  endDate: string; // 개별 마감일이 있으면 그 값, 없으면 과제 공통 마감일
+  type: AssignmentSubmitType;
+  submissions: AssignmentSubmission[]; // 본인 제출 이력 전체 (최신순, 없으면 빈 배열)
+}
+
+export interface MyAssignmentHistoryWeekGroup {
+  week: number;
+  weeklyStatus: AssignmentDisplayStatus; // 주차 종합 상태
+  assignments: MyAssignmentSubmissionHistory[];
+}
+
+// 아기사자: 주차별 과제 상세 + 본인 제출 이력 조회 (week 미지정 시 전체 주차)
+export function getMyAssignmentHistory(token: IToken, week?: number) {
+  const authAxios = getAuthAxios(token);
+  return authAxios
+    .get<MyAssignmentHistoryWeekGroup[]>('/api/assignments/me/submissions/history', {
+      params: week != null ? { week } : undefined,
+    })
+    .then((res) => res.data);
+}
+
 export function getStaffAssignments(token: IToken) {
   const authAxios = getAuthAxios(token);
   return authAxios.get<AssignmentWeekGroup[]>('/api/assignments/staff').then((res) => res.data);
 }
 
-// 회장/관리자: partId로 지정한 파트의 과제 목록을 주차별로 조회 (전체 파트 조회 가능)
-export function getPresidentAssignments(token: IToken, partId?: number) {
+export function getPresidentAssignments(token: IToken, partId: number) {
   const authAxios = getAuthAxios(token);
   return authAxios
-    .get<AssignmentWeekGroup[]>('/api/assignments/president', { params: partId != null ? { partId } : undefined })
+    .get<AssignmentWeekGroup[]>('/api/assignments/president', { params: { partId } })
     .then((res) => res.data);
 }
 
@@ -145,6 +169,22 @@ export function deleteAssignment(token: IToken, assignmentId: number) {
 export type SubmissionStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
 export type AssignmentDisplayStatus =
   'BEFORE_SUBMISSION' | 'MISSED' | 'PENDING_REVIEW' | 'LATE_SUBMITTED' | 'APPROVED' | 'REJECTED';
+
+// 지각 제출을 받아주는 유예 기간
+const LATE_SUBMISSION_GRACE_MS = 5 * 24 * 60 * 60 * 1000;
+
+// 아기사자가 지금 제출/재제출할 수 있는 과제인지 판정
+// 반려는 운영진 검토가 보통 마감 후라서 마감과 무관하게 다시 제출할 수 있어야 하고,
+// 승인이 끝난 건(승인 완료·지각 제출)은 더 제출할 수 없는게 맞음
+export function canSubmitAssignment(status: AssignmentDisplayStatus, endDate: string) {
+  if (status === 'REJECTED') return true;
+  if (status === 'APPROVED' || status === 'LATE_SUBMITTED' || status === 'MISSED') return false;
+  const deadline = new Date(endDate).getTime();
+  // 아직 한 번도 내지 않았으면 지각 제출을 받아주기 위해 마감 + 유예까지 열어둔다
+  if (status === 'BEFORE_SUBMISSION') return Date.now() <= deadline + LATE_SUBMISSION_GRACE_MS;
+  // 이미 낸 건(승인 대기)은 판정 전이라도 마감 시각까지만 수정할 수 있다
+  return Date.now() <= deadline;
+}
 
 export interface AssignmentFile {
   id: number;
