@@ -1,15 +1,15 @@
-import { useId, useRef, useState } from 'react';
+import { useId, useRef } from 'react';
 import styled from 'styled-components';
 
 import Button from '@common/button/Button';
 import ContentBadge from '@common/badge/ContentBadge';
 import Chip from '@common/chip/Chip';
-import PaginationDots from '@common/pagination/PaginationDots';
 import TextButton from '@common/textButton/TextButton';
+import ProjectDetailCarousel from '@project/detail/ProjectDetailCarousel';
 import IcLineHorizontal from '@assets/svg/icon/ic-line-horizontal.svg';
-import { IcChevronLeft, IcChevronRight } from '@assets/svg';
+import { IcChevronLeft } from '@assets/svg';
 import useFocusTrap from 'src/hooks/useFocusTrap';
-import { BackgroundColor, Fill, Label, Material, Orange } from '@utils/constant/color';
+import { BackgroundColor, Label, Material, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 export interface PostDetailModalProps {
@@ -37,17 +37,6 @@ const PostDetailModal = ({
   const modalRef = useRef<HTMLDivElement>(null);
   useFocusTrap(modalRef, onClose);
 
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [prevImageUrls, setPrevImageUrls] = useState(imageUrls);
-  if (imageUrls !== prevImageUrls) {
-    setPrevImageUrls(imageUrls);
-    setActiveIndex(0);
-  }
-
-  const showNavigation = imageUrls.length > 1;
-  const goToPrev = () => setActiveIndex((prev) => (prev === 0 ? imageUrls.length - 1 : prev - 1));
-  const goToNext = () => setActiveIndex((prev) => (prev === imageUrls.length - 1 ? 0 : prev + 1));
-
   return (
     <Backdrop onClick={onClose}>
       <Modal
@@ -72,20 +61,7 @@ const PostDetailModal = ({
         </MobileHeader>
         <Information>
           <ImageGroup>
-            <MainThumbnail>
-              {imageUrls.length > 0 && <MainThumbnailImage src={imageUrls[activeIndex]} alt="" />}
-              {showNavigation && (
-                <>
-                  <NavButton type="button" aria-label="이전 이미지" $side="left" onClick={goToPrev}>
-                    <IcChevronLeft width={20} height={20} />
-                  </NavButton>
-                  <NavButton type="button" aria-label="다음 이미지" $side="right" onClick={goToNext}>
-                    <IcChevronRight width={20} height={20} />
-                  </NavButton>
-                </>
-              )}
-            </MainThumbnail>
-            {showNavigation && <Dots total={imageUrls.length} current={activeIndex} size="medium" />}
+            <ProjectDetailCarousel key={imageUrls.join(',')} images={imageUrls} />
           </ImageGroup>
 
           <TextGroup>
@@ -182,15 +158,6 @@ const MobileTitle = styled.p`
   ${typographyCss(Typography.title2.bold)}
 `;
 
-const Dots = styled(PaginationDots)`
-  @media (max-width: 700px) {
-    span {
-      width: 6px;
-      height: 6px;
-    }
-  }
-`;
-
 const Information = styled.div`
   width: 100%;
   padding: 28px;
@@ -210,39 +177,6 @@ const ImageGroup = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 22px;
-`;
-
-const MainThumbnail = styled.div`
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  border-radius: 22px;
-  overflow: hidden;
-  background-color: ${Fill.subtle};
-`;
-
-const MainThumbnailImage = styled.img`
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-`;
-
-const NavButton = styled.button<{ $side: 'left' | 'right' }>`
-  position: absolute;
-  top: 50%;
-  ${(props) => (props.$side === 'left' ? 'left: 16px;' : 'right: 16px;')}
-  transform: translateY(-50%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border: none;
-  border-radius: 50%;
-  background-color: ${BackgroundColor};
-  color: ${Label.normal};
-  padding: 0;
-  cursor: pointer;
 `;
 
 const TextGroup = styled.div`
