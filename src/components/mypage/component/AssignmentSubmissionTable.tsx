@@ -6,7 +6,7 @@ import EmptyState from '@common/emptyState/EmptyState';
 import SegmentedControl from '@common/segmentedControl/SegmentedControl';
 import Tooltip from '@common/tooltip/Tooltip';
 import { AssignmentDisplayStatus, AssignmentMemberSubmission, AssignmentSubmission } from 'src/apis/assignment';
-import { Black, Label, Line } from '@utils/constant/color';
+import { Black, Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 const STATUS_BADGE: Record<AssignmentDisplayStatus, { label: string; color: 'neutral' | 'accent' }> = {
@@ -28,6 +28,7 @@ const APPROVAL_OPTIONS = [
 
 interface AssignmentSubmissionTableProps {
   members: AssignmentMemberSubmission[];
+  assignmentEndDate?: string; // 과제 공통 마감일 — 이 값과 다르면 개별 연장된 아기사자다
   // 마감일은 아기사자마다 다를 수 있어(개별 마감일) 해당 행의 마감일을 함께 넘긴다
   onApprove: (submitId: number, deadline: string) => void;
   onReject: (submitId: number, deadline: string) => void;
@@ -36,10 +37,14 @@ interface AssignmentSubmissionTableProps {
 
 const AssignmentSubmissionTable = ({
   members,
+  assignmentEndDate,
   onApprove,
   onReject,
   onViewSubmission,
 }: AssignmentSubmissionTableProps) => {
+  const hasExtendedDeadline = (deadline: string) =>
+    !!assignmentEndDate && new Date(deadline).getTime() !== new Date(assignmentEndDate).getTime();
+
   return (
     <Wrapper>
       <HeaderRow>
@@ -73,10 +78,15 @@ const AssignmentSubmissionTable = ({
               >
                 {isFirstRow ? (
                   <NameCell>
-                    <Name tabIndex={0}>{member.memberName}</Name>
-                    <TooltipSlot>
-                      <Tooltip position="bottom" align="start" text={`마감일 ㅣ ${formatDate(member.deadline)}`} />
-                    </TooltipSlot>
+                    {/* 마감일을 개별 연장한 아기사자만 주황색 밑줄로 구분하고, 눌렀을 때 연장된 마감일을 보여준다 */}
+                    <Name $extended={hasExtendedDeadline(member.deadline)} tabIndex={0}>
+                      {member.memberName}
+                    </Name>
+                    {hasExtendedDeadline(member.deadline) && (
+                      <TooltipSlot>
+                        <Tooltip position="bottom" align="start" text={`마감일 ㅣ ${formatDate(member.deadline)}`} />
+                      </TooltipSlot>
+                    )}
                   </NameCell>
                 ) : (
                   <span />
@@ -188,18 +198,30 @@ const TooltipSlot = styled.div`
   top: 100%;
   left: 0;
   z-index: 10;
+  /* 이름 칸(90px) 폭에 맞춰 줄바꿈되지 않도록 한 줄로 펼친다 */
+  white-space: nowrap;
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
   transition: opacity 0.15s ease;
 `;
 
-const Name = styled.span`
-  color: ${Black.b900};
-  cursor: default;
+const Name = styled.span<{ $extended: boolean }>`
+  color: ${(props) => (props.$extended ? Orange.o500 : Black.b900)};
+  cursor: ${(props) => (props.$extended ? 'pointer' : 'default')};
   ${typographyCss(Typography.title3.bold)}
 
-  &:hover + ${TooltipSlot}, &:focus-visible + ${TooltipSlot} {
+  /* Figma: 밑줄은 폰트 자체 위치를 쓰고 글자 아래를 파고들지 않는다 */
+  ${(props) =>
+    props.$extended &&
+    `
+    text-decoration: underline solid;
+    text-decoration-skip-ink: none;
+    text-underline-position: from-font;
+  `}
+
+  /* 클릭(focus)으로도 열리도록 focus-visible이 아니라 focus를 쓴다 */
+  &:hover + ${TooltipSlot}, &:focus + ${TooltipSlot} {
     opacity: 1;
     visibility: visible;
   }

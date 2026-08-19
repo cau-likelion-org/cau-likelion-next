@@ -201,6 +201,7 @@ const MyPageAssignmentDetail = () => {
 
       <AssignmentSubmissionTable
         members={members}
+        assignmentEndDate={submissionHistory?.endDate ?? activeAssignment?.endDate}
         onApprove={handleApprove}
         onReject={handleReject}
         onViewSubmission={setViewTarget}
