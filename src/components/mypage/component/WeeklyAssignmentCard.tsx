@@ -19,6 +19,7 @@ export interface AssignmentItem {
 
 export interface AssignmentCard {
   id?: string;
+  assignmentIds?: number[];
   items: AssignmentItem[];
   dueDate: string;
   actionLabel?: '수정하기' | '제출하기';
@@ -61,7 +62,11 @@ const WeeklyAssignmentCard = ({ group }: { group: WeeklyAssignmentGroup }) => {
       setIsUnsupportedOpen(true);
       return;
     }
-    if (card.id) router.push(`/mypage/assignment/${card.id}`);
+    if (!card.id) return;
+    router.push({
+      pathname: `/mypage/assignment/${card.id}`,
+      query: card.assignmentIds?.length ? { ids: card.assignmentIds.join(',') } : undefined,
+    });
   };
 
   return (

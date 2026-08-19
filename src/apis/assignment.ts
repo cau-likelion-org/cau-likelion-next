@@ -170,6 +170,22 @@ export type SubmissionStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
 export type AssignmentDisplayStatus =
   'BEFORE_SUBMISSION' | 'MISSED' | 'PENDING_REVIEW' | 'LATE_SUBMITTED' | 'APPROVED' | 'REJECTED';
 
+// 지각 제출을 받아주는 유예 기간
+const LATE_SUBMISSION_GRACE_MS = 5 * 24 * 60 * 60 * 1000;
+
+// 아기사자가 지금 제출/재제출할 수 있는 과제인지 판정
+// 반려는 운영진 검토가 보통 마감 후라서 마감과 무관하게 다시 제출할 수 있어야 하고,
+// 승인이 끝난 건(승인 완료·지각 제출)은 더 제출할 수 없는게 맞음
+export function canSubmitAssignment(status: AssignmentDisplayStatus, endDate: string) {
+  if (status === 'REJECTED') return true;
+  if (status === 'APPROVED' || status === 'LATE_SUBMITTED' || status === 'MISSED') return false;
+  const deadline = new Date(endDate).getTime();
+  // 아직 한 번도 내지 않았으면 지각 제출을 받아주기 위해 마감 + 유예까지 열어둔다
+  if (status === 'BEFORE_SUBMISSION') return Date.now() <= deadline + LATE_SUBMISSION_GRACE_MS;
+  // 이미 낸 건(승인 대기)은 판정 전이라도 마감 시각까지만 수정할 수 있다
+  return Date.now() <= deadline;
+}
+
 export interface AssignmentFile {
   id: number;
   fileUrl: string;

@@ -2,10 +2,11 @@ import styled from 'styled-components';
 
 import ContentBadge from '@common/badge/ContentBadge';
 import Button from '@common/button/Button';
+import EmptyState from '@common/emptyState/EmptyState';
 import SegmentedControl from '@common/segmentedControl/SegmentedControl';
 import Tooltip from '@common/tooltip/Tooltip';
 import { AssignmentDisplayStatus, AssignmentMemberSubmission, AssignmentSubmission } from 'src/apis/assignment';
-import { Black, Label, Line } from '@utils/constant/color';
+import { Black, Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 const STATUS_BADGE: Record<AssignmentDisplayStatus, { label: string; color: 'neutral' | 'accent' }> = {
@@ -27,17 +28,23 @@ const APPROVAL_OPTIONS = [
 
 interface AssignmentSubmissionTableProps {
   members: AssignmentMemberSubmission[];
-  onApprove: (submitId: number) => void;
-  onReject: (submitId: number) => void;
+  assignmentEndDate?: string; // 과제 공통 마감일 — 이 값과 다르면 개별 연장된 아기사자다
+  // 마감일은 아기사자마다 다를 수 있어(개별 마감일) 해당 행의 마감일을 함께 넘긴다
+  onApprove: (submitId: number, deadline: string) => void;
+  onReject: (submitId: number, deadline: string) => void;
   onViewSubmission: (submission: AssignmentSubmission) => void;
 }
 
 const AssignmentSubmissionTable = ({
   members,
+  assignmentEndDate,
   onApprove,
   onReject,
   onViewSubmission,
 }: AssignmentSubmissionTableProps) => {
+  const hasExtendedDeadline = (deadline: string) =>
+    !!assignmentEndDate && new Date(deadline).getTime() !== new Date(assignmentEndDate).getTime();
+
   return (
     <Wrapper>
       <HeaderRow>
@@ -48,6 +55,8 @@ const AssignmentSubmissionTable = ({
         <HeadCell>확인자</HeadCell>
         <HeadCell>상태</HeadCell>
       </HeaderRow>
+
+      {members.length === 0 && <Empty message="아직 제출한 아기사자가 없습니다." />}
 
       <Body>
         {members.map((member, memberIndex) => {
@@ -69,10 +78,14 @@ const AssignmentSubmissionTable = ({
               >
                 {isFirstRow ? (
                   <NameCell>
-                    <Name tabIndex={0}>{member.memberName}</Name>
-                    <TooltipSlot>
-                      <Tooltip position="bottom" align="start" text={`마감일 ㅣ ${formatDate(member.deadline)}`} />
-                    </TooltipSlot>
+                    <Name $extended={hasExtendedDeadline(member.deadline)} tabIndex={0}>
+                      {member.memberName}
+                    </Name>
+                    {hasExtendedDeadline(member.deadline) && (
+                      <TooltipSlot>
+                        <Tooltip position="bottom" align="start" text={`마감일 ㅣ ${formatDate(member.deadline)}`} />
+                      </TooltipSlot>
+                    )}
                   </NameCell>
                 ) : (
                   <span />
@@ -100,8 +113,8 @@ const AssignmentSubmissionTable = ({
                   disabled={!hasSubmission}
                   onChange={(value) => {
                     if (!submission) return;
-                    if (value === 'APPROVED') onApprove(submission.id);
-                    else onReject(submission.id);
+                    if (value === 'APPROVED') onApprove(submission.id, member.deadline);
+                    else onReject(submission.id, member.deadline);
                   }}
                 />
 
@@ -143,6 +156,10 @@ const HeadCell = styled.span`
   ${typographyCss(Typography.body1Reading.regular)}
 `;
 
+const Empty = styled(EmptyState)`
+  min-height: 240px;
+`;
+
 const Body = styled.div`
   display: flex;
   flex-direction: column;
@@ -174,24 +191,32 @@ const NameCell = styled.div`
   align-items: center;
 `;
 
-// 개별 마감일 툴팁: 이름에 hover/focus 했을 때만 노출
 const TooltipSlot = styled.div`
   position: absolute;
   top: 100%;
   left: 0;
   z-index: 10;
+  white-space: nowrap;
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
   transition: opacity 0.15s ease;
 `;
 
-const Name = styled.span`
-  color: ${Black.b900};
-  cursor: default;
+const Name = styled.span<{ $extended: boolean }>`
+  color: ${(props) => (props.$extended ? Orange.o500 : Black.b900)};
+  cursor: ${(props) => (props.$extended ? 'pointer' : 'default')};
   ${typographyCss(Typography.title3.bold)}
 
-  &:hover + ${TooltipSlot}, &:focus-visible + ${TooltipSlot} {
+  ${(props) =>
+    props.$extended &&
+    `
+    text-decoration: underline solid;
+    text-decoration-skip-ink: none;
+    text-underline-position: from-font;
+  `}
+
+  &:hover + ${TooltipSlot}, &:focus + ${TooltipSlot} {
     opacity: 1;
     visibility: visible;
   }

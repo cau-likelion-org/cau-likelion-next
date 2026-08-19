@@ -1,11 +1,11 @@
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import axios from 'axios';
 import styled from 'styled-components';
 
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import Button from '@common/button/Button';
-import Toast from '@common/toast/Toast';
 import AssignmentSubmitCard, {
   AssignmentSubmitItem,
   AssignmentSubmitValue,
@@ -13,6 +13,7 @@ import AssignmentSubmitCard, {
 import { IcChevronLeft } from '@assets/svg';
 import {
   MyAssignmentHistoryWeekGroup,
+  canSubmitAssignment,
   getMyAssignmentHistory,
   submitAssignment,
   uploadAssignmentFile,
@@ -29,6 +30,15 @@ const formatDueDate = (value: string) => {
   return `${date.getFullYear()}/${pad(date.getMonth() + 1)}/${pad(date.getDate())}`;
 };
 
+// 파일 업로드·제출 실패 사유(예: 허용되지 않는 파일 형식)는 서버 메시지를 그대로 보여준다
+const getServerMessage = (error: unknown) => {
+  if (!axios.isAxiosError(error)) return undefined;
+  const data: unknown = error.response?.data;
+  if (typeof data === 'string') return data.trim() || undefined;
+  const message = (data as { message?: unknown } | undefined)?.message;
+  return typeof message === 'string' && message.trim() ? message : undefined;
+};
+
 const AssignmentSubmit = () => {
   const tokenState = useTokenStore((state) => state.token);
   const hasHydrated = useTokenStore((state) => state.hasHydrated);
@@ -40,7 +50,8 @@ const AssignmentSubmit = () => {
   // 입력값은 렌더에 쓰지 않고 제출 시점에만 읽으므로 ref에 모은다 (매 타이핑마다 리렌더 방지)
   const valueMapRef = useRef<Record<string, AssignmentSubmitValue>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
+  // 제출 실패 사유는 과제별로 해당 카드의 첨부 영역 아래에 표시한다
+  const [submitErrors, setSubmitErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (hasHydrated && !tokenState.access) router.push('/login');
@@ -53,10 +64,19 @@ const AssignmentSubmit = () => {
   });
   const weekGroup = weekGroups?.find((group) => group.week === week);
 
-  const dueDates = (weekGroup?.assignments ?? []).map((assignment) => formatDueDate(assignment.endDate));
-  const sharedDueDate = dueDates.length > 0 && dueDates.every((date) => date === dueDates[0]) ? dueDates[0] : null;
+  // 목록에서 마감일이 같은 과제끼리 묶어 넘어오므로 그 카드에 속한 과제만 다룬다 (ids가 없으면 주차 전체)
+  const idsParam = typeof router.query.ids === 'string' ? router.query.ids.split(',') : null;
+  const cardAssignments = (weekGroup?.assignments ?? []).filter(
+    (assignment) => !idsParam || idsParam.includes(String(assignment.assignmentId)),
+  );
 
-  const items: AssignmentSubmitItem[] = (weekGroup?.assignments ?? []).map((assignment) => ({
+  const submittableAssignments = cardAssignments.filter((assignment) =>
+    canSubmitAssignment(assignment.submissions[0]?.displayStatus ?? 'BEFORE_SUBMISSION', assignment.endDate),
+  );
+
+  const dueDate = submittableAssignments[0]?.endDate ?? null;
+
+  const items: AssignmentSubmitItem[] = submittableAssignments.map((assignment) => ({
     id: String(assignment.assignmentId),
     name: assignment.title,
     description: assignment.detail,
@@ -77,10 +97,10 @@ const AssignmentSubmit = () => {
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
-    setErrorMessage('');
+    setSubmitErrors({});
 
     // 되돌리는 API가 없어 일부만 성공할 수 있다. 실패한 과제만 사용자에게 알린다
-    const failed: string[] = [];
+    const failed: Record<string, string> = {};
     for (const item of items) {
       const value = valueMapRef.current[item.id];
       if (!value) continue;
@@ -99,8 +119,8 @@ const AssignmentSubmit = () => {
           url: item.format === 'link' ? value.link.trim() : undefined,
           files,
         });
-      } catch {
-        failed.push(item.name);
+      } catch (error) {
+        failed[item.id] = getServerMessage(error) ?? '제출에 실패했습니다. 다시 시도해 주세요.';
       }
     }
 
@@ -108,8 +128,8 @@ const AssignmentSubmit = () => {
     queryClient.invalidateQueries({ queryKey: ['myAssignments'] });
     queryClient.invalidateQueries({ queryKey: ['myAssignmentHistory'] });
 
-    if (failed.length > 0) {
-      setErrorMessage(`${failed.join(', ')} 제출에 실패했습니다. 다시 시도해 주세요.`);
+    if (Object.keys(failed).length > 0) {
+      setSubmitErrors(failed);
       return;
     }
     handleClose();
@@ -132,9 +152,9 @@ const AssignmentSubmit = () => {
       <Content>
         <SessionRow>
           <SessionTitle>{week}주차 세션 과제</SessionTitle>
-          {sharedDueDate && (
+          {dueDate && (
             <DueDate>
-              마감일 <span>ㅣ</span> {sharedDueDate}
+              마감일 <span>ㅣ</span> {formatDueDate(dueDate)}
             </DueDate>
           )}
         </SessionRow>
@@ -142,6 +162,7 @@ const AssignmentSubmit = () => {
           <AssignmentSubmitCard
             key={item.id}
             item={item}
+            errorMessage={submitErrors[item.id]}
             onValidityChange={handleValidityChange}
             onValueChange={handleValueChange}
           />
@@ -153,10 +174,6 @@ const AssignmentSubmit = () => {
           제출하기
         </Button>
       </SubmitButtonWrapper>
-
-      <ToastWrapper>
-        <Toast variant="negative" text={errorMessage} show={!!errorMessage} onHidden={() => setErrorMessage('')} />
-      </ToastWrapper>
     </Wrapper>
   );
 };
@@ -166,15 +183,6 @@ AssignmentSubmit.getLayout = function getLayout(page: ReactElement) {
 };
 
 export default AssignmentSubmit;
-
-const ToastWrapper = styled.div`
-  position: fixed;
-  top: 110px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10001;
-  pointer-events: none;
-`;
 
 const Wrapper = styled.div`
   display: flex;

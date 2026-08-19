@@ -17,8 +17,10 @@ import StaffAssignmentCard from '@mypage/component/StaffAssignmentCard';
 import WeeklyAssignmentCard, { WeeklyAssignmentGroup } from '@mypage/component/WeeklyAssignmentCard';
 import { getGenerations, getUserProfile } from 'src/apis/account';
 import {
+  AssignmentSummary,
   AssignmentSummaryWeekGroup,
   AssignmentWeekGroup,
+  canSubmitAssignment,
   getMyAssignments,
   getPresidentAssignments,
   getStaffAssignments,
@@ -46,10 +48,20 @@ const formatSubmittedAt = (value: string) => {
   return `${formatDueDate(value)} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
 };
 
-// 마감이 지났으면 버튼을 숨기고, 한 건도 제출하지 않았으면 제출하기로 보여준다
-const resolveActionLabel = (endDate: string, assignments: { submittedAt: string | null }[]) => {
-  if (new Date(endDate).getTime() < Date.now()) return undefined;
-  return assignments.every((assignment) => !assignment.submittedAt) ? '제출하기' : '수정하기';
+const groupByDeadline = (assignments: AssignmentSummary[]) => {
+  const buckets = new Map<string, AssignmentSummary[]>();
+  assignments.forEach((assignment) => {
+    const bucket = buckets.get(assignment.endDate);
+    if (bucket) bucket.push(assignment);
+    else buckets.set(assignment.endDate, [assignment]);
+  });
+  return [...buckets.entries()].sort(([a], [b]) => new Date(a).getTime() - new Date(b).getTime());
+};
+
+const resolveActionLabel = (assignments: AssignmentSummary[]) => {
+  const submittable = assignments.filter((assignment) => canSubmitAssignment(assignment.status, assignment.endDate));
+  if (submittable.length === 0) return undefined;
+  return submittable.every((assignment) => !assignment.submittedAt) ? '제출하기' : '수정하기';
 };
 
 const MyPageAssignment = () => {
@@ -157,25 +169,21 @@ const MyPageAssignment = () => {
     enabled: !!userProfile && !isStaffOrAdmin && userProfile.role !== 'ADULT_LION',
   });
 
-  // 한 주차의 과제는 마감일이 모두 같으므로 주차당 카드 하나로 묶는다
+  // 아기사자: 마감일이 같은 과제는 한 카드, 다르면 마감일 순으로 카드를 나눈다
   const myGroups: WeeklyAssignmentGroup[] = (myWeekGroups ?? []).map((group) => ({
     week: group.week,
     status: group.weeklyStatus,
-    cards:
-      group.assignments.length === 0
-        ? []
-        : [
-            {
-              id: String(group.week),
-              items: group.assignments.map((assignment) => ({
-                name: assignment.title,
-                status: assignment.status,
-                submittedAt: assignment.submittedAt ? formatSubmittedAt(assignment.submittedAt) : undefined,
-              })),
-              dueDate: formatDueDate(group.assignments[0].endDate),
-              actionLabel: resolveActionLabel(group.assignments[0].endDate, group.assignments),
-            },
-          ],
+    cards: groupByDeadline(group.assignments).map(([endDate, assignments]) => ({
+      id: String(group.week),
+      assignmentIds: assignments.map((assignment) => assignment.assignmentId),
+      items: assignments.map((assignment) => ({
+        name: assignment.title,
+        status: assignment.status,
+        submittedAt: assignment.submittedAt ? formatSubmittedAt(assignment.submittedAt) : undefined,
+      })),
+      dueDate: formatDueDate(endDate),
+      actionLabel: resolveActionLabel(assignments),
+    })),
   }));
 
   return (

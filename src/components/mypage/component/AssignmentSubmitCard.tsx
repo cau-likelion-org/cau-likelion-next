@@ -31,11 +31,12 @@ export interface AssignmentSubmitValue {
 
 interface AssignmentSubmitCardProps {
   item: AssignmentSubmitItem;
+  errorMessage?: string; // 제출 실패 사유
   onValidityChange?: (itemId: string, isValid: boolean) => void;
   onValueChange?: (itemId: string, value: AssignmentSubmitValue) => void;
 }
 
-const AssignmentSubmitCard = ({ item, onValidityChange, onValueChange }: AssignmentSubmitCardProps) => {
+const AssignmentSubmitCard = ({ item, errorMessage, onValidityChange, onValueChange }: AssignmentSubmitCardProps) => {
   const [files, setFiles] = useState<File[]>([]);
   const [link, setLink] = useState('');
   const [description, setDescription] = useState('');
@@ -101,6 +102,7 @@ const AssignmentSubmitCard = ({ item, onValidityChange, onValueChange }: Assignm
               </AddButton>
             )}
             <HiddenFileInput ref={fileInputRef} type="file" onChange={handleFileChange} />
+            {errorMessage && <ErrorText role="alert">{errorMessage}</ErrorText>}
           </Field>
         ) : (
           <Field>
@@ -119,6 +121,7 @@ const AssignmentSubmitCard = ({ item, onValidityChange, onValueChange }: Assignm
                 $hasValue={link.trim() !== ''}
               />
             </AttachmentField>
+            {errorMessage && <ErrorText role="alert">{errorMessage}</ErrorText>}
           </Field>
         )}
 
@@ -225,6 +228,12 @@ const FieldHeading = styled.p`
 
 const Required = styled.span`
   color: ${Status.negative};
+`;
+
+const ErrorText = styled.p`
+  margin: -12px 0 0;
+  color: ${Status.negative};
+  ${typographyCss(Typography.body2Normal.medium)}
 `;
 
 const AttachmentRow = styled.div`
