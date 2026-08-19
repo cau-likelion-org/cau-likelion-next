@@ -1,6 +1,5 @@
 import { useRef, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
 import styled from 'styled-components';
 
 import Toast from '@common/toast/Toast';
@@ -47,22 +46,14 @@ const MakeAttendanceCard = () => {
       setIsToastOpen(true);
       queryClient.invalidateQueries({ queryKey: ['weeklyAttendance', today] });
     },
-    // 같은 주차·같은 일자에 이미 출석부가 있으면 서버가 거절한다. 사유는 서버 메시지를 그대로 보여준다
     onError: (error: unknown) => {
-      const status = axios.isAxiosError(error) ? error.response?.status : undefined;
-      const serverMessage = axios.isAxiosError(error)
-        ? ((error.response?.data as { message?: unknown } | undefined)?.message ?? undefined)
-        : undefined;
-      if (typeof serverMessage === 'string' && serverMessage.trim()) {
-        setSubmitError(serverMessage);
-        return;
-      }
-      setSubmitError(status === 400 ? '이미 출석부가 만들어진 주차예요.' : '출석부 생성에 실패했어요.');
+      const status = (error as { response?: { status?: number } })?.response?.status;
+      setSubmitError(status === 400 ? '해당 날짜에 이미 출석부가 존재합니다.' : '출석부 생성에 실패했어요.');
     },
   });
 
-
-  const isLockedByToday = !!todayAttendance && new Date().getHours() < CREATE_LOCK_UNTIL_HOUR;
+  // 비밀번호를 실제로 받아왔을 때만 잠근다 (보여줄 값이 없으면 잠가도 회장이 확인할 방법이 없다)
+  const isLockedByToday = !!todayAttendance?.password && new Date().getHours() < CREATE_LOCK_UNTIL_HOUR;
   const isCreated = createMutation.isSuccess || isLockedByToday;
   const hasPassword = !!password;
   const canSave = !!date && !!weekNumber && hasPassword && !createMutation.isPending && !isCreated;

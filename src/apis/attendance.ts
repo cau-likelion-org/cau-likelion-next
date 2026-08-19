@@ -1,5 +1,3 @@
-import axios from 'axios';
-
 import { IToken } from 'src/store/useTokenStore';
 import { getAuthAxios } from './authAxios';
 
@@ -28,15 +26,10 @@ export function createWeeklyAttendance(token: IToken, payload: WeeklyAttendanceC
 }
 
 export async function getWeeklyAttendanceByDate(token: IToken, date: string) {
-  try {
-    const { data } = await getAuthAxios(token).get<WeeklyAttendanceResponse>('/api/attendances/password', {
-      params: { date },
-    });
-    return data ?? null;
-  } catch (error) {
-    if (axios.isAxiosError(error) && error.response?.status === 404) return null;
-    throw error;
-  }
+  const { data } = await getAuthAxios(token).get<WeeklyAttendanceResponse[]>('/api/attendances/password', {
+    params: { date },
+  });
+  return data.find((attendance) => attendance.date === date) ?? null;
 }
 
 export type AttendanceStatus = 'BEFORE' | 'PRESENT' | 'LATE' | 'ABSENT' | 'UNAUTHORIZED_ABSENT' | 'EXCUSED';
