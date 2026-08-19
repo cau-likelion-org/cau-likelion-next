@@ -24,7 +24,7 @@ const Thumbnail = ({
 }: ThumbnailProps) => {
   return (
     <Wrapper className={className} $ratio={ratio} $radius={radius} $border={border}>
-      <Image src={src} alt={alt} />
+      <Image src={src} alt={alt} referrerPolicy="no-referrer" />
       {overlay && <Overlay>{overlay}</Overlay>}
     </Wrapper>
   );

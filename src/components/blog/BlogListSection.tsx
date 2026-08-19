@@ -91,7 +91,7 @@ const BlogListSection = () => {
               title={post.title}
               description={post.summary}
               badges={[`${post.generationNumber}기`, post.writer, CATEGORY_LABEL[post.category]]}
-              date={toDateString(new Date(post.createdAt), '/')}
+              date={toDateString(new Date(post.publishedDate ?? post.createdAt), '/')}
               url={post.url}
               thumbnailUrl={post.thumbnailUrl}
               thumbnailAlt={post.title}
