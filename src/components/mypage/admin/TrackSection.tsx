@@ -56,7 +56,7 @@ const TrackSection = ({
 
   return (
     <Section>
-      <Title>14기 트랙 소개</Title>
+      <Title>트랙 소개</Title>
       {items.map((item) => (
         <Card key={item.id}>
           <Row>
