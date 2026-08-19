@@ -35,7 +35,7 @@ import {
 import { getRoadmap, addRoadmap } from 'src/apis/roadmap';
 import { uploadFile } from 'src/apis/upload';
 import useTokenStore from 'src/store/useTokenStore';
-import { isAdminRole, canManageSitePages } from '@utils/index';
+import { isAdminRole } from '@utils/index';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
@@ -267,61 +267,59 @@ const MyPageAdminAbout = () => {
 
   return (
     <>
-      <MyPageShell active="admin-about" isAdmin={!!userProfile && canManageSitePages(userProfile.role)}>
-        {!isAuthorized ? (
-          <PageLoadingGate isError={isUserProfileError} />
-        ) : (
-          <>
-            <TitleRow>
-              <PageTitle>소개 페이지 관리</PageTitle>
-              <ButtonRow>
-                {isEditing ? (
-                  <>
-                    <Button variant="outlined" color="assistive" size="small" onClick={handleCancel}>
-                      취소
-                    </Button>
-                    <Button size="small" onClick={handleSave} loading={isSaving}>
-                      저장
-                    </Button>
-                  </>
-                ) : (
-                  <EditButton onClick={() => setIsEditing(true)} />
-                )}
-              </ButtonRow>
-            </TitleRow>
-            {isDataError ? (
-              <EmptyState variant="error" />
-            ) : !isDataLoaded ? (
-              <LoadingWrapper>
-                <LinearLoading progress={dataLoadProgress} />
-              </LoadingWrapper>
-            ) : (
-              <>
-                <TalentSection
-                  items={talentItems}
-                  onChange={setTalentItems}
-                  showErrors={showErrors}
-                  disabled={!isEditing}
-                />
-                <CurriculumSection
-                  tracks={curriculumTracks}
-                  onChange={setCurriculumTracks}
-                  showErrors={showErrors}
-                  disabled={!isEditing}
-                />
-                <RoadmapSection
-                  imageUrl={roadmapFile.url}
-                  fileName={roadmapFile.name}
-                  onSelectFile={handleRoadmapFileSelect}
-                  onClear={handleRoadmapClear}
-                  disabled={!isEditing}
-                  isUploading={isUploadingRoadmap}
-                />
-              </>
-            )}
-          </>
-        )}
-      </MyPageShell>
+      {!isAuthorized ? (
+        <PageLoadingGate isError={isUserProfileError} />
+      ) : (
+        <>
+          <TitleRow>
+            <PageTitle>소개 페이지 관리</PageTitle>
+            <ButtonRow>
+              {isEditing ? (
+                <>
+                  <Button variant="outlined" color="assistive" size="small" onClick={handleCancel}>
+                    취소
+                  </Button>
+                  <Button size="small" onClick={handleSave} loading={isSaving}>
+                    저장
+                  </Button>
+                </>
+              ) : (
+                <EditButton onClick={() => setIsEditing(true)} />
+              )}
+            </ButtonRow>
+          </TitleRow>
+          {isDataError ? (
+            <EmptyState variant="error" />
+          ) : !isDataLoaded ? (
+            <LoadingWrapper>
+              <LinearLoading progress={dataLoadProgress} />
+            </LoadingWrapper>
+          ) : (
+            <>
+              <TalentSection
+                items={talentItems}
+                onChange={setTalentItems}
+                showErrors={showErrors}
+                disabled={!isEditing}
+              />
+              <CurriculumSection
+                tracks={curriculumTracks}
+                onChange={setCurriculumTracks}
+                showErrors={showErrors}
+                disabled={!isEditing}
+              />
+              <RoadmapSection
+                imageUrl={roadmapFile.url}
+                fileName={roadmapFile.name}
+                onSelectFile={handleRoadmapFileSelect}
+                onClear={handleRoadmapClear}
+                disabled={!isEditing}
+                isUploading={isUploadingRoadmap}
+              />
+            </>
+          )}
+        </>
+      )}
       <ToastWrapper>
         <Toast variant={toastVariant} text={toastMessage} show={!!toastMessage} onHidden={() => setToastMessage('')} />
       </ToastWrapper>
@@ -330,7 +328,11 @@ const MyPageAdminAbout = () => {
 };
 
 MyPageAdminAbout.getLayout = function getLayout(page: ReactElement) {
-  return <LayoutFullWidth>{page}</LayoutFullWidth>;
+  return (
+    <LayoutFullWidth>
+      <MyPageShell active="admin-about">{page}</MyPageShell>
+    </LayoutFullWidth>
+  );
 };
 
 export default MyPageAdminAbout;

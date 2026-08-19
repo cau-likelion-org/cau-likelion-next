@@ -1,9 +1,16 @@
-import { ReactNode } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
+import { Router } from 'next/router';
+import { useQuery } from '@tanstack/react-query';
 import styled from 'styled-components';
 
+import { UserProfile } from '@@types/request';
 import LogoutButton from '@mypage/component/LogoutButton';
 import Sidebar, { SidebarActive } from '@mypage/component/Sidebar';
+import PageLoadingGate from '@common/pageGate/PageLoadingGate';
 import { IcChevronRight } from '@assets/svg';
+import { getUserProfile } from 'src/apis/account';
+import useTokenStore from 'src/store/useTokenStore';
+import { canManageSitePages } from '@utils/index';
 import { Black, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { containerCss, media } from '@utils/constant/breakpoint';
@@ -19,15 +26,43 @@ const BREADCRUMB_LABEL: Record<SidebarActive, string> = {
   'admin-recruit': '리크루팅 사전 알림 발송',
 };
 
+// 페이지 바깥(getLayout)에서 렌더되어 마이페이지 안에서 이동해도 유지되므로,
+// 사이드바 노출에 필요한 역할은 페이지에서 받지 않고 셸이 직접 조회한다 (react-query 캐시 공유)
+// isAdmin은 목 데이터로 역할을 바꿔보는 _debug 프리뷰 전용 override
 const MyPageShell = ({
   active,
-  isAdmin = false,
+  isAdmin,
   children,
 }: {
   active: SidebarActive;
   isAdmin?: boolean;
   children: ReactNode;
 }) => {
+  const tokenState = useTokenStore((state) => state.token);
+  const { data: userProfile } = useQuery<UserProfile>({
+    queryKey: ['userProfile'],
+    queryFn: () => getUserProfile(tokenState),
+    retry: false,
+    enabled: !!tokenState.access,
+  });
+  const showAdminMenu = isAdmin ?? (!!userProfile && canManageSitePages(userProfile.role));
+
+  const [isRouting, setIsRouting] = useState(false);
+  useEffect(() => {
+    const start = (url: string) => setIsRouting(url.startsWith('/mypage'));
+    const end = () => setIsRouting(false);
+
+    Router.events.on('routeChangeStart', start);
+    Router.events.on('routeChangeComplete', end);
+    Router.events.on('routeChangeError', end);
+
+    return () => {
+      Router.events.off('routeChangeStart', start);
+      Router.events.off('routeChangeComplete', end);
+      Router.events.off('routeChangeError', end);
+    };
+  }, []);
+
   return (
     <Wrapper>
       <Header>
@@ -43,9 +78,9 @@ const MyPageShell = ({
       </Header>
       <Content>
         <SidebarSlot>
-          <Sidebar active={active} isAdmin={isAdmin} />
+          <Sidebar active={active} isAdmin={showAdminMenu} />
         </SidebarSlot>
-        <Main>{children}</Main>
+        <Main>{isRouting ? <PageLoadingGate /> : children}</Main>
       </Content>
     </Wrapper>
   );

@@ -52,6 +52,7 @@ const AssignmentSubmit = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   // 제출 실패 사유는 과제별로 해당 카드의 첨부 영역 아래에 표시한다
   const [submitErrors, setSubmitErrors] = useState<Record<string, string>>({});
+  const [retryIds, setRetryIds] = useState<string[] | null>(null);
 
   useEffect(() => {
     if (hasHydrated && !tokenState.access) router.push('/login');
@@ -76,12 +77,14 @@ const AssignmentSubmit = () => {
 
   const dueDate = submittableAssignments[0]?.endDate ?? null;
 
-  const items: AssignmentSubmitItem[] = submittableAssignments.map((assignment) => ({
-    id: String(assignment.assignmentId),
-    name: assignment.title,
-    description: assignment.detail,
-    format: assignment.type === 'FILE' ? 'file' : 'link',
-  }));
+  const items: AssignmentSubmitItem[] = submittableAssignments
+    .filter((assignment) => !retryIds || retryIds.includes(String(assignment.assignmentId)))
+    .map((assignment) => ({
+      id: String(assignment.assignmentId),
+      name: assignment.title,
+      description: assignment.detail,
+      format: assignment.type === 'FILE' ? 'file' : 'link',
+    }));
 
   const handleClose = () => router.push('/mypage/assignment');
 
@@ -128,8 +131,10 @@ const AssignmentSubmit = () => {
     queryClient.invalidateQueries({ queryKey: ['myAssignments'] });
     queryClient.invalidateQueries({ queryKey: ['myAssignmentHistory'] });
 
-    if (Object.keys(failed).length > 0) {
+    const failedIds = Object.keys(failed);
+    if (failedIds.length > 0) {
       setSubmitErrors(failed);
+      setRetryIds(failedIds);
       return;
     }
     handleClose();
