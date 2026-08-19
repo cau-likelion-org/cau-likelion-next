@@ -34,11 +34,7 @@ const NavBar = () => {
   const openRecruitClosedAlert = useRecruitModalStore((state) => state.openClosedAlert);
   const [isScrolled, setIsScrolled] = useState(false);
 
-  // 지원하기는 어느 페이지에서 눌러도 랜딩(홈) 화면을 배경으로 모달이 뜨도록 홈으로 이동 후 연다
   const handleRecruitClick = () => {
-    if (router.pathname !== '/') {
-      router.push('/');
-    }
     openRecruitClosedAlert();
   };
 

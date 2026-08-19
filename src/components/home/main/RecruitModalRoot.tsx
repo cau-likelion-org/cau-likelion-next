@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import styled from 'styled-components';
 
 import Toast from '@common/toast/Toast';
@@ -7,18 +8,23 @@ import { MOBILE } from '@home/common/responsive';
 import RecruitClosedAlert from './RecruitClosedAlert';
 import RecruitNotifyModal from './RecruitNotifyModal';
 
-// 지원하기 진입점(NavBar 등)이 페이지마다 있어도, 모달·토스트는 레이아웃과 무관하게
-// 항상 랜딩 화면을 배경으로 떠야 해서 _app.tsx에서 이 컴포넌트 하나만 전역으로 마운트한다.
+// 2단계(notify)로 넘어갈 때만 랜딩 화면으로 이동한다.
 const RecruitModalRoot = () => {
+  const router = useRouter();
   const step = useRecruitModalStore((state) => state.step);
   const openNotifyModal = useRecruitModalStore((state) => state.openNotifyModal);
   const closeModal = useRecruitModalStore((state) => state.close);
   const toast = useRecruitModalStore((state) => state.toast);
   const clearToast = useRecruitModalStore((state) => state.clearToast);
 
+  const handleConfirmNotify = () => {
+    if (router.pathname !== '/') router.push('/');
+    openNotifyModal();
+  };
+
   return (
     <>
-      {step === 'closedAlert' && <RecruitClosedAlert onClose={closeModal} onConfirm={openNotifyModal} />}
+      {step === 'closedAlert' && <RecruitClosedAlert onClose={closeModal} onConfirm={handleConfirmNotify} />}
       {step === 'notify' && <RecruitNotifyModal onClose={closeModal} />}
       {toast && (
         <ToastWrapper>
