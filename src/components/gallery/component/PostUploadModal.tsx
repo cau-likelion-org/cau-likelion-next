@@ -122,6 +122,9 @@ const PostUploadModal = ({
   const [showErrors, setShowErrors] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorToast, setErrorToast] = useState('');
+  // 같은 문구를 다시 setErrorToast로 넘기면 값이 동일해 리렌더가 스킵되어 토스트가
+  // 다시 뜨지 않는다. key를 바꿔 Toast를 강제로 새로 마운트시켜 항상 다시 노출되게 한다.
+  const [toastKey, setToastKey] = useState(0);
 
   const { data: generations } = useQuery({ queryKey: ['generations'], queryFn: getGenerations });
 
@@ -142,10 +145,13 @@ const PostUploadModal = ({
       ? GENERATION_NOT_FOUND_MESSAGE
       : '';
 
-  const [prevGenerationError, setPrevGenerationError] = useState(generationError);
-  if (generationError !== prevGenerationError) {
-    setPrevGenerationError(generationError);
-    if (generationError) setErrorToast(generationError);
+  const [prevDebouncedGeneration, setPrevDebouncedGeneration] = useState(debouncedGeneration);
+  if (debouncedGeneration !== prevDebouncedGeneration) {
+    setPrevDebouncedGeneration(debouncedGeneration);
+    if (generationError) {
+      setErrorToast(generationError);
+      setToastKey((prev) => prev + 1);
+    }
   }
 
   const categoryOptions =
@@ -613,7 +619,13 @@ const PostUploadModal = ({
         </Actions>
       </Modal>
       <ToastWrapper>
-        <Toast variant="negative" text={errorToast} show={!!errorToast} onHidden={() => setErrorToast('')} />
+        <Toast
+          key={toastKey}
+          variant="negative"
+          text={errorToast}
+          show={!!errorToast}
+          onHidden={() => setErrorToast('')}
+        />
       </ToastWrapper>
     </Backdrop>
   );
