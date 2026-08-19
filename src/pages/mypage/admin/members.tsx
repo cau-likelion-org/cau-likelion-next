@@ -25,7 +25,7 @@ import {
   setCurrentGeneration,
 } from 'src/apis/account';
 import useTokenStore from 'src/store/useTokenStore';
-import { canManageMemberRoles, canManageSitePages } from '@utils/index';
+import { canManageMemberRoles } from '@utils/index';
 import { ROLE_LABEL, TRACK_OPTIONS } from '@utils/constant';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -167,41 +167,39 @@ const MyPageAdminMembers = () => {
       <ToastWrapper>
         <Toast variant={toastVariant} text={toastMessage} show={!!toastMessage} onHidden={() => setToastMessage('')} />
       </ToastWrapper>
-      <MyPageShell active="admin-members" isAdmin={!!userProfile && canManageSitePages(userProfile.role)}>
-        {!isAuthorized ? (
-          <PageLoadingGate isError={isUserProfileError} />
-        ) : (
-          <>
-            <PageTitle>전체 회원/파트 관리</PageTitle>
-            <MemberSection
-              members={filteredMembers}
-              generations={generations ?? []}
-              isLoading={isMembersLoading}
-              isError={isMembersError}
-              nameQuery={nameQuery}
-              onNameQueryChange={setNameQuery}
-              generationFilter={{ value: generationValue, options: generationOptions, onChange: setGenerationValue }}
-              partFilter={{ value: partValue, options: partOptions, onChange: setPartValue }}
-              roleFilter={{ value: roleValue, options: roleOptions, onChange: setRoleValue }}
-              onSave={handleSave}
-              isSaving={saveMutation.isPending}
-            />
-            <AllowedMemberSection
-              items={allowedEmails ?? []}
-              isLoading={isAllowedEmailsLoading}
-              isError={isAllowedEmailsError}
-              onSave={(allowedItems) => saveAllowedEmailsMutation.mutateAsync(allowedItems)}
-              isSaving={saveAllowedEmailsMutation.isPending}
-            />
-            <PartManageSection
-              generations={generations ?? []}
-              onSelectCurrent={(id) => setCurrentGenerationMutation.mutate(id)}
-              isUpdatingCurrent={setCurrentGenerationMutation.isPending}
-              onCreate={() => setIsCreateModalOpen(true)}
-            />
-          </>
-        )}
-      </MyPageShell>
+      {!isAuthorized ? (
+        <PageLoadingGate isError={isUserProfileError} />
+      ) : (
+        <>
+          <PageTitle>전체 회원/파트 관리</PageTitle>
+          <MemberSection
+            members={filteredMembers}
+            generations={generations ?? []}
+            isLoading={isMembersLoading}
+            isError={isMembersError}
+            nameQuery={nameQuery}
+            onNameQueryChange={setNameQuery}
+            generationFilter={{ value: generationValue, options: generationOptions, onChange: setGenerationValue }}
+            partFilter={{ value: partValue, options: partOptions, onChange: setPartValue }}
+            roleFilter={{ value: roleValue, options: roleOptions, onChange: setRoleValue }}
+            onSave={handleSave}
+            isSaving={saveMutation.isPending}
+          />
+          <AllowedMemberSection
+            items={allowedEmails ?? []}
+            isLoading={isAllowedEmailsLoading}
+            isError={isAllowedEmailsError}
+            onSave={(allowedItems) => saveAllowedEmailsMutation.mutateAsync(allowedItems)}
+            isSaving={saveAllowedEmailsMutation.isPending}
+          />
+          <PartManageSection
+            generations={generations ?? []}
+            onSelectCurrent={(id) => setCurrentGenerationMutation.mutate(id)}
+            isUpdatingCurrent={setCurrentGenerationMutation.isPending}
+            onCreate={() => setIsCreateModalOpen(true)}
+          />
+        </>
+      )}
       {isCreateModalOpen && (
         <GenerationCreateModal
           onClose={() => setIsCreateModalOpen(false)}
@@ -214,7 +212,11 @@ const MyPageAdminMembers = () => {
 };
 
 MyPageAdminMembers.getLayout = function getLayout(page: ReactElement) {
-  return <LayoutFullWidth>{page}</LayoutFullWidth>;
+  return (
+    <LayoutFullWidth>
+      <MyPageShell active="admin-members">{page}</MyPageShell>
+    </LayoutFullWidth>
+  );
 };
 
 export default MyPageAdminMembers;

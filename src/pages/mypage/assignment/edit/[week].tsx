@@ -5,6 +5,7 @@ import styled from 'styled-components';
 
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import Toast from '@common/toast/Toast';
+import { NarrowBreak, WIDE_TOAST_WIDTH } from '@common/toast/toastLayout';
 import AssignmentCreateForm, { AssignmentDraft } from '@mypage/component/AssignmentCreateForm';
 import {
   AssignmentDetail,
@@ -45,17 +46,31 @@ const AssignmentEditPage = () => {
     queryFn: () => Promise.all(assignmentIds.map((id) => getAssignment(tokenState, id))),
     enabled: assignmentIds.length > 0,
   });
-  // 과제가 없는 주차(또는 마지막 과제를 삭제한 직후)는 조회할 게 없으므로 빈 폼으로 연다
+
   const details = assignmentIds.length === 0 ? [] : fetchedDetails;
 
-  const [toastMessage, setToastMessage] = useState('');
+  const [toastMessage, setToastMessage] = useState<React.ReactNode>('');
+  const [toastVariant, setToastVariant] = useState<'positive' | 'negative'>('positive');
+
+  const showToast = (variant: 'positive' | 'negative', message: React.ReactNode) => {
+    setToastVariant(variant);
+    setToastMessage(message);
+  };
+
+  const failureText = (action: string) => (
+    <>
+      {action}에 실패했습니다. <NarrowBreak />
+      잠시 후 다시 시도해 주세요.
+    </>
+  );
 
   const deleteMutation = useMutation({
     mutationFn: (assignmentId: number) => deleteAssignment(tokenState, assignmentId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: assignmentsQueryKey });
-      setToastMessage('과제가 삭제되었습니다.');
+      showToast('positive', '과제가 삭제되었습니다.');
     },
+    onError: () => showToast('negative', failureText('과제 삭제')),
   });
 
   // 기존 과제는 수정(PUT), 새로 추가한 과제는 생성(POST)
@@ -87,6 +102,7 @@ const AssignmentEditPage = () => {
       sessionStorage.setItem('assignmentEdited', '1');
       router.push({ pathname: `/mypage/assignment/status/${week}`, query: partId != null ? { partId } : undefined });
     },
+    onError: () => showToast('negative', failureText('변경사항 저장')),
   });
 
   // 운영진이 아니면 훅이 리다이렉트하므로 그동안 아무것도 그리지 않는다.
@@ -114,7 +130,13 @@ const AssignmentEditPage = () => {
         onDeleteAssignment={(assignmentId) => deleteMutation.mutate(assignmentId)}
       />
       <ToastWrapper>
-        <Toast variant="positive" text={toastMessage} show={!!toastMessage} onHidden={() => setToastMessage('')} />
+        <Toast
+          variant={toastVariant}
+          width={WIDE_TOAST_WIDTH}
+          text={toastMessage}
+          show={!!toastMessage}
+          onHidden={() => setToastMessage('')}
+        />
       </ToastWrapper>
     </>
   );

@@ -22,6 +22,7 @@ const ListboxOptions = ({ listId, options, value, activeIndex, onSelect }: Listb
           role="option"
           aria-selected={value === option}
           $active={index === activeIndex}
+          onMouseDown={(event) => event.preventDefault()}
           onClick={() => onSelect(option, index)}
         >
           {option}

@@ -1,5 +1,7 @@
+import { useRef } from 'react';
 import styled from 'styled-components';
 
+import useFocusTrap from 'src/hooks/useFocusTrap';
 import { BackgroundColor, Label, Material, Orange, Status } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
@@ -14,7 +16,7 @@ export interface AlertAction {
 export interface AlertProps {
   className?: string;
   heading?: string;
-  body: string;
+  body?: string;
   actions: AlertAction[];
   onDimmerClick?: () => void;
 }
@@ -26,13 +28,16 @@ const actionColor: Record<AlertActionVariant, string> = {
 };
 
 const Alert = ({ className, heading, body, actions, onDimmerClick }: AlertProps) => {
+  const modalRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(modalRef, onDimmerClick ?? (() => {}));
+
   return (
     <Overlay className={className} role="dialog" aria-modal="true">
       <Dimmer onClick={onDimmerClick} />
-      <Modal>
+      <Modal ref={modalRef} tabIndex={-1}>
         <Information>
           {heading && <Heading>{heading}</Heading>}
-          <Body>{body}</Body>
+          {body && <Body>{body}</Body>}
         </Information>
         <Actions>
           {actions.map((action) => (
@@ -84,7 +89,7 @@ const Information = styled.div`
   display: flex;
   flex-direction: column;
   gap: 6px;
-  padding: 20px;
+  padding: 28px;
   word-break: break-word;
 `;
 
@@ -105,7 +110,7 @@ const Actions = styled.div`
   align-items: center;
   justify-content: flex-end;
   gap: 24px;
-  padding: 0 20px 12px;
+  padding: 0 28px 20px;
 `;
 
 const ActionButton = styled.button<{ color: string }>`

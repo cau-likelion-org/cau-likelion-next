@@ -1,13 +1,15 @@
 import styled from 'styled-components';
 import { ReactElement } from 'react';
+import dynamic from 'next/dynamic';
 import MainSection from '@home/main/MainSection';
 import IntroduceSection from '@home/introduction/IntroduceSection';
-import ProjectSection from '@home/project/ProjectSection';
 import TrackSection from '@home/track/TrackSection';
 import ActivitySection from '@home/activity/ActivitySection';
 import FAQSection from '@home/faq/FAQSection';
 import LayoutLanding from '@common/layout/LayoutLanding';
 import MainPageHead from 'src/components/meta/MainPageHead';
+
+const ProjectSection = dynamic(() => import('@home/project/ProjectSection'), { ssr: false });
 
 function Landing() {
   return (

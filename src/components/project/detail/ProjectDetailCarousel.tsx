@@ -3,23 +3,52 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
+const TRANSITION_MS = 300;
+
 const ProjectDetailCarousel = ({ images }: { images: string[] }) => {
-  const [activeIndex, setActiveIndex] = useState(0);
+  const isLoopable = images.length > 1;
+  const slides = isLoopable ? [...images, images[0]] : images;
+  const [slideIndex, setSlideIndex] = useState(0);
+  const [isAnimated, setIsAnimated] = useState(true);
+  const activeIndex = slideIndex % images.length;
 
   useEffect(() => {
-    if (images.length <= 1) return undefined;
+    if (!isLoopable) return undefined;
     const timer = setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % images.length);
+      setSlideIndex((prev) => prev + 1);
     }, 4000);
     return () => clearInterval(timer);
-  }, [images.length]);
+  }, [isLoopable]);
+
+  useEffect(() => {
+    if (slideIndex !== images.length) return undefined;
+    const timer = setTimeout(() => {
+      setIsAnimated(false);
+      setSlideIndex(0);
+    }, TRANSITION_MS);
+    return () => clearTimeout(timer);
+  }, [slideIndex, images.length]);
+
+  useEffect(() => {
+    if (isAnimated) return undefined;
+    let innerFrame = 0;
+    const outerFrame = requestAnimationFrame(() => {
+      innerFrame = requestAnimationFrame(() => setIsAnimated(true));
+    });
+    return () => {
+      cancelAnimationFrame(outerFrame);
+      cancelAnimationFrame(innerFrame);
+    };
+  }, [isAnimated]);
 
   return (
     <Wrapper>
       <ThumbnailFrame>
-        <SlideTrack style={{ transform: `translateX(-${activeIndex * 100}%)` }}>
-          {images.map((image) => (
-            <ImageSlide key={image}>
+        <SlideTrack
+          style={{ transform: `translateX(-${slideIndex * 100}%)`, transition: isAnimated ? undefined : 'none' }}
+        >
+          {slides.map((image, index) => (
+            <ImageSlide key={`${image}-${index}`}>
               <Image
                 src={image}
                 alt="프로젝트 이미지"
@@ -39,7 +68,7 @@ const ProjectDetailCarousel = ({ images }: { images: string[] }) => {
               type="button"
               aria-label={`${i + 1}번째 이미지 보기`}
               $active={activeIndex === i}
-              onClick={() => setActiveIndex(i)}
+              onClick={() => setSlideIndex(i)}
             />
           ))}
         </Dots>
@@ -71,7 +100,7 @@ const SlideTrack = styled.div`
   display: flex;
   width: 100%;
   height: 100%;
-  transition: transform 300ms ease-out;
+  transition: transform ${TRANSITION_MS}ms ease-out;
 `;
 
 const ImageSlide = styled.div`

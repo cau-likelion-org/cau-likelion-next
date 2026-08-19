@@ -9,6 +9,7 @@ import ChungAngLogo from 'src/assets/svg/logo/logo-chungang-symbol.svg';
 import IcMenu from 'src/assets/svg/icon/ic-menu.svg';
 import IcClose from 'src/assets/svg/icon/ic-close.svg';
 import { BackgroundColor, Label } from '@utils/constant/color';
+import { media } from '@utils/constant/breakpoint';
 import MobileNavModal from './MobileNavModal';
 
 const MobileNavBar = () => {
@@ -66,7 +67,7 @@ const Wrapper = styled.div`
   padding: 0 20px;
   background-color: ${BackgroundColor};
 
-  @media (min-width: 900px) {
+  ${media.sm} {
     display: none;
   }
 `;

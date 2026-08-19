@@ -9,6 +9,7 @@ import useAuthRedirect from 'src/hooks/useAuthRedirect';
 import { SIGNUP_UNAPPROVED_EMAIL_FLAG_KEY } from 'src/apis/signUp';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
+import { media } from '@utils/constant/breakpoint';
 
 const TOAST_MESSAGE_BY_FLAG: Record<string, ReactNode> = {
   [SIGNUP_UNAPPROVED_EMAIL_FLAG_KEY]: (
@@ -90,7 +91,7 @@ const TextGroup = styled(PageHeader)`
   gap: 24px;
   padding-bottom: 52px;
 
-  @media (max-width: 900px) {
+  ${media.xs} {
     padding-top: 40px;
   }
 `;

@@ -33,6 +33,17 @@ jobs:
 
       - run: npm ci
 
+      # webpack 컴파일 결과 캐시
+      # 소스가 바뀌면 키가 갱신되고, restore-keys로 직전 캐시를 물려받아 증분만 다시 컴파일
+      - name: 빌드 캐시 복원
+        uses: actions/cache@v4
+        with:
+          path: .next/cache
+          key: next-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-${{ hashFiles('src/**', 'next.config.js') }}
+          restore-keys: |
+            next-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-
+            next-${{ runner.os }}-
+
       # 번들 사이즈는 시크릿 값에 의존하지 않으므로 주입하지 않는다.
       # (NEXT_PUBLIC_* 값이 번들에 인라인되는 만큼 로컬 측정치보다 0.2kB 가량 작게 나오지만,
       #  기준값보다 항상 작은 방향이라 오탐으로 실패하지 않는다)

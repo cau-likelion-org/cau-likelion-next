@@ -10,6 +10,7 @@ import IcLineHorizontal from '@assets/svg/icon/ic-line-horizontal.svg';
 import { IcChevronLeft } from '@assets/svg';
 import useFocusTrap from 'src/hooks/useFocusTrap';
 import { BackgroundColor, Label, Material, Orange } from '@utils/constant/color';
+import { media } from '@utils/constant/breakpoint';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 export interface PostDetailModalProps {
@@ -118,7 +119,7 @@ const Backdrop = styled.div`
 `;
 
 const Modal = styled.div`
-  width: 1040px;
+  width: 568px;
   max-width: calc(100vw - 40px);
   max-height: calc(100vh - 40px);
   overflow-y: auto;
@@ -129,6 +130,14 @@ const Modal = styled.div`
   background-color: ${BackgroundColor};
   outline: none;
   z-index: 10000;
+
+  ${media.md} {
+    width: 711px;
+  }
+
+  ${media.lg} {
+    width: 800px;
+  }
 
   @media (max-width: 700px) {
     width: 100%;
