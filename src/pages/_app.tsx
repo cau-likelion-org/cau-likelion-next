@@ -7,6 +7,7 @@ import type { AppProps } from 'next/app';
 import React, { ReactElement, ReactNode } from 'react';
 import { NextPage } from 'next';
 import LayoutDefault from '@common/layout/LayoutDefault';
+import Loading from '@common/loading/Loading';
 import RecruitModalRoot from '@home/main/RecruitModalRoot';
 import { useState, useEffect, useRef } from 'react';
 import NextRouter, { Router, useRouter } from 'next/router';
@@ -109,16 +110,39 @@ function AppContent({ Component, pageProps }: AppPropsWithLayout) {
     };
   }, [tokenState.access]);
 
+  const [isRouting, setIsRouting] = useState(false);
+  useEffect(() => {
+    const start = (url: string) => {
+      const isInsideMyPage = NextRouter.asPath.startsWith('/mypage') && url.startsWith('/mypage');
+      setIsRouting(!isInsideMyPage);
+    };
+    const stop = () => setIsRouting(false);
+
+    Router.events.on('routeChangeStart', start);
+    Router.events.on('routeChangeComplete', stop);
+    Router.events.on('routeChangeError', stop);
+
+    return () => {
+      Router.events.off('routeChangeStart', start);
+      Router.events.off('routeChangeComplete', stop);
+      Router.events.off('routeChangeError', stop);
+    };
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <Head>
         <title>LikeLionCAU</title>
       </Head>
       {/* 레이아웃 안쪽을 감싸서, 페이지가 죽어도 네비게이션으로 빠져나갈 수 있게 한다 */}
-      {getLayout(
-        <ErrorBoundary>
-          <Component {...pageProps} />
-        </ErrorBoundary>,
+      {isRouting ? (
+        <Loading />
+      ) : (
+        getLayout(
+          <ErrorBoundary>
+            <Component {...pageProps} />
+          </ErrorBoundary>,
+        )
       )}
       <RecruitModalRoot />
     </QueryClientProvider>
