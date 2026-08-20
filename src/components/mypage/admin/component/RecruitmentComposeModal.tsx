@@ -25,6 +25,7 @@ interface RecruitmentComposeRecipient {
 interface RecruitmentComposeModalProps {
   recipients: RecruitmentComposeRecipient[];
   onRemoveRecipient: (id: number) => void;
+  onSelectAll: () => void;
   onClose: () => void;
   onSubmit: (form: RecruitmentComposeForm) => void | Promise<unknown>;
   isSubmitting?: boolean;
@@ -39,6 +40,7 @@ const formatDate = (value: string) => (value ? value.slice(0, 10).replace(/-/g, 
 const RecruitmentComposeModal = ({
   recipients,
   onRemoveRecipient,
+  onSelectAll,
   onClose,
   onSubmit,
   isSubmitting = false,
@@ -54,6 +56,7 @@ const RecruitmentComposeModal = ({
   const [showErrors, setShowErrors] = useState(false);
   const [isRecipientListExpanded, setIsRecipientListExpanded] = useState(false);
   const [isRecipientListFaded, setIsRecipientListFaded] = useState(false);
+  const [hasOverflow, setHasOverflow] = useState(false);
   const [pendingCancelAction, setPendingCancelAction] = useState<(() => void) | null>(null);
   const recipientChipRowRef = useRef<HTMLDivElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
@@ -62,18 +65,23 @@ const RecruitmentComposeModal = ({
   useEffect(() => {
     const el = recipientChipRowRef.current;
     if (!el) return;
-    const checkFade = () => setIsRecipientListFaded(el.scrollWidth - el.scrollLeft - el.clientWidth > 1);
-    checkFade();
-    el.addEventListener('scroll', checkFade);
-    const observer = new ResizeObserver(checkFade);
+    const checkOverflow = () => {
+      setIsRecipientListFaded(el.scrollWidth - el.scrollLeft - el.clientWidth > 1);
+      // 펼쳐진 상태(줄바꿈)에서는 scrollWidth가 오버플로우를 반영하지 않으므로, 접힌 상태에서 잰 값만 반영한다
+      if (!isRecipientListExpanded) setHasOverflow(el.scrollWidth - el.clientWidth > 1);
+    };
+    checkOverflow();
+    el.addEventListener('scroll', checkOverflow);
+    const observer = new ResizeObserver(checkOverflow);
     observer.observe(el);
     return () => {
-      el.removeEventListener('scroll', checkFade);
+      el.removeEventListener('scroll', checkOverflow);
       observer.disconnect();
     };
-  }, [recipients]);
+  }, [recipients, isRecipientListExpanded]);
 
-  const isInvalid = recipients.length === 0 || isUnfilled(title) || isUnfilled(content);
+  const isScheduleInvalid = !date || !time;
+  const isInvalid = recipients.length === 0 || isUnfilled(title) || isUnfilled(content) || isScheduleInvalid;
 
   const handleSubmit = () => {
     if (isInvalid) {
@@ -83,7 +91,7 @@ const RecruitmentComposeModal = ({
     onSubmit({
       title,
       content,
-      scheduledSendAt: date && time ? `${date}T${time}:00` : undefined,
+      scheduledSendAt: `${date}T${time}:00`,
     });
   };
 
@@ -98,19 +106,27 @@ const RecruitmentComposeModal = ({
             </LargeHeading>
             <RecipientBox $status={showErrors && recipients.length === 0 ? 'negative' : 'normal'}>
               <RecipientSummaryRow>
-                <AudiencePill>사전 알림 신청자 전체선택</AudiencePill>
-                <RecipientCount
-                  type="button"
-                  aria-expanded={isRecipientListExpanded}
-                  onClick={() => setIsRecipientListExpanded((prev) => !prev)}
-                >
-                  <CountText>총 {recipients.length}명</CountText>
-                  {isRecipientListExpanded ? (
-                    <IcCaretUp width={16} height={16} />
-                  ) : (
-                    <IcCaretDown width={16} height={16} />
-                  )}
-                </RecipientCount>
+                <AudiencePill type="button" onClick={onSelectAll}>
+                  사전 알림 신청자 전체선택
+                </AudiencePill>
+                {hasOverflow ? (
+                  <RecipientCount
+                    type="button"
+                    aria-expanded={isRecipientListExpanded}
+                    onClick={() => setIsRecipientListExpanded((prev) => !prev)}
+                  >
+                    <CountText>총 {recipients.length}명</CountText>
+                    {isRecipientListExpanded ? (
+                      <IcCaretUp width={16} height={16} />
+                    ) : (
+                      <IcCaretDown width={16} height={16} />
+                    )}
+                  </RecipientCount>
+                ) : (
+                  <RecipientCount as="span">
+                    <CountText>총 {recipients.length}명</CountText>
+                  </RecipientCount>
+                )}
               </RecipientSummaryRow>
               <RecipientChipRow
                 ref={recipientChipRowRef}
@@ -167,9 +183,11 @@ const RecruitmentComposeModal = ({
           </Field>
 
           <Field>
-            <Heading>발송 예약</Heading>
+            <Heading>
+              발송 예약<Required>*</Required>
+            </Heading>
             <DateRow>
-              <DateBox $status="normal">
+              <DateBox $status={showErrors && !date ? 'negative' : 'normal'}>
                 <DateIcon>
                   <IcCalendar width={22} height={22} />
                 </DateIcon>
@@ -182,7 +200,7 @@ const RecruitmentComposeModal = ({
                   onClick={(event) => event.currentTarget.showPicker?.()}
                 />
               </DateBox>
-              <DateBox $status="normal">
+              <DateBox $status={showErrors && !time ? 'negative' : 'normal'}>
                 <DateIcon>
                   <IcClock width={22} height={22} />
                 </DateIcon>
@@ -196,6 +214,7 @@ const RecruitmentComposeModal = ({
                 />
               </DateBox>
             </DateRow>
+            {showErrors && isScheduleInvalid && <FieldDescription>발송 날짜와 시각을 선택해 주세요.</FieldDescription>}
           </Field>
         </Information>
         <Actions>
@@ -241,7 +260,7 @@ const RecruitmentComposeModal = ({
             >
               취소
             </Button>
-            <Button size="large" onClick={handleSubmit} loading={isSubmitting} disabled={isInvalid}>
+            <Button size="large" onClick={handleSubmit} loading={isSubmitting}>
               {submitLabel}
             </Button>
           </ButtonGroup>
@@ -320,6 +339,11 @@ const Heading = styled.p`
   ${typographyCss(Typography.label1Normal.bold)}
 `;
 
+const Required = styled.span`
+  color: ${State.error};
+  ${typographyCss(Typography.label1Normal.bold)}
+`;
+
 const RecipientBox = styled.div<{ $status: 'normal' | 'negative' }>`
   display: flex;
   flex-direction: column;
@@ -350,14 +374,17 @@ const RecipientSummaryRow = styled.div`
   width: 100%;
 `;
 
-const AudiencePill = styled.span`
+const AudiencePill = styled.button`
   display: inline-flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
+  border: none;
   padding: 7px 14px;
   border-radius: 8px;
   background-color: ${Fill.normal};
   color: ${Label.neutral};
+  cursor: pointer;
   ${typographyCss({ ...Typography.label2.bold, fontWeight: 500 })}
 `;
 
