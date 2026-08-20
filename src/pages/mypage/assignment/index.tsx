@@ -61,7 +61,7 @@ const groupByDeadline = (assignments: AssignmentSummary[]) => {
 const resolveActionLabel = (assignments: AssignmentSummary[]) => {
   const submittable = assignments.filter((assignment) => canSubmitAssignment(assignment.status, assignment.endDate));
   if (submittable.length === 0) return undefined;
-  return submittable.every((assignment) => !assignment.submittedAt) ? '제출하기' : '수정하기';
+  return submittable.every((assignment) => !assignment.submittedAt) ? '제출하기' : '재제출하기';
 };
 
 const MyPageAssignment = () => {
