@@ -59,6 +59,7 @@ const activityToLocal = (activity: ActivityResponse): ActivityIntroItem => ({
   id: String(activity.id),
   title: activity.name,
   imageName: activity.imageUrl,
+  imageFileName: '',
   subtitle: activity.introduction,
   description: activity.description,
   buttonText: activity.buttonName,
@@ -292,7 +293,9 @@ const MyPageAdminLanding = () => {
     setUploadingActivityIds((prev) => [...prev, id]);
     try {
       const { url } = await uploadFile(tokenState, 'ACTIVITY', file);
-      setActivityItems((prev) => prev.map((item) => (item.id === id ? { ...item, imageName: url } : item)));
+      setActivityItems((prev) =>
+        prev.map((item) => (item.id === id ? { ...item, imageName: url, imageFileName: file.name } : item)),
+      );
     } catch {
       setToastVariant('negative');
       setToastMessage('이미지 업로드 중 오류가 발생했습니다.');
