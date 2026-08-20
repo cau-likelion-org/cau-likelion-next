@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import styled from 'styled-components';
+import axios from 'axios';
+import styled, { css } from 'styled-components';
 
 import { AllowedUserEmailItem } from '@@types/request';
 import ListCell from '@common/listCell/ListCell';
@@ -7,10 +8,18 @@ import CircularLoading from '@common/loading/CircularLoading';
 import Button from '@common/button/Button';
 import EditButton from '@mypage/admin/component/EditButton';
 import { IcCaretDown, IcCaretUp, IcPlus } from '@assets/svg';
-import { isUnfilled } from '@utils/index';
-import { BackgroundColor, Black, Label, Line, Orange } from '@utils/constant/color';
+import { isEmailFormatInvalid, isUnfilled } from '@utils/index';
+import { BackgroundColor, Black, Label, Line, Orange, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { createId } from './utils';
+
+const getServerMessage = (error: unknown) => {
+  if (!axios.isAxiosError(error)) return undefined;
+  const data: unknown = error.response?.data;
+  if (typeof data === 'string') return data.trim() || undefined;
+  const message = (data as { message?: unknown } | undefined)?.message;
+  return typeof message === 'string' && message.trim() ? message : undefined;
+};
 
 interface LocalAllowedItem {
   key: string;
@@ -44,11 +53,16 @@ const AllowedMemberSection = ({
   const [isOpen, setIsOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState<LocalAllowedItem[]>([]);
+  // 저장 시 백엔드가 409(이미 등록된 이메일)로 거절한 행의 key
+  const [conflictKeys, setConflictKeys] = useState<Set<string>>(new Set());
+  const [saveError, setSaveError] = useState('');
 
   const toggleOpen = () => setIsOpen((prev) => !prev);
 
   const startEdit = () => {
     setDraft(items.map(toLocal));
+    setConflictKeys(new Set());
+    setSaveError('');
     setIsEditing(true);
   };
 
@@ -56,18 +70,53 @@ const AllowedMemberSection = ({
 
   const updateItem = (key: string, patch: Partial<LocalAllowedItem>) => {
     setDraft((prev) => prev.map((item) => (item.key === key ? { ...item, ...patch } : item)));
+    if (patch.email !== undefined) {
+      setConflictKeys((prev) => {
+        if (!prev.has(key)) return prev;
+        const next = new Set(prev);
+        next.delete(key);
+        return next;
+      });
+    }
   };
 
   const removeItem = (key: string) => setDraft((prev) => prev.filter((item) => item.key !== key));
 
   const addItem = () => setDraft((prev) => [...prev, { key: createId(), id: null, name: '', email: '' }]);
 
-  const isDraftInvalid = draft.some((item) => isUnfilled(item.name) || isUnfilled(item.email));
+  const isEmailDuplicate = (item: LocalAllowedItem) =>
+    !isUnfilled(item.email) &&
+    draft.some(
+      (other) => other.key !== item.key && other.email.trim().toLowerCase() === item.email.trim().toLowerCase(),
+    );
+  const isDraftInvalid = draft.some(
+    (item) =>
+      isUnfilled(item.name) || isUnfilled(item.email) || isEmailFormatInvalid(item.email) || isEmailDuplicate(item),
+  );
 
   const handleSave = async () => {
     if (isDraftInvalid) return;
-    setIsEditing(false);
-    await onSave(draft.map(({ id, name, email }) => ({ id, name, email })));
+    setConflictKeys(new Set());
+    setSaveError('');
+    try {
+      await onSave(draft.map(({ id, name, email }) => ({ id, name, email })));
+      setIsEditing(false);
+    } catch (error) {
+      const status = axios.isAxiosError(error) ? error.response?.status : undefined;
+      const serverMessage = getServerMessage(error);
+      if (status === 409) {
+        // 클라이언트에서 미리 걸러지지 않은 중복(예: 이미 실제 회원으로 등록된 이메일)에 대한 최후 방어선
+        const conflictEmail = serverMessage?.match(/[^\s@]+@[^\s@]+\.[^\s@]+/)?.[0];
+        const matched = conflictEmail ? draft.filter((item) => item.email === conflictEmail) : [];
+        if (matched.length > 0) {
+          setConflictKeys(new Set(matched.map((item) => item.key)));
+        } else {
+          setSaveError('이미 등록된 이메일입니다.');
+        }
+      } else if (status === 400) {
+        setSaveError('이메일 형식에 맞지 않습니다.');
+      }
+    }
   };
 
   return (
@@ -100,6 +149,8 @@ const AllowedMemberSection = ({
             )}
           </PanelHeaderRow>
 
+          {isEditing && saveError && <ErrorText>{saveError}</ErrorText>}
+
           {isLoading ? (
             <StateWrapper>
               <CircularLoading size={32} />
@@ -108,24 +159,38 @@ const AllowedMemberSection = ({
             <ErrorMessage>예비 회원 목록을 불러오지 못했습니다.</ErrorMessage>
           ) : isEditing ? (
             <RowList>
-              {draft.map((item) => (
-                <EditRow key={item.key}>
-                  <NameField
-                    value={item.name}
-                    placeholder="이름"
-                    onChange={(event) => updateItem(item.key, { name: event.target.value })}
-                  />
-                  <EmailField
-                    type="email"
-                    value={item.email}
-                    placeholder="가입 예정 이메일"
-                    onChange={(event) => updateItem(item.key, { email: event.target.value })}
-                  />
-                  <Button variant="outlined" color="assistive" size="small" onClick={() => removeItem(item.key)}>
-                    삭제
-                  </Button>
-                </EditRow>
-              ))}
+              {draft.map((item) => {
+                const isFormatInvalid = isEmailFormatInvalid(item.email);
+                const isDuplicate = !isFormatInvalid && (isEmailDuplicate(item) || conflictKeys.has(item.key));
+                const emailErrorText = isFormatInvalid
+                  ? '이메일 형식에 맞지 않습니다.'
+                  : isDuplicate
+                    ? '이미 등록된 이메일입니다.'
+                    : undefined;
+
+                return (
+                  <EditRow key={item.key}>
+                    <NameField
+                      value={item.name}
+                      placeholder="이름"
+                      onChange={(event) => updateItem(item.key, { name: event.target.value })}
+                    />
+                    <EmailFieldColumn>
+                      <EmailField
+                        type="email"
+                        value={item.email}
+                        placeholder="가입 예정 이메일"
+                        $invalid={isFormatInvalid || isDuplicate}
+                        onChange={(event) => updateItem(item.key, { email: event.target.value })}
+                      />
+                      {emailErrorText && <ErrorText>{emailErrorText}</ErrorText>}
+                    </EmailFieldColumn>
+                    <Button variant="outlined" color="assistive" size="small" onClick={() => removeItem(item.key)}>
+                      삭제
+                    </Button>
+                  </EditRow>
+                );
+              })}
               <AddButton type="button" onClick={addItem} aria-label="예비 회원 추가">
                 <IcPlus width={20} height={20} />
               </AddButton>
@@ -236,9 +301,17 @@ const EmailCell = styled.span`
 
 const EditRow = styled.div`
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 20px;
   width: 100%;
+`;
+
+const EmailFieldColumn = styled.div`
+  display: flex;
+  flex: 1 0 0;
+  flex-direction: column;
+  min-width: 0;
+  gap: 4px;
 `;
 
 const AddButton = styled.button`
@@ -254,7 +327,7 @@ const AddButton = styled.button`
   cursor: pointer;
 `;
 
-const NameField = styled.input`
+const NameField = styled.input<{ $invalid?: boolean }>`
   flex-shrink: 0;
   width: 90px;
   padding: 4px 8px;
@@ -264,6 +337,12 @@ const NameField = styled.input`
   background-color: rgba(23, 23, 23, 0.04);
   color: ${Label.strong};
   ${typographyCss(Typography.headline1.bold)}
+
+  ${(props) =>
+    props.$invalid &&
+    css`
+      box-shadow: inset 0 0 0 1px rgba(255, 0, 0, 0.28);
+    `}
 
   &::placeholder {
     color: ${Label.assistive};
@@ -275,6 +354,12 @@ const EmailField = styled(NameField)`
   width: auto;
   min-width: 0;
   ${typographyCss(Typography.headline2.medium)}
+`;
+
+const ErrorText = styled.p`
+  margin: 0;
+  color: ${State.error};
+  ${typographyCss(Typography.caption1.regular)}
 `;
 
 const StateWrapper = styled.div`

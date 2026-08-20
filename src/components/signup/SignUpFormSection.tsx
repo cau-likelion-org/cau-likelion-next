@@ -19,7 +19,7 @@ import {
   SIGNUP_SUCCESS_FLAG_KEY,
   SIGNUP_UNAPPROVED_EMAIL_FLAG_KEY,
 } from 'src/apis/signUp';
-import { isUnfilled } from '@utils/index';
+import { excludeCommonPart, isUnfilled } from '@utils/index';
 
 type OpenField = 'part' | null;
 
@@ -44,7 +44,10 @@ const SignUpFormSection = () => {
     () => generations?.find((g) => g.status === 'IN_ACTIVITY') ?? generations?.[generations.length - 1],
     [generations],
   );
-  const partOptions = useMemo(() => activeGeneration?.parts.map((p) => p.name) ?? [], [activeGeneration]);
+  const partOptions = useMemo(
+    () => excludeCommonPart(activeGeneration?.parts ?? []).map((p) => p.name),
+    [activeGeneration],
+  );
 
   const {
     listId: partListId,

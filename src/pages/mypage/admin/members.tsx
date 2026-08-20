@@ -9,7 +9,7 @@ import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import Toast from '@common/toast/Toast';
 import MyPageShell from '@mypage/component/MyPageShell';
 import PageLoadingGate from '@common/pageGate/PageLoadingGate';
-import MemberSection, { ALL_FILTER, MemberEditUpdate } from '@mypage/admin/MemberSection';
+import MemberSection, { ALL_FILTER, MemberEditUpdate, MemberSaveError } from '@mypage/admin/MemberSection';
 import AllowedMemberSection from '@mypage/admin/AllowedMemberSection';
 import PartManageSection from '@mypage/admin/PartManageSection';
 import GenerationCreateModal from '@mypage/admin/component/GenerationCreateModal';
@@ -104,7 +104,12 @@ const MyPageAdminMembers = () => {
       queryClient.invalidateQueries({ queryKey: allowedEmailsQueryKey });
       showToast('positive', '변경사항이 저장되었습니다.');
     },
-    onError: () => showToast('negative', '예비 회원 목록 저장에 실패했습니다. 다시 시도해 주세요.'),
+    onError: (error) => {
+      const status = error instanceof AxiosError ? error.response?.status : undefined;
+      // 400(형식 오류)/409(중복 이메일)는 AllowedMemberSection이 행 단위로 안내하므로 별도 토스트를 띄우지 않는다.
+      if (status === 400 || status === 409) return;
+      showToast('negative', '예비 회원 목록 저장에 실패했습니다. 다시 시도해 주세요.');
+    },
   });
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -144,16 +149,30 @@ const MyPageAdminMembers = () => {
   });
 
   const saveMutation = useMutation({
-    mutationFn: ({ updates, deleteIds }: { updates: MemberEditUpdate[]; deleteIds: number[] }) =>
-      Promise.all([
-        ...updates.map(({ id, form }) => putUserProfile({ id, form, tokenState })),
-        ...deleteIds.map((id) => deleteMember(id, tokenState)),
-      ]),
+    mutationFn: async ({ updates, deleteIds }: { updates: MemberEditUpdate[]; deleteIds: number[] }) => {
+      const [updateResults, deleteResults] = await Promise.all([
+        Promise.allSettled(updates.map(({ id, form }) => putUserProfile({ id, form, tokenState }))),
+        Promise.allSettled(deleteIds.map((id) => deleteMember(id, tokenState))),
+      ]);
+      const toFailure = (id: number, result: PromiseSettledResult<unknown>) =>
+        result.status === 'rejected'
+          ? [{ id, status: result.reason instanceof AxiosError ? result.reason.response?.status : undefined }]
+          : [];
+      const failures = [
+        ...updateResults.flatMap((result, index) => toFailure(updates[index].id, result)),
+        ...deleteResults.flatMap((result, index) => toFailure(deleteIds[index], result)),
+      ];
+      if (failures.length > 0) throw new MemberSaveError(failures);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: membersQueryKey });
       showToast('positive', '변경사항이 저장되었습니다.');
     },
-    onError: () => showToast('negative', '회원 정보 저장에 실패했습니다. 다시 시도해 주세요.'),
+    onError: (error) => {
+      // 회원별 실패는 MemberSection이 행 단위로 안내하므로 별도 토스트를 띄우지 않는다.
+      if (error instanceof MemberSaveError) return;
+      showToast('negative', '회원 정보 저장에 실패했습니다. 다시 시도해 주세요.');
+    },
   });
 
   const handleSave = (updates: MemberEditUpdate[], deleteIds: number[]) => {
