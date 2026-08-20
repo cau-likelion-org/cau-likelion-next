@@ -166,8 +166,8 @@ const ProjectsSection = ({ staticData }: { staticData: ArchivingArrayType<IProje
         <EmptyState message="조건에 맞는 프로젝트가 없습니다." />
       ) : (
         <CardGrid>
-          {sortedProjects.map((project, index) => (
-            <ProjectCard key={project.id} {...project} cardPosition={index} totalImageCount={sortedProjects.length} />
+          {sortedProjects.map((project) => (
+            <ProjectCard key={project.id} {...project} />
           ))}
         </CardGrid>
       )}

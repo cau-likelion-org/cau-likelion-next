@@ -9,12 +9,10 @@ import { NextPage } from 'next';
 import LayoutDefault from '@common/layout/LayoutDefault';
 import Loading from '@common/loading/Loading';
 import RecruitModalRoot from '@home/main/RecruitModalRoot';
-import { useState, useEffect, useRef } from 'react';
-import NextRouter, { Router, useRouter } from 'next/router';
+import { useState, useEffect } from 'react';
+import NextRouter, { Router } from 'next/router';
 import ErrorBoundary from '@common/errorBoundary/ErrorBoundary';
-import { sendPageView } from 'src/lib/ga';
 import useTokenStore from 'src/store/useTokenStore';
-import { track, markPageEntry, setUserId, getUserIdFromToken } from 'src/lib/amplitude';
 import {
   refreshFcmTokenIfGranted,
   registerMessagingServiceWorker,
@@ -30,7 +28,6 @@ type AppPropsWithLayout = AppProps & {
 };
 
 function AppContent({ Component, pageProps }: AppPropsWithLayout) {
-  const router = useRouter();
   // 프로필 조회가 인증 문제로 실패하면 화면들이 아무것도 렌더링하지 않으므로(빈 화면),
   // 세션을 정리하고 로그인으로 보낸다
   const [queryClient] = useState(
@@ -49,16 +46,11 @@ function AppContent({ Component, pageProps }: AppPropsWithLayout) {
   );
   const tokenState = useTokenStore((state) => state.token);
   const hydrate = useTokenStore((state) => state.hydrate);
-  const previousPathRef = useRef<string | undefined>(undefined);
   const getLayout = Component.getLayout || ((page: ReactElement) => <LayoutDefault>{page}</LayoutDefault>);
 
   useEffect(() => {
     hydrate();
   }, [hydrate]);
-
-  useEffect(() => {
-    setUserId(getUserIdFromToken(tokenState.access ?? undefined));
-  }, [tokenState.access]);
 
   // 서비스 워커만 미리 등록해 둔다 (알림 권한 요청은 사용자가 직접 켤 때)
   useEffect(() => {
@@ -81,34 +73,6 @@ function AppContent({ Component, pageProps }: AppPropsWithLayout) {
       if (fcmToken) updateFcmToken(tokenState, fcmToken).catch(() => undefined);
     });
   }, [tokenState]);
-
-  useEffect(() => {
-    sendPageView(router.asPath);
-    markPageEntry();
-    track('Page Viewed', {
-      page_path: router.asPath,
-      referrer_path: typeof document !== 'undefined' ? document.referrer : undefined,
-      is_logged_in: !!tokenState.access,
-    });
-    previousPathRef.current = router.asPath;
-
-    const end = (url: string) => {
-      sendPageView(url);
-      markPageEntry();
-      track('Page Viewed', {
-        page_path: url,
-        referrer_path: previousPathRef.current,
-        is_logged_in: !!tokenState.access,
-      });
-      previousPathRef.current = url;
-    };
-
-    Router.events.on('routeChangeComplete', end);
-
-    return () => {
-      Router.events.off('routeChangeComplete', end);
-    };
-  }, [tokenState.access]);
 
   const [isRouting, setIsRouting] = useState(false);
   useEffect(() => {
