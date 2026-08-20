@@ -17,16 +17,24 @@ import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { media } from '@utils/constant/breakpoint';
 
-const TOAST_MESSAGE_BY_FLAG: Record<string, ReactNode> = {
-  [SIGNUP_UNAPPROVED_EMAIL_FLAG_KEY]: (
-    <>
-      사전 등록된 이메일로만 회원가입이 가능합니다.
-      <br />
-      운영진에게 문의해주세요.
-    </>
-  ),
+interface ToastConfig {
+  variant: 'positive' | 'negative';
+  message: ReactNode;
+}
+
+const TOAST_CONFIG_BY_FLAG: Record<string, ToastConfig> = {
+  [SIGNUP_UNAPPROVED_EMAIL_FLAG_KEY]: {
+    variant: 'negative',
+    message: (
+      <>
+        사전 등록된 이메일로만 회원가입이 가능합니다.
+        <br />
+        운영진에게 문의해주세요.
+      </>
+    ),
+  },
 };
-const TOAST_FLAG_KEYS = Object.keys(TOAST_MESSAGE_BY_FLAG);
+const TOAST_FLAG_KEYS = Object.keys(TOAST_CONFIG_BY_FLAG);
 
 const GOOGLE_LOGIN_FAILED_MESSAGE = '로그인에 실패했어요. 새로고침 후 다시 시도해주세요.';
 
@@ -37,17 +45,19 @@ const Login = () => {
 
   const [redirectResult] = useState(() => (typeof window === 'undefined' ? null : consumeGoogleLoginRedirect()));
 
-  const [toastMessage, setToastMessage] = useState<ReactNode>(() => {
-    if (typeof window === 'undefined') return '';
-    if (redirectResult && 'error' in redirectResult) return GOOGLE_LOGIN_FAILED_MESSAGE;
+  const [toast, setToast] = useState<ToastConfig | null>(() => {
+    if (typeof window === 'undefined') return null;
+    if (redirectResult && 'error' in redirectResult) {
+      return { variant: 'negative', message: GOOGLE_LOGIN_FAILED_MESSAGE };
+    }
     const activeKey = TOAST_FLAG_KEYS.find((key) => sessionStorage.getItem(key) === 'true');
-    return activeKey ? TOAST_MESSAGE_BY_FLAG[activeKey] : '';
+    return activeKey ? TOAST_CONFIG_BY_FLAG[activeKey] : null;
   });
 
   useEffect(() => {
-    if (!toastMessage) return;
+    if (!toast) return;
     TOAST_FLAG_KEYS.forEach((key) => sessionStorage.removeItem(key));
-  }, [toastMessage]);
+  }, [toast]);
 
   const loginMutation = useMutation({
     mutationFn: (idToken: string) => googleLogin(idToken),
@@ -63,7 +73,7 @@ const Login = () => {
       const status = axios.isAxiosError(error) ? error.response?.status : undefined;
       // 4xx(EMAIL_NOT_ALLOWED)만 "미가입 이메일" 업무 오류로 간주. 5xx·네트워크 오류는 조용히 무시
       if (status !== undefined && status >= 400 && status < 500) {
-        setToastMessage(TOAST_MESSAGE_BY_FLAG[SIGNUP_UNAPPROVED_EMAIL_FLAG_KEY]);
+        setToast(TOAST_CONFIG_BY_FLAG[SIGNUP_UNAPPROVED_EMAIL_FLAG_KEY]);
       }
     },
   });
@@ -79,11 +89,11 @@ const Login = () => {
     <Wrapper>
       <ToastWrapper>
         <Toast
-          variant="negative"
-          text={toastMessage}
-          show={!!toastMessage}
+          variant={toast?.variant ?? 'negative'}
+          text={toast?.message ?? ''}
+          show={!!toast}
           width={348}
-          onHidden={() => setToastMessage('')}
+          onHidden={() => setToast(null)}
         />
       </ToastWrapper>
       <TextGroup

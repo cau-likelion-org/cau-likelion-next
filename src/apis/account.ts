@@ -26,6 +26,8 @@ export const logout = (refreshToken: string | null) => {
   return axios.post(`${url}/api/auth/logout`, { refreshToken });
 };
 
+export const LOGOUT_SUCCESS_FLAG_KEY = 'logoutSuccess';
+
 const DEV_OVERRIDABLE_ROLES: MemberRole[] = ['BABY_LION', 'ADULT_LION', 'STAFF', 'PRESIDENT', 'ADMIN'];
 
 /**

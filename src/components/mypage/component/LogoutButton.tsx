@@ -1,12 +1,14 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useRouter } from 'next/router';
 
 import Button from '@common/button/Button';
 import { IcLogout } from '@assets/svg';
 import useTokenStore from 'src/store/useTokenStore';
-import { deleteFcmToken, logout } from 'src/apis/account';
+import { LOGOUT_SUCCESS_FLAG_KEY, deleteFcmToken, logout } from 'src/apis/account';
 import { clearCachedFcmToken, getCachedFcmToken } from 'src/lib/pushNotification';
 
 const LogoutButton = () => {
+  const router = useRouter();
   const tokenState = useTokenStore((state) => state.token);
   const setToken = useTokenStore((state) => state.setToken);
   const queryClient = useQueryClient();
@@ -28,6 +30,8 @@ const LogoutButton = () => {
     onSettled: () => {
       setToken({ access: null, refresh: null });
       queryClient.clear();
+      sessionStorage.setItem(LOGOUT_SUCCESS_FLAG_KEY, 'true');
+      router.push('/');
     },
   });
 
