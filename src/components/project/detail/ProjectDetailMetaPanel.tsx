@@ -34,7 +34,7 @@ const ProjectDetailMetaPanel = ({ startDate, endDate, stack, links }: ProjectDet
 
   return (
     <Panel>
-      <Row>
+      <Column>
         <RowLabel>프로젝트 기간</RowLabel>
         <DateRow>
           <Chip size="small">{startDate}</Chip>
@@ -45,7 +45,7 @@ const ProjectDetailMetaPanel = ({ startDate, endDate, stack, links }: ProjectDet
             </>
           )}
         </DateRow>
-      </Row>
+      </Column>
       <Column>
         <RowLabel>기술스택</RowLabel>
         <ChipRow>
@@ -85,21 +85,6 @@ const Panel = styled.div`
   padding: 22px;
   border-radius: 16px;
   background-color: #f5f7f9;
-`;
-
-const Row = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  width: 100%;
-
-  /* 모바일 시안에서는 기술스택과 동일하게 라벨 아래로 값이 내려간다 */
-  @media (max-width: 700px) {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 14px;
-  }
 `;
 
 const Column = styled.div`
