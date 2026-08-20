@@ -13,7 +13,7 @@ import EditButton from '@mypage/admin/component/EditButton';
 import ConfirmDialog from '@mypage/admin/component/ConfirmDialog';
 import { IcCaretDown, IcCaretUp, IcSearch } from '@assets/svg';
 import { NUMERIC_ONLY_REGEX, ROLE_LABEL } from '@utils/constant';
-import { isEmailFormatInvalid } from '@utils/index';
+import { excludeCommonPart, isEmailFormatInvalid } from '@utils/index';
 import { Black, Label, Line, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { media } from '@utils/constant/breakpoint';
@@ -451,7 +451,9 @@ const MemberSection = ({
             const generationValue = edit?.generationNumber ?? String(member.generationNumber ?? '');
             const effectiveGenerationNumber =
               edit?.generationNumber !== undefined ? Number(edit.generationNumber) : member.generationNumber;
-            const generationParts = generations.find((g) => g.number === effectiveGenerationNumber)?.parts ?? [];
+            const generationParts = excludeCommonPart(
+              generations.find((g) => g.number === effectiveGenerationNumber)?.parts ?? [],
+            );
             const roleValue = ROLE_LABEL[edit?.role ?? member.role];
             const partId = edit?.partId !== undefined ? edit.partId : member.partId;
             const partValue = generationParts.find((part) => part.id === partId)?.name ?? NO_PART_LABEL;

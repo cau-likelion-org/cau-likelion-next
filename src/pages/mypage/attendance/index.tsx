@@ -28,7 +28,7 @@ import {
 } from 'src/apis/attendance';
 import useTokenStore from 'src/store/useTokenStore';
 import { INACTIVE_MEMBER_NOTICE_KEY, TRACK_OPTIONS } from '@utils/constant';
-import { isAdminRole, isFullAdminRole } from '@utils/index';
+import { excludeCommonPart, isAdminRole, isFullAdminRole } from '@utils/index';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { media } from '@utils/constant/breakpoint';
@@ -90,7 +90,7 @@ const MyPageAttendance = () => {
   // 파트 순서는 응답 순서가 아니라 전체 → 기획디자인 → 프론트엔드 → 백엔드 고정
   const partOptions = [
     ALL_PART,
-    ...(activeGeneration?.parts ?? [])
+    ...excludeCommonPart(activeGeneration?.parts ?? [])
       .map((part) => part.name)
       .filter((name) => name !== '기타')
       .sort((a, b) => TRACK_OPTIONS.indexOf(a) - TRACK_OPTIONS.indexOf(b)),

@@ -10,6 +10,7 @@ import EmptyState from '@common/emptyState/EmptyState';
 import { UserProfile } from '@@types/request';
 import { MemberScore, getMemberScores } from 'src/apis/mypage';
 import useTokenStore from 'src/store/useTokenStore';
+import { COMMON_PART_NAME } from '@utils/constant';
 import { BackgroundColor, Black, Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { media } from '@utils/constant/breakpoint';
@@ -48,7 +49,10 @@ const MemberScoreSection = ({ userProfile }: { userProfile: UserProfile }) => {
     currentGeneration === ALL_OPTION || String(generationNumber) === currentGeneration;
 
   const partOptions = useMemo(() => {
-    const parts = scores.filter((score) => matchesGeneration(score.generationNumber)).map((score) => score.partName);
+    const parts = scores
+      .filter((score) => matchesGeneration(score.generationNumber))
+      .map((score) => score.partName)
+      .filter((partName) => partName !== COMMON_PART_NAME);
     return [ALL_OPTION, ...Array.from(new Set(parts))];
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scores, currentGeneration]);

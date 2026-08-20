@@ -27,7 +27,7 @@ import {
 } from 'src/apis/assignment';
 import useTokenStore from 'src/store/useTokenStore';
 import { INACTIVE_MEMBER_NOTICE_KEY, TRACK_OPTIONS } from '@utils/constant';
-import { isAdminRole, isFullAdminRole } from '@utils/index';
+import { excludeCommonPart, isAdminRole, isFullAdminRole } from '@utils/index';
 import { IcPlus } from '@assets/svg';
 import { Fill, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -109,7 +109,7 @@ const MyPageAssignment = () => {
   const activeGeneration =
     generations?.find((generation) => generation.status === 'IN_ACTIVITY') ?? generations?.[generations.length - 1];
   // 파트 순서는 응답 순서가 아니라 기획디자인 → 프론트엔드 → 백엔드 고정
-  const parts = (activeGeneration?.parts ?? [])
+  const parts = excludeCommonPart(activeGeneration?.parts ?? [])
     .filter((part) => part.name !== '기타')
     .sort((a, b) => TRACK_OPTIONS.indexOf(a.name) - TRACK_OPTIONS.indexOf(b.name));
 

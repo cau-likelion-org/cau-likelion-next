@@ -6,6 +6,7 @@ import ContentBadge from '@common/badge/ContentBadge';
 import CircularLoading from '@common/loading/CircularLoading';
 import EmptyState from '@common/emptyState/EmptyState';
 import Button from '@common/button/Button';
+import { excludeCommonPart } from '@utils/index';
 import { Black, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
@@ -68,7 +69,7 @@ const PartManageSection = ({
               <NumberCell>{generation.number}</NumberCell>
               <Cell>{generation.year}</Cell>
               <BadgeCell>
-                {generation.parts.map((part) => (
+                {excludeCommonPart(generation.parts).map((part) => (
                   <ContentBadge key={part.id} text={part.name} color="accent" variant="solid" size="medium" />
                 ))}
               </BadgeCell>

@@ -17,15 +17,12 @@ import useListboxSelect from 'src/hooks/useListboxSelect';
 import useTokenStore from 'src/store/useTokenStore';
 import { UploadDomain, uploadFile } from 'src/apis/upload';
 import { getGenerations } from 'src/apis/account';
-import { NUMERIC_ONLY_REGEX } from '@utils/constant';
+import { COMMON_PART_NAME, NUMERIC_ONLY_REGEX } from '@utils/constant';
 import { BackgroundColor, Fill, Label, Line, Material, Orange, State } from '@utils/constant/color';
 import { isUnfilled } from '@utils/index';
 import { resizeImageFile } from '@utils/resizeImage';
 import { Typography, typographyCss } from '@utils/constant/typography';
 const MAX_IMAGE_COUNT = 10;
-// 백엔드에 별도 파트로 등록되어 있지 않은, 특정 파트에 한정되지 않는 세션을 위한 옵션.
-// partName은 자유 문자열이라 백엔드 반영 없이 프론트에서만 추가.
-export const COMMON_PART_NAME = '공통';
 const TITLE_PLACEHOLDER: Record<PostType, string> = {
   session: '세션명을 입력해주세요.',
   project: '게시물 제목을 입력해주세요.',

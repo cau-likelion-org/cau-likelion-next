@@ -1,4 +1,5 @@
 import { ArchivingArrayType, IGalleryData, IProjectData, ISessionData, MemberRole } from '@@types/request';
+import { COMMON_PART_NAME } from '@utils/constant';
 
 export const toDateString = (date?: Date, formatter = '-') => {
   if (!date) return '';
@@ -20,6 +21,10 @@ export const isUnfilled = (value: string) => value.trim().length === 0;
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export const isEmailFormatInvalid = (email: string) => !isUnfilled(email) && !EMAIL_REGEX.test(email);
+
+// 갤러리 게시물 파트 선택지에만 있는 "공통"은 관리자 화면의 파트 목록·드롭다운에서는 제외한다
+export const excludeCommonPart = <T extends { name: string }>(parts: T[]) =>
+  parts.filter((part) => part.name !== COMMON_PART_NAME);
 
 // 운영진(STAFF) 이상 — 담당 파트에 한정된 관리 권한까지 포함해 "관리자 화면 접근 가능 여부" 판단에 사용
 const ADMIN_ROLES: MemberRole[] = ['STAFF', 'PRESIDENT', 'ADMIN'];

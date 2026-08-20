@@ -41,6 +41,9 @@ export const TRACK_NAME: { [key: number]: string } = {
 
 export const TRACK_OPTIONS = [TRACK_NAME[TRACK.PM_DESIGN], TRACK_NAME[TRACK.FRONTEND], TRACK_NAME[TRACK.BACKEND]];
 
+// 갤러리 게시물 파트 선택지에만 존재하는, 프론트엔드에서 합성한 파트("전체 파트 공통"). 백엔드 기수 파트 목록에는 없다.
+export const COMMON_PART_NAME = '공통';
+
 export const TRACK_DESCRIPTION: { [key: number]: { description: string; recommend: string } } = {
   [TRACK.PM_DESIGN]: {
     description:
