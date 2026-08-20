@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 import ListboxOptions from '@common/select/ListboxOptions';
 import useListboxSelect from 'src/hooks/useListboxSelect';
-import { IcCaretDown } from '@assets/svg';
+import { IcCaretDown, IcCaretUp } from '@assets/svg';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
@@ -45,9 +45,7 @@ const PartSelect = ({ value, options, onChange, ariaLabel = '파트 선택' }: P
         }}
       >
         <TriggerText>{value}</TriggerText>
-        <Caret>
-          <IcCaretDown width={20} height={20} />
-        </Caret>
+        <Caret>{isOpen ? <IcCaretUp width={20} height={20} /> : <IcCaretDown width={20} height={20} />}</Caret>
       </Trigger>
       {isOpen && (
         <ListboxOptions
