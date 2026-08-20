@@ -52,7 +52,8 @@ const MakeAttendanceCard = () => {
     },
     onError: (error: unknown) => {
       const status = (error as { response?: { status?: number } })?.response?.status;
-      setSubmitError(status === 400 ? '해당 날짜에 이미 출석부가 존재합니다.' : '출석부 생성에 실패했어요.');
+      const isDuplicate = status === 400 || status === 409;
+      setSubmitError(isDuplicate ? '이미 출석부를 생성했어요.' : '출석부 생성에 실패했어요.');
     },
   });
 
