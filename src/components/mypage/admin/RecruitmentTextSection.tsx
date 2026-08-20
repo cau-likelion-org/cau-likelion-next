@@ -68,13 +68,10 @@ const RecruitmentTextSection = ({
               {pageItems.map((text, index) => {
                 const badge = STATUS_BADGE[text.status];
                 return (
-                  <Row
-                    key={text.id}
-                    type="button"
-                    $divider={index !== pageItems.length - 1}
-                    onClick={() => onSelect(text)}
-                  >
-                    <TitleCell>{text.title}</TitleCell>
+                  <Row key={text.id} $divider={index !== pageItems.length - 1}>
+                    <TitleCell type="button" onClick={() => onSelect(text)}>
+                      {text.title}
+                    </TitleCell>
                     <Cell>{text.targetCount}명</Cell>
                     <Cell>{formatDate(text.createdAt)}</Cell>
                     <Cell>{formatDateTime(text.scheduledSendAt)}</Cell>
@@ -137,26 +134,27 @@ const Body = styled.div`
   gap: 22px;
 `;
 
-const Row = styled.button<{ $divider: boolean }>`
+const Row = styled.div<{ $divider: boolean }>`
   display: grid;
   grid-template-columns: ${GRID};
   gap: 20px;
   align-items: center;
   width: 100%;
   padding: 0 0 22px;
-  border: none;
-  background: none;
-  cursor: pointer;
-  text-align: left;
 
   ${(props) => props.$divider && `border-bottom: 1px solid ${Line.normal};`}
 `;
 
-const TitleCell = styled.div`
+const TitleCell = styled.button`
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
   color: ${Label.strong};
   ${typographyCss(Typography.headline1.bold)}
 `;
