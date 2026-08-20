@@ -13,7 +13,8 @@ import EditButton from '@mypage/admin/component/EditButton';
 import ConfirmDialog from '@mypage/admin/component/ConfirmDialog';
 import { IcCaretDown, IcCaretUp, IcSearch } from '@assets/svg';
 import { NUMERIC_ONLY_REGEX, ROLE_LABEL } from '@utils/constant';
-import { Black, Label, Line } from '@utils/constant/color';
+import { isEmailFormatInvalid } from '@utils/index';
+import { Black, Label, Line, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { media } from '@utils/constant/breakpoint';
 
@@ -24,6 +25,22 @@ const ROLE_OPTIONS: MemberRole[] = ['BABY_LION', 'ADULT_LION', 'STAFF', 'PRESIDE
 export interface MemberEditUpdate {
   id: number;
   form: MemberUpdateRequest;
+}
+
+export interface MemberSaveFailure {
+  id: number;
+  status?: number;
+}
+
+// 저장 요청 일부(회원별 update/delete)가 실패했을 때, 실패한 회원 id를 함께 전달하기 위한 에러
+export class MemberSaveError extends Error {
+  failures: MemberSaveFailure[];
+
+  constructor(failures: MemberSaveFailure[]) {
+    super('일부 회원 정보를 저장하지 못했습니다.');
+    this.name = 'MemberSaveError';
+    this.failures = failures;
+  }
 }
 
 interface MemberFilterConfig {
@@ -202,10 +219,15 @@ const MemberSection = ({
   const [edits, setEdits] = useState<Map<number, EditValue>>(new Map());
   const [deletions, setDeletions] = useState<Set<number>>(new Set());
   const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
+  // 저장 시 실패로 확인된(주로 서버가 새로 잡아낸 중복 이메일) 회원 id
+  const [conflictIds, setConflictIds] = useState<Set<number>>(new Set());
+  const [saveError, setSaveError] = useState('');
 
   const startEdit = () => {
     setEdits(new Map());
     setDeletions(new Set());
+    setConflictIds(new Set());
+    setSaveError('');
     setIsEditing(true);
   };
 
@@ -248,6 +270,21 @@ const MemberSection = ({
       else next.set(member.id, current);
       return next;
     });
+    setConflictIds((prev) => {
+      if (!prev.has(member.id)) return prev;
+      const next = new Set(prev);
+      next.delete(member.id);
+      return next;
+    });
+  };
+
+  const getEffectiveEmail = (member: MemberResponse) => edits.get(member.id)?.email ?? member.email;
+
+  // 화면에 보이는 목록(현재 필터 범위) 안에서의 중복만 검사한다 — 필터 밖 회원과의 중복은 저장 시 서버 응답으로 잡는다
+  const isEmailDuplicate = (member: MemberResponse) => {
+    const email = getEffectiveEmail(member).trim().toLowerCase();
+    if (!email) return false;
+    return members.some((other) => other.id !== member.id && getEffectiveEmail(other).trim().toLowerCase() === email);
   };
 
   // 기수는 파트에 종속되므로(파트가 바뀌면 기수도 바뀜), 입력한 기수에 실제로 존재하는 파트가 있을 때만
@@ -301,7 +338,13 @@ const MemberSection = ({
     });
   };
 
+  const visibleMembers = members.filter((member) => !deletions.has(member.id));
+  const isAnyInvalid = visibleMembers.some(
+    (member) => isEmailFormatInvalid(getEffectiveEmail(member)) || isEmailDuplicate(member),
+  );
+
   const handleSave = async () => {
+    if (isAnyInvalid) return;
     const updates: MemberEditUpdate[] = Array.from(edits, ([id, edit]) => {
       const member = members.find((item) => item.id === id);
       return {
@@ -315,16 +358,25 @@ const MemberSection = ({
       };
     });
     const deleteIds = Array.from(deletions);
-    setIsEditing(false);
+    setConflictIds(new Set());
+    setSaveError('');
     try {
       await onSave?.(updates, deleteIds);
-    } finally {
+      setIsEditing(false);
       setEdits(new Map());
       setDeletions(new Set());
+    } catch (error) {
+      if (error instanceof MemberSaveError) {
+        // 400(형식)은 저장 전 클라이언트 검증으로 이미 걸러지므로, 여기 남는 건 사실상 409(중복)다
+        setConflictIds(new Set(error.failures.map((failure) => failure.id)));
+        if (error.failures.some((failure) => failure.status !== 400 && failure.status !== 409)) {
+          setSaveError('일부 회원 정보를 저장하지 못했습니다. 다시 시도해 주세요.');
+        }
+      } else {
+        setSaveError('회원 정보 저장에 실패했습니다. 다시 시도해 주세요.');
+      }
     }
   };
-
-  const visibleMembers = members.filter((member) => !deletions.has(member.id));
 
   return (
     <Wrapper>
@@ -336,7 +388,7 @@ const MemberSection = ({
               <Button color="assistive" size="small" onClick={cancelEdit} disabled={isSaving}>
                 취소
               </Button>
-              <Button size="small" onClick={handleSave} loading={isSaving}>
+              <Button size="small" onClick={handleSave} loading={isSaving} disabled={isAnyInvalid}>
                 저장
               </Button>
             </ButtonGroup>
@@ -344,6 +396,8 @@ const MemberSection = ({
             <EditButton onClick={startEdit} />
           ))}
       </Header>
+
+      {isEditing && saveError && <ErrorText>{saveError}</ErrorText>}
 
       <FilterRow>
         <SearchField
@@ -401,6 +455,15 @@ const MemberSection = ({
             const roleValue = ROLE_LABEL[edit?.role ?? member.role];
             const partId = edit?.partId !== undefined ? edit.partId : member.partId;
             const partValue = generationParts.find((part) => part.id === partId)?.name ?? NO_PART_LABEL;
+            const emailValue = edit?.email ?? member.email;
+            const isEmailFormatInvalidValue = isEmailFormatInvalid(emailValue);
+            const isEmailDuplicateValue =
+              !isEmailFormatInvalidValue && (isEmailDuplicate(member) || conflictIds.has(member.id));
+            const emailErrorText = isEmailFormatInvalidValue
+              ? '이메일 형식에 맞지 않습니다.'
+              : isEmailDuplicateValue
+                ? '이미 등록된 이메일입니다.'
+                : undefined;
 
             return (
               <Row key={member.id} $editing={isEditing} $divider={index !== visibleMembers.length - 1}>
@@ -433,12 +496,16 @@ const MemberSection = ({
                   <Cell>{member.partName ?? '-'}</Cell>
                 )}
                 {isEditing ? (
-                  <CellInput
-                    type="email"
-                    value={edit?.email ?? member.email}
-                    aria-label={`${member.name} 이메일 수정`}
-                    onChange={(event) => changeEmail(member, event.target.value)}
-                  />
+                  <EmailFieldColumn>
+                    <CellInput
+                      type="email"
+                      value={emailValue}
+                      $invalid={isEmailFormatInvalidValue || isEmailDuplicateValue}
+                      aria-label={`${member.name} 이메일 수정`}
+                      onChange={(event) => changeEmail(member, event.target.value)}
+                    />
+                    {emailErrorText && <ErrorText>{emailErrorText}</ErrorText>}
+                  </EmailFieldColumn>
                 ) : (
                   <Cell>{member.email}</Cell>
                 )}
@@ -592,9 +659,28 @@ const NameInput = styled.input`
   ${typographyCss(Typography.headline1.bold)}
 `;
 
-const CellInput = styled.input`
+const CellInput = styled.input<{ $invalid?: boolean }>`
   ${inputBase}
   ${typographyCss(Typography.headline2.medium)}
+
+  ${(props) =>
+    props.$invalid &&
+    css`
+      box-shadow: inset 0 0 0 1px rgba(255, 0, 0, 0.28);
+    `}
+`;
+
+const EmailFieldColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 4px;
+`;
+
+const ErrorText = styled.p`
+  margin: 0;
+  color: ${State.error};
+  ${typographyCss(Typography.caption1.regular)}
 `;
 
 const StateWrapper = styled.div`
