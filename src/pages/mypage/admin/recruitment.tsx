@@ -205,6 +205,7 @@ const MyPageAdminRecruitment = () => {
             .filter((subscriber) => selectedIds.has(subscriber.id))
             .map((subscriber) => ({ id: subscriber.id, email: subscriber.email }))}
           onRemoveRecipient={toggleSelect}
+          onSelectAll={() => setSelectedIds(new Set((subscribers ?? []).map((subscriber) => subscriber.id)))}
           onClose={() => setIsComposeOpen(false)}
           onSubmit={(form) => composeMutation.mutateAsync(form)}
           isSubmitting={composeMutation.isPending}
@@ -244,6 +245,7 @@ const MyPageAdminRecruitment = () => {
               return next;
             })
           }
+          onSelectAll={() => setEditRecipientIds(new Set((subscribers ?? []).map((subscriber) => subscriber.id)))}
           onClose={() => setEditingText(null)}
           onSubmit={(form) => updateMutation.mutateAsync(form)}
           isSubmitting={updateMutation.isPending}

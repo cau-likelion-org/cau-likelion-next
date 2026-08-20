@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 import Button from '@common/button/Button';
 import Chip from '@common/chip/Chip';
+import LinkifiedText from './LinkifiedText';
 import { IcCaretDown, IcCaretUp } from '@assets/svg';
 import { BackgroundColor, Fill, Label, Line, Material, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -20,14 +21,14 @@ interface RecruitmentResendModalProps {
 const RecruitmentResendModal = ({
   title,
   content,
-  recipients: initialRecipients,
+  recipients,
   onClose,
   onConfirm,
   isSubmitting = false,
 }: RecruitmentResendModalProps) => {
-  const [recipients, setRecipients] = useState(initialRecipients);
   const [isRecipientListExpanded, setIsRecipientListExpanded] = useState(false);
   const [isRecipientListFaded, setIsRecipientListFaded] = useState(false);
+  const [hasOverflow, setHasOverflow] = useState(false);
   const recipientChipRowRef = useRef<HTMLDivElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
   useFocusTrap(modalRef, onClose);
@@ -35,16 +36,20 @@ const RecruitmentResendModal = ({
   useEffect(() => {
     const el = recipientChipRowRef.current;
     if (!el) return;
-    const checkFade = () => setIsRecipientListFaded(el.scrollWidth - el.scrollLeft - el.clientWidth > 1);
-    checkFade();
-    el.addEventListener('scroll', checkFade);
-    const observer = new ResizeObserver(checkFade);
+    const checkOverflow = () => {
+      setIsRecipientListFaded(el.scrollWidth - el.scrollLeft - el.clientWidth > 1);
+      // 펼쳐진 상태(줄바꿈)에서는 scrollWidth가 오버플로우를 반영하지 않으므로, 접힌 상태에서 잰 값만 반영한다
+      if (!isRecipientListExpanded) setHasOverflow(el.scrollWidth - el.clientWidth > 1);
+    };
+    checkOverflow();
+    el.addEventListener('scroll', checkOverflow);
+    const observer = new ResizeObserver(checkOverflow);
     observer.observe(el);
     return () => {
-      el.removeEventListener('scroll', checkFade);
+      el.removeEventListener('scroll', checkOverflow);
       observer.disconnect();
     };
-  }, [recipients]);
+  }, [recipients, isRecipientListExpanded]);
 
   return (
     <Overlay>
@@ -63,35 +68,29 @@ const RecruitmentResendModal = ({
                   $faded={isRecipientListFaded}
                 >
                   {recipients.map((email, index) => (
-                    <RecipientChip
-                      key={`${email}-${index}`}
-                      size="xsmall"
-                      trailingIcon={
-                        <RemoveButton
-                          type="button"
-                          aria-label={`${email} 삭제`}
-                          onClick={() => setRecipients((prev) => prev.filter((_, i) => i !== index))}
-                        >
-                          ×
-                        </RemoveButton>
-                      }
-                    >
+                    <RecipientChip key={`${email}-${index}`} size="xsmall">
                       {email}
                     </RecipientChip>
                   ))}
                 </RecipientChipRow>
-                <RecipientCount
-                  type="button"
-                  aria-expanded={isRecipientListExpanded}
-                  onClick={() => setIsRecipientListExpanded((prev) => !prev)}
-                >
-                  <CountText>총 {recipients.length}명</CountText>
-                  {isRecipientListExpanded ? (
-                    <IcCaretUp width={16} height={16} />
-                  ) : (
-                    <IcCaretDown width={16} height={16} />
-                  )}
-                </RecipientCount>
+                {hasOverflow ? (
+                  <RecipientCount
+                    type="button"
+                    aria-expanded={isRecipientListExpanded}
+                    onClick={() => setIsRecipientListExpanded((prev) => !prev)}
+                  >
+                    <CountText>총 {recipients.length}명</CountText>
+                    {isRecipientListExpanded ? (
+                      <IcCaretUp width={16} height={16} />
+                    ) : (
+                      <IcCaretDown width={16} height={16} />
+                    )}
+                  </RecipientCount>
+                ) : (
+                  <RecipientCount as="span">
+                    <CountText>총 {recipients.length}명</CountText>
+                  </RecipientCount>
+                )}
               </RecipientSummaryRow>
             </RecipientBox>
           </Field>
@@ -103,7 +102,9 @@ const RecruitmentResendModal = ({
 
           <Field>
             <LargeHeading>내용</LargeHeading>
-            <ReadonlyTextarea>{content}</ReadonlyTextarea>
+            <ReadonlyTextarea>
+              <LinkifiedText text={content} />
+            </ReadonlyTextarea>
           </Field>
         </Information>
         <Actions>
@@ -234,19 +235,6 @@ const RecipientChipRow = styled.div<{ $expanded: boolean; $faded: boolean }>`
 
 const RecipientChip = styled(Chip)`
   flex-shrink: 0;
-`;
-
-const RemoveButton = styled.button`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  background: none;
-  padding: 0;
-  font-size: 12px;
-  line-height: 1;
-  color: inherit;
-  cursor: pointer;
 `;
 
 const RecipientCount = styled.button`

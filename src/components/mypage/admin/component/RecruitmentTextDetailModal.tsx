@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { RecruitmentTextResponse } from 'src/apis/recruitment';
 import { STATUS_BADGE } from '@mypage/admin/RecruitmentTextSection';
 import ContentBadge from '@common/badge/ContentBadge';
+import LinkifiedText from './LinkifiedText';
 import { IcCaretDown, IcCaretUp } from '@assets/svg';
 import { BackgroundColor, Fill, Label, Line, Material, Orange, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -32,6 +33,7 @@ const RecruitmentTextDetailModal = ({
 
   const [isRecipientListFaded, setIsRecipientListFaded] = useState(false);
   const [isRecipientListExpanded, setIsRecipientListExpanded] = useState(false);
+  const [hasOverflow, setHasOverflow] = useState(false);
   const recipientChipRowRef = useRef<HTMLDivElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
   useFocusTrap(modalRef, onClose);
@@ -39,16 +41,20 @@ const RecruitmentTextDetailModal = ({
   useEffect(() => {
     const el = recipientChipRowRef.current;
     if (!el) return;
-    const checkFade = () => setIsRecipientListFaded(el.scrollWidth - el.scrollLeft - el.clientWidth > 1);
-    checkFade();
-    el.addEventListener('scroll', checkFade);
-    const observer = new ResizeObserver(checkFade);
+    const checkOverflow = () => {
+      setIsRecipientListFaded(el.scrollWidth - el.scrollLeft - el.clientWidth > 1);
+      // 펼쳐진 상태(줄바꿈)에서는 scrollWidth가 오버플로우를 반영하지 않으므로, 접힌 상태에서 잰 값만 반영한다
+      if (!isRecipientListExpanded) setHasOverflow(el.scrollWidth - el.clientWidth > 1);
+    };
+    checkOverflow();
+    el.addEventListener('scroll', checkOverflow);
+    const observer = new ResizeObserver(checkOverflow);
     observer.observe(el);
     return () => {
-      el.removeEventListener('scroll', checkFade);
+      el.removeEventListener('scroll', checkOverflow);
       observer.disconnect();
     };
-  }, [text.recipients]);
+  }, [text.recipients, isRecipientListExpanded]);
 
   return (
     <Overlay>
@@ -69,9 +75,11 @@ const RecruitmentTextDetailModal = ({
                   </ResendButton>
                 )}
                 <RecipientCountRow
-                  type="button"
-                  aria-expanded={isRecipientListExpanded}
-                  onClick={() => setIsRecipientListExpanded((prev) => !prev)}
+                  as={hasOverflow ? 'button' : 'div'}
+                  type={hasOverflow ? 'button' : undefined}
+                  $clickable={hasOverflow}
+                  aria-expanded={hasOverflow ? isRecipientListExpanded : undefined}
+                  onClick={hasOverflow ? () => setIsRecipientListExpanded((prev) => !prev) : undefined}
                 >
                   {text.status === 'SENT' && (
                     <>
@@ -80,11 +88,12 @@ const RecruitmentTextDetailModal = ({
                     </>
                   )}
                   <ContentBadge text={`총 ${text.targetCount}명`} size="small" />
-                  {isRecipientListExpanded ? (
-                    <IcCaretUp width={16} height={16} />
-                  ) : (
-                    <IcCaretDown width={16} height={16} />
-                  )}
+                  {hasOverflow &&
+                    (isRecipientListExpanded ? (
+                      <IcCaretUp width={16} height={16} />
+                    ) : (
+                      <IcCaretDown width={16} height={16} />
+                    ))}
                 </RecipientCountRow>
               </RecipientSummaryRow>
               <RecipientChipRow
@@ -106,7 +115,9 @@ const RecruitmentTextDetailModal = ({
           </Field>
 
           <MailTitle>{text.title}</MailTitle>
-          <MailContent>{text.content}</MailContent>
+          <MailContent>
+            <LinkifiedText text={text.content} />
+          </MailContent>
 
           <StatusRow>
             <ContentBadge text={badge.label} color={badge.color} variant={badge.variant} size="medium" />
@@ -219,7 +230,7 @@ const ResendButton = styled.button<{ $disabled?: boolean }>`
   ${typographyCss(Typography.label2.bold)}
 `;
 
-const RecipientCountRow = styled.button`
+const RecipientCountRow = styled.button<{ $clickable?: boolean }>`
   display: inline-flex;
   flex-shrink: 0;
   align-items: center;
@@ -228,7 +239,7 @@ const RecipientCountRow = styled.button`
   background: none;
   padding: 0;
   color: ${Label.normal};
-  cursor: pointer;
+  cursor: ${(props) => (props.$clickable === false ? 'default' : 'pointer')};
 `;
 
 const CountLabel = styled.span<{ $tone?: 'negative' }>`
