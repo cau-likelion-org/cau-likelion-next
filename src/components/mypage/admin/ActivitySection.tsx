@@ -30,6 +30,8 @@ export interface ActivityIntroItem {
   id: string;
   title: string;
   imageName: string;
+  // 이번 편집 세션에서 새로 업로드한 파일의 원본 파일명. 비어있으면 imageName(URL)에서 추출해 보여준다
+  imageFileName: string;
   subtitle: string;
   description: string;
   buttonText: string;
@@ -61,6 +63,7 @@ const createEmptyItem = (): ActivityIntroItem => ({
   id: createId(),
   title: '',
   imageName: '',
+  imageFileName: '',
   subtitle: '',
   description: '',
   buttonText: '',
@@ -176,7 +179,7 @@ const ActivityCard = ({
               {isUploading
                 ? '업로드 중...'
                 : item.imageName
-                  ? getFileNameFromUrl(item.imageName)
+                  ? item.imageFileName || getFileNameFromUrl(item.imageName)
                   : '이미지 파일을 선택해 주세요.'}
             </ImageFileName>
             {item.imageName && !disabled && !isUploading && (
@@ -184,7 +187,7 @@ const ActivityCard = ({
                 type="button"
                 onClick={(event) => {
                   event.stopPropagation();
-                  onChange({ imageName: '' });
+                  onChange({ imageName: '', imageFileName: '' });
                 }}
                 aria-label="이미지 삭제"
               >

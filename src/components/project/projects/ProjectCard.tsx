@@ -2,17 +2,13 @@ import { IProjectData } from '@@types/request';
 import { AccentTint, Black, Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 import { useState } from 'react';
 import styled from 'styled-components';
 import { IcTrophy } from '@assets/svg';
 import ThumbnailPlaceholder from '@common/thumbnail/ThumbnailPlaceholder';
-import { track, getDeviceType, getPageEntryTime } from 'src/lib/amplitude';
 
 interface ProjectCardProps extends IProjectData {
   generation: string;
-  cardPosition: number;
-  totalImageCount: number;
 }
 
 const ProjectCard = ({
@@ -24,46 +20,18 @@ const ProjectCard = ({
   description,
   banner,
   generation,
-  cardPosition,
-  totalImageCount,
 }: ProjectCardProps) => {
-  const router = useRouter();
   const introText = subtitle || description;
   // 실패한 src를 기억해두면 thumbnail이 바뀔 때 자동으로 다시 시도하게 된다
   const [failedThumbnail, setFailedThumbnail] = useState<string | null>(null);
   const showThumbnail = !!thumbnail && failedThumbnail !== thumbnail;
 
-  const handleClick = () => {
-    track('Archiving Card Clicked', {
-      archiving_type: 'project',
-      item_id: id,
-      item_title: title,
-      card_position: cardPosition,
-      referrer_path: router.asPath,
-    });
-  };
-
-  const handleImageLoad = () => {
-    track('Image Load Completed', {
-      page_path: router.asPath,
-      load_duration_ms: Date.now() - getPageEntryTime(),
-      image_count: totalImageCount,
-      device_type: getDeviceType(),
-    });
-  };
-
   return (
     <Link href={`/project/${id}`} prefetch={false} shallow>
-      <Wrapper onClick={handleClick}>
+      <Wrapper>
         <Thumbnail>
           {showThumbnail ? (
-            <img
-              key={thumbnail}
-              src={thumbnail}
-              alt={title}
-              onLoad={handleImageLoad}
-              onError={() => setFailedThumbnail(thumbnail)}
-            />
+            <img key={thumbnail} src={thumbnail} alt={title} onError={() => setFailedThumbnail(thumbnail)} />
           ) : (
             <ThumbnailPlaceholder />
           )}

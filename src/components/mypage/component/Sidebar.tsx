@@ -17,6 +17,18 @@ export type SidebarActive =
   | 'admin-members'
   | 'admin-recruit';
 
+// 라우팅 시작 시점(routeChangeStart)에 목적지 url만으로 활성 탭을 미리 계산하기 위한 매핑
+export const PATHNAME_TO_ACTIVE: Record<string, SidebarActive> = {
+  '/mypage': 'home',
+  '/mypage/attendance': 'attendance',
+  '/mypage/assignment': 'assignment',
+  '/mypage/admin/landing': 'admin-landing',
+  '/mypage/admin/about': 'admin-about',
+  '/mypage/admin/blog': 'admin-blog',
+  '/mypage/admin/members': 'admin-members',
+  '/mypage/admin/recruitment': 'admin-recruit',
+};
+
 const Sidebar = ({ active, isAdmin = false }: { active: SidebarActive; isAdmin?: boolean }) => {
   const router = useRouter();
   const isAdminSection = active.startsWith('admin-');

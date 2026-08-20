@@ -5,7 +5,7 @@ import styled from 'styled-components';
 
 import { UserProfile } from '@@types/request';
 import LogoutButton from '@mypage/component/LogoutButton';
-import Sidebar, { SidebarActive } from '@mypage/component/Sidebar';
+import Sidebar, { PATHNAME_TO_ACTIVE, SidebarActive } from '@mypage/component/Sidebar';
 import PageLoadingGate from '@common/pageGate/PageLoadingGate';
 import { IcChevronRight } from '@assets/svg';
 import { getUserProfile } from 'src/apis/account';
@@ -48,9 +48,18 @@ const MyPageShell = ({
   const showAdminMenu = isAdmin ?? (!!userProfile && canManageSitePages(userProfile.role));
 
   const [isRouting, setIsRouting] = useState(false);
+  // 목적지 페이지 컴포넌트가 완전히 교체되기 전에도, 클릭한 목적지 기준으로 사이드바 활성탭을 바로 반영하기 위한 값
+  const [pendingActive, setPendingActive] = useState<SidebarActive | null>(null);
   useEffect(() => {
-    const start = (url: string) => setIsRouting(url.startsWith('/mypage'));
-    const end = () => setIsRouting(false);
+    const start = (url: string) => {
+      setIsRouting(url.startsWith('/mypage'));
+      const pathname = url.split('?')[0].split('#')[0];
+      setPendingActive(PATHNAME_TO_ACTIVE[pathname] ?? null);
+    };
+    const end = () => {
+      setIsRouting(false);
+      setPendingActive(null);
+    };
 
     Router.events.on('routeChangeStart', start);
     Router.events.on('routeChangeComplete', end);
@@ -63,6 +72,8 @@ const MyPageShell = ({
     };
   }, []);
 
+  const displayedActive = pendingActive ?? active;
+
   return (
     <Wrapper>
       <Header>
@@ -73,12 +84,12 @@ const MyPageShell = ({
         <Breadcrumb aria-label="현재 위치">
           <span>마이페이지</span>
           <IcChevronRight width={16} height={16} aria-hidden />
-          <span>{BREADCRUMB_LABEL[active]}</span>
+          <span>{BREADCRUMB_LABEL[displayedActive]}</span>
         </Breadcrumb>
       </Header>
       <Content>
         <SidebarSlot>
-          <Sidebar active={active} isAdmin={showAdminMenu} />
+          <Sidebar active={displayedActive} isAdmin={showAdminMenu} />
         </SidebarSlot>
         <Main>{isRouting ? <PageLoadingGate /> : children}</Main>
       </Content>
