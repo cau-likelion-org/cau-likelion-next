@@ -142,6 +142,7 @@ const AssignmentSubmit = () => {
       setRetryIds(failedIds);
       return;
     }
+    sessionStorage.setItem('assignmentSubmitted', '1');
     handleClose();
   };
 
