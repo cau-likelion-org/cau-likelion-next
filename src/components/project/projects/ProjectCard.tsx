@@ -68,7 +68,7 @@ const HoverText = styled.p`
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  ${typographyCss(Typography.heading1.bold)}
+  ${typographyCss(Typography.headline1.bold)}
 `;
 
 const HoverOverlay = styled.div`
@@ -102,7 +102,7 @@ const AwardText = styled.p`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  ${typographyCss(Typography.heading1.bold)}
+  ${typographyCss(Typography.headline1.bold)}
 `;
 
 const Thumbnail = styled.div`

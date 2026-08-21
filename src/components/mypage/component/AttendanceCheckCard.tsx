@@ -130,6 +130,10 @@ const Wrapper = styled.div<{ $active: boolean }>`
   ${media.lg} {
     width: 520px;
   }
+
+  ${media.xl} {
+    flex-grow: 1;
+  }
 `;
 
 const Title = styled.p`

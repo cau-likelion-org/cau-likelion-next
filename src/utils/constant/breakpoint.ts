@@ -19,10 +19,11 @@ export const media = {
 // 콘텐츠 좌우 여백
 export const ContainerPadding = 20;
 
+export const ContainerPaddingXl = 102;
+
 // 좌우 패딩을 포함한 값
 export const ContainerMaxWidth = {
   lg: 1100,
-  xl: 1440,
 } as const;
 
 export const containerCss = `
@@ -35,6 +36,8 @@ export const containerCss = `
     max-width: ${ContainerMaxWidth.lg}px;
   }
   ${media.xl} {
-    max-width: ${ContainerMaxWidth.xl}px;
+    max-width: none;
+    padding-left: ${ContainerPaddingXl}px;
+    padding-right: ${ContainerPaddingXl}px;
   }
 `;

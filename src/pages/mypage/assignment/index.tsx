@@ -61,7 +61,7 @@ const groupByDeadline = (assignments: AssignmentSummary[]) => {
 const resolveActionLabel = (assignments: AssignmentSummary[]) => {
   const submittable = assignments.filter((assignment) => canSubmitAssignment(assignment.status, assignment.endDate));
   if (submittable.length === 0) return undefined;
-  return submittable.every((assignment) => !assignment.submittedAt) ? '제출하기' : '수정하기';
+  return submittable.every((assignment) => !assignment.submittedAt) ? '제출하기' : '재제출하기';
 };
 
 const MyPageAssignment = () => {
@@ -87,13 +87,16 @@ const MyPageAssignment = () => {
     router.replace('/mypage');
   }, [userProfile?.role, router]);
 
-  // 과제 생성 완료 후 넘어오면 토스트 표시
+  // 과제 생성/제출 완료 후 넘어오면 토스트 표시
   const [toastMessage, setToastMessage] = useState('');
   useEffect(() => {
     const createdWeek = sessionStorage.getItem('assignmentCreatedWeek');
-    if (!createdWeek) return;
+    const isSubmitted = sessionStorage.getItem('assignmentSubmitted');
+    if (!createdWeek && !isSubmitted) return;
     sessionStorage.removeItem('assignmentCreatedWeek');
-    const frame = requestAnimationFrame(() => setToastMessage(`${createdWeek}주차 과제가 생성되었습니다.`));
+    sessionStorage.removeItem('assignmentSubmitted');
+    const message = createdWeek ? `${createdWeek}주차 과제가 생성되었습니다.` : '제출이 완료되었습니다.';
+    const frame = requestAnimationFrame(() => setToastMessage(message));
     return () => cancelAnimationFrame(frame);
   }, []);
 

@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 import { IcKakaotalk, IcInstagram, IcEmail } from '@assets/svg';
 import { BackgroundLight, Label, Line } from '@utils/constant/color';
-import { media } from '@utils/constant/breakpoint';
+import { ContainerPaddingXl, media } from '@utils/constant/breakpoint';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import LikelionCAULogo from 'src/assets/svg/logo/logo-likelion-chungang.svg';
 
@@ -86,6 +86,12 @@ const Container = styled.div`
 
   ${media.md} {
     padding-bottom: 24px;
+  }
+
+  ${media.xl} {
+    max-width: none;
+    padding-left: ${ContainerPaddingXl}px;
+    padding-right: ${ContainerPaddingXl}px;
   }
 `;
 

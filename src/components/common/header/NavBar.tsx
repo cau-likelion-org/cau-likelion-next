@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Button from '@common/button/Button';
 import { Label, Line } from '@utils/constant/color';
-import { ContainerMaxWidth, media } from '@utils/constant/breakpoint';
+import { ContainerMaxWidth, ContainerPaddingXl, media } from '@utils/constant/breakpoint';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -112,7 +112,8 @@ const Content = styled.div`
   padding: 14px 20px;
 
   ${media.xl} {
-    max-width: ${ContainerMaxWidth.xl}px;
+    max-width: none;
+    padding: 14px ${ContainerPaddingXl}px;
   }
 `;
 

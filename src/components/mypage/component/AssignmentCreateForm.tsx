@@ -17,7 +17,11 @@ import { BackgroundWhite, Fill, Label, Line, Material, Orange, State } from '@ut
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { containerCss } from '@utils/constant/breakpoint';
 
-const TITLE_MAX = 12;
+// 한글이 하나라도 섞이면 16자, 순수 영문·숫자면 20자 (모두 공백 포함) — 프로젝트 서비스명과 동일한 규칙
+const TITLE_MAX_KO = 16;
+const TITLE_MAX_EN = 20;
+const HANGUL_REGEX = /[ㄱ-ㅎㅏ-ㅣ가-힣]/;
+const getTitleMax = (value: string) => (HANGUL_REGEX.test(value) ? TITLE_MAX_KO : TITLE_MAX_EN);
 const DETAIL_MAX = 300;
 
 const SUBMIT_OPTIONS = ['파일첨부', '링크첨부'];
@@ -73,9 +77,23 @@ const AssignmentCreateForm = ({
   const addDraft = () => setDrafts((prev) => [...prev, emptyDraft()]);
   const removeDraft = (index: number) => setDrafts((prev) => prev.filter((_, i) => i !== index));
 
+  // 영문만 있을 땐 20자지만 한글이 섞이는 순간 한도가 16자로 줄어든다. 한도를 넘기는 입력은 막되,
+  // 이미 입력된 글자를 잘라내지는 않는다(지우는 방향은 항상 허용).
+  const handleTitleChange = (index: number, next: string) => {
+    const prev = drafts[index].title;
+    if (next.length > prev.length && next.length > getTitleMax(next)) return;
+    updateDraft(index, { title: next });
+  };
+
   const canSubmit =
     !isUnfilled(week) &&
-    drafts.every((draft) => !isUnfilled(draft.title) && !isUnfilled(draft.detail) && draft.endDate);
+    drafts.every(
+      (draft) =>
+        !isUnfilled(draft.title) &&
+        draft.title.length <= getTitleMax(draft.title) &&
+        !isUnfilled(draft.detail) &&
+        draft.endDate,
+    );
 
   // 이탈 시 경고: 생성은 입력한 내용이 있으면, 수정은 처음 값에서 바뀌었으면
   const [initialSnapshot, setInitialSnapshot] = useState(() => JSON.stringify(initialDrafts ?? []));
@@ -212,17 +230,23 @@ const AssignmentCreateForm = ({
               </FieldHeadingLarge>
               <CompactTextarea
                 resize="fixed"
-                placeholder="메시지를 입력해 주세요."
-                maxLength={TITLE_MAX}
+                placeholder={`텍스트 입력(국문 포함 ${TITLE_MAX_KO}자/영문 ${TITLE_MAX_EN}자)`}
+                maxLength={getTitleMax(draft.title)}
                 value={draft.title}
-                onChange={(event) => updateDraft(index, { title: event.target.value })}
-                status={showErrors && isUnfilled(draft.title) ? 'negative' : 'normal'}
-                description={showErrors && isUnfilled(draft.title) ? '과제 이름을 입력해 주세요.' : undefined}
-                bottomTrailingContent={
-                  <CharCount>
-                    {draft.title.length}/{TITLE_MAX}
-                  </CharCount>
+                onChange={(event) => handleTitleChange(index, event.target.value)}
+                status={
+                  showErrors && (isUnfilled(draft.title) || draft.title.length > getTitleMax(draft.title))
+                    ? 'negative'
+                    : 'normal'
                 }
+                description={
+                  showErrors && isUnfilled(draft.title)
+                    ? '과제 이름을 입력해 주세요.'
+                    : showErrors && draft.title.length > getTitleMax(draft.title)
+                      ? `${getTitleMax(draft.title)}자 이내로 입력해 주세요.`
+                      : undefined
+                }
+                bottomTrailingContent={<CharCount>{draft.title.length}</CharCount>}
               />
             </Field>
 

@@ -578,11 +578,7 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
           onChange={handleTitleChange}
           resize="fixed"
           maxLength={maxTitleLength}
-          bottomTrailingContent={
-            <CharCount>
-              {title.length}/{maxTitleLength}
-            </CharCount>
-          }
+          bottomTrailingContent={<CharCount>{title.length}</CharCount>}
           status={showErrors && (isUnfilled(title) || isTitleOverflow) ? 'negative' : 'normal'}
           description={
             showErrors && isUnfilled(title)

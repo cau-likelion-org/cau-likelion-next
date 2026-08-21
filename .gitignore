@@ -18,6 +18,9 @@
 # storybook
 /storybook-static
 
+# editor
+.vscode/
+
 # misc
 .DS_Store
 *.pem

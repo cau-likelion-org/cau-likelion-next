@@ -153,7 +153,7 @@ const AssignmentSubmitCard = ({
               placeholder="제출물에 대한 설명을 입력하세요."
               maxLength={DESCRIPTION_MAX_LENGTH}
               value={description}
-              onChange={(event) => setDescription(event.target.value)}
+              onChange={(event) => setDescription(event.target.value.slice(0, DESCRIPTION_MAX_LENGTH))}
               bottomTrailingContent={
                 <CharCount>
                   {description.length}/{DESCRIPTION_MAX_LENGTH}

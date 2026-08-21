@@ -171,6 +171,10 @@ const Wrapper = styled.div`
   ${media.lg} {
     width: 520px;
   }
+
+  ${media.xl} {
+    flex-grow: 1;
+  }
   padding: 20px;
   border-radius: 14px;
   border: 1px solid ${Line.subtle};

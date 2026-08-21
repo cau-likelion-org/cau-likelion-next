@@ -38,6 +38,10 @@ const Wrapper = styled.div`
   ${media.lg} {
     width: 340px;
   }
+
+  ${media.xl} {
+    flex-grow: 1;
+  }
 `;
 
 // Figma: 프로필 뱃지는 Orange/O75 솔리드 배경 (과제표의 8% 틴트 뱃지와 다름)
