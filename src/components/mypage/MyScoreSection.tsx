@@ -140,6 +140,10 @@ const StatCardWrapper = styled.div`
   ${media.xs} {
     width: 100%;
   }
+
+  ${media.xl} {
+    flex-grow: 1;
+  }
 `;
 
 const StatCardHeader = styled.div`
