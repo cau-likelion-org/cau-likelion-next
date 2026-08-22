@@ -27,6 +27,7 @@ import {
   RecruitmentTextResponse,
 } from 'src/apis/recruitment';
 import useTokenStore from 'src/store/useTokenStore';
+import { COMMON_PART_NAME } from '@utils/constant';
 import { isAdminRole } from '@utils/index';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -60,6 +61,8 @@ const MyPageAdminRecruitment = () => {
   const { data: interestPartOptions } = useQuery({
     queryKey: ['recruitmentInterestParts'],
     queryFn: () => getSubscriberInterestParts(tokenState),
+    // 신청 폼의 "공통" 노출 버그로 과거에 "공통"을 관심 파트로 신청한 기록이 남아있을 수 있어 방어적으로 제외
+    select: (parts) => parts.filter((part) => part !== COMMON_PART_NAME),
     enabled: isAuthorized,
   });
 
