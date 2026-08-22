@@ -8,7 +8,7 @@ import CharCount from '@common/charCount/CharCount';
 import AddCardButton from '@mypage/admin/component/AddCardButton';
 import RemoveCardButton from '@mypage/admin/component/RemoveCardButton';
 import { isUnfilled } from '@utils/index';
-import { BackgroundWhite, Black, Label, Line, State } from '@utils/constant/color';
+import { BackgroundWhite, Black, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { createId } from './utils';
 
@@ -29,7 +29,7 @@ export interface CurriculumTrackItems {
 const isCurriculumWeekInvalid = (week: CurriculumWeekItem) => isUnfilled(week.week) || isUnfilled(week.title);
 
 export const isCurriculumTracksInvalid = (tracks: CurriculumTrackItems[]) =>
-  tracks.some((track) => track.weeks.length === 0 || track.weeks.some(isCurriculumWeekInvalid));
+  tracks.some((track) => track.weeks.some(isCurriculumWeekInvalid));
 
 const createEmptyWeek = (): CurriculumWeekItem => ({ id: createId(), week: '', title: '', description: '' });
 
@@ -120,7 +120,6 @@ const CurriculumSection = ({
           )}
         </Card>
       ))}
-      {showErrors && activeTrack.weeks.length === 0 && <ErrorText>이 트랙에 주차를 하나 이상 추가해 주세요.</ErrorText>}
       {!disabled && <AddCardButton onClick={addWeek} ariaLabel="커리큘럼 주차 추가" />}
     </Section>
   );
@@ -178,10 +177,4 @@ const ButtonRow = styled.div`
   display: flex;
   justify-content: flex-end;
   width: 100%;
-`;
-
-const ErrorText = styled.p`
-  margin: 0;
-  color: ${State.error};
-  ${typographyCss(Typography.caption1.regular)}
 `;
