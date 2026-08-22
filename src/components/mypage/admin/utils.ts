@@ -36,9 +36,17 @@ export const syncListSection = async <TLocal extends { id: string }, TRequest, T
     const original = originalById.get(item.id);
     return !original || JSON.stringify(toLocal(original)) !== JSON.stringify(item);
   });
-  const upserts = changedItems.map((item) =>
-    isNewItemId(item.id) ? create(toRequest(item)) : update(Number(item.id), toRequest(item)),
-  );
+  const newItems = changedItems.filter((item) => isNewItemId(item.id));
+  const updates = changedItems
+    .filter((item) => !isNewItemId(item.id))
+    .map((item) => update(Number(item.id), toRequest(item)));
 
-  await Promise.all([...deletions, ...upserts]);
+  // 신규 항목은 서버가 매기는 id(=생성 순서)가 입력한 순서와 일치해야 해서 동시 요청 대신 순차 실행
+  const createSequentially = async () => {
+    for (const item of newItems) {
+      await create(toRequest(item));
+    }
+  };
+
+  await Promise.all([...deletions, ...updates, createSequentially()]);
 };
