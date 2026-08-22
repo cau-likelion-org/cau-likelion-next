@@ -13,7 +13,7 @@ import { Typography, typographyCss } from '@utils/constant/typography';
 import { MOBILE } from '@home/common/responsive';
 
 const PAGE_NAVIGATION_HREF: Record<PageNavigation, string> = {
-  INTRO_CURRICULUM: '/about',
+  INTRO_CURRICULUM: '/about#curriculum',
   PROJECT: '/project',
   GALLERY_SESSION: '/gallery?tab=session',
   GALLERY_PROJECT: '/gallery?tab=project',
@@ -29,6 +29,12 @@ const ActivitySection = () => {
   } = useQuery({ queryKey: ['activities'], queryFn: () => getActivities() });
 
   const [expandedId, setExpandedId] = useState<number | null>(null);
+
+  // 해시가 있는 링크는 이동 후 직접 해당 섹션으로 스크롤하므로, Next의 기본 top 스크롤은 꺼둔다
+  const handleNavigate = (pageNavigation: PageNavigation) => {
+    const href = PAGE_NAVIGATION_HREF[pageNavigation];
+    router.push(href, undefined, { scroll: !href.includes('#') });
+  };
 
   return (
     <Wrapper>
@@ -61,7 +67,7 @@ const ActivitySection = () => {
                       variant="solid"
                       color="primary"
                       trailingIcon={<ChevronRightIcon />}
-                      onClick={() => router.push(PAGE_NAVIGATION_HREF[pageNavigation])}
+                      onClick={() => handleNavigate(pageNavigation)}
                     >
                       {buttonName}
                     </Button>
@@ -72,7 +78,7 @@ const ActivitySection = () => {
                       variant="solid"
                       color="primary"
                       trailingIcon={<ChevronRightIcon />}
-                      onClick={() => router.push(PAGE_NAVIGATION_HREF[pageNavigation])}
+                      onClick={() => handleNavigate(pageNavigation)}
                     >
                       {buttonName}
                     </Button>
