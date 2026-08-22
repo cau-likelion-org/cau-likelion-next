@@ -140,7 +140,8 @@ const TextGroup = styled(PageHeader)`
   }
 
   ${media.xs} {
-    padding-top: 40px;
+    padding-top: 52px;
+    gap: 22px;
   }
 `;
 
