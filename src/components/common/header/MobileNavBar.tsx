@@ -26,17 +26,11 @@ const MobileNavBar = () => {
           <ChungAngLogo width={168} height={20} />
         </Link>
         <RightSection>
-          {/* 메뉴가 열리면 같은 버튼이 패널 안에 있으므로 바에서는 숨긴다 (Figma: 로고 + 닫기만) */}
-          {!isModalOn &&
-            (isLogin ? (
-              <Button variant="solid" color="assistive" size="small" onClick={() => router.push('/mypage')}>
-                마이페이지
-              </Button>
-            ) : (
-              <Button variant="solid" color="primary" size="small" onClick={() => router.push('/login')}>
-                로그인
-              </Button>
-            ))}
+          {!isModalOn && (
+            <Button size="small" onClick={() => router.push(isLogin ? '/mypage' : '/login')}>
+              {isLogin ? '마이페이지' : '로그인'}
+            </Button>
+          )}
           <MenuButton
             type="button"
             aria-label={isModalOn ? '메뉴 닫기' : '메뉴 열기'}
