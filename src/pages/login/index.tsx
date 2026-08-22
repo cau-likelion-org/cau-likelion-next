@@ -135,6 +135,10 @@ const TextGroup = styled(PageHeader)`
   gap: 24px;
   padding-bottom: 52px;
 
+  p:first-of-type {
+    ${typographyCss(Typography.title2.bold)}
+  }
+
   ${media.xs} {
     padding-top: 40px;
   }
