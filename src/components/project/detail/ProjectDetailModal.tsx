@@ -1,7 +1,6 @@
 import { UserProfile } from '@@types/request';
 import { useQuery } from '@tanstack/react-query';
-import Button from '@common/button/Button';
-import { IcChevronLeft } from '@assets/svg';
+import BackHeader from '@common/header/BackHeader';
 import { AccentTint, Label, Material, Orange } from '@utils/constant/color';
 import { media } from '@utils/constant/breakpoint';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -64,16 +63,7 @@ const ProjectDetailModal = ({ projectId, staticData, onClose }: ProjectDetailMod
       <ModalCard onClick={(event) => event.stopPropagation()}>
         {/* 모바일은 모달이 화면을 덮어 배경 클릭으로 닫을 수 없으므로, 로딩 중에도 닫기 버튼을 노출한다 */}
         <MobileHeader>
-          <Button
-            variant="outlined"
-            color="assistive"
-            size="small"
-            leadingIcon={<IcChevronLeft width={16} height={16} />}
-            onClick={onClose}
-          >
-            닫기
-          </Button>
-          <MobileTitle>프로젝트 상세보기</MobileTitle>
+          <BackHeader label="프로젝트 목록으로 돌아가기" onClick={onClose} />
         </MobileHeader>
         {isError ? (
           <LoadingWrapper>
@@ -136,6 +126,7 @@ const Backdrop = styled.div`
   background-color: ${Material.dimmer};
 
   @media (max-width: 700px) {
+    top: 60px;
     padding: 0;
   }
 `;
@@ -175,18 +166,9 @@ const MobileHeader = styled.div`
   display: none;
 
   @media (max-width: 700px) {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    padding: 52px 20px;
+    display: block;
+    padding: 0 20px;
   }
-`;
-
-const MobileTitle = styled.p`
-  margin: 0;
-  color: ${Orange.o500};
-  ${typographyCss(Typography.title2.bold)}
 `;
 
 const LoadingWrapper = styled.div`
