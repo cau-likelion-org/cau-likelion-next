@@ -1,7 +1,15 @@
 html {
-  -webkit-text-size-adjust​: ​none​;
+  -webkit-text-size-adjust: none;
+  text-size-adjust: none;
   width: 100%;
   margin: 0;
+  font-family:
+    'Pretendard',
+    -apple-system,
+    BlinkMacSystemFont,
+    system-ui,
+    'Apple SD Gothic Neo',
+    sans-serif;
   font-size: 62.5%;
   overflow: scroll;
   scroll-snap-type: y mandatory;
@@ -75,6 +83,13 @@ body {
 a {
   color: inherit;
   text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
 }
 
 * {
