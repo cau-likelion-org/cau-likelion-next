@@ -35,6 +35,7 @@ const CurriculumSection = () => {
 
   const weeks = (curriculums ?? [])
     .filter((curriculum) => curriculum.trackId === activeTrack?.id)
+    .sort((a, b) => a.id - b.id)
     .map((curriculum) => ({
       key: String(curriculum.id),
       badge: curriculum.week,

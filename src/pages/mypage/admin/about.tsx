@@ -52,6 +52,7 @@ const buildCurriculumTracks = (tracks: TrackResponse[], curriculums: CurriculumR
     label: track.koName,
     weeks: curriculums
       .filter((curriculum) => curriculum.trackId === track.id)
+      .sort((a, b) => a.id - b.id)
       .map((curriculum) => ({
         id: String(curriculum.id),
         week: curriculum.week,
