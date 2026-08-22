@@ -18,7 +18,7 @@ import useListboxSelect from 'src/hooks/useListboxSelect';
 import useTokenStore from 'src/store/useTokenStore';
 import { UploadDomain, uploadFile } from 'src/apis/upload';
 import { getGenerations } from 'src/apis/account';
-import { COMMON_PART_NAME, NUMERIC_ONLY_REGEX } from '@utils/constant';
+import { NUMERIC_ONLY_REGEX } from '@utils/constant';
 import { BackgroundColor, Fill, Label, Line, Material, Orange, State } from '@utils/constant/color';
 import { isUnfilled } from '@utils/index';
 import { resizeImageFile } from '@utils/resizeImage';
@@ -157,9 +157,7 @@ const PostUploadModal = ({
 
   const categoryOptions =
     postType === 'session'
-      ? matchedGeneration
-        ? [COMMON_PART_NAME, ...matchedGeneration.parts.map((part) => part.name)]
-        : []
+      ? (matchedGeneration?.parts.map((part) => part.name) ?? [])
       : (categoryConfig?.options ?? []);
   const categoryOptionsKey = categoryOptions.join(' ');
   const [prevCategoryOptionsKey, setPrevCategoryOptionsKey] = useState(categoryOptionsKey);
