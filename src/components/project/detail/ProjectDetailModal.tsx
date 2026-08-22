@@ -94,7 +94,7 @@ const ProjectDetailModal = ({ projectId, staticData, onClose }: ProjectDetailMod
                   <Badge>{project.generationNumber}기</Badge>
                   <Badge>{PROJECT_CATEGORY_LABEL[project.category]}</Badge>
                 </BadgeRow>
-                {project.summary && <Description>{project.summary.replace(/\\n/g, '\n')}</Description>}
+                {project.summary && <Summary>{project.summary.replace(/\\n/g, '\n')}</Summary>}
               </TextBlock>
               <PanelRow>
                 <ProjectDetailTeamPanel teamName={project.teamName} members={project.members} />
@@ -223,6 +223,10 @@ const Description = styled.p`
   color: ${Label.normal};
   white-space: pre-line;
   ${typographyCss(Typography.heading2.medium)}
+`;
+
+const Summary = styled(Description)`
+  ${typographyCss(Typography.headline1.medium)}
 `;
 
 const BadgeRow = styled.div`
