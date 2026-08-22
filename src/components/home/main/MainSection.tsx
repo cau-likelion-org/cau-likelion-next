@@ -45,7 +45,7 @@ const MainSection = () => {
 
         <DesktopGroup>
           <Description>{DESCRIPTION}</Description>
-          <Button
+          <BlurButton
             variant="solid"
             color="assistive"
             size="large"
@@ -53,12 +53,12 @@ const MainSection = () => {
             onClick={openRecruitModal}
           >
             {BUTTON_LABEL}
-          </Button>
+          </BlurButton>
         </DesktopGroup>
 
         <MobileGroup>
           <Description>{MOBILE_DESCRIPTION}</Description>
-          <Button
+          <BlurButton
             variant="solid"
             color="assistive"
             size="small"
@@ -66,7 +66,7 @@ const MainSection = () => {
             onClick={openRecruitModal}
           >
             {BUTTON_LABEL}
-          </Button>
+          </BlurButton>
         </MobileGroup>
       </Content>
     </Wrapper>
@@ -206,4 +206,9 @@ const MobileGroup = styled.div`
     gap: 22px;
     width: 100%;
   }
+`;
+
+const BlurButton = styled(Button)`
+  backdrop-filter: blur(32px);
+  -webkit-backdrop-filter: blur(32px);
 `;
