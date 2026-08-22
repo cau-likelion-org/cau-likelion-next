@@ -121,7 +121,7 @@ const Wrapper = styled.div<{ $open: boolean }>`
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 9998;
+  z-index: 10001;
   overflow-y: auto;
   background-color: ${BackgroundColor};
   opacity: ${(props) => (props.$open ? 1 : 0)};

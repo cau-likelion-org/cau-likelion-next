@@ -258,7 +258,7 @@ const RecruitmentComposeModal = ({
               onClick={mode === 'create' ? () => setPendingCancelAction(() => onClose) : onClose}
               disabled={isSubmitting}
             >
-              취소
+              닫기
             </Button>
             <Button size="large" onClick={handleSubmit} loading={isSubmitting}>
               {submitLabel}

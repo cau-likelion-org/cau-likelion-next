@@ -8,6 +8,7 @@ import IcCheck from './icon/ic-check.svg';
 import IcChevronDown from './icon/ic-chevron-down.svg';
 import IcChevronDownThick from './icon/ic-chevron-down-thick.svg';
 import IcChevronLeft from './icon/ic-chevron-left.svg';
+import IcChevronLeftThick from './icon/ic-chevron-left-thick.svg';
 import IcChevronRight from './icon/ic-chevron-right.svg';
 import IcChevronUpThick from './icon/ic-chevron-up-thick.svg';
 import IcCircleCheck from './icon/ic-circle-check.svg';
@@ -47,6 +48,7 @@ export {
   IcChevronDown,
   IcChevronDownThick,
   IcChevronLeft,
+  IcChevronLeftThick,
   IcChevronRight,
   IcChevronUpThick,
   IcCircleCheck,

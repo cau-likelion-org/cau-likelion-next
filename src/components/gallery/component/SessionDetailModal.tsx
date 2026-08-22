@@ -21,7 +21,7 @@ const SessionDetailModal = ({
 }: SessionDetailModalProps) => (
   <PostDetailModal
     title={title}
-    headerTitle="세션 상세보기"
+    headerTitle="갤러리 목록으로 돌아가기"
     badges={badges}
     description={description}
     date={date}

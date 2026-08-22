@@ -1,15 +1,14 @@
 import { useId, useRef } from 'react';
 import styled from 'styled-components';
 
-import Button from '@common/button/Button';
+import BackHeader from '@common/header/BackHeader';
 import ContentBadge from '@common/badge/ContentBadge';
 import Chip from '@common/chip/Chip';
 import TextButton from '@common/textButton/TextButton';
 import ProjectDetailCarousel from '@project/detail/ProjectDetailCarousel';
 import IcLineHorizontal from '@assets/svg/icon/ic-line-horizontal.svg';
-import { IcChevronLeft } from '@assets/svg';
 import useFocusTrap from 'src/hooks/useFocusTrap';
-import { BackgroundColor, Label, Material, Orange } from '@utils/constant/color';
+import { BackgroundColor, Label, Material } from '@utils/constant/color';
 import { media } from '@utils/constant/breakpoint';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
@@ -49,16 +48,7 @@ const PostDetailModal = ({
         onClick={(event) => event.stopPropagation()}
       >
         <MobileHeader>
-          <Button
-            variant="outlined"
-            color="assistive"
-            size="small"
-            leadingIcon={<IcChevronLeft width={16} height={16} />}
-            onClick={onClose}
-          >
-            닫기
-          </Button>
-          <MobileTitle>{headerTitle}</MobileTitle>
+          <BackHeader label={headerTitle} onClick={onClose} />
         </MobileHeader>
         <Information>
           <ImageGroup>
@@ -116,6 +106,10 @@ const Backdrop = styled.div`
   justify-content: center;
   background-color: ${Material.dimmer};
   z-index: 9999;
+
+  @media (max-width: 700px) {
+    top: 60px;
+  }
 `;
 
 const Modal = styled.div`
@@ -152,19 +146,10 @@ const MobileHeader = styled.div`
   display: none;
 
   @media (max-width: 700px) {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
+    display: block;
     width: 100%;
-    padding: 52px 20px;
+    padding: 0 20px;
   }
-`;
-
-const MobileTitle = styled.p`
-  margin: 0;
-  color: ${Orange.o500};
-  ${typographyCss(Typography.title2.bold)}
 `;
 
 const Information = styled.div`

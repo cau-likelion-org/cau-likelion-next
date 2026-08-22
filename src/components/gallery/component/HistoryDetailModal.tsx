@@ -21,7 +21,7 @@ const HistoryDetailModal = ({
 }: HistoryDetailModalProps) => (
   <PostDetailModal
     title={title}
-    headerTitle="추억 상세보기"
+    headerTitle="갤러리 목록으로 돌아가기"
     badges={badges}
     description={description}
     date={date}
