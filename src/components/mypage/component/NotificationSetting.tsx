@@ -137,12 +137,11 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 4px;
   width: 100%;
 `;
 
 const SectionLabel = styled.p`
-  margin: 0;
+  margin: 0 0 4px;
   padding: 8px 0;
   color: ${Label.strong};
   ${typographyCss(Typography.label1Normal.medium)}
@@ -200,7 +199,7 @@ const Thumb = styled.span`
 `;
 
 const Guide = styled.p<{ $align: GuideAlign }>`
-  margin: 0;
+  margin: 14px 0 0;
   width: 100%;
   text-align: ${(props) => props.$align};
   white-space: ${(props) => (props.$align === 'center' ? 'pre-line' : 'normal')};
