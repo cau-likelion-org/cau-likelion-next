@@ -6,8 +6,10 @@ import IcCaretDown from './icon/ic-caret-down.svg';
 import IcCaretUp from './icon/ic-caret-up.svg';
 import IcCheck from './icon/ic-check.svg';
 import IcChevronDown from './icon/ic-chevron-down.svg';
+import IcChevronDownThick from './icon/ic-chevron-down-thick.svg';
 import IcChevronLeft from './icon/ic-chevron-left.svg';
 import IcChevronRight from './icon/ic-chevron-right.svg';
+import IcChevronUpThick from './icon/ic-chevron-up-thick.svg';
 import IcCircleCheck from './icon/ic-circle-check.svg';
 import IcCircleClose from './icon/ic-circle-close.svg';
 import IcCircleCloseOutline from './icon/ic-circle-close-outline.svg';
@@ -43,8 +45,10 @@ export {
   IcCaretUp,
   IcCheck,
   IcChevronDown,
+  IcChevronDownThick,
   IcChevronLeft,
   IcChevronRight,
+  IcChevronUpThick,
   IcCircleCheck,
   IcCircleClose,
   IcCircleCloseOutline,

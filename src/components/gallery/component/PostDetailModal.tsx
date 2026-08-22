@@ -209,7 +209,7 @@ const BadgeRow = styled.div`
 `;
 
 const Description = styled.p`
-  ${typographyCss(Typography.heading2.medium)}
+  ${typographyCss(Typography.headline1.regular)}
   color: ${Label.normal};
   margin: 0;
   white-space: pre-line;

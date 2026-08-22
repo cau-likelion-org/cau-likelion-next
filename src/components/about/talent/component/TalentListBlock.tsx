@@ -44,7 +44,7 @@ const Divider = styled.hr`
   margin: 0;
   width: 100%;
   border: none;
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  border-top: 1px solid ${Orange.o500};
 `;
 
 const List = styled.ul`

@@ -119,9 +119,9 @@ const WeeklyAssignmentCard = ({ group }: { group: WeeklyAssignmentGroup }) => {
                 {card.actionLabel && (
                   <>
                     <DesktopAction>
-                      <Button size="large" onClick={() => handleOpenDetail(card)}>
+                      <ActionButton size="medium" onClick={() => handleOpenDetail(card)}>
                         {card.actionLabel}
-                      </Button>
+                      </ActionButton>
                     </DesktopAction>
                     <MobileAction>
                       <Button size="small" onClick={() => handleOpenDetail(card)}>
@@ -285,6 +285,11 @@ const FooterRow = styled.div`
   ${media.xs} {
     margin-top: 6px;
   }
+`;
+
+const ActionButton = styled(Button)`
+  width: 93px;
+  white-space: nowrap;
 `;
 
 const DesktopAction = styled.div`

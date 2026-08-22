@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import styled from 'styled-components';
-import { MdKeyboardArrowDown, MdKeyboardArrowUp } from 'react-icons/md';
 
-import { BackgroundWhite, CoolNeutral, Label, Line, Orange } from '@utils/constant/color';
+import { IcChevronDownThick, IcChevronUpThick } from '@assets/svg';
+import { BackgroundWhite, Black, Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 export interface CurriculumWeek {
@@ -32,11 +32,7 @@ const WeekAccordion = ({ weeks }: WeekAccordionProps) => {
             <ItemHeader>
               <Badge expanded={expanded}>{week.badge}</Badge>
               <ItemTitle expanded={expanded}>{week.title}</ItemTitle>
-              {expanded ? (
-                <MdKeyboardArrowUp size={24} color="#ffffff" />
-              ) : (
-                <MdKeyboardArrowDown size={24} color={CoolNeutral.neutral70} />
-              )}
+              {expanded ? <ChevronUpIcon /> : <ChevronDownIcon />}
             </ItemHeader>
             {expanded && week.content && <ItemContent>{week.content}</ItemContent>}
           </Item>
@@ -77,6 +73,20 @@ const ItemHeader = styled.div`
   align-items: center;
   gap: 14px;
   width: 100%;
+`;
+
+const ChevronUpIcon = styled(IcChevronUpThick)`
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  color: ${Black.b0};
+`;
+
+const ChevronDownIcon = styled(IcChevronDownThick)`
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  color: ${Label.assistive};
 `;
 
 const Badge = styled.span<{ expanded: boolean }>`
