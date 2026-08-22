@@ -91,7 +91,7 @@ const ActivitySection = () => {
 export default ActivitySection;
 
 const Wrapper = styled.div`
-  width: 1440px;
+  width: 100%;
   padding: 80px 0;
   display: flex;
   justify-content: center;

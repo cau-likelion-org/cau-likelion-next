@@ -63,7 +63,7 @@ const IntroduceSection = () => {
 export default IntroduceSection;
 
 const Wrapper = styled.div`
-  width: 1440px;
+  width: 100%;
   padding: 60px 190px 80px 190px;
   background-color: ${Orange.o500};
   display: flex;
