@@ -12,7 +12,7 @@ import { toDateString } from '@utils/index';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 import BlogCard from './component/BlogCard';
-import { containerCss } from '@utils/constant/breakpoint';
+import { containerCss, media } from '@utils/constant/breakpoint';
 
 type FilterKey = 'generation' | 'category';
 
@@ -168,7 +168,11 @@ const Header = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 42px;
+  gap: 52px;
+
+  ${media.xs} {
+    gap: 32px;
+  }
 
   @media (max-width: 600px) {
     gap: 0;
@@ -177,7 +181,6 @@ const Header = styled.div`
 
 const Intro = styled(PageHeader)`
   gap: 24px;
-  padding-bottom: 22px;
 
   @media (max-width: 600px) {
     padding-top: 52px;
