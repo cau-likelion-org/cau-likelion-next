@@ -11,7 +11,7 @@ import useFocusTrap from 'src/hooks/useFocusTrap';
 import useListboxSelect from 'src/hooks/useListboxSelect';
 import { getAvailableParts, subscribeRecruitment } from 'src/apis/recruitment';
 import useRecruitModalStore from 'src/store/useRecruitModalStore';
-import { isUnfilled } from '@utils/index';
+import { excludeCommonPart, isUnfilled } from '@utils/index';
 import { BackgroundColor, Fill, Label, Material } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { MOBILE } from '@home/common/responsive';
@@ -36,11 +36,9 @@ const RecruitNotifyModal = ({ onClose }: { onClose: () => void }) => {
     queryKey: ['recruitment-available-parts'],
     queryFn: getAvailableParts,
   });
-  const departmentOptions = useMemo(() => availableParts?.map((part) => part.name) ?? [], [availableParts]);
-  const selectedPart = useMemo(
-    () => availableParts?.find((part) => part.name === department),
-    [availableParts, department],
-  );
+  const visibleParts = useMemo(() => excludeCommonPart(availableParts ?? []), [availableParts]);
+  const departmentOptions = useMemo(() => visibleParts.map((part) => part.name), [visibleParts]);
+  const selectedPart = useMemo(() => visibleParts.find((part) => part.name === department), [visibleParts, department]);
 
   const {
     listId: departmentListId,
