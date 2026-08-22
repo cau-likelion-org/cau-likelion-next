@@ -35,6 +35,11 @@ const MainSection = () => {
             <LogoX />
             <LogoCAU />
           </LogoRow>
+          <MobileLogoRow>
+            <LogoLikelion width={93.68} height={10.61} />
+            <LogoX width={7.79} height={7.79} />
+            <LogoCAU width={39.47} height={22.39} />
+          </MobileLogoRow>
           <Catchphrase />
         </TopGroup>
 
@@ -124,7 +129,7 @@ const Content = styled.div`
     left: auto;
     top: auto;
     width: 100%;
-    padding: 113px 20px 0;
+    padding: 76px 20px 0;
     gap: 22px;
   }
 `;
@@ -137,7 +142,7 @@ const TopGroup = styled.div`
 
   @media (max-width: ${MOBILE}px) {
     width: 100%;
-    gap: 0;
+    gap: 22px;
   }
 `;
 
@@ -148,6 +153,16 @@ const LogoRow = styled.div`
 
   @media (max-width: ${MOBILE}px) {
     display: none;
+  }
+`;
+
+const MobileLogoRow = styled.div`
+  display: none;
+
+  @media (max-width: ${MOBILE}px) {
+    display: flex;
+    align-items: center;
+    gap: 8.25px;
   }
 `;
 
