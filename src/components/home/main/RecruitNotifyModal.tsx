@@ -139,6 +139,22 @@ const RecruitNotifyModal = ({ onClose }: { onClose: () => void }) => {
             status={isEmailInvalid ? 'negative' : 'normal'}
             description={isEmailInvalid ? '이메일 형식이 맞지 않습니다' : undefined}
           />
+          <Promo>
+            <PromoText>
+              멋쟁이사자처럼 중앙대 공식 카카오톡 채널을
+              <MobileBreak /> 추가하면
+              <DesktopBreak /> 소식을 더 빠르게 받아볼 수 있어요.
+            </PromoText>
+            <Button
+              variant="solid"
+              color="assistive"
+              size="medium"
+              trailingIcon={<IcKakaotalk width={16} height={16} />}
+              onClick={() => window.open(KAKAO_CHANNEL_URL, '_blank', 'noopener noreferrer')}
+            >
+              카카오톡 채널 바로가기
+            </Button>
+          </Promo>
         </Information>
         <Actions>
           <Consent>이메일을 통한 모집 알림 수신에 동의합니다. (필수)</Consent>
@@ -157,20 +173,6 @@ const RecruitNotifyModal = ({ onClose }: { onClose: () => void }) => {
               알림 신청하기
             </Button>
           </ActionRow>
-          <Promo>
-            <PromoText>
-              멋쟁이사자처럼 중앙대 공식 카카오톡 채널을 추가하면 소식을 더 빠르게 받아볼 수 있어요.
-            </PromoText>
-            <Button
-              variant="solid"
-              color="assistive"
-              size="medium"
-              trailingIcon={<IcKakaotalk width={16} height={16} />}
-              onClick={() => window.open(KAKAO_CHANNEL_URL, '_blank', 'noopener noreferrer')}
-            >
-              카카오톡 채널 바로가기
-            </Button>
-          </Promo>
         </Actions>
       </Modal>
     </Backdrop>
@@ -303,4 +305,20 @@ const PromoText = styled.p`
   color: ${Label.alternative};
   text-align: center;
   margin: 0;
+`;
+
+const MobileBreak = styled.br`
+  display: none;
+
+  @media (max-width: ${MOBILE}px) {
+    display: inline;
+  }
+`;
+
+const DesktopBreak = styled.br`
+  display: inline;
+
+  @media (max-width: ${MOBILE}px) {
+    display: none;
+  }
 `;
