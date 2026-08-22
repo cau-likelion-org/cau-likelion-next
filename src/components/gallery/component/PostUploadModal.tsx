@@ -12,6 +12,7 @@ import CharCount from '@common/charCount/CharCount';
 import Toast from '@common/toast/Toast';
 import { IcAdd, IcCalendar, IcCircleExclamation, IcCloseCircle, IcLineHorizontal } from '@assets/svg';
 import useFocusTrap from 'src/hooks/useFocusTrap';
+import useScrollToFirstError from 'src/hooks/useScrollToFirstError';
 import useInput from 'src/hooks/useInput';
 import useListboxSelect from 'src/hooks/useListboxSelect';
 import useTokenStore from 'src/store/useTokenStore';
@@ -187,6 +188,7 @@ const PostUploadModal = ({
 
   const modalRef = useRef<HTMLDivElement>(null);
   useFocusTrap(modalRef, onClose);
+  const scrollToFirstError = useScrollToFirstError(modalRef);
   const modalAriaLabel = `${POST_TYPE_LABEL[postType]} ${mode === 'edit' ? '수정' : '추가'}`;
 
   const handleFileChange = async (index: number, event: ChangeEvent<HTMLInputElement>) => {
@@ -318,6 +320,7 @@ const PostUploadModal = ({
   const handleSubmit = async () => {
     if (hasError) {
       setShowErrors(true);
+      scrollToFirstError();
       return;
     }
     if (!onSubmit) {
@@ -721,6 +724,7 @@ const SingleDateInput = ({
         value={value}
         onChange={(event) => onChange(event.target.value)}
         aria-label={ariaLabel}
+        aria-invalid={invalid}
       />
     </DateInputWrapper>
   );

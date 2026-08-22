@@ -10,6 +10,7 @@ import { isUnfilled } from '@utils/index';
 import { BackgroundColor, Fill, Label, Line, Material, Orange, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import useFocusTrap from 'src/hooks/useFocusTrap';
+import useScrollToFirstError from 'src/hooks/useScrollToFirstError';
 
 export interface RecruitmentComposeForm {
   title: string;
@@ -61,6 +62,7 @@ const RecruitmentComposeModal = ({
   const recipientChipRowRef = useRef<HTMLDivElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
   useFocusTrap(modalRef, onClose);
+  const scrollToFirstError = useScrollToFirstError(modalRef);
 
   useEffect(() => {
     const el = recipientChipRowRef.current;
@@ -86,6 +88,7 @@ const RecruitmentComposeModal = ({
   const handleSubmit = () => {
     if (isInvalid) {
       setShowErrors(true);
+      scrollToFirstError();
       return;
     }
     onSubmit({
@@ -104,7 +107,11 @@ const RecruitmentComposeModal = ({
             <LargeHeading>
               발송 대상<LargeRequired>*</LargeRequired>
             </LargeHeading>
-            <RecipientBox $status={showErrors && recipients.length === 0 ? 'negative' : 'normal'}>
+            <RecipientBox
+              $status={showErrors && recipients.length === 0 ? 'negative' : 'normal'}
+              tabIndex={-1}
+              aria-invalid={showErrors && recipients.length === 0}
+            >
               <RecipientSummaryRow>
                 <AudiencePill type="button" onClick={onSelectAll}>
                   사전 알림 신청자 전체선택
@@ -195,6 +202,7 @@ const RecruitmentComposeModal = ({
                 <HiddenDateInput
                   type="date"
                   aria-label="발송 날짜"
+                  aria-invalid={showErrors && !date}
                   value={date}
                   onChange={(event) => setDate(event.target.value)}
                   onClick={(event) => event.currentTarget.showPicker?.()}
@@ -208,6 +216,7 @@ const RecruitmentComposeModal = ({
                 <HiddenDateInput
                   type="time"
                   aria-label="발송 시간"
+                  aria-invalid={showErrors && !time}
                   value={time}
                   onChange={(event) => setTime(event.target.value)}
                   onClick={(event) => event.currentTarget.showPicker?.()}

@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import styled from 'styled-components';
 
 import Tab from '@common/tab/Tab';
@@ -31,20 +30,27 @@ const isCurriculumWeekInvalid = (week: CurriculumWeekItem) => isUnfilled(week.we
 export const isCurriculumTracksInvalid = (tracks: CurriculumTrackItems[]) =>
   tracks.some((track) => track.weeks.some(isCurriculumWeekInvalid));
 
+// 저장 시 에러가 있는 트랙(탭)으로 자동 전환하기 위한 첫 번째 미입력 트랙 조회
+export const getFirstInvalidTrackKey = (tracks: CurriculumTrackItems[]) =>
+  tracks.find((track) => track.weeks.some(isCurriculumWeekInvalid))?.key;
+
 const createEmptyWeek = (): CurriculumWeekItem => ({ id: createId(), week: '', title: '', description: '' });
 
 const CurriculumSection = ({
   tracks,
   onChange,
   showErrors,
+  activeKey,
+  onActiveKeyChange,
   disabled = false,
 }: {
   tracks: CurriculumTrackItems[];
   onChange: (tracks: CurriculumTrackItems[]) => void;
   showErrors: boolean;
+  activeKey: string;
+  onActiveKeyChange: (key: string) => void;
   disabled?: boolean;
 }) => {
-  const [activeKey, setActiveKey] = useState(tracks[0]?.key ?? '');
   const activeTrack = tracks.find((track) => track.key === activeKey) ?? tracks[0];
 
   const updateWeeks = (updater: (weeks: CurriculumWeekItem[]) => CurriculumWeekItem[]) => {
@@ -75,7 +81,7 @@ const CurriculumSection = ({
       <Tab
         items={tracks.map((track) => ({ key: track.key, label: track.label }))}
         activeKey={activeKey}
-        onChange={setActiveKey}
+        onChange={onActiveKeyChange}
         size="large"
       />
       {activeTrack.weeks.map((week) => (
