@@ -1,4 +1,4 @@
-import PostDetailModal from './PostDetailModal';
+import PostDetailModal from '../PostDetailModal';
 
 interface HistoryDetailModalProps {
   title: string;

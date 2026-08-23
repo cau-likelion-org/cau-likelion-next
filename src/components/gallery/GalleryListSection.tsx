@@ -24,15 +24,15 @@ import { getSessionList, getSession } from 'src/apis/session';
 import { getHistoryList, getHistory } from 'src/apis/history';
 import { getGalleryProjectList, getGalleryProject, GALLERY_PROJECT_CATEGORY_LABEL } from 'src/apis/gallery';
 
-import HistoryDetailModal from './component/HistoryDetailModal';
-import HistoryEditModal from './component/HistoryEditModal';
-import HistoryUploadModal from './component/HistoryUploadModal';
-import ProjectDetailModal from './component/ProjectDetailModal';
-import ProjectEditModal from './component/ProjectEditModal';
-import ProjectUploadModal from './component/ProjectUploadModal';
-import SessionDetailModal from './component/SessionDetailModal';
-import SessionEditModal from './component/SessionEditModal';
-import SessionUploadModal from './component/SessionUploadModal';
+import HistoryDetailModal from './component/history/HistoryDetailModal';
+import HistoryEditModal from './component/history/HistoryEditModal';
+import HistoryUploadModal from './component/history/HistoryUploadModal';
+import ProjectDetailModal from './component/project/ProjectDetailModal';
+import ProjectEditModal from './component/project/ProjectEditModal';
+import ProjectUploadModal from './component/project/ProjectUploadModal';
+import SessionDetailModal from './component/session/SessionDetailModal';
+import SessionEditModal from './component/session/SessionEditModal';
+import SessionUploadModal from './component/session/SessionUploadModal';
 import { containerCss, media } from '@utils/constant/breakpoint';
 
 type GalleryTabKey = 'session' | 'project' | 'gallery';

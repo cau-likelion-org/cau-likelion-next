@@ -2,7 +2,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import useTokenStore from 'src/store/useTokenStore';
 import { deleteHistory, updateHistory } from 'src/apis/history';
 import { getGenerations } from 'src/apis/project';
-import PostUploadModal, { PostUploadModalSubmitValues } from './PostUploadModal';
+import PostUploadModal, { PostUploadModalSubmitValues } from '../PostUploadModal';
 
 interface HistoryEditModalProps {
   id: number;
