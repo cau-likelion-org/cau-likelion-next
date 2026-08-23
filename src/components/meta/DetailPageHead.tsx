@@ -22,8 +22,8 @@ const DetailPageHead = ({ title, category, img, canoUrl, description }: DetailPa
       <meta property="og:description" content={description} />
       <meta property="og:url" content={canoUrl ?? 'https://cau-likelion.org/'} />
       <meta property="og:type" content="website" />
-      <meta property="og:image" content={img ? img : DEFAULT_OG_IMAGE} />
       {!img && <meta property="og:image" content={DEFAULT_OG_IMAGE_FALLBACK} />}
+      <meta property="og:image" content={img ? img : DEFAULT_OG_IMAGE} />
       <meta property="twitter:card" content="summary" />
       <meta property="twitter:title" content={title} />
       <meta property="twitter:description" content={description} />
