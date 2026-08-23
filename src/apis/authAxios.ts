@@ -50,8 +50,8 @@ export const getAuthAxios = (token: IToken) => {
   // 만료 임박한 액세스 토큰은 요청 전에 미리 재발급 (401 왕복을 피함)
   authAxios.interceptors.request.use(async (config) => {
     const current = useTokenStore.getState().token;
-    let accessToken = current.access ?? token.access;
-    const refreshToken = current.refresh ?? token.refresh;
+    let accessToken = current.access;
+    const refreshToken = current.refresh;
     const expiresAt = accessToken ? decodeJwtExpiry(accessToken) : null;
 
     if (accessToken && refreshToken && expiresAt !== null && expiresAt - Date.now() < REFRESH_BUFFER_MS) {
@@ -74,7 +74,7 @@ export const getAuthAxios = (token: IToken) => {
     (res) => res,
     async (error) => {
       const { config, response } = error;
-      const refreshToken = useTokenStore.getState().token.refresh ?? token.refresh;
+      const refreshToken = useTokenStore.getState().token.refresh;
       if (!AUTH_ERROR_STATUSES.includes(response?.status) || !refreshToken) {
         return Promise.reject(error);
       }
