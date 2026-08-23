@@ -18,7 +18,7 @@ import useListboxSelect from 'src/hooks/useListboxSelect';
 import useTokenStore from 'src/store/useTokenStore';
 import { UploadDomain, uploadFile } from 'src/apis/upload';
 import { getGenerations } from 'src/apis/account';
-import { COMMON_PART_NAME, NUMERIC_ONLY_REGEX } from '@utils/constant';
+import { NUMERIC_ONLY_REGEX } from '@utils/constant';
 import { BackgroundColor, Fill, Label, Line, Material, Orange, State } from '@utils/constant/color';
 import { isUnfilled } from '@utils/index';
 import { resizeImageFile } from '@utils/resizeImage';
@@ -34,14 +34,6 @@ const CONTENT_PLACEHOLDER: Record<PostType, string> = {
   project: '사진에 대한 설명을 입력해주세요.',
   gallery: '사진에 대한 설명을 입력해주세요.',
 };
-// 세션 파트 드롭다운 노출 순서 — 백엔드가 주는 순서와 무관하게 항상 이 순서로 보여준다
-const SESSION_PART_ORDER = [COMMON_PART_NAME, '기획디자인', '프론트엔드', '백엔드'];
-const sortBySessionPartOrder = (a: string, b: string) => {
-  const indexA = SESSION_PART_ORDER.indexOf(a);
-  const indexB = SESSION_PART_ORDER.indexOf(b);
-  return (indexA === -1 ? Infinity : indexA) - (indexB === -1 ? Infinity : indexB);
-};
-
 // 두 자리 기수를 입력하는 도중(예: "1" → "13") 검증이 앞서 트리거되지 않도록 입력이 멈춘 뒤에만 검증
 const GENERATION_VALIDATION_DELAY = 1500;
 // 2021년(9기)부터의 활동만 아카이빙 대상
@@ -165,7 +157,7 @@ const PostUploadModal = ({
 
   const categoryOptions =
     postType === 'session'
-      ? (matchedGeneration?.parts.map((part) => part.name).sort(sortBySessionPartOrder) ?? [])
+      ? (matchedGeneration?.parts.map((part) => part.name) ?? [])
       : (categoryConfig?.options ?? []);
   const categoryOptionsKey = categoryOptions.join(' ');
   const [prevCategoryOptionsKey, setPrevCategoryOptionsKey] = useState(categoryOptionsKey);

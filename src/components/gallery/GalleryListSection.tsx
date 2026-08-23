@@ -67,14 +67,6 @@ const LIST_QUERY_KEY_BY_TAB: Record<GalleryTabKey, string> = {
 
 const PROJECT_CATEGORY_FILTER_OPTIONS = ['전체', ...Object.values(GALLERY_PROJECT_CATEGORY_LABEL)];
 const ALL_OPTION = '전체';
-// 기수 필터가 "전체"일 때, 기수별로 파트명 체계가 달라도(기획디자인 vs 기획+디자인)
-// 하나의 목록에서 항상 이 순서로 보여주기 위한 기준
-const ALL_GENERATIONS_PART_ORDER = [COMMON_PART_NAME, '기획디자인', '기획', '디자인', '프론트엔드', '백엔드'];
-const sortByAllGenerationsPartOrder = (a: string, b: string) => {
-  const indexA = ALL_GENERATIONS_PART_ORDER.indexOf(a);
-  const indexB = ALL_GENERATIONS_PART_ORDER.indexOf(b);
-  return (indexA === -1 ? Infinity : indexA) - (indexB === -1 ? Infinity : indexB);
-};
 // const WIKI_URL = 'https://wiki.cau-likelion.org';
 
 const toDisplayDate = (isoDate: string | undefined) => (isoDate ?? '').split('T')[0].replaceAll('-', '/');
@@ -191,9 +183,13 @@ const GalleryListSection = () => {
   const partOptions = useMemo(() => {
     if (!generations) return [ALL_OPTION];
     if (generation === ALL_OPTION) {
-      const parts = Array.from(
-        new Set([...generations.flatMap((item) => item.parts.map((part) => part.name)), COMMON_PART_NAME]),
-      ).sort(sortByAllGenerationsPartOrder);
+      // 오래된 기수부터 훑되, 각 이름의 마지막 등장 위치로 정렬(뒤집어서 중복 제거 후 재반전). 공통만 맨 앞 고정.
+      const flatPartNames = [...generations]
+        .sort((a, b) => a.number - b.number)
+        .flatMap((item) => item.parts.map((part) => part.name));
+      const parts = Array.from(new Set(flatPartNames.slice().reverse()))
+        .reverse()
+        .sort((a, b) => (a === COMMON_PART_NAME ? -1 : b === COMMON_PART_NAME ? 1 : 0));
       return [ALL_OPTION, ...parts];
     }
     const generationNumber = Number(generation.replace('기', ''));
