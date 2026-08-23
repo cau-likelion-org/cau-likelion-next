@@ -1,6 +1,6 @@
-import PostDetailModal from './PostDetailModal';
+import PostDetailModal from '../PostDetailModal';
 
-interface HistoryDetailModalProps {
+interface ProjectDetailModalProps {
   title: string;
   badges: string[];
   description: string;
@@ -10,7 +10,7 @@ interface HistoryDetailModalProps {
   onEdit?: () => void;
 }
 
-const HistoryDetailModal = ({
+const ProjectDetailModal = ({
   title,
   badges,
   description,
@@ -18,7 +18,7 @@ const HistoryDetailModal = ({
   imageUrls,
   onClose,
   onEdit,
-}: HistoryDetailModalProps) => (
+}: ProjectDetailModalProps) => (
   <PostDetailModal
     title={title}
     headerTitle="갤러리 목록으로 돌아가기"
@@ -31,4 +31,4 @@ const HistoryDetailModal = ({
   />
 );
 
-export default HistoryDetailModal;
+export default ProjectDetailModal;

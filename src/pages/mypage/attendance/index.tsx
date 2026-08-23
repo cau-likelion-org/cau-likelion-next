@@ -10,11 +10,11 @@ import Toast from '@common/toast/Toast';
 import PageLoadingGate from '@common/pageGate/PageLoadingGate';
 import CircularLoading from '@common/loading/CircularLoading';
 import EmptyState from '@common/emptyState/EmptyState';
-import PartAttendanceTable from '@mypage/component/PartAttendanceTable';
+import PartAttendanceTable from '@mypage/component/attendance/PartAttendanceTable';
 import WeeklyAttendanceCard, {
   WeeklyAttendanceRecord,
   WeeklyAttendanceStatus,
-} from '@mypage/component/WeeklyAttendanceCard';
+} from '@mypage/component/attendance/WeeklyAttendanceCard';
 import { getGenerations, getUserProfile } from 'src/apis/account';
 import {
   AttendanceStatus,

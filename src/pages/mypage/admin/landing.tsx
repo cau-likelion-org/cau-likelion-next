@@ -12,20 +12,20 @@ import MyPageShell from '@mypage/component/MyPageShell';
 import LinearLoading from '@common/loading/LinearLoading';
 import EmptyState from '@common/emptyState/EmptyState';
 import PageLoadingGate from '@common/pageGate/PageLoadingGate';
-import IntroduceSection, { LandingMetrics, isMetricsInvalid } from '@mypage/admin/IntroduceSection';
-import TrackSection, { TrackIntroItem, isTrackItemInvalid } from '@mypage/admin/TrackSection';
+import IntroduceSection, { LandingMetrics, isMetricsInvalid } from '@mypage/admin/landing/IntroduceSection';
+import TrackSection, { TrackIntroItem, isTrackItemInvalid } from '@mypage/admin/landing/TrackSection';
 import ActivitySection, {
   ActivityIntroItem,
   isActivityItemInvalid,
   PAGE_NAVIGATION_LABEL,
   PAGE_NAVIGATION_BY_LABEL,
-} from '@mypage/admin/ActivitySection';
+} from '@mypage/admin/landing/ActivitySection';
 import ProjectSection, {
   FeaturedProject,
   isProjectSelectionInvalid,
   MIN_EXPOSED_PROJECT_COUNT,
-} from '@mypage/admin/ProjectSection';
-import FAQSection, { FaqItem, isFaqItemInvalid } from '@mypage/admin/FAQSection';
+} from '@mypage/admin/landing/ProjectSection';
+import FAQSection, { FaqItem, isFaqItemInvalid } from '@mypage/admin/landing/FAQSection';
 import EditButton from '@mypage/admin/component/EditButton';
 import { syncListSection } from '@mypage/admin/utils';
 import useScrollToFirstError from 'src/hooks/useScrollToFirstError';

@@ -12,14 +12,14 @@ import MyPageShell from '@mypage/component/MyPageShell';
 import LinearLoading from '@common/loading/LinearLoading';
 import EmptyState from '@common/emptyState/EmptyState';
 import PageLoadingGate from '@common/pageGate/PageLoadingGate';
-import TalentSection, { TalentItem, isTalentItemsInvalid } from '@mypage/admin/TalentSection';
+import TalentSection, { TalentItem, isTalentItemsInvalid } from '@mypage/admin/about/TalentSection';
 import CurriculumSection, {
   CurriculumTrackItems,
   CurriculumWeekItem,
   isCurriculumTracksInvalid,
   getFirstInvalidTrackKey,
-} from '@mypage/admin/CurriculumSection';
-import RoadmapSection from '@mypage/admin/RoadmapSection';
+} from '@mypage/admin/about/CurriculumSection';
+import RoadmapSection from '@mypage/admin/about/RoadmapSection';
 import EditButton from '@mypage/admin/component/EditButton';
 import { syncListSection } from '@mypage/admin/utils';
 import useScrollToFirstError from 'src/hooks/useScrollToFirstError';

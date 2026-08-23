@@ -1,16 +1,16 @@
-import PostDetailModal from './PostDetailModal';
+import PostDetailModal from '../PostDetailModal';
 
-interface ProjectDetailModalProps {
+interface SessionDetailModalProps {
   title: string;
   badges: string[];
   description: string;
-  date: [string, string];
+  date: string;
   imageUrls: string[];
   onClose: () => void;
   onEdit?: () => void;
 }
 
-const ProjectDetailModal = ({
+const SessionDetailModal = ({
   title,
   badges,
   description,
@@ -18,7 +18,7 @@ const ProjectDetailModal = ({
   imageUrls,
   onClose,
   onEdit,
-}: ProjectDetailModalProps) => (
+}: SessionDetailModalProps) => (
   <PostDetailModal
     title={title}
     headerTitle="갤러리 목록으로 돌아가기"
@@ -31,4 +31,4 @@ const ProjectDetailModal = ({
   />
 );
 
-export default ProjectDetailModal;
+export default SessionDetailModal;

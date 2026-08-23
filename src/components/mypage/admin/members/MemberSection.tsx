@@ -10,7 +10,7 @@ import Button from '@common/button/Button';
 import Menu from '@common/menu/Menu';
 import ProjectFilterSelect from '@project/projects/ProjectFilterSelect';
 import EditButton from '@mypage/admin/component/EditButton';
-import ConfirmDialog from '@mypage/admin/component/ConfirmDialog';
+import ConfirmDialog from './ConfirmDialog';
 import { IcCaretDown, IcCaretUp, IcSearch } from '@assets/svg';
 import { NUMERIC_ONLY_REGEX, ROLE_LABEL } from '@utils/constant';
 import { excludeCommonPart, isEmailFormatInvalid } from '@utils/index';

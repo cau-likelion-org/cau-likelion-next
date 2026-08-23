@@ -17,7 +17,7 @@ import BlogSection, {
   BLOG_CATEGORY_LABEL,
   BLOG_CATEGORY_BY_LABEL,
   isBlogItemInvalid,
-} from '@mypage/admin/BlogSection';
+} from '@mypage/admin/blog/BlogSection';
 import EditButton from '@mypage/admin/component/EditButton';
 import { syncListSection } from '@mypage/admin/utils';
 import useScrollToFirstError from 'src/hooks/useScrollToFirstError';

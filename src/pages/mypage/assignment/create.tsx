@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import Toast from '@common/toast/Toast';
 import { NarrowBreak, WIDE_TOAST_WIDTH } from '@common/toast/toastLayout';
-import AssignmentCreateForm from '@mypage/component/AssignmentCreateForm';
+import AssignmentCreateForm from '@mypage/component/assignment/AssignmentCreateForm';
 import { AssignmentCreateRequest, createAssignments } from 'src/apis/assignment';
 import useStaffOnly from 'src/hooks/useStaffOnly';
 import useTokenStore from 'src/store/useTokenStore';
