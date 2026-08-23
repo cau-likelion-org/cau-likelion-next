@@ -9,10 +9,10 @@ import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import Toast from '@common/toast/Toast';
 import MyPageShell from '@mypage/component/MyPageShell';
 import PageLoadingGate from '@common/pageGate/PageLoadingGate';
-import MemberSection, { ALL_FILTER, MemberEditUpdate, MemberSaveError } from '@mypage/admin/MemberSection';
-import AllowedMemberSection from '@mypage/admin/AllowedMemberSection';
-import PartManageSection from '@mypage/admin/PartManageSection';
-import GenerationCreateModal from '@mypage/admin/component/GenerationCreateModal';
+import MemberSection, { ALL_FILTER, MemberEditUpdate, MemberSaveError } from '@mypage/admin/members/MemberSection';
+import AllowedMemberSection from '@mypage/admin/members/AllowedMemberSection';
+import PartManageSection from '@mypage/admin/members/PartManageSection';
+import GenerationCreateModal from '@mypage/admin/members/GenerationCreateModal';
 import {
   createGeneration,
   deleteMember,

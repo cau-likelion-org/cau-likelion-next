@@ -13,8 +13,8 @@ import PageLoadingGate from '@common/pageGate/PageLoadingGate';
 import MyPageShell from '@mypage/component/MyPageShell';
 import MobileUnsupportedModal from '@common/modal/MobileUnsupportedModal';
 import PartSelect from '@mypage/component/PartSelect';
-import StaffAssignmentCard from '@mypage/component/StaffAssignmentCard';
-import WeeklyAssignmentCard, { WeeklyAssignmentGroup } from '@mypage/component/WeeklyAssignmentCard';
+import StaffAssignmentCard from '@mypage/component/assignment/StaffAssignmentCard';
+import WeeklyAssignmentCard, { WeeklyAssignmentGroup } from '@mypage/component/assignment/WeeklyAssignmentCard';
 import { getGenerations, getUserProfile } from 'src/apis/account';
 import {
   AssignmentSummary,

@@ -8,7 +8,7 @@ import {
   AttendanceStatusUpdate,
   MemberAttendanceResponse,
 } from 'src/apis/attendance';
-import AttendanceReasonModal from '@mypage/component/AttendanceReasonModal';
+import AttendanceReasonModal from './AttendanceReasonModal';
 import EmptyState from '@common/emptyState/EmptyState';
 import PartSelect from '@mypage/component/PartSelect';
 import CircularLoading from '@common/loading/CircularLoading';

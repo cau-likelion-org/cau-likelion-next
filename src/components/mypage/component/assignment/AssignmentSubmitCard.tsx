@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 import ContentBadge from '@common/badge/ContentBadge';
 import Textarea from '@common/textarea/Textarea';
-import { ITEM_BADGE_CONFIG } from '@mypage/component/WeeklyAssignmentCard';
+import { ITEM_BADGE_CONFIG } from './WeeklyAssignmentCard';
 import { AssignmentSubmission } from 'src/apis/assignment';
 import { IcCircleClose, IcDocument, IcLink, IcPlus } from '@assets/svg';
 import { BackgroundWhite, Black, Fill, Label, Line, Status } from '@utils/constant/color';
