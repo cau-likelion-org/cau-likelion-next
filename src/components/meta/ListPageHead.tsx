@@ -1,4 +1,11 @@
-import { ARCHIVING, MENU, META_DESCRIPTION, META_DESCRIPTION_HEAD } from '@utils/constant';
+import {
+  ARCHIVING,
+  DEFAULT_OG_IMAGE,
+  DEFAULT_OG_IMAGE_FALLBACK,
+  MENU,
+  META_DESCRIPTION,
+  META_DESCRIPTION_HEAD,
+} from '@utils/constant';
 import Head from 'next/head';
 import React from 'react';
 
@@ -19,11 +26,12 @@ const ListPageHead = ({ canoUrl, category }: ListPageHeadProps) => {
       <meta property="og:description" content={META_DESCRIPTION[category]} />
       <meta property="og:url" content={canoUrl ?? 'https://cau-likelion.org/'} />
       <meta property="og:type" content="website" />
-      <meta property="og:image" content={'https://cau-likelion.org/image/og-image.png'} />
+      <meta property="og:image" content={DEFAULT_OG_IMAGE} />
+      <meta property="og:image" content={DEFAULT_OG_IMAGE_FALLBACK} />
       <meta property="twitter:card" content="summary" />
       <meta property="twitter:title" content={`CAU LION | ${META_DESCRIPTION_HEAD[category]}`} />
       <meta property="twitter:description" content={META_DESCRIPTION[category]} />
-      <meta property="twitter:image" content={'https://cau-likelion.org/image/og-image.png'} />
+      <meta property="twitter:image" content={DEFAULT_OG_IMAGE} />
       <meta property="twitter:url" content={canoUrl ?? 'https:/cau-likelion.org/'} />
       <meta name="twitter:creator" content="CAU LION" />
       <link rel="canonical" href={canoUrl}></link>
