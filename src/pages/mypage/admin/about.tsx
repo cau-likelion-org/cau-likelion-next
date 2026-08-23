@@ -1,4 +1,4 @@
-import { ReactElement, ReactNode, useEffect, useState } from 'react';
+import { ReactElement, ReactNode, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
@@ -17,10 +17,12 @@ import CurriculumSection, {
   CurriculumTrackItems,
   CurriculumWeekItem,
   isCurriculumTracksInvalid,
+  getFirstInvalidTrackKey,
 } from '@mypage/admin/CurriculumSection';
 import RoadmapSection from '@mypage/admin/RoadmapSection';
 import EditButton from '@mypage/admin/component/EditButton';
 import { syncListSection } from '@mypage/admin/utils';
+import useScrollToFirstError from 'src/hooks/useScrollToFirstError';
 import { getUserProfile } from 'src/apis/account';
 import { getTracks, TrackResponse } from 'src/apis/track';
 import { getTalents, createTalent, updateTalent, deleteTalent, TalentResponse } from 'src/apis/talent';
@@ -38,6 +40,7 @@ import useTokenStore from 'src/store/useTokenStore';
 import { isAdminRole } from '@utils/index';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
+import { media } from '@utils/constant/breakpoint';
 
 const talentToLocal = (talent: TalentResponse): TalentItem => ({
   id: String(talent.id),
@@ -153,6 +156,14 @@ const MyPageAdminAbout = () => {
   const [showErrors, setShowErrors] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [curriculumActiveKey, setCurriculumActiveKey] = useState('');
+
+  const contentRef = useRef<HTMLDivElement>(null);
+  const scrollToFirstError = useScrollToFirstError(contentRef);
+
+  if (!curriculumActiveKey && curriculumTracks.length > 0) {
+    setCurriculumActiveKey(curriculumTracks[0].key);
+  }
 
   // 조회된 데이터가 바뀌면(최초 로드, 저장 후 재조회) 화면 편집 상태를 다시 그 값으로 맞춤
   const [syncedTalents, setSyncedTalents] = useState(talents);
@@ -219,6 +230,9 @@ const MyPageAdminAbout = () => {
 
     if (hasError) {
       setShowErrors(true);
+      const firstInvalidTrackKey = getFirstInvalidTrackKey(curriculumTracks);
+      if (firstInvalidTrackKey) setCurriculumActiveKey(firstInvalidTrackKey);
+      scrollToFirstError();
       return;
     }
     setShowErrors(false);
@@ -296,7 +310,7 @@ const MyPageAdminAbout = () => {
               <LinearLoading progress={dataLoadProgress} />
             </LoadingWrapper>
           ) : (
-            <>
+            <ContentWrapper ref={contentRef}>
               <TalentSection
                 items={talentItems}
                 onChange={setTalentItems}
@@ -307,6 +321,8 @@ const MyPageAdminAbout = () => {
                 tracks={curriculumTracks}
                 onChange={setCurriculumTracks}
                 showErrors={showErrors}
+                activeKey={curriculumActiveKey}
+                onActiveKeyChange={setCurriculumActiveKey}
                 disabled={!isEditing}
               />
               <RoadmapSection
@@ -317,7 +333,7 @@ const MyPageAdminAbout = () => {
                 disabled={!isEditing}
                 isUploading={isUploadingRoadmap}
               />
-            </>
+            </ContentWrapper>
           )}
         </>
       )}
@@ -363,6 +379,18 @@ const LoadingWrapper = styled.div`
   justify-content: center;
   width: 100%;
   min-height: 300px;
+`;
+
+const ContentWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  gap: 40px;
+
+  ${media.xs} {
+    gap: 32px;
+  }
 `;
 
 const ToastWrapper = styled.div`

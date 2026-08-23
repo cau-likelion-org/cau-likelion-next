@@ -44,7 +44,7 @@ const CurriculumSection = () => {
     }));
 
   return (
-    <Wrapper>
+    <Wrapper id="curriculum">
       <SectionTitle>14기 커리큘럼</SectionTitle>
       {isLoading ? (
         <LoadingWrapper>

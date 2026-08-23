@@ -47,6 +47,7 @@ import {
 } from '@assets/svg';
 import useInput from 'src/hooks/useInput';
 import useListboxSelect from 'src/hooks/useListboxSelect';
+import useScrollToFirstError from 'src/hooks/useScrollToFirstError';
 import { NUMERIC_ONLY_REGEX, PROJECT_CATEGORY_OPTIONS } from '@utils/constant';
 import { AccentTint, BackgroundColor, Fill, Label, Line, Orange, State } from '@utils/constant/color';
 import { isUnfilled } from '@utils/index';
@@ -149,6 +150,9 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
     idCounterRef.current += 1;
     return idCounterRef.current;
   };
+
+  const formRef = useRef<HTMLDivElement>(null);
+  const scrollToFirstError = useScrollToFirstError(formRef);
 
   const sortedInitialImages = initialData
     ? [...initialData.images].sort((a, b) => a.displayOrder - b.displayOrder)
@@ -424,11 +428,13 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
   const handleSubmit = async () => {
     if (hasError || isSubmitting) {
       setShowErrors(true);
+      scrollToFirstError();
       return;
     }
     const payload = buildPayload();
     if (!payload) {
       setShowErrors(true);
+      scrollToFirstError();
       return;
     }
     setSubmitError('');
@@ -473,7 +479,7 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
   };
 
   return (
-    <Wrapper>
+    <Wrapper ref={formRef}>
       <HeaderRow>
         <Button
           variant="outlined"
@@ -1039,6 +1045,7 @@ const SingleDateInput = ({
         min={min}
         onChange={(event) => onChange(event.target.value)}
         aria-label={ariaLabel}
+        aria-invalid={invalid}
       />
     </DateInputWrapper>
   );

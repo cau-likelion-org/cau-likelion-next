@@ -101,6 +101,7 @@ const Select = forwardRef<HTMLDivElement, SelectProps & { id?: string }>(functio
         aria-haspopup="listbox"
         aria-expanded={ariaExpanded}
         aria-describedby={descriptionId}
+        aria-invalid={status === 'negative'}
         $status={status}
         $disabled={disabled}
         $readOnly={readOnly}

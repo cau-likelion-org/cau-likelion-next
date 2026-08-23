@@ -198,7 +198,7 @@ const GalleryListSection = () => {
     }
     const generationNumber = Number(generation.replace('기', ''));
     const matched = generations.find((item) => item.number === generationNumber);
-    return [ALL_OPTION, COMMON_PART_NAME, ...(matched?.parts.map((part) => part.name) ?? [])];
+    return [ALL_OPTION, ...(matched?.parts.map((part) => part.name) ?? [])];
   }, [generations, generation]);
 
   const sessionCards = (sessions ?? []).filter(
