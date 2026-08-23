@@ -6,6 +6,7 @@ import Select from '@common/select/Select';
 import ListboxOptions from '@common/select/ListboxOptions';
 import CircularLoading from '@common/loading/CircularLoading';
 import EmptyState from '@common/emptyState/EmptyState';
+import PaginationNavigation from '@common/pagination/PaginationNavigation';
 import useListboxSelect from 'src/hooks/useListboxSelect';
 import { getBlogs, BlogCategory } from 'src/apis/blog';
 import { toDateString } from '@utils/index';
@@ -25,12 +26,14 @@ const CATEGORY_LABEL: Record<BlogCategory, string> = {
   ETC: '기타',
 };
 const CATEGORY_OPTIONS = [ALL_OPTION, ...Object.values(CATEGORY_LABEL)];
+const PAGE_SIZE = 10;
 
 const BlogListSection = () => {
   const { data: blogs, isLoading, isError } = useQuery({ queryKey: ['blogs'], queryFn: getBlogs });
   const [generation, setGeneration] = useState(ALL_OPTION);
   const [category, setCategory] = useState(ALL_OPTION);
   const [openFilter, setOpenFilter] = useState<FilterKey | null>(null);
+  const [page, setPage] = useState(1);
 
   const generationOptions = useMemo(() => {
     const generations = Array.from(new Set((blogs ?? []).map((blog) => blog.generationNumber))).sort((a, b) => b - a);
@@ -42,6 +45,8 @@ const BlogListSection = () => {
     const matchesCategory = category === ALL_OPTION || CATEGORY_LABEL[blog.category] === category;
     return matchesGeneration && matchesCategory;
   });
+  const totalPage = Math.max(1, Math.ceil(posts.length / PAGE_SIZE));
+  const pagePosts = posts.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   return (
     <Wrapper>
@@ -58,6 +63,7 @@ const BlogListSection = () => {
             onSelect={(option) => {
               setGeneration(option);
               setOpenFilter(null);
+              setPage(1);
             }}
           />
           <FilterSelect
@@ -70,6 +76,7 @@ const BlogListSection = () => {
             onSelect={(option) => {
               setCategory(option);
               setOpenFilter(null);
+              setPage(1);
             }}
           />
         </FilterRow>
@@ -84,20 +91,25 @@ const BlogListSection = () => {
       ) : posts.length === 0 ? (
         <EmptyState message="조건에 맞는 블로그 글이 없습니다." />
       ) : (
-        <PostList>
-          {posts.map((post) => (
-            <BlogCard
-              key={post.id}
-              title={post.title}
-              description={post.summary}
-              badges={[`${post.generationNumber}기`, post.writer, CATEGORY_LABEL[post.category]]}
-              date={toDateString(new Date(post.publishedDate ?? post.createdAt), '/')}
-              url={post.url}
-              thumbnailUrl={post.thumbnailUrl}
-              thumbnailAlt={post.title}
-            />
-          ))}
-        </PostList>
+        <>
+          <PostList>
+            {pagePosts.map((post) => (
+              <BlogCard
+                key={post.id}
+                title={post.title}
+                description={post.summary}
+                badges={[`${post.generationNumber}기`, post.writer, CATEGORY_LABEL[post.category]]}
+                date={toDateString(new Date(post.publishedDate ?? post.createdAt), '/')}
+                url={post.url}
+                thumbnailUrl={post.thumbnailUrl}
+                thumbnailAlt={post.title}
+              />
+            ))}
+          </PostList>
+          <PaginationRow>
+            <PaginationNavigation variant="extended" currentPage={page} totalPage={totalPage} onPageChange={setPage} />
+          </PaginationRow>
+        </>
       )}
     </Wrapper>
   );
@@ -226,6 +238,12 @@ const PostList = styled.div`
   @media (max-width: 600px) {
     gap: 32px;
   }
+`;
+
+const PaginationRow = styled.div`
+  display: flex;
+  justify-content: center;
+  width: 100%;
 `;
 
 const LoadingWrapper = styled.div`
