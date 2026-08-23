@@ -5,8 +5,8 @@ import Select from '@common/select/Select';
 import ListboxOptions from '@common/select/ListboxOptions';
 import Textarea from '@common/textarea/Textarea';
 import TextField from '@common/textField/TextField';
-import AddCardButton from '@mypage/admin/component/AddCardButton';
-import RemoveCardButton from '@mypage/admin/component/RemoveCardButton';
+import AddCardButton from '@mypage/component/AddCardButton';
+import RemoveCardButton from '@mypage/component/RemoveCardButton';
 import CharCount from '@common/charCount/CharCount';
 import useListboxSelect from 'src/hooks/useListboxSelect';
 import { isUnfilled } from '@utils/index';
@@ -14,7 +14,7 @@ import { PageNavigation } from 'src/apis/activity';
 import { IcCircleCloseOutline, IcImage } from '@assets/svg';
 import { BackgroundWhite, Label, Line, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
-import { createId } from './utils';
+import { createId } from '../utils';
 
 // imageName엔 원본 파일명이 아니라 업로드된 이미지의 URL이 들어있어(S3 URL만 내려옴),
 // 화면에 보여줄 파일명은 URL 마지막 경로에서 추출한다

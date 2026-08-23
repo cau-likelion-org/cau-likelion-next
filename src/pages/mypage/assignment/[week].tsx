@@ -9,7 +9,7 @@ import Button from '@common/button/Button';
 import AssignmentSubmitCard, {
   AssignmentSubmitItem,
   AssignmentSubmitValue,
-} from '@mypage/component/AssignmentSubmitCard';
+} from '@mypage/component/assignment/AssignmentSubmitCard';
 import { IcChevronLeft } from '@assets/svg';
 import {
   MyAssignmentHistoryWeekGroup,

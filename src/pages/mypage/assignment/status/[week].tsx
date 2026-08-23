@@ -8,11 +8,11 @@ import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import Tab from '@common/tab/Tab';
 import Toast from '@common/toast/Toast';
 import { NarrowBreak, WIDE_TOAST_WIDTH } from '@common/toast/toastLayout';
-import AssignmentDeadlineModal from '@mypage/component/AssignmentDeadlineModal';
-import AssignmentInfoCard from '@mypage/component/AssignmentInfoCard';
-import AssignmentRejectModal from '@mypage/component/AssignmentRejectModal';
-import AssignmentSubmissionModal from '@mypage/component/AssignmentSubmissionModal';
-import AssignmentSubmissionTable from '@mypage/component/AssignmentSubmissionTable';
+import AssignmentDeadlineModal from '@mypage/component/assignment/AssignmentDeadlineModal';
+import AssignmentInfoCard from '@mypage/component/assignment/AssignmentInfoCard';
+import AssignmentRejectModal from '@mypage/component/assignment/AssignmentRejectModal';
+import AssignmentSubmissionModal from '@mypage/component/assignment/AssignmentSubmissionModal';
+import AssignmentSubmissionTable from '@mypage/component/assignment/AssignmentSubmissionTable';
 import {
   AssignmentSubmissionHistory,
   AssignmentSubmission,

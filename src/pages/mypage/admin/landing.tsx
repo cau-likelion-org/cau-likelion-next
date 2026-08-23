@@ -1,4 +1,4 @@
-import { ReactElement, ReactNode, useEffect, useState } from 'react';
+import { ReactElement, ReactNode, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
@@ -12,22 +12,23 @@ import MyPageShell from '@mypage/component/MyPageShell';
 import LinearLoading from '@common/loading/LinearLoading';
 import EmptyState from '@common/emptyState/EmptyState';
 import PageLoadingGate from '@common/pageGate/PageLoadingGate';
-import IntroduceSection, { LandingMetrics, isMetricsInvalid } from '@mypage/admin/IntroduceSection';
-import TrackSection, { TrackIntroItem, isTrackItemInvalid } from '@mypage/admin/TrackSection';
+import IntroduceSection, { LandingMetrics, isMetricsInvalid } from '@mypage/admin/landing/IntroduceSection';
+import TrackSection, { TrackIntroItem, isTrackItemInvalid } from '@mypage/admin/landing/TrackSection';
 import ActivitySection, {
   ActivityIntroItem,
   isActivityItemInvalid,
   PAGE_NAVIGATION_LABEL,
   PAGE_NAVIGATION_BY_LABEL,
-} from '@mypage/admin/ActivitySection';
+} from '@mypage/admin/landing/ActivitySection';
 import ProjectSection, {
   FeaturedProject,
   isProjectSelectionInvalid,
   MIN_EXPOSED_PROJECT_COUNT,
-} from '@mypage/admin/ProjectSection';
-import FAQSection, { FaqItem, isFaqItemInvalid } from '@mypage/admin/FAQSection';
+} from '@mypage/admin/landing/ProjectSection';
+import FAQSection, { FaqItem, isFaqItemInvalid } from '@mypage/admin/landing/FAQSection';
 import EditButton from '@mypage/admin/component/EditButton';
 import { syncListSection } from '@mypage/admin/utils';
+import useScrollToFirstError from 'src/hooks/useScrollToFirstError';
 import { getUserProfile } from 'src/apis/account';
 import { getTracks, createTrack, updateTrack, deleteTrack, TrackResponse } from 'src/apis/track';
 import { getActivities, createActivity, updateActivity, deleteActivity, ActivityResponse } from 'src/apis/activity';
@@ -40,6 +41,7 @@ import useTokenStore from 'src/store/useTokenStore';
 import { isAdminRole } from '@utils/index';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
+import { media } from '@utils/constant/breakpoint';
 
 const trackToLocal = (track: TrackResponse): TrackIntroItem => ({
   id: String(track.id),
@@ -163,6 +165,9 @@ const MyPageAdminLanding = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
+  const contentRef = useRef<HTMLDivElement>(null);
+  const scrollToFirstError = useScrollToFirstError(contentRef);
+
   // 조회된 데이터가 바뀌면(최초 로드, 저장 후 재조회) 화면 편집 상태를 다시 그 값으로 맞춤
   const [syncedIntroduce, setSyncedIntroduce] = useState(introduce);
   if (introduce !== syncedIntroduce) {
@@ -232,6 +237,7 @@ const MyPageAdminLanding = () => {
         setToastVariant('negative');
         setToastMessage(`노출 프로젝트는 최소 ${MIN_EXPOSED_PROJECT_COUNT}개 이상 선택해 주세요.`);
       }
+      scrollToFirstError();
       return;
     }
     setShowErrors(false);
@@ -336,7 +342,7 @@ const MyPageAdminLanding = () => {
               <LinearLoading progress={dataLoadProgress} />
             </LoadingWrapper>
           ) : (
-            <>
+            <ContentWrapper ref={contentRef}>
               <IntroduceSection
                 metrics={introduceMetrics}
                 onChange={setIntroduceMetrics}
@@ -359,7 +365,7 @@ const MyPageAdminLanding = () => {
                 disabled={!isEditing}
               />
               <FAQSection items={faqItems} onChange={setFaqItems} showErrors={showErrors} disabled={!isEditing} />
-            </>
+            </ContentWrapper>
           )}
         </>
       )}
@@ -405,6 +411,18 @@ const LoadingWrapper = styled.div`
   justify-content: center;
   width: 100%;
   min-height: 300px;
+`;
+
+const ContentWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  gap: 40px;
+
+  ${media.xs} {
+    gap: 32px;
+  }
 `;
 
 const ToastWrapper = styled.div`

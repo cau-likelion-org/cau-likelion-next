@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import { RecruitmentTextResponse } from 'src/apis/recruitment';
-import { STATUS_BADGE } from '@mypage/admin/RecruitmentTextSection';
+import { STATUS_BADGE } from './RecruitmentTextSection';
 import ContentBadge from '@common/badge/ContentBadge';
 import LinkifiedText from './LinkifiedText';
 import { IcCaretDown, IcCaretUp } from '@assets/svg';

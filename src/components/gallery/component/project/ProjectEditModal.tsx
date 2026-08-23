@@ -1,8 +1,13 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import useTokenStore from 'src/store/useTokenStore';
-import { createGalleryProject, GALLERY_PROJECT_CATEGORY_LABEL, GalleryProjectCategory } from 'src/apis/gallery';
+import {
+  deleteGalleryProject,
+  updateGalleryProject,
+  GALLERY_PROJECT_CATEGORY_LABEL,
+  GalleryProjectCategory,
+} from 'src/apis/gallery';
 import { getGenerations } from 'src/apis/project';
-import PostUploadModal, { PostUploadModalSubmitValues } from './PostUploadModal';
+import PostUploadModal, { PostUploadModalSubmitValues } from '../PostUploadModal';
 
 const CATEGORY_OPTIONS = Object.values(GALLERY_PROJECT_CATEGORY_LABEL);
 const CATEGORY_BY_LABEL = Object.fromEntries(
@@ -12,25 +17,36 @@ const CATEGORY_BY_LABEL = Object.fromEntries(
   ]),
 );
 
-interface ProjectUploadModalProps {
+interface ProjectEditModalProps {
+  id: number;
+  initialValues: {
+    title: string;
+    content: string;
+    generation: string;
+    category: string;
+    dateRange: [string, string];
+    imageUrls: string[];
+    thumbnailUrl?: string;
+  };
   onClose: () => void;
-  onSuccess?: () => void;
+  onDeleteSuccess: () => void;
+  onSubmitSuccess: () => void;
 }
 
-const ProjectUploadModal = ({ onClose, onSuccess }: ProjectUploadModalProps) => {
+const ProjectEditModal = ({ id, initialValues, onClose, onDeleteSuccess, onSubmitSuccess }: ProjectEditModalProps) => {
   const tokenState = useTokenStore((state) => state.token);
   const { data: generations } = useQuery({
     queryKey: ['generations'],
     queryFn: () => getGenerations(tokenState),
     enabled: !!tokenState.access,
   });
-  const createMutation = useMutation({
+  const updateMutation = useMutation({
     mutationFn: (values: PostUploadModalSubmitValues) => {
       const generationId = generations?.find((g) => g.number === Number(values.generation))?.id;
       if (!generationId) throw new Error('존재하지 않는 기수예요.');
       const category = CATEGORY_BY_LABEL[values.category ?? ''];
       if (!category) throw new Error('프로젝트 구분을 선택해 주세요.');
-      return createGalleryProject(tokenState, {
+      return updateGalleryProject(tokenState, id, {
         generationId,
         category,
         title: values.title,
@@ -42,22 +58,31 @@ const ProjectUploadModal = ({ onClose, onSuccess }: ProjectUploadModalProps) => 
       });
     },
   });
+  const deleteMutation = useMutation({ mutationFn: () => deleteGalleryProject(tokenState, id) });
 
   const handleSubmit = async (values: PostUploadModalSubmitValues) => {
-    await createMutation.mutateAsync(values);
-    onSuccess?.();
+    await updateMutation.mutateAsync(values);
+    onSubmitSuccess();
+  };
+
+  const handleDelete = async () => {
+    await deleteMutation.mutateAsync();
+    onDeleteSuccess();
   };
 
   return (
     <PostUploadModal
+      mode="edit"
       onClose={onClose}
+      onDelete={handleDelete}
       onSubmit={handleSubmit}
       postType="project"
       category={{ label: '프로젝트 구분', options: CATEGORY_OPTIONS }}
       dateFieldLabel="기간"
       dateMode="range"
+      initialValues={initialValues}
     />
   );
 };
 
-export default ProjectUploadModal;
+export default ProjectEditModal;

@@ -7,9 +7,10 @@ import ListboxOptions from '@common/select/ListboxOptions';
 import TextField from '@common/textField/TextField';
 import Textarea from '@common/textarea/Textarea';
 import CharCount from '@common/charCount/CharCount';
-import AddCardButton from '@mypage/admin/component/AddCardButton';
-import RemoveCardButton from '@mypage/admin/component/RemoveCardButton';
+import AddCardButton from '@mypage/component/AddCardButton';
+import RemoveCardButton from '@mypage/component/RemoveCardButton';
 import useListboxSelect from 'src/hooks/useListboxSelect';
+import useScrollToFirstError from 'src/hooks/useScrollToFirstError';
 import { AssignmentCreateRequest, AssignmentSubmitType } from 'src/apis/assignment';
 import { isUnfilled } from '@utils/index';
 import { IcCalendar, IcChevronLeft, IcCircleExclamation } from '@assets/svg';
@@ -69,6 +70,8 @@ const AssignmentCreateForm = ({
   // 저장 전 이탈 방지 모달
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
   const bypassGuardRef = useRef(false); // 제출 성공/이탈 확인 시 가드 우회
+  const formRef = useRef<HTMLDivElement>(null);
+  const scrollToFirstError = useScrollToFirstError(formRef);
   const pendingUrlRef = useRef<string | null>(null); // 라우트 변경으로 막힌 목적지
 
   const updateDraft = (index: number, patch: Partial<AssignmentDraft>) => {
@@ -151,6 +154,7 @@ const AssignmentCreateForm = ({
     if (submitting) return;
     if (!canSubmit) {
       setShowErrors(true);
+      scrollToFirstError();
       return;
     }
     bypassGuardRef.current = true;
@@ -180,7 +184,7 @@ const AssignmentCreateForm = ({
   };
 
   return (
-    <Page>
+    <Page ref={formRef}>
       <TopBar>
         <CloseButton type="button" onClick={handleClose}>
           <IcChevronLeft width={16} height={16} />
@@ -414,6 +418,7 @@ const DateField = ({
           value={value}
           onChange={(event) => onChange(event.target.value)}
           onClick={(event) => event.currentTarget.showPicker?.()}
+          aria-invalid={!!invalid}
         />
       </DateBox>
       {invalid && <DateError>마감일을 선택해 주세요.</DateError>}

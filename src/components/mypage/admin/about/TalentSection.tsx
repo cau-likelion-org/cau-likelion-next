@@ -3,12 +3,12 @@ import styled from 'styled-components';
 import Textarea from '@common/textarea/Textarea';
 import TextField from '@common/textField/TextField';
 import CharCount from '@common/charCount/CharCount';
-import AddCardButton from '@mypage/admin/component/AddCardButton';
-import RemoveCardButton from '@mypage/admin/component/RemoveCardButton';
+import AddCardButton from '@mypage/component/AddCardButton';
+import RemoveCardButton from '@mypage/component/RemoveCardButton';
 import { isUnfilled } from '@utils/index';
 import { BackgroundWhite, Black, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
-import { createId } from './utils';
+import { createId } from '../utils';
 
 export interface TalentItem {
   id: string;

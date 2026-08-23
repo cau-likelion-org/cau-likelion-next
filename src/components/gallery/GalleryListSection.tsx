@@ -24,15 +24,15 @@ import { getSessionList, getSession } from 'src/apis/session';
 import { getHistoryList, getHistory } from 'src/apis/history';
 import { getGalleryProjectList, getGalleryProject, GALLERY_PROJECT_CATEGORY_LABEL } from 'src/apis/gallery';
 
-import HistoryDetailModal from './component/HistoryDetailModal';
-import HistoryEditModal from './component/HistoryEditModal';
-import HistoryUploadModal from './component/HistoryUploadModal';
-import ProjectDetailModal from './component/ProjectDetailModal';
-import ProjectEditModal from './component/ProjectEditModal';
-import ProjectUploadModal from './component/ProjectUploadModal';
-import SessionDetailModal from './component/SessionDetailModal';
-import SessionEditModal from './component/SessionEditModal';
-import SessionUploadModal from './component/SessionUploadModal';
+import HistoryDetailModal from './component/history/HistoryDetailModal';
+import HistoryEditModal from './component/history/HistoryEditModal';
+import HistoryUploadModal from './component/history/HistoryUploadModal';
+import ProjectDetailModal from './component/project/ProjectDetailModal';
+import ProjectEditModal from './component/project/ProjectEditModal';
+import ProjectUploadModal from './component/project/ProjectUploadModal';
+import SessionDetailModal from './component/session/SessionDetailModal';
+import SessionEditModal from './component/session/SessionEditModal';
+import SessionUploadModal from './component/session/SessionUploadModal';
 import { containerCss, media } from '@utils/constant/breakpoint';
 
 type GalleryTabKey = 'session' | 'project' | 'gallery';
@@ -198,7 +198,7 @@ const GalleryListSection = () => {
     }
     const generationNumber = Number(generation.replace('기', ''));
     const matched = generations.find((item) => item.number === generationNumber);
-    return [ALL_OPTION, COMMON_PART_NAME, ...(matched?.parts.map((part) => part.name) ?? [])];
+    return [ALL_OPTION, ...(matched?.parts.map((part) => part.name) ?? [])];
   }, [generations, generation]);
 
   const sessionCards = (sessions ?? []).filter(
@@ -413,7 +413,7 @@ const GalleryListSection = () => {
         ) : isSessionsError ? (
           <EmptyState variant="error" />
         ) : sessionCards.length === 0 ? (
-          <EmptyState message="조건에 맞는 세션이 없습니다." />
+          <EmptyState message="조건에 맞는 게시물이 없습니다." />
         ) : (
           <CardGrid>
             {sessionCards.map((item) => (
@@ -444,7 +444,7 @@ const GalleryListSection = () => {
         ) : isProjectsError ? (
           <EmptyState variant="error" />
         ) : projectCards.length === 0 ? (
-          <EmptyState message="조건에 맞는 프로젝트가 없습니다." />
+          <EmptyState message="조건에 맞는 게시물이 없습니다." />
         ) : (
           <CardGrid>
             {projectCards.map((item) => (
@@ -476,7 +476,7 @@ const GalleryListSection = () => {
         ) : isHistoriesError ? (
           <EmptyState variant="error" />
         ) : historyCards.length === 0 ? (
-          <EmptyState message="조건에 맞는 추억이 없습니다." />
+          <EmptyState message="조건에 맞는 게시물이 없습니다." />
         ) : (
           <CardGrid>
             {historyCards.map((item) => (

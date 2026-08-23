@@ -12,6 +12,7 @@ import CharCount from '@common/charCount/CharCount';
 import Toast from '@common/toast/Toast';
 import { IcAdd, IcCalendar, IcCircleExclamation, IcCloseCircle, IcLineHorizontal } from '@assets/svg';
 import useFocusTrap from 'src/hooks/useFocusTrap';
+import useScrollToFirstError from 'src/hooks/useScrollToFirstError';
 import useInput from 'src/hooks/useInput';
 import useListboxSelect from 'src/hooks/useListboxSelect';
 import useTokenStore from 'src/store/useTokenStore';
@@ -33,6 +34,14 @@ const CONTENT_PLACEHOLDER: Record<PostType, string> = {
   project: '사진에 대한 설명을 입력해주세요.',
   gallery: '사진에 대한 설명을 입력해주세요.',
 };
+// 세션 파트 드롭다운 노출 순서 — 백엔드가 주는 순서와 무관하게 항상 이 순서로 보여준다
+const SESSION_PART_ORDER = [COMMON_PART_NAME, '기획디자인', '프론트엔드', '백엔드'];
+const sortBySessionPartOrder = (a: string, b: string) => {
+  const indexA = SESSION_PART_ORDER.indexOf(a);
+  const indexB = SESSION_PART_ORDER.indexOf(b);
+  return (indexA === -1 ? Infinity : indexA) - (indexB === -1 ? Infinity : indexB);
+};
+
 // 두 자리 기수를 입력하는 도중(예: "1" → "13") 검증이 앞서 트리거되지 않도록 입력이 멈춘 뒤에만 검증
 const GENERATION_VALIDATION_DELAY = 1500;
 // 2021년(9기)부터의 활동만 아카이빙 대상
@@ -156,9 +165,7 @@ const PostUploadModal = ({
 
   const categoryOptions =
     postType === 'session'
-      ? matchedGeneration
-        ? [COMMON_PART_NAME, ...matchedGeneration.parts.map((part) => part.name)]
-        : []
+      ? (matchedGeneration?.parts.map((part) => part.name).sort(sortBySessionPartOrder) ?? [])
       : (categoryConfig?.options ?? []);
   const categoryOptionsKey = categoryOptions.join(' ');
   const [prevCategoryOptionsKey, setPrevCategoryOptionsKey] = useState(categoryOptionsKey);
@@ -187,6 +194,7 @@ const PostUploadModal = ({
 
   const modalRef = useRef<HTMLDivElement>(null);
   useFocusTrap(modalRef, onClose);
+  const scrollToFirstError = useScrollToFirstError(modalRef);
   const modalAriaLabel = `${POST_TYPE_LABEL[postType]} ${mode === 'edit' ? '수정' : '추가'}`;
 
   const handleFileChange = async (index: number, event: ChangeEvent<HTMLInputElement>) => {
@@ -318,6 +326,7 @@ const PostUploadModal = ({
   const handleSubmit = async () => {
     if (hasError) {
       setShowErrors(true);
+      scrollToFirstError();
       return;
     }
     if (!onSubmit) {
@@ -721,6 +730,7 @@ const SingleDateInput = ({
         value={value}
         onChange={(event) => onChange(event.target.value)}
         aria-label={ariaLabel}
+        aria-invalid={invalid}
       />
     </DateInputWrapper>
   );

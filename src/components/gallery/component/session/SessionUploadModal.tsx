@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import useTokenStore from 'src/store/useTokenStore';
 import { createSession } from 'src/apis/session';
-import PostUploadModal, { PostUploadModalSubmitValues } from './PostUploadModal';
+import PostUploadModal, { PostUploadModalSubmitValues } from '../PostUploadModal';
 
 interface SessionUploadModalProps {
   onClose: () => void;

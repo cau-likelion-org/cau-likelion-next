@@ -10,11 +10,11 @@ import MyPageShell from '@mypage/component/MyPageShell';
 import PageLoadingGate from '@common/pageGate/PageLoadingGate';
 import Button from '@common/button/Button';
 import Toast from '@common/toast/Toast';
-import RecruitmentSubscriberSection, { ALL_PART_FILTER } from '@mypage/admin/RecruitmentSubscriberSection';
-import RecruitmentTextSection from '@mypage/admin/RecruitmentTextSection';
-import RecruitmentComposeModal, { RecruitmentComposeForm } from '@mypage/admin/component/RecruitmentComposeModal';
-import RecruitmentTextDetailModal from '@mypage/admin/component/RecruitmentTextDetailModal';
-import RecruitmentResendModal from '@mypage/admin/component/RecruitmentResendModal';
+import RecruitmentSubscriberSection, { ALL_PART_FILTER } from '@mypage/admin/recruitment/RecruitmentSubscriberSection';
+import RecruitmentTextSection from '@mypage/admin/recruitment/RecruitmentTextSection';
+import RecruitmentComposeModal, { RecruitmentComposeForm } from '@mypage/admin/recruitment/RecruitmentComposeModal';
+import RecruitmentTextDetailModal from '@mypage/admin/recruitment/RecruitmentTextDetailModal';
+import RecruitmentResendModal from '@mypage/admin/recruitment/RecruitmentResendModal';
 import { getUserProfile } from 'src/apis/account';
 import {
   createRecruitmentText,

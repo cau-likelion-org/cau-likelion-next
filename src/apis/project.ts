@@ -1,4 +1,4 @@
-import { ArchivingArrayType, IProjectData } from '@@types/request';
+import { ArchivingArrayType, Generation, IProjectData } from '@@types/request';
 import axios from 'axios';
 import { IToken } from 'src/store/useTokenStore';
 import { url } from '.';
@@ -121,17 +121,9 @@ export interface ProjectResponseDto {
   members: ProjectMemberDto[];
 }
 
-export interface GenerationListItem {
-  id: number;
-  number: number;
-  year: number;
-  status: 'BEFORE_ACTIVITY' | 'IN_ACTIVITY' | 'AFTER_ACTIVITY';
-  parts: { id: number; name: string }[];
-}
-
 export const getGenerations = async (token: IToken) => {
   const authAxios = getAuthAxios(token);
-  const response = await authAxios.get<GenerationListItem[]>('/api/generations');
+  const response = await authAxios.get<Generation[]>('/api/generations');
   return response.data;
 };
 

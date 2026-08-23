@@ -4,15 +4,15 @@ import styled from 'styled-components';
 import Select from '@common/select/Select';
 import ListboxOptions from '@common/select/ListboxOptions';
 import TextField from '@common/textField/TextField';
-import AddCardButton from '@mypage/admin/component/AddCardButton';
-import RemoveCardButton from '@mypage/admin/component/RemoveCardButton';
+import AddCardButton from '@mypage/component/AddCardButton';
+import RemoveCardButton from '@mypage/component/RemoveCardButton';
 import { IcCircleClose, IcLink } from '@assets/svg';
 import useListboxSelect from 'src/hooks/useListboxSelect';
 import { BlogCategory } from 'src/apis/blog';
 import { NUMERIC_ONLY_REGEX } from '@utils/constant';
 import { isUnfilled } from '@utils/index';
 import { BackgroundWhite, Label, Line } from '@utils/constant/color';
-import { createId } from './utils';
+import { createId } from '../utils';
 
 export interface BlogItem {
   id: string;

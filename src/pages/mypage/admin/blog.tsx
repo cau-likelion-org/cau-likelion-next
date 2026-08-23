@@ -1,4 +1,4 @@
-import { ReactElement, ReactNode, useEffect, useState } from 'react';
+import { ReactElement, ReactNode, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
@@ -17,9 +17,10 @@ import BlogSection, {
   BLOG_CATEGORY_LABEL,
   BLOG_CATEGORY_BY_LABEL,
   isBlogItemInvalid,
-} from '@mypage/admin/BlogSection';
+} from '@mypage/admin/blog/BlogSection';
 import EditButton from '@mypage/admin/component/EditButton';
 import { syncListSection } from '@mypage/admin/utils';
+import useScrollToFirstError from 'src/hooks/useScrollToFirstError';
 import { getUserProfile, getGenerations } from 'src/apis/account';
 import { getBlogs, createBlog, updateBlog, deleteBlog, BlogResponse, BlogRequest } from 'src/apis/blog';
 import useTokenStore from 'src/store/useTokenStore';
@@ -83,6 +84,9 @@ const MyPageAdminBlog = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
+  const contentRef = useRef<HTMLDivElement>(null);
+  const scrollToFirstError = useScrollToFirstError(contentRef);
+
   // 조회된 데이터가 바뀌면(최초 로드, 저장 후 재조회) 화면 편집 상태를 다시 그 값으로 맞춤
   const [syncedBlogs, setSyncedBlogs] = useState(blogs);
   if (blogs !== syncedBlogs) {
@@ -112,6 +116,7 @@ const MyPageAdminBlog = () => {
 
     if (hasError) {
       setShowErrors(true);
+      scrollToFirstError();
       return;
     }
     setShowErrors(false);
@@ -168,7 +173,9 @@ const MyPageAdminBlog = () => {
               <CircularLoading size={32} />
             </LoadingWrapper>
           ) : (
-            <BlogSection items={blogItems} onChange={setBlogItems} showErrors={showErrors} disabled={!isEditing} />
+            <ContentWrapper ref={contentRef}>
+              <BlogSection items={blogItems} onChange={setBlogItems} showErrors={showErrors} disabled={!isEditing} />
+            </ContentWrapper>
           )}
         </>
       )}
@@ -214,6 +221,10 @@ const LoadingWrapper = styled.div`
   justify-content: center;
   width: 100%;
   min-height: 300px;
+`;
+
+const ContentWrapper = styled.div`
+  width: 100%;
 `;
 
 const ToastWrapper = styled.div`

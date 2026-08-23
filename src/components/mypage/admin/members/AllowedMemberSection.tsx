@@ -11,7 +11,7 @@ import { IcCaretDown, IcCaretUp, IcPlus } from '@assets/svg';
 import { isEmailFormatInvalid, isUnfilled } from '@utils/index';
 import { BackgroundColor, Black, Label, Line, Orange, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
-import { createId } from './utils';
+import { createId } from '../utils';
 
 const getServerMessage = (error: unknown) => {
   if (!axios.isAxiosError(error)) return undefined;
