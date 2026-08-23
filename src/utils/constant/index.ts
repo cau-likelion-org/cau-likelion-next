@@ -103,3 +103,7 @@ export const META_DESCRIPTION_HEAD = {
 };
 
 export const PROJECT_CATEGORY_OPTIONS = ['아이디어톤', '해커톤', '중커톤', '기타'];
+
+// 운영 도메인이 점검 모드일 때도 OG 이미지가 뜨도록, Vercel 배포 주소의 이미지도 함께 노출한다
+export const DEFAULT_OG_IMAGE = 'https://cau-likelion.org/image/og-image.png';
+export const DEFAULT_OG_IMAGE_FALLBACK = 'https://cau-likelion-next-ashen.vercel.app/image/og-image.png';
