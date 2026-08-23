@@ -413,7 +413,7 @@ const GalleryListSection = () => {
         ) : isSessionsError ? (
           <EmptyState variant="error" />
         ) : sessionCards.length === 0 ? (
-          <EmptyState message="조건에 맞는 세션이 없습니다." />
+          <EmptyState message="조건에 맞는 게시물이 없습니다." />
         ) : (
           <CardGrid>
             {sessionCards.map((item) => (
@@ -444,7 +444,7 @@ const GalleryListSection = () => {
         ) : isProjectsError ? (
           <EmptyState variant="error" />
         ) : projectCards.length === 0 ? (
-          <EmptyState message="조건에 맞는 프로젝트가 없습니다." />
+          <EmptyState message="조건에 맞는 게시물이 없습니다." />
         ) : (
           <CardGrid>
             {projectCards.map((item) => (
@@ -476,7 +476,7 @@ const GalleryListSection = () => {
         ) : isHistoriesError ? (
           <EmptyState variant="error" />
         ) : historyCards.length === 0 ? (
-          <EmptyState message="조건에 맞는 추억이 없습니다." />
+          <EmptyState message="조건에 맞는 게시물이 없습니다." />
         ) : (
           <CardGrid>
             {historyCards.map((item) => (
