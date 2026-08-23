@@ -96,13 +96,13 @@ const ProjectsSection = ({ staticData }: { staticData: ArchivingArrayType<IProje
     return matchGeneration && matchCategory;
   });
 
-  // 시작 날짜 최신순, 시작일이 같으면 이름 오름차순
   const sortedProjects = [...filteredProjects].sort(
-    (a, b) => getStartTime(b.startDate) - getStartTime(a.startDate) || a.title.localeCompare(b.title, 'ko'),
+    (a, b) =>
+      Number(b.generation) - Number(a.generation) ||
+      getStartTime(b.startDate) - getStartTime(a.startDate) ||
+      a.title.localeCompare(b.title, 'ko'),
   );
 
-  // 불러오기 실패는 데이터 자체가 없을 때만 노출한다.
-  // 목록은 있는데 필터 결과만 비어 있는 경우는 '조건에 맞는 프로젝트가 없습니다'가 맞다
   const hasLoadedProjects = flatProjects.length > 0;
 
   return (
