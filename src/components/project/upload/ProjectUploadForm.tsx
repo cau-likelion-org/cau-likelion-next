@@ -14,8 +14,8 @@ import TextField from '@common/textField/TextField';
 import Textarea from '@common/textarea/Textarea';
 import Toast from '@common/toast/Toast';
 import ProjectFilterSelect from '@project/projects/ProjectFilterSelect';
+import { Generation } from '@@types/request';
 import {
-  GenerationListItem,
   LinkPlatform,
   PROJECT_CREATED_FLAG_KEY,
   PROJECT_DELETED_FLAG_KEY,
@@ -304,7 +304,7 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
   const [submitError, setSubmitError] = useState('');
 
-  const { data: generations, isError: isGenerationsError } = useQuery<GenerationListItem[]>({
+  const { data: generations, isError: isGenerationsError } = useQuery<Generation[]>({
     queryKey: ['generations'],
     queryFn: () => getGenerations(tokenState),
     enabled: !!tokenState.access,
