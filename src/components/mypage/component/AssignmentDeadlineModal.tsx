@@ -37,7 +37,10 @@ const AssignmentDeadlineModal = ({
 }: AssignmentDeadlineModalProps) => {
   const [assignmentId, setAssignmentId] = useState(initialAssignmentId);
   const [deadline, setDeadline] = useState('');
-  const [memberId, setMemberId] = useState<number | null>(null);
+  const [memberIds, setMemberIds] = useState<number[]>([]);
+
+  const toggleMember = (id: number) =>
+    setMemberIds((prev) => (prev.includes(id) ? prev.filter((value) => value !== id) : [...prev, id]));
 
   const selectedAssignment = assignments.find((assignment) => assignment.assignmentId === assignmentId);
   const titles = assignments.map((assignment) => assignment.title);
@@ -55,7 +58,7 @@ const AssignmentDeadlineModal = ({
     },
   });
 
-  const canSubmit = !!deadline && memberId != null && !submitting;
+  const canSubmit = !!deadline && memberIds.length > 0 && !submitting;
 
   return (
     <Overlay role="dialog" aria-modal="true" aria-label="개별 마감일 변경">
@@ -122,15 +125,14 @@ const AssignmentDeadlineModal = ({
             <Heading>
               변경 대상<Required>*</Required>
             </Heading>
-            <MemberGrid role="radiogroup" aria-label="변경 대상">
+            <MemberGrid role="group" aria-label="변경 대상">
               {members.map((member) => (
                 <MemberRadio
                   key={member.memberId}
-                  name="deadline-target"
-                  value={String(member.memberId)}
+                  multiple
                   label={member.memberName}
-                  checked={memberId === member.memberId}
-                  onChange={() => setMemberId(member.memberId)}
+                  checked={memberIds.includes(member.memberId)}
+                  onChange={() => toggleMember(member.memberId)}
                 />
               ))}
             </MemberGrid>
@@ -141,11 +143,7 @@ const AssignmentDeadlineModal = ({
           <Button variant="outlined" color="assistive" size="large" onClick={onClose}>
             취소
           </Button>
-          <Button
-            size="large"
-            disabled={!canSubmit}
-            onClick={() => memberId != null && onSubmit(assignmentId, [memberId], deadline)}
-          >
+          <Button size="large" disabled={!canSubmit} onClick={() => onSubmit(assignmentId, memberIds, deadline)}>
             변경하기
           </Button>
         </Actions>

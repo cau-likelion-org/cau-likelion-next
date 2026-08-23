@@ -19,6 +19,7 @@ export interface RadioProps {
   ariaLabel?: string;
   name?: string;
   value?: string;
+  multiple?: boolean;
   onChange?: (checked: boolean) => void;
   id?: string;
 }
@@ -46,6 +47,7 @@ const Radio = ({
   ariaLabel,
   name,
   value,
+  multiple = false,
   onChange,
   id,
 }: RadioProps) => {
@@ -58,7 +60,7 @@ const Radio = ({
       <ControlWrapper $tight={tight}>
         <Box
           as="input"
-          type="radio"
+          type={multiple ? 'checkbox' : 'radio'}
           id={radioId}
           name={name}
           value={value}
