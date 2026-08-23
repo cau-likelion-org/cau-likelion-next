@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import styled from 'styled-components';
 
+import BackHeader from '@common/header/BackHeader';
 import Button from '@common/button/Button';
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import Tab from '@common/tab/Tab';
@@ -27,8 +28,6 @@ import {
 } from 'src/apis/assignment';
 import useStaffOnly from 'src/hooks/useStaffOnly';
 import useTokenStore from 'src/store/useTokenStore';
-import { IcChevronLeft } from '@assets/svg';
-import { Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { containerCss } from '@utils/constant/breakpoint';
 
@@ -144,18 +143,7 @@ const MyPageAssignmentDetail = () => {
 
   return (
     <Page>
-      <TopBar>
-        <Button
-          variant="outlined"
-          color="assistive"
-          size="medium"
-          leadingIcon={<IcChevronLeft width={18} height={18} />}
-          onClick={() => router.push('/mypage/assignment')}
-        >
-          닫기
-        </Button>
-        <PageTitle>과제 제출 현황</PageTitle>
-      </TopBar>
+      <BackHeader label="과제 목록으로 돌아가기" onClick={() => router.push('/mypage/assignment')} />
 
       <WeekRow>
         <WeekTitle>{week}주차 세션 과제</WeekTitle>
@@ -247,7 +235,6 @@ const Page = styled.div`
   display: flex;
   flex-direction: column;
   ${containerCss}
-  padding-top: 90px;
   padding-bottom: 80px;
 `;
 
@@ -258,20 +245,6 @@ const ToastWrapper = styled.div`
   transform: translateX(-50%);
   z-index: 10001;
   pointer-events: none;
-`;
-
-const TopBar = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  margin-bottom: 52px;
-`;
-
-const PageTitle = styled.h1`
-  margin: 0;
-  color: ${Orange.o500};
-  ${typographyCss(Typography.display2.bold)}
 `;
 
 const WeekRow = styled.div`

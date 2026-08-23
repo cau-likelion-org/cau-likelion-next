@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import styled from 'styled-components';
 
 import Alert from '@common/alert/Alert';
+import BackHeader from '@common/header/BackHeader';
 import Button from '@common/button/Button';
 import CharCount from '@common/charCount/CharCount';
 import Chip from '@common/chip/Chip';
@@ -37,7 +38,6 @@ import {
   IcAdd,
   IcBehance,
   IcCalendar,
-  IcChevronLeft,
   IcCircleClose,
   IcCircleExclamation,
   IcGithub,
@@ -480,380 +480,370 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
 
   return (
     <Wrapper ref={formRef}>
-      <HeaderRow>
-        <Button
-          variant="outlined"
-          color="assistive"
-          size="medium"
-          leadingIcon={<IcChevronLeft width={16} height={16} />}
-          onClick={handleCancel}
-        >
-          닫기
-        </Button>
-        <Title>{isEditMode ? '프로젝트 수정하기' : '프로젝트 추가하기'}</Title>
-      </HeaderRow>
-
-      <ImageUploadGroup>
-        <MainThumbnail as={images[featuredIndex] ? 'div' : 'label'} $hasImage={!!images[featuredIndex]}>
-          {images[featuredIndex] ? (
-            <MainThumbnailImage src={images[featuredIndex]} alt="대표 이미지" />
-          ) : (
-            <>
-              <UploadGuide>
-                사진을 {MAX_IMAGE_COUNT}장까지 업로드하고
-                <br />
-                표지가 되는 대표사진을 선택해주세요
-              </UploadGuide>
-              <HiddenFileInput
-                type="file"
-                accept="image/*"
-                aria-label="대표 이미지 선택"
-                onChange={(event) => handleFileChange(featuredIndex, event)}
-              />
-            </>
-          )}
-          <FeaturedChip>대표</FeaturedChip>
-        </MainThumbnail>
-        <ThumbnailRow>
-          {images.map((image, index) =>
-            image ? (
-              <ThumbnailSlot
-                key={index}
-                as="div"
-                role="button"
-                tabIndex={0}
-                $active={index === featuredIndex}
-                $dragging={draggingIndex === index}
-                $dropTarget={dragOverIndex === index && draggingIndex !== index}
-                aria-label={`${index + 1}번째 이미지를 대표사진으로 설정`}
-                onClick={() => setFeaturedIndex(index)}
-                onKeyDown={(event) => {
-                  if (event.key === 'Enter' || event.key === ' ') {
-                    event.preventDefault();
-                    setFeaturedIndex(index);
-                  }
-                }}
-                draggable
-                onDragStart={(event: DragEvent<HTMLElement>) => {
-                  event.dataTransfer.effectAllowed = 'move';
-                  // Firefox는 데이터가 설정되어야 드래그를 시작함
-                  event.dataTransfer.setData('text/plain', String(index));
-                  setDraggingIndex(index);
-                }}
-                onDragEnd={() => {
-                  setDraggingIndex(null);
-                  setDragOverIndex(null);
-                }}
-                {...dropTargetProps(index)}
-              >
-                <ThumbnailImage src={image} alt="" draggable={false} />
-                <RemoveThumbnailButton
-                  type="button"
-                  aria-label={`${index + 1}번째 이미지 삭제`}
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    handleRemoveImage(index);
-                  }}
-                >
-                  <IcCircleClose width={24} height={24} />
-                </RemoveThumbnailButton>
-              </ThumbnailSlot>
+      <BackHeader label="프로젝트 목록으로 돌아가기" onClick={handleCancel} />
+      <FormContent>
+        <ImageUploadGroup>
+          <MainThumbnail as={images[featuredIndex] ? 'div' : 'label'} $hasImage={!!images[featuredIndex]}>
+            {images[featuredIndex] ? (
+              <MainThumbnailImage src={images[featuredIndex]} alt="대표 이미지" />
             ) : (
-              <ThumbnailSlot key={index}>
-                <ImagePlaceholderIcon />
+              <>
+                <UploadGuide>
+                  사진을 {MAX_IMAGE_COUNT}장까지 업로드하고
+                  <br />
+                  표지가 되는 대표사진을 선택해주세요
+                </UploadGuide>
                 <HiddenFileInput
                   type="file"
                   accept="image/*"
-                  aria-label={`이미지 ${index + 1} 선택`}
-                  onChange={(event) => handleFileChange(index, event)}
+                  aria-label="대표 이미지 선택"
+                  onChange={(event) => handleFileChange(featuredIndex, event)}
                 />
-              </ThumbnailSlot>
-            ),
-          )}
-        </ThumbnailRow>
-      </ImageUploadGroup>
-
-      <FieldGroup>
-        <FieldHeading>
-          서비스명
-          <Required>*</Required>
-        </FieldHeading>
-        <TitleTextarea
-          placeholder={`서비스명을 입력해주세요. (국문 포함 ${MAX_TITLE_LENGTH_KO}자/영문 ${MAX_TITLE_LENGTH_EN}자)`}
-          value={title}
-          onChange={handleTitleChange}
-          resize="fixed"
-          maxLength={maxTitleLength}
-          bottomTrailingContent={<CharCount>{title.length}</CharCount>}
-          status={showErrors && (isUnfilled(title) || isTitleOverflow) ? 'negative' : 'normal'}
-          description={
-            showErrors && isUnfilled(title)
-              ? '서비스명을 입력해 주세요.'
-              : showErrors && isTitleOverflow
-                ? `${maxTitleLength}자 이내로 입력해 주세요.`
-                : undefined
-          }
-        />
-      </FieldGroup>
-
-      <FieldGroup>
-        <FieldHeading>
-          서비스 한줄소개
-          <Required>*</Required>
-        </FieldHeading>
-        <TitleTextarea
-          placeholder="서비스 한줄소개를 입력해주세요."
-          value={subtitle}
-          onChange={(event) => setSubtitle(event.target.value.slice(0, 80))}
-          resize="fixed"
-          maxLength={80}
-          bottomTrailingContent={<CharCount>{subtitle.length}/80</CharCount>}
-          status={showErrors && (isUnfilled(subtitle) || isSubtitleOverflow) ? 'negative' : 'normal'}
-          description={
-            showErrors && isUnfilled(subtitle)
-              ? '서비스 한줄소개를 입력해 주세요.'
-              : showErrors && isSubtitleOverflow
-                ? '80자 이내로 입력해 주세요.'
-                : undefined
-          }
-        />
-      </FieldGroup>
-
-      <FieldGroup>
-        <FieldHeading>
-          서비스 설명
-          <Required>*</Required>
-        </FieldHeading>
-        <ContentTextarea
-          placeholder={CONTENT_PLACEHOLDER}
-          value={description}
-          onChange={(event) => setDescription(event.target.value.slice(0, 300))}
-          resize="fixed"
-          maxLength={300}
-          bottomTrailingContent={<CharCount>{description.length}/300</CharCount>}
-          status={showErrors && (isUnfilled(description) || isDescriptionOverflow) ? 'negative' : 'normal'}
-          description={
-            showErrors && isUnfilled(description)
-              ? '서비스 설명을 입력해 주세요.'
-              : showErrors && isDescriptionOverflow
-                ? '300자 이내로 입력해 주세요.'
-                : undefined
-          }
-        />
-      </FieldGroup>
-
-      <Row>
-        <NarrowField>
-          <TextField
-            heading="기수 구분"
-            required
-            placeholder="숫자 입력"
-            value={generation}
-            onChange={onChangeGeneration}
-            status={showErrors && (isUnfilled(generation) || isGenerationUnresolved) ? 'negative' : 'normal'}
-            description={
-              showErrors && isUnfilled(generation)
-                ? '기수를 입력해 주세요.'
-                : showErrors && isGenerationsError
-                  ? '기수 정보를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.'
-                  : showErrors && isGenerationInvalid
-                    ? '존재하지 않는 기수예요.'
-                    : undefined
-            }
-          />
-        </NarrowField>
-        <ProjectFilterSelect
-          heading="프로젝트 구분"
-          required
-          options={PROJECT_CATEGORY_OPTIONS}
-          value={category}
-          onChange={setCategory}
-          status={showErrors && isUnfilled(category) ? 'negative' : 'normal'}
-          description={showErrors && isUnfilled(category) ? '프로젝트 구분을 선택해 주세요.' : undefined}
-        />
-      </Row>
-
-      <TeamRow>
-        <TeamColumn>
-          <TextField
-            heading="팀명"
-            required
-            placeholder="텍스트 입력"
-            value={teamName}
-            onChange={(event) => setTeamName(event.target.value)}
-            status={showErrors && isUnfilled(teamName) ? 'negative' : 'normal'}
-            description={showErrors && isUnfilled(teamName) ? '팀명을 입력해 주세요.' : undefined}
-          />
-          <TagChipInput
-            heading="기획"
-            placeholder="텍스트 입력 후 띄어쓰기"
-            values={pmMembers}
-            onChange={setPmMembers}
-          />
-          <TagChipInput
-            heading="디자인"
-            placeholder="텍스트 입력 후 띄어쓰기"
-            values={designMembers}
-            onChange={setDesignMembers}
-          />
-          <TagChipInput
-            heading="프론트엔드"
-            placeholder="텍스트 입력 후 띄어쓰기"
-            values={frontendMembers}
-            onChange={setFrontendMembers}
-          />
-          <TagChipInput
-            heading="백엔드"
-            placeholder="텍스트 입력 후 띄어쓰기"
-            values={backendMembers}
-            onChange={setBackendMembers}
-          />
-          {extraParts.map((part) => (
-            <ExtraPartGroup key={part.id}>
-              <ExtraPartHeaderRow>
-                <PartNameInput
-                  placeholder="파트 이름 입력"
-                  value={part.name}
-                  onChange={(event) =>
-                    setExtraParts((prev) =>
-                      prev.map((p) => (p.id === part.id ? { ...p, name: event.target.value } : p)),
-                    )
-                  }
-                />
-                <TextButton size="small" color="assistive" onClick={() => handleRemovePart(part.id)}>
-                  삭제
-                </TextButton>
-              </ExtraPartHeaderRow>
-              <TagChipInput
-                placeholder="텍스트 입력 후 띄어쓰기"
-                values={part.members}
-                onChange={(members) =>
-                  setExtraParts((prev) => prev.map((p) => (p.id === part.id ? { ...p, members } : p)))
-                }
-              />
-            </ExtraPartGroup>
-          ))}
-          <Button
-            variant="solid"
-            color="assistive"
-            size="medium"
-            trailingIcon={<IcAdd width={16} height={16} />}
-            onClick={handleAddPart}
-          >
-            파트 추가
-          </Button>
-        </TeamColumn>
-        <TeamColumn>
-          <DateFieldGroup>
-            <FieldHeadingSmall>
-              프로젝트 기간
-              <RequiredSmall>*</RequiredSmall>
-            </FieldHeadingSmall>
-            <DateRangeRow>
-              <SingleDateInput
-                placeholder="시작일 선택"
-                ariaLabel="시작일"
-                value={dateRange[0]}
-                onChange={(next) => setDateRange([next, dateRange[1]])}
-                invalid={showErrors && isDateInvalid}
-              />
-              <DateRangeDivider width={16} height={16} />
-              <SingleDateInput
-                placeholder="종료일 선택"
-                ariaLabel="종료일"
-                value={dateRange[1]}
-                min={dateRange[0] || undefined}
-                onChange={(next) => setDateRange([dateRange[0], next])}
-                invalid={showErrors && isDateInvalid}
-              />
-            </DateRangeRow>
-            {showErrors && isDateMissing && <DateDescription>프로젝트 기간을 선택해 주세요.</DateDescription>}
-            {showErrors && isDateOrderInvalid && (
-              <DateDescription>종료일은 시작일 이후로 선택해 주세요.</DateDescription>
+              </>
             )}
-          </DateFieldGroup>
-          <TagChipInput
-            heading="기술스택"
-            placeholder="텍스트 입력 후 띄어쓰기"
-            values={techStackItems}
-            onChange={setTechStackItems}
-          />
-          <TextField
-            heading="배너 추가하기"
-            placeholder="예시) 2026 해커톤 본선진출작"
-            value={banner}
-            onChange={(event) => setBanner(event.target.value.slice(0, MAX_BANNER_LENGTH))}
-            maxLength={MAX_BANNER_LENGTH}
-            trailingContent={
-              <CharCount>
-                {banner.length}/{MAX_BANNER_LENGTH}
-              </CharCount>
+            <FeaturedChip>대표</FeaturedChip>
+          </MainThumbnail>
+          <ThumbnailRow>
+            {images.map((image, index) =>
+              image ? (
+                <ThumbnailSlot
+                  key={index}
+                  as="div"
+                  role="button"
+                  tabIndex={0}
+                  $active={index === featuredIndex}
+                  $dragging={draggingIndex === index}
+                  $dropTarget={dragOverIndex === index && draggingIndex !== index}
+                  aria-label={`${index + 1}번째 이미지를 대표사진으로 설정`}
+                  onClick={() => setFeaturedIndex(index)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault();
+                      setFeaturedIndex(index);
+                    }
+                  }}
+                  draggable
+                  onDragStart={(event: DragEvent<HTMLElement>) => {
+                    event.dataTransfer.effectAllowed = 'move';
+                    // Firefox는 데이터가 설정되어야 드래그를 시작함
+                    event.dataTransfer.setData('text/plain', String(index));
+                    setDraggingIndex(index);
+                  }}
+                  onDragEnd={() => {
+                    setDraggingIndex(null);
+                    setDragOverIndex(null);
+                  }}
+                  {...dropTargetProps(index)}
+                >
+                  <ThumbnailImage src={image} alt="" draggable={false} />
+                  <RemoveThumbnailButton
+                    type="button"
+                    aria-label={`${index + 1}번째 이미지 삭제`}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      handleRemoveImage(index);
+                    }}
+                  >
+                    <IcCircleClose width={24} height={24} />
+                  </RemoveThumbnailButton>
+                </ThumbnailSlot>
+              ) : (
+                <ThumbnailSlot key={index}>
+                  <ImagePlaceholderIcon />
+                  <HiddenFileInput
+                    type="file"
+                    accept="image/*"
+                    aria-label={`이미지 ${index + 1} 선택`}
+                    onChange={(event) => handleFileChange(index, event)}
+                  />
+                </ThumbnailSlot>
+              ),
+            )}
+          </ThumbnailRow>
+        </ImageUploadGroup>
+
+        <FieldGroup>
+          <FieldHeading>
+            서비스명
+            <Required>*</Required>
+          </FieldHeading>
+          <TitleTextarea
+            placeholder={`서비스명을 입력해주세요. (국문 포함 ${MAX_TITLE_LENGTH_KO}자/영문 ${MAX_TITLE_LENGTH_EN}자)`}
+            value={title}
+            onChange={handleTitleChange}
+            resize="fixed"
+            maxLength={maxTitleLength}
+            bottomTrailingContent={<CharCount>{title.length}</CharCount>}
+            status={showErrors && (isUnfilled(title) || isTitleOverflow) ? 'negative' : 'normal'}
+            description={
+              showErrors && isUnfilled(title)
+                ? '서비스명을 입력해 주세요.'
+                : showErrors && isTitleOverflow
+                  ? `${maxTitleLength}자 이내로 입력해 주세요.`
+                  : undefined
             }
           />
-        </TeamColumn>
-      </TeamRow>
+        </FieldGroup>
 
-      <FieldGroup>
-        <LinkHeading>링크첨부</LinkHeading>
-        {linkRows.map((row, index) => (
-          <LinkRowWrapper key={row.id}>
-            <LinkTypeSelect
-              value={row.type}
-              options={LINK_TYPE_OPTIONS}
-              onChange={(type) => setLinkRows((prev) => prev.map((r) => (r.id === row.id ? { ...r, type } : r)))}
-            />
+        <FieldGroup>
+          <FieldHeading>
+            서비스 한줄소개
+            <Required>*</Required>
+          </FieldHeading>
+          <TitleTextarea
+            placeholder="서비스 한줄소개를 입력해주세요."
+            value={subtitle}
+            onChange={(event) => setSubtitle(event.target.value.slice(0, 80))}
+            resize="fixed"
+            maxLength={80}
+            bottomTrailingContent={<CharCount>{subtitle.length}/80</CharCount>}
+            status={showErrors && (isUnfilled(subtitle) || isSubtitleOverflow) ? 'negative' : 'normal'}
+            description={
+              showErrors && isUnfilled(subtitle)
+                ? '서비스 한줄소개를 입력해 주세요.'
+                : showErrors && isSubtitleOverflow
+                  ? '80자 이내로 입력해 주세요.'
+                  : undefined
+            }
+          />
+        </FieldGroup>
+
+        <FieldGroup>
+          <FieldHeading>
+            서비스 설명
+            <Required>*</Required>
+          </FieldHeading>
+          <ContentTextarea
+            placeholder={CONTENT_PLACEHOLDER}
+            value={description}
+            onChange={(event) => setDescription(event.target.value.slice(0, 300))}
+            resize="fixed"
+            maxLength={300}
+            bottomTrailingContent={<CharCount>{description.length}/300</CharCount>}
+            status={showErrors && (isUnfilled(description) || isDescriptionOverflow) ? 'negative' : 'normal'}
+            description={
+              showErrors && isUnfilled(description)
+                ? '서비스 설명을 입력해 주세요.'
+                : showErrors && isDescriptionOverflow
+                  ? '300자 이내로 입력해 주세요.'
+                  : undefined
+            }
+          />
+        </FieldGroup>
+
+        <Row>
+          <NarrowField>
             <TextField
-              placeholder="복사한 링크를 붙여넣어 주세요."
-              value={row.url}
-              onChange={(event) =>
-                setLinkRows((prev) => prev.map((r) => (r.id === row.id ? { ...r, url: event.target.value } : r)))
+              heading="기수 구분"
+              required
+              placeholder="숫자 입력"
+              value={generation}
+              onChange={onChangeGeneration}
+              status={showErrors && (isUnfilled(generation) || isGenerationUnresolved) ? 'negative' : 'normal'}
+              description={
+                showErrors && isUnfilled(generation)
+                  ? '기수를 입력해 주세요.'
+                  : showErrors && isGenerationsError
+                    ? '기수 정보를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.'
+                    : showErrors && isGenerationInvalid
+                      ? '존재하지 않는 기수예요.'
+                      : undefined
               }
             />
-            {index > 0 && (
-              <DeleteLinkButton type="button" onClick={() => handleRemoveLinkRow(row.id)} aria-label="링크 삭제">
-                <IcTrash width={24} height={24} />
-              </DeleteLinkButton>
-            )}
-          </LinkRowWrapper>
-        ))}
-        <AddLinkButton type="button" onClick={handleAddLinkRow} aria-label="링크 추가">
-          <IcAdd width={20} height={20} />
-        </AddLinkButton>
-      </FieldGroup>
+          </NarrowField>
+          <ProjectFilterSelect
+            heading="프로젝트 구분"
+            required
+            options={PROJECT_CATEGORY_OPTIONS}
+            value={category}
+            onChange={setCategory}
+            status={showErrors && isUnfilled(category) ? 'negative' : 'normal'}
+            description={showErrors && isUnfilled(category) ? '프로젝트 구분을 선택해 주세요.' : undefined}
+          />
+        </Row>
 
-      <ActionArea>
-        {isEditMode ? (
-          <EditActionGroup>
+        <TeamRow>
+          <TeamColumn>
+            <TextField
+              heading="팀명"
+              required
+              placeholder="텍스트 입력"
+              value={teamName}
+              onChange={(event) => setTeamName(event.target.value)}
+              status={showErrors && isUnfilled(teamName) ? 'negative' : 'normal'}
+              description={showErrors && isUnfilled(teamName) ? '팀명을 입력해 주세요.' : undefined}
+            />
+            <TagChipInput
+              heading="기획"
+              placeholder="텍스트 입력 후 띄어쓰기"
+              values={pmMembers}
+              onChange={setPmMembers}
+            />
+            <TagChipInput
+              heading="디자인"
+              placeholder="텍스트 입력 후 띄어쓰기"
+              values={designMembers}
+              onChange={setDesignMembers}
+            />
+            <TagChipInput
+              heading="프론트엔드"
+              placeholder="텍스트 입력 후 띄어쓰기"
+              values={frontendMembers}
+              onChange={setFrontendMembers}
+            />
+            <TagChipInput
+              heading="백엔드"
+              placeholder="텍스트 입력 후 띄어쓰기"
+              values={backendMembers}
+              onChange={setBackendMembers}
+            />
+            {extraParts.map((part) => (
+              <ExtraPartGroup key={part.id}>
+                <ExtraPartHeaderRow>
+                  <PartNameInput
+                    placeholder="파트 이름 입력"
+                    value={part.name}
+                    onChange={(event) =>
+                      setExtraParts((prev) =>
+                        prev.map((p) => (p.id === part.id ? { ...p, name: event.target.value } : p)),
+                      )
+                    }
+                  />
+                  <TextButton size="small" color="assistive" onClick={() => handleRemovePart(part.id)}>
+                    삭제
+                  </TextButton>
+                </ExtraPartHeaderRow>
+                <TagChipInput
+                  placeholder="텍스트 입력 후 띄어쓰기"
+                  values={part.members}
+                  onChange={(members) =>
+                    setExtraParts((prev) => prev.map((p) => (p.id === part.id ? { ...p, members } : p)))
+                  }
+                />
+              </ExtraPartGroup>
+            ))}
             <Button
               variant="solid"
-              color="primary"
-              size="large"
-              onClick={handleSubmit}
-              loading={isSubmitting}
-              disabled={deleteMutation.isPending}
-            >
-              수정하기
-            </Button>
-            <Button
-              variant="outlined"
               color="assistive"
-              size="large"
-              onClick={handleDelete}
-              loading={deleteMutation.isPending}
-              disabled={isSubmitting}
+              size="medium"
+              trailingIcon={<IcAdd width={16} height={16} />}
+              onClick={handleAddPart}
             >
-              삭제하기
+              파트 추가
             </Button>
-          </EditActionGroup>
-        ) : (
-          <>
-            <ActionDescription>등록 후 수정할 수 있어요</ActionDescription>
-            <Button variant="solid" color="primary" size="large" onClick={handleSubmit} loading={isSubmitting}>
-              등록하기
-            </Button>
-          </>
-        )}
-      </ActionArea>
+          </TeamColumn>
+          <TeamColumn>
+            <DateFieldGroup>
+              <FieldHeadingSmall>
+                프로젝트 기간
+                <RequiredSmall>*</RequiredSmall>
+              </FieldHeadingSmall>
+              <DateRangeRow>
+                <SingleDateInput
+                  placeholder="시작일 선택"
+                  ariaLabel="시작일"
+                  value={dateRange[0]}
+                  onChange={(next) => setDateRange([next, dateRange[1]])}
+                  invalid={showErrors && isDateInvalid}
+                />
+                <DateRangeDivider width={16} height={16} />
+                <SingleDateInput
+                  placeholder="종료일 선택"
+                  ariaLabel="종료일"
+                  value={dateRange[1]}
+                  min={dateRange[0] || undefined}
+                  onChange={(next) => setDateRange([dateRange[0], next])}
+                  invalid={showErrors && isDateInvalid}
+                />
+              </DateRangeRow>
+              {showErrors && isDateMissing && <DateDescription>프로젝트 기간을 선택해 주세요.</DateDescription>}
+              {showErrors && isDateOrderInvalid && (
+                <DateDescription>종료일은 시작일 이후로 선택해 주세요.</DateDescription>
+              )}
+            </DateFieldGroup>
+            <TagChipInput
+              heading="기술스택"
+              placeholder="텍스트 입력 후 띄어쓰기"
+              values={techStackItems}
+              onChange={setTechStackItems}
+            />
+            <TextField
+              heading="배너 추가하기"
+              placeholder="예시) 2026 해커톤 본선진출작"
+              value={banner}
+              onChange={(event) => setBanner(event.target.value.slice(0, MAX_BANNER_LENGTH))}
+              maxLength={MAX_BANNER_LENGTH}
+              trailingContent={
+                <CharCount>
+                  {banner.length}/{MAX_BANNER_LENGTH}
+                </CharCount>
+              }
+            />
+          </TeamColumn>
+        </TeamRow>
+
+        <FieldGroup>
+          <LinkHeading>링크첨부</LinkHeading>
+          {linkRows.map((row, index) => (
+            <LinkRowWrapper key={row.id}>
+              <LinkTypeSelect
+                value={row.type}
+                options={LINK_TYPE_OPTIONS}
+                onChange={(type) => setLinkRows((prev) => prev.map((r) => (r.id === row.id ? { ...r, type } : r)))}
+              />
+              <TextField
+                placeholder="복사한 링크를 붙여넣어 주세요."
+                value={row.url}
+                onChange={(event) =>
+                  setLinkRows((prev) => prev.map((r) => (r.id === row.id ? { ...r, url: event.target.value } : r)))
+                }
+              />
+              {index > 0 && (
+                <DeleteLinkButton type="button" onClick={() => handleRemoveLinkRow(row.id)} aria-label="링크 삭제">
+                  <IcTrash width={24} height={24} />
+                </DeleteLinkButton>
+              )}
+            </LinkRowWrapper>
+          ))}
+          <AddLinkButton type="button" onClick={handleAddLinkRow} aria-label="링크 추가">
+            <IcAdd width={20} height={20} />
+          </AddLinkButton>
+        </FieldGroup>
+
+        <ActionArea>
+          {isEditMode ? (
+            <EditActionGroup>
+              <Button
+                variant="solid"
+                color="primary"
+                size="large"
+                onClick={handleSubmit}
+                loading={isSubmitting}
+                disabled={deleteMutation.isPending}
+              >
+                수정하기
+              </Button>
+              <Button
+                variant="outlined"
+                color="assistive"
+                size="large"
+                onClick={handleDelete}
+                loading={deleteMutation.isPending}
+                disabled={isSubmitting}
+              >
+                삭제하기
+              </Button>
+            </EditActionGroup>
+          ) : (
+            <>
+              <ActionDescription>등록 후 수정할 수 있어요</ActionDescription>
+              <Button variant="solid" color="primary" size="large" onClick={handleSubmit} loading={isSubmitting}>
+                등록하기
+              </Button>
+            </>
+          )}
+        </ActionArea>
+      </FormContent>
 
       <ToastWrapper>
         <Toast variant="negative" text={submitError} show={!!submitError} onHidden={() => setSubmitError('')} />
@@ -1055,23 +1045,16 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 46px;
   ${containerCss}
-  padding-top: 40px;
   padding-bottom: 80px;
 `;
 
-const HeaderRow = styled.div`
+const FormContent = styled.div`
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 46px;
   width: 100%;
-`;
-
-const Title = styled.h1`
-  margin: 0;
-  color: ${Orange.o500};
-  ${typographyCss(Typography.title2.bold)}
 `;
 
 const ImageUploadGroup = styled.div`
