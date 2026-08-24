@@ -8,7 +8,6 @@ import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import BackHeader from '@common/header/BackHeader';
 import Button from '@common/button/Button';
 import Toast from '@common/toast/Toast';
-import MobileUnsupportedModal from '@common/modal/MobileUnsupportedModal';
 import { WIDE_TOAST_WIDTH } from '@common/toast/toastLayout';
 import AssignmentSubmitCard, {
   AssignmentSubmitItem,
@@ -24,7 +23,7 @@ import {
 import useTokenStore from 'src/store/useTokenStore';
 import { Black, Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
-import { containerCss, isMobileViewport } from '@utils/constant/breakpoint';
+import { containerCss, media } from '@utils/constant/breakpoint';
 
 const formatDueDate = (value: string) => {
   const date = new Date(value);
@@ -57,7 +56,6 @@ const AssignmentSubmit = () => {
   const [submitErrors, setSubmitErrors] = useState<Record<string, string>>({});
   const [retryIds, setRetryIds] = useState<string[] | null>(null);
   const [toastMessage, setToastMessage] = useState('');
-  const [isUnsupportedOpen, setIsUnsupportedOpen] = useState(false);
 
   useEffect(() => {
     if (hasHydrated && !tokenState.access) router.push('/login');
@@ -110,10 +108,6 @@ const AssignmentSubmit = () => {
     submittableEntries.length > 0 && submittableEntries.every((entry) => validityMap[entry.item.id]);
 
   const handleSubmit = async () => {
-    if (isMobileViewport()) {
-      setIsUnsupportedOpen(true);
-      return;
-    }
     setIsSubmitting(true);
     setSubmitErrors({});
 
@@ -204,8 +198,6 @@ const AssignmentSubmit = () => {
           onHidden={() => setToastMessage('')}
         />
       </ToastWrapper>
-
-      {isUnsupportedOpen && <MobileUnsupportedModal onClose={() => setIsUnsupportedOpen(false)} />}
     </Wrapper>
   );
 };
@@ -267,6 +259,10 @@ const SubmitButtonWrapper = styled.div`
 
   button {
     width: 100%;
+  }
+
+  ${media.mobileDevice} {
+    display: none;
   }
 `;
 
