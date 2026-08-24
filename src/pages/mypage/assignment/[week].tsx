@@ -6,6 +6,8 @@ import styled from 'styled-components';
 
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import Button from '@common/button/Button';
+import Toast from '@common/toast/Toast';
+import { WIDE_TOAST_WIDTH } from '@common/toast/toastLayout';
 import AssignmentSubmitCard, {
   AssignmentSubmitItem,
   AssignmentSubmitValue,
@@ -53,6 +55,7 @@ const AssignmentSubmit = () => {
   // 제출 실패 사유는 과제별로 해당 카드의 첨부 영역 아래에 표시한다
   const [submitErrors, setSubmitErrors] = useState<Record<string, string>>({});
   const [retryIds, setRetryIds] = useState<string[] | null>(null);
+  const [toastMessage, setToastMessage] = useState('');
 
   useEffect(() => {
     if (hasHydrated && !tokenState.access) router.push('/login');
@@ -181,6 +184,7 @@ const AssignmentSubmit = () => {
             errorMessage={submitErrors[item.id]}
             onValidityChange={handleValidityChange}
             onValueChange={handleValueChange}
+            onFileRejected={setToastMessage}
           />
         ))}
       </Content>
@@ -193,6 +197,16 @@ const AssignmentSubmit = () => {
           </Button>
         </SubmitButtonWrapper>
       )}
+
+      <ToastWrapper>
+        <Toast
+          variant="negative"
+          width={WIDE_TOAST_WIDTH}
+          text={toastMessage}
+          show={!!toastMessage}
+          onHidden={() => setToastMessage('')}
+        />
+      </ToastWrapper>
     </Wrapper>
   );
 };
@@ -262,4 +276,13 @@ const SubmitButtonWrapper = styled.div`
   button {
     width: 100%;
   }
+`;
+
+const ToastWrapper = styled.div`
+  position: fixed;
+  top: 110px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10001;
+  pointer-events: none;
 `;

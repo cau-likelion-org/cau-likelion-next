@@ -25,6 +25,9 @@ const FORMAT_LABEL: Record<SubmissionFormat, string> = {
 
 const DESCRIPTION_MAX_LENGTH = 300;
 
+const MAX_FILE_SIZE_MB = 100;
+const MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024;
+
 export interface AssignmentSubmitItem {
   id: string;
   name: string;
@@ -52,6 +55,7 @@ interface AssignmentSubmitCardProps {
   errorMessage?: string; // 제출 실패 사유
   onValidityChange?: (itemId: string, isValid: boolean) => void;
   onValueChange?: (itemId: string, value: AssignmentSubmitValue) => void;
+  onFileRejected?: (message: string) => void;
 }
 
 const AssignmentSubmitCard = ({
@@ -61,6 +65,7 @@ const AssignmentSubmitCard = ({
   errorMessage,
   onValidityChange,
   onValueChange,
+  onFileRejected,
 }: AssignmentSubmitCardProps) => {
   const prefill = isEditableSubmission(submission) ? submission : undefined;
   const [files, setFiles] = useState<File[]>([]);
@@ -85,8 +90,13 @@ const AssignmentSubmitCard = ({
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) setFiles((prev) => [...prev, file]);
     event.target.value = '';
+    if (!file) return;
+    if (file.size > MAX_FILE_SIZE) {
+      onFileRejected?.(`${MAX_FILE_SIZE_MB}MB 이하의 파일만 첨부할 수 있습니다.`);
+      return;
+    }
+    setFiles((prev) => [...prev, file]);
   };
 
   const handleFileRemove = (index: number) => {
