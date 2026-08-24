@@ -25,8 +25,8 @@ const SITE_MENU = [
 
 const MY_PAGE_MENU = [
   { title: '홈', routing: '/mypage' },
-  { title: '과제관리', routing: '/mypage/assignment' },
   { title: '출결관리', routing: '/mypage/attendance' },
+  { title: '과제관리', routing: '/mypage/assignment' },
 ];
 
 const MobileNavModal = ({ isModalOn, onClose }: { isModalOn: boolean; onClose?: () => void }) => {
@@ -55,7 +55,7 @@ const MobileNavModal = ({ isModalOn, onClose }: { isModalOn: boolean; onClose?: 
 
   return (
     <Wrapper $open={isModalOn} aria-hidden={!isModalOn}>
-      <Inner>
+      <Inner $isLogin={isLogin}>
         {isLogin ? (
           <>
             <MenuGroup $gap={26} $fullWidth>
@@ -77,9 +77,11 @@ const MobileNavModal = ({ isModalOn, onClose }: { isModalOn: boolean; onClose?: 
             <LogoutButton />
           </>
         ) : (
-          <Button variant="solid" color="primary" size="small" onClick={() => handleNavigate('/login')}>
-            로그인
-          </Button>
+          <LoginAction>
+            <Button variant="solid" color="primary" size="medium" onClick={() => handleNavigate('/login')}>
+              로그인
+            </Button>
+          </LoginAction>
         )}
 
         <Divider />
@@ -124,21 +126,24 @@ const Wrapper = styled.div<{ $open: boolean }>`
   }
 `;
 
-const Inner = styled.div`
+const Inner = styled.div<{ $isLogin: boolean }>`
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-start;
   gap: 40px;
   width: 100%;
-  padding: 10px 20px 40px;
+  padding: ${(props) => (props.$isLogin ? 10 : 20)}px 20px 40px;
+`;
+
+const LoginAction = styled.div`
+  align-self: flex-end;
 `;
 
 const MenuGroup = styled.div<{ $gap: number; $fullWidth?: boolean }>`
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-start;
   gap: ${(props) => props.$gap}px;
-  /* 메뉴 항목은 오른쪽 정렬이지만, 알림 설정 블록은 메뉴 영역 전체 폭을 쓴다 */
   width: ${(props) => (props.$fullWidth ? '100%' : 'auto')};
 `;
 
