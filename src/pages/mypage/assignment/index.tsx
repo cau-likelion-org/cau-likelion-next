@@ -31,7 +31,7 @@ import { excludeCommonPart, isAdminRole, isFullAdminRole } from '@utils/index';
 import { IcPlus } from '@assets/svg';
 import { Fill, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
-import { XS_MEDIA_QUERY, media } from '@utils/constant/breakpoint';
+import { isMobileViewport, media } from '@utils/constant/breakpoint';
 
 const formatDueDate = (value: string) => {
   const date = new Date(value);
@@ -125,7 +125,6 @@ const MyPageAssignment = () => {
   const canCreateAssignment = !isPresident || (!!ownPartName && currentPartName === ownPartName);
 
   const [isUnsupportedOpen, setIsUnsupportedOpen] = useState(false);
-  const isMobileViewport = () => typeof window !== 'undefined' && window.matchMedia(XS_MEDIA_QUERY).matches;
 
   const handleCreate = () => {
     if (isMobileViewport()) {
