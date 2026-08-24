@@ -572,10 +572,6 @@ const Intro = styled(PageHeader)`
 
   @media (max-width: 600px) {
     padding-top: 52px;
-
-    p:first-of-type {
-      ${typographyCss(Typography.display2.bold)}
-    }
   }
 `;
 
