@@ -33,22 +33,28 @@ const decodeIdTokenNonce = (idToken: string): string | null => {
 
 export type GoogleLoginRedirectResult = { idToken: string } | { error: string } | null;
 
-// URL fragment를 지우는 부수효과가 있어 두 번 호출하면 결과가 달라진다. React Strict Mode의
-// 이중 호출과 무관하게 페이지당 한 번만 파싱하도록 모듈 스코프에 캐싱한다.
+// Strict Mode 이중 호출 대응용 캐시. 다음 tick엔 비워서, 나중에 /login이 다시 마운트돼도
+// 이미 소비된 idToken을 재사용하지 않게 한다.
 let cachedResult: GoogleLoginRedirectResult | undefined;
+
+const setCachedResult = (result: GoogleLoginRedirectResult) => {
+  cachedResult = result;
+  setTimeout(() => {
+    cachedResult = undefined;
+  }, 0);
+  return result;
+};
 
 export const consumeGoogleLoginRedirect = (): GoogleLoginRedirectResult => {
   if (cachedResult !== undefined) return cachedResult;
 
   if (typeof window === 'undefined' || !window.location.hash) {
-    cachedResult = null;
-    return cachedResult;
+    return setCachedResult(null);
   }
 
   const params = new URLSearchParams(window.location.hash.slice(1));
   if (!params.has('id_token') && !params.has('error')) {
-    cachedResult = null;
-    return cachedResult;
+    return setCachedResult(null);
   }
 
   const storedNonce = sessionStorage.getItem(GOOGLE_OAUTH_NONCE_KEY);
@@ -57,12 +63,11 @@ export const consumeGoogleLoginRedirect = (): GoogleLoginRedirectResult => {
 
   const error = params.get('error');
   if (error) {
-    cachedResult = { error };
-    return cachedResult;
+    return setCachedResult({ error });
   }
 
   const idToken = params.get('id_token');
-  cachedResult =
-    !idToken || !storedNonce || decodeIdTokenNonce(idToken) !== storedNonce ? { error: 'invalid_token' } : { idToken };
-  return cachedResult;
+  return setCachedResult(
+    !idToken || !storedNonce || decodeIdTokenNonce(idToken) !== storedNonce ? { error: 'invalid_token' } : { idToken },
+  );
 };

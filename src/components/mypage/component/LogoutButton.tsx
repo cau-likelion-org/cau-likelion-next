@@ -27,11 +27,14 @@ const LogoutButton = () => {
       }
       await logout(tokenState.refresh);
     },
-    onSettled: () => {
-      setToken({ access: null, refresh: null });
-      queryClient.clear();
-      sessionStorage.setItem(LOGOUT_SUCCESS_FLAG_KEY, 'true');
-      router.push('/');
+    onSettled: async () => {
+      try {
+        await router.push('/');
+      } finally {
+        setToken({ access: null, refresh: null });
+        queryClient.clear();
+        sessionStorage.setItem(LOGOUT_SUCCESS_FLAG_KEY, 'true');
+      }
     },
   });
 
@@ -41,6 +44,7 @@ const LogoutButton = () => {
       color="assistive"
       size="small"
       onClick={() => logoutMutation.mutate()}
+      loading={logoutMutation.isPending}
       trailingIcon={<IcLogout width={16} height={16} />}
     >
       로그아웃
