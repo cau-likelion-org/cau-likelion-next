@@ -54,11 +54,12 @@ const WeeklyAssignmentCard = ({ group }: { group: WeeklyAssignmentGroup }) => {
   const [isOpen, setIsOpen] = useState(true);
   const weekBadge = WEEK_BADGE_CONFIG[group.status];
 
-  const handleOpenDetail = (card: AssignmentCard) => {
+  const openDetail = (card: AssignmentCard, mode: 'view' | 'edit') => {
     if (!card.id) return;
+    const ids = card.assignmentIds?.length ? { ids: card.assignmentIds.join(',') } : undefined;
     router.push({
       pathname: `/mypage/assignment/${card.id}`,
-      query: card.assignmentIds?.length ? { ids: card.assignmentIds.join(',') } : undefined,
+      query: mode === 'view' ? { ...ids, mode: 'view' } : ids,
     });
   };
 
@@ -81,11 +82,11 @@ const WeeklyAssignmentCard = ({ group }: { group: WeeklyAssignmentGroup }) => {
               role="button"
               tabIndex={0}
               aria-label={`${group.week}주차 세션 과제 상세 보기`}
-              onClick={() => handleOpenDetail(card)}
+              onClick={() => openDetail(card, 'view')}
               onKeyDown={(event) => {
                 if (event.key !== 'Enter' && event.key !== ' ') return;
                 event.preventDefault();
-                handleOpenDetail(card);
+                openDetail(card, 'view');
               }}
             >
               {card.items.map((item, itemIndex) => {
@@ -107,12 +108,12 @@ const WeeklyAssignmentCard = ({ group }: { group: WeeklyAssignmentGroup }) => {
                 {card.actionLabel && (
                   <>
                     <DesktopAction onClick={(event) => event.stopPropagation()}>
-                      <ActionButton size="medium" onClick={() => handleOpenDetail(card)}>
+                      <ActionButton size="medium" onClick={() => openDetail(card, 'edit')}>
                         {card.actionLabel}
                       </ActionButton>
                     </DesktopAction>
                     <MobileAction onClick={(event) => event.stopPropagation()}>
-                      <Button size="small" onClick={() => handleOpenDetail(card)}>
+                      <Button size="small" onClick={() => openDetail(card, 'edit')}>
                         {card.actionLabel}
                       </Button>
                     </MobileAction>

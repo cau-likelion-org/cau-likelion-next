@@ -186,6 +186,17 @@ export function canSubmitAssignment(status: AssignmentDisplayStatus, endDate: st
   return Date.now() <= deadline;
 }
 
+export type AssignmentActionLabel = '제출하기' | '재제출하기' | '수정하기';
+
+export function resolveAssignmentActionLabel(
+  submittable: { status: AssignmentDisplayStatus; submitted: boolean }[],
+): AssignmentActionLabel | undefined {
+  if (submittable.length === 0) return undefined;
+  if (submittable.some((item) => item.status === 'REJECTED')) return '재제출하기';
+  if (submittable.some((item) => !item.submitted)) return '제출하기';
+  return '수정하기';
+}
+
 export interface AssignmentFile {
   id: number;
   fileUrl: string;

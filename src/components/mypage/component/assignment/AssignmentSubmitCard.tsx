@@ -52,8 +52,10 @@ interface AssignmentSubmitCardProps {
   item: AssignmentSubmitItem;
   submission?: AssignmentSubmission;
   canSubmit?: boolean;
+  readOnly?: boolean;
   errorMessage?: string; // 제출 실패 사유
   onValidityChange?: (itemId: string, isValid: boolean) => void;
+  onDirtyChange?: (itemId: string, isDirty: boolean) => void;
   onValueChange?: (itemId: string, value: AssignmentSubmitValue) => void;
   onFileRejected?: (message: string) => void;
 }
@@ -62,8 +64,10 @@ const AssignmentSubmitCard = ({
   item,
   submission,
   canSubmit = true,
+  readOnly = false,
   errorMessage,
   onValidityChange,
+  onDirtyChange,
   onValueChange,
   onFileRejected,
 }: AssignmentSubmitCardProps) => {
@@ -78,18 +82,29 @@ const AssignmentSubmitCard = ({
 
   const isValid = item.format === 'file' ? files.length + keptFiles.length > 0 : link.trim() !== '';
 
-  const isMissed = !submission && !canSubmit;
-  const missedBadge = ITEM_BADGE_CONFIG.MISSED;
+  const isDirty =
+    files.length > 0 ||
+    keptFiles.length !== (prefill?.files.length ?? 0) ||
+    link !== (prefill?.url ?? '') ||
+    description !== (prefill?.content ?? '');
+
+  const isEditable = canSubmit && !readOnly;
+  const emptyBadge = ITEM_BADGE_CONFIG[canSubmit ? 'BEFORE_SUBMISSION' : 'MISSED'];
 
   useEffect(() => {
-    if (!canSubmit) return;
+    if (!isEditable) return;
     onValidityChange?.(item.id, isValid);
-  }, [item.id, isValid, canSubmit, onValidityChange]);
+  }, [item.id, isValid, isEditable, onValidityChange]);
 
   useEffect(() => {
-    if (!canSubmit) return;
+    if (!isEditable) return;
+    onDirtyChange?.(item.id, isDirty);
+  }, [item.id, isDirty, isEditable, onDirtyChange]);
+
+  useEffect(() => {
+    if (!isEditable) return;
     onValueChange?.(item.id, { files, keptFiles, link, description });
-  }, [item.id, files, keptFiles, link, description, canSubmit, onValueChange]);
+  }, [item.id, files, keptFiles, link, description, isEditable, onValueChange]);
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -121,7 +136,7 @@ const AssignmentSubmitCard = ({
         </FormatFieldWrapper>
       </Header>
 
-      {canSubmit && (
+      {isEditable && (
         <AttachmentBox>
           {item.format === 'file' ? (
             <Field>
@@ -201,21 +216,33 @@ const AssignmentSubmitCard = ({
               }
             />
           </Field>
+
+          {submission && (
+            <InlineStatus>
+              <SubmittedAt>{formatSubmittedAt(submission.submittedAt)}</SubmittedAt>
+              <ContentBadge
+                text={ITEM_BADGE_CONFIG[submission.displayStatus].label}
+                color={ITEM_BADGE_CONFIG[submission.displayStatus].color}
+                variant="solid"
+                size="medium"
+              />
+            </InlineStatus>
+          )}
         </AttachmentBox>
       )}
 
-      {isMissed && (
+      {!isEditable && !submission && (
         <SubmissionBox>
           <SubmissionGroup>
             <SubmissionHeader>
               <SubmissionTitle>제출 내역</SubmissionTitle>
-              <ContentBadge text={missedBadge.label} color={missedBadge.color} variant="solid" size="medium" />
+              <ContentBadge text={emptyBadge.label} color={emptyBadge.color} variant="solid" size="medium" />
             </SubmissionHeader>
           </SubmissionGroup>
         </SubmissionBox>
       )}
 
-      {submission && (
+      {!isEditable && submission && (
         <SubmissionBox>
           <SubmissionGroup>
             <SubmissionHeader>
@@ -366,6 +393,10 @@ const SubmissionMeta = styled.div`
   display: flex;
   align-items: center;
   gap: 20px;
+`;
+
+const InlineStatus = styled(SubmissionMeta)`
+  align-self: flex-end;
 `;
 
 const SubmittedAt = styled.p`
