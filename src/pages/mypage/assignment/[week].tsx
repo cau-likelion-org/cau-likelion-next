@@ -115,12 +115,15 @@ const AssignmentSubmit = () => {
       try {
         const files =
           item.format === 'file'
-            ? await Promise.all(
-                value.files.map(async (file) => ({
-                  fileUrl: await uploadAssignmentFile(tokenState, file),
-                  originalFilename: file.name,
-                })),
-              )
+            ? [
+                ...value.keptFiles,
+                ...(await Promise.all(
+                  value.files.map(async (file) => ({
+                    fileUrl: await uploadAssignmentFile(tokenState, file),
+                    originalFilename: file.name,
+                  })),
+                )),
+              ]
             : undefined;
         await submitAssignment(tokenState, Number(item.id), {
           content: value.description.trim() || undefined,
