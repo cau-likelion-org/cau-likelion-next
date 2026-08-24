@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useQuery } from '@tanstack/react-query';
@@ -8,7 +7,6 @@ import { UserProfile } from '@@types/request';
 import Button from '@common/button/Button';
 import LogoutButton from '@mypage/component/LogoutButton';
 import NotificationSetting from '@mypage/component/NotificationSetting';
-import MobileUnsupportedModal from '@common/modal/MobileUnsupportedModal';
 import { getUserProfile } from 'src/apis/account';
 import useTokenStore from 'src/store/useTokenStore';
 import useRecruitModalStore from 'src/store/useRecruitModalStore';
@@ -27,8 +25,8 @@ const SITE_MENU = [
 
 const MY_PAGE_MENU = [
   { title: '홈', routing: '/mypage' },
-  { title: '과제관리', routing: '/mypage/assignment' },
   { title: '출결관리', routing: '/mypage/attendance' },
+  { title: '과제관리', routing: '/mypage/assignment' },
 ];
 
 const MobileNavModal = ({ isModalOn, onClose }: { isModalOn: boolean; onClose?: () => void }) => {
@@ -37,7 +35,6 @@ const MobileNavModal = ({ isModalOn, onClose }: { isModalOn: boolean; onClose?: 
   const hasHydrated = useTokenStore((state) => state.hasHydrated);
   const isLogin = hasHydrated && !!access;
 
-  const [isUnsupportedOpen, setIsUnsupportedOpen] = useState(false);
   const openRecruitClosedAlert = useRecruitModalStore((state) => state.openClosedAlert);
 
   const { data: userProfile } = useQuery<UserProfile>({
@@ -56,15 +53,9 @@ const MobileNavModal = ({ isModalOn, onClose }: { isModalOn: boolean; onClose?: 
     router.push(routing);
   };
 
-  // 관리자 페이지는 데스크톱 전용이라 모바일에서는 이동 대신 안내 모달을 띄운다
-  const handleAdminClick = () => {
-    onClose?.();
-    setIsUnsupportedOpen(true);
-  };
-
   return (
     <Wrapper $open={isModalOn} aria-hidden={!isModalOn}>
-      <Inner>
+      <Inner $isLogin={isLogin}>
         {isLogin ? (
           <>
             <MenuGroup $gap={26} $fullWidth>
@@ -76,9 +67,9 @@ const MobileNavModal = ({ isModalOn, onClose }: { isModalOn: boolean; onClose?: 
               ))}
               {/* 관리자 메뉴는 중하하 관리자에게만 노출 */}
               {!!userProfile && canManageSitePages(userProfile.role) && (
-                <MenuItem type="button" onClick={handleAdminClick}>
+                <AdminMenuItem type="button" onClick={() => handleNavigate('/mypage/admin/landing')}>
                   관리자
-                </MenuItem>
+                </AdminMenuItem>
               )}
               {/* 과제 알림 설정 — 아기사자에게만 노출된다 (컴포넌트가 역할을 직접 판별) */}
               <NotificationSetting guideAlign="left" />
@@ -86,9 +77,11 @@ const MobileNavModal = ({ isModalOn, onClose }: { isModalOn: boolean; onClose?: 
             <LogoutButton />
           </>
         ) : (
-          <Button variant="solid" color="primary" size="small" onClick={() => handleNavigate('/login')}>
-            로그인
-          </Button>
+          <LoginAction>
+            <Button variant="solid" color="primary" size="medium" onClick={() => handleNavigate('/login')}>
+              로그인
+            </Button>
+          </LoginAction>
         )}
 
         <Divider />
@@ -107,8 +100,6 @@ const MobileNavModal = ({ isModalOn, onClose }: { isModalOn: boolean; onClose?: 
           )}
         </MenuGroup>
       </Inner>
-
-      {isUnsupportedOpen && <MobileUnsupportedModal onClose={() => setIsUnsupportedOpen(false)} />}
     </Wrapper>
   );
 };
@@ -135,21 +126,24 @@ const Wrapper = styled.div<{ $open: boolean }>`
   }
 `;
 
-const Inner = styled.div`
+const Inner = styled.div<{ $isLogin: boolean }>`
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-start;
   gap: 40px;
   width: 100%;
-  padding: 10px 20px 40px;
+  padding: ${(props) => (props.$isLogin ? 10 : 20)}px 20px 40px;
+`;
+
+const LoginAction = styled.div`
+  align-self: flex-end;
 `;
 
 const MenuGroup = styled.div<{ $gap: number; $fullWidth?: boolean }>`
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-start;
   gap: ${(props) => props.$gap}px;
-  /* 메뉴 항목은 오른쪽 정렬이지만, 알림 설정 블록은 메뉴 영역 전체 폭을 쓴다 */
   width: ${(props) => (props.$fullWidth ? '100%' : 'auto')};
 `;
 
@@ -171,6 +165,12 @@ const MenuItem = styled.button`
   ${menuItemCss}
   color: ${Black.b900};
   ${typographyCss(Typography.headline1.bold)}
+`;
+
+const AdminMenuItem = styled(MenuItem)`
+  ${media.mobileDevice} {
+    display: none;
+  }
 `;
 
 const MenuLink = styled(Link)`

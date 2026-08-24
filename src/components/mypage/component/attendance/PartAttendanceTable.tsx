@@ -474,7 +474,7 @@ const EditButton = styled.button`
 const EditActions = styled.div`
   display: flex;
 
-  ${media.xs} {
+  ${media.mobileDevice} {
     display: none;
   }
 `;

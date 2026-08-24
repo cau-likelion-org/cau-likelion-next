@@ -4,12 +4,11 @@ import styled from 'styled-components';
 
 import Button from '@common/button/Button';
 import ContentBadge from '@common/badge/ContentBadge';
-import MobileUnsupportedModal from '@common/modal/MobileUnsupportedModal';
 import { AssignmentDisplayStatus } from 'src/apis/assignment';
 import { IcChevronDown } from '@assets/svg';
 import { BackgroundWhite, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
-import { isMobileViewport, media } from '@utils/constant/breakpoint';
+import { media } from '@utils/constant/breakpoint';
 
 export interface AssignmentItem {
   name: string;
@@ -22,7 +21,7 @@ export interface AssignmentCard {
   assignmentIds?: number[];
   items: AssignmentItem[];
   dueDate: string;
-  actionLabel?: '재제출하기' | '제출하기';
+  actionLabel?: '재제출하기' | '제출하기' | '수정하기';
 }
 
 export interface WeeklyAssignmentGroup {
@@ -53,7 +52,6 @@ export const ITEM_BADGE_CONFIG: Record<AssignmentDisplayStatus, { label: string;
 const WeeklyAssignmentCard = ({ group }: { group: WeeklyAssignmentGroup }) => {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(true);
-  const [isUnsupportedOpen, setIsUnsupportedOpen] = useState(false);
   const weekBadge = WEEK_BADGE_CONFIG[group.status];
 
   const handleOpenDetail = (card: AssignmentCard) => {
@@ -62,14 +60,6 @@ const WeeklyAssignmentCard = ({ group }: { group: WeeklyAssignmentGroup }) => {
       pathname: `/mypage/assignment/${card.id}`,
       query: card.assignmentIds?.length ? { ids: card.assignmentIds.join(',') } : undefined,
     });
-  };
-
-  const handleSubmitAction = (card: AssignmentCard) => {
-    if (isMobileViewport()) {
-      setIsUnsupportedOpen(true);
-      return;
-    }
-    handleOpenDetail(card);
   };
 
   return (
@@ -117,12 +107,12 @@ const WeeklyAssignmentCard = ({ group }: { group: WeeklyAssignmentGroup }) => {
                 {card.actionLabel && (
                   <>
                     <DesktopAction onClick={(event) => event.stopPropagation()}>
-                      <ActionButton size="medium" onClick={() => handleSubmitAction(card)}>
+                      <ActionButton size="medium" onClick={() => handleOpenDetail(card)}>
                         {card.actionLabel}
                       </ActionButton>
                     </DesktopAction>
                     <MobileAction onClick={(event) => event.stopPropagation()}>
-                      <Button size="small" onClick={() => handleSubmitAction(card)}>
+                      <Button size="small" onClick={() => handleOpenDetail(card)}>
                         {card.actionLabel}
                       </Button>
                     </MobileAction>
@@ -132,7 +122,6 @@ const WeeklyAssignmentCard = ({ group }: { group: WeeklyAssignmentGroup }) => {
             </GroupCard>
           );
         })}
-      {isUnsupportedOpen && <MobileUnsupportedModal onClose={() => setIsUnsupportedOpen(false)} />}
     </Wrapper>
   );
 };
@@ -301,6 +290,10 @@ const MobileAction = styled.div`
 
   ${media.xs} {
     display: block;
+  }
+
+  ${media.mobileDevice} {
+    display: none;
   }
 `;
 

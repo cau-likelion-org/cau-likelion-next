@@ -11,7 +11,6 @@ import CircularLoading from '@common/loading/CircularLoading';
 import EmptyState from '@common/emptyState/EmptyState';
 import PageLoadingGate from '@common/pageGate/PageLoadingGate';
 import MyPageShell from '@mypage/component/MyPageShell';
-import MobileUnsupportedModal from '@common/modal/MobileUnsupportedModal';
 import PartSelect from '@mypage/component/PartSelect';
 import StaffAssignmentCard from '@mypage/component/assignment/StaffAssignmentCard';
 import WeeklyAssignmentCard, { WeeklyAssignmentGroup } from '@mypage/component/assignment/WeeklyAssignmentCard';
@@ -31,7 +30,7 @@ import { excludeCommonPart, isAdminRole, isFullAdminRole } from '@utils/index';
 import { IcPlus } from '@assets/svg';
 import { Fill, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
-import { isMobileViewport, media } from '@utils/constant/breakpoint';
+import { media } from '@utils/constant/breakpoint';
 
 const formatDueDate = (value: string) => {
   const date = new Date(value);
@@ -61,7 +60,9 @@ const groupByDeadline = (assignments: AssignmentSummary[]) => {
 const resolveActionLabel = (assignments: AssignmentSummary[]) => {
   const submittable = assignments.filter((assignment) => canSubmitAssignment(assignment.status, assignment.endDate));
   if (submittable.length === 0) return undefined;
-  return submittable.every((assignment) => !assignment.submittedAt) ? '제출하기' : '재제출하기';
+  if (submittable.some((assignment) => assignment.status === 'REJECTED')) return '재제출하기';
+  if (submittable.some((assignment) => !assignment.submittedAt)) return '제출하기';
+  return '수정하기';
 };
 
 const MyPageAssignment = () => {
@@ -124,21 +125,11 @@ const MyPageAssignment = () => {
   const selectedPartId = parts.find((part) => part.name === currentPartName)?.id;
   const canCreateAssignment = !isPresident || (!!ownPartName && currentPartName === ownPartName);
 
-  const [isUnsupportedOpen, setIsUnsupportedOpen] = useState(false);
-
   const handleCreate = () => {
-    if (isMobileViewport()) {
-      setIsUnsupportedOpen(true);
-      return;
-    }
     router.push('/mypage/assignment/create');
   };
 
   const handleDetail = (week: number) => {
-    if (isMobileViewport()) {
-      setIsUnsupportedOpen(true);
-      return;
-    }
     router.push({
       pathname: `/mypage/assignment/status/${week}`,
       query: isPresident && selectedPartId != null ? { partId: selectedPartId } : undefined,
@@ -261,7 +252,6 @@ const MyPageAssignment = () => {
       <ToastWrapper>
         <Toast variant="positive" text={toastMessage} show={!!toastMessage} onHidden={() => setToastMessage('')} />
       </ToastWrapper>
-      {isUnsupportedOpen && <MobileUnsupportedModal onClose={() => setIsUnsupportedOpen(false)} />}
     </>
   );
 };
@@ -315,6 +305,10 @@ const CreateButton = styled.button`
     background-color: ${Fill.normal};
     color: ${Label.neutral};
     ${typographyCss({ ...Typography.label2.bold, fontWeight: 500 })}
+  }
+
+  ${media.mobileDevice} {
+    display: none;
   }
 `;
 

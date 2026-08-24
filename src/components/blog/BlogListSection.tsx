@@ -10,7 +10,6 @@ import PaginationNavigation from '@common/pagination/PaginationNavigation';
 import useListboxSelect from 'src/hooks/useListboxSelect';
 import { getBlogs, BlogCategory } from 'src/apis/blog';
 import { toDateString } from '@utils/index';
-import { Typography, typographyCss } from '@utils/constant/typography';
 
 import BlogCard from './component/BlogCard';
 import { containerCss, media } from '@utils/constant/breakpoint';
@@ -197,10 +196,6 @@ const Intro = styled(PageHeader)`
   @media (max-width: 600px) {
     padding-top: 52px;
     padding-bottom: 52px;
-
-    p:first-of-type {
-      ${typographyCss(Typography.display2.bold)}
-    }
   }
 `;
 

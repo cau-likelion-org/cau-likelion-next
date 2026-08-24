@@ -81,10 +81,6 @@ const Header = styled(PageHeader)`
     padding-top: 43px;
     padding-bottom: 43px;
 
-    p:first-of-type {
-      ${typographyCss(Typography.display2.bold)}
-    }
-
     p:last-of-type {
       ${typographyCss(Typography.label1Normal.medium)}
     }
