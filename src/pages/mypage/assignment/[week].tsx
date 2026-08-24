@@ -5,6 +5,7 @@ import axios from 'axios';
 import styled from 'styled-components';
 
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
+import BackHeader from '@common/header/BackHeader';
 import Button from '@common/button/Button';
 import Toast from '@common/toast/Toast';
 import { WIDE_TOAST_WIDTH } from '@common/toast/toastLayout';
@@ -12,7 +13,6 @@ import AssignmentSubmitCard, {
   AssignmentSubmitItem,
   AssignmentSubmitValue,
 } from '@mypage/component/assignment/AssignmentSubmitCard';
-import { IcChevronLeft } from '@assets/svg';
 import {
   MyAssignmentHistoryWeekGroup,
   canSubmitAssignment,
@@ -21,7 +21,7 @@ import {
   uploadAssignmentFile,
 } from 'src/apis/assignment';
 import useTokenStore from 'src/store/useTokenStore';
-import { Black, Label, Orange } from '@utils/constant/color';
+import { Black, Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { containerCss } from '@utils/constant/breakpoint';
 
@@ -154,49 +154,40 @@ const AssignmentSubmit = () => {
 
   return (
     <Wrapper>
-      <TopRow>
-        <Button
-          variant="outlined"
-          color="assistive"
-          leadingIcon={<IcChevronLeft width={18} height={18} />}
-          onClick={handleClose}
-        >
-          닫기
-        </Button>
-        <PageTitle>과제 제출하기</PageTitle>
-      </TopRow>
+      <BackHeader label="과제 목록으로 돌아가기" onClick={handleClose} />
+      <SubmitPageContent>
+        <Content>
+          <SessionRow>
+            <SessionTitle>{week}주차 세션 과제</SessionTitle>
+            {dueDate && (
+              <DueDate>
+                마감일 <span>ㅣ</span> {formatDueDate(dueDate)}
+              </DueDate>
+            )}
+          </SessionRow>
+          {entries.map(({ item, submission, canSubmit }) => (
+            <AssignmentSubmitCard
+              key={item.id}
+              item={item}
+              submission={submission}
+              canSubmit={canSubmit}
+              errorMessage={submitErrors[item.id]}
+              onValidityChange={handleValidityChange}
+              onValueChange={handleValueChange}
+              onFileRejected={setToastMessage}
+            />
+          ))}
+        </Content>
 
-      <Content>
-        <SessionRow>
-          <SessionTitle>{week}주차 세션 과제</SessionTitle>
-          {dueDate && (
-            <DueDate>
-              마감일 <span>ㅣ</span> {formatDueDate(dueDate)}
-            </DueDate>
-          )}
-        </SessionRow>
-        {entries.map(({ item, submission, canSubmit }) => (
-          <AssignmentSubmitCard
-            key={item.id}
-            item={item}
-            submission={submission}
-            canSubmit={canSubmit}
-            errorMessage={submitErrors[item.id]}
-            onValidityChange={handleValidityChange}
-            onValueChange={handleValueChange}
-            onFileRejected={setToastMessage}
-          />
-        ))}
-      </Content>
-
-      {/* 제출 가능한 과제가 하나도 없으면(승인 대기·제출 완료) 제출 내역만 보여준다 */}
-      {submittableEntries.length > 0 && (
-        <SubmitButtonWrapper>
-          <Button size="large" disabled={!isSubmitEnabled || isSubmitting} onClick={handleSubmit}>
-            제출하기
-          </Button>
-        </SubmitButtonWrapper>
-      )}
+        {/* 제출 가능한 과제가 하나도 없으면(승인 대기·제출 완료) 제출 내역만 보여준다 */}
+        {submittableEntries.length > 0 && (
+          <SubmitButtonWrapper>
+            <Button size="large" disabled={!isSubmitEnabled || isSubmitting} onClick={handleSubmit}>
+              제출하기
+            </Button>
+          </SubmitButtonWrapper>
+        )}
+      </SubmitPageContent>
 
       <ToastWrapper>
         <Toast
@@ -221,23 +212,16 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 80px;
   ${containerCss}
-  padding-top: 40px;
   padding-bottom: 80px;
 `;
 
-const TopRow = styled.div`
+const SubmitPageContent = styled.div`
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
+  gap: 80px;
   width: 100%;
-`;
-
-const PageTitle = styled.h1`
-  margin: 0;
-  color: ${Orange.o500};
-  ${typographyCss(Typography.display2.bold)}
 `;
 
 const Content = styled.div`

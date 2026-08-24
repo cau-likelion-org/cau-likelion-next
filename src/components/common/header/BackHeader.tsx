@@ -1,8 +1,9 @@
 import styled from 'styled-components';
 
 import { IcChevronLeftThick } from '@assets/svg';
-import { BackgroundColor, Orange } from '@utils/constant/color';
+import { Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
+import { media } from '@utils/constant/breakpoint';
 
 interface BackHeaderProps {
   label: string;
@@ -11,42 +12,48 @@ interface BackHeaderProps {
 
 const BackHeader = ({ label, onClick }: BackHeaderProps) => (
   <Wrapper>
-    <IconButton type="button" onClick={onClick} aria-label={label}>
-      <IcChevronLeftThick width={20} height={20} />
-    </IconButton>
-    <Label>{label}</Label>
+    <ClickableRow type="button" onClick={onClick}>
+      <IconSlot>
+        <IcChevronLeftThick width={20} height={20} />
+      </IconSlot>
+      <Label>{label}</Label>
+    </ClickableRow>
   </Wrapper>
 );
 
 export default BackHeader;
 
 const Wrapper = styled.div`
-  display: flex;
-  align-items: center;
   width: 100%;
   padding: 32px 0;
+
+  ${media.sm} {
+    padding: 80px 0 52px;
+  }
 `;
 
-const IconButton = styled.button`
+const ClickableRow = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  background: none;
+  cursor: pointer;
+`;
+
+const IconSlot = styled.span`
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  width: 40px;
-  height: 40px;
-  padding: 10px;
-  border: none;
-  border-radius: 10px;
-  background-color: ${BackgroundColor};
   color: ${Orange.o500};
-  cursor: pointer;
-
-  &:hover {
-    background-color: rgba(255, 96, 0, 0.08);
-  }
 `;
 
 const Label = styled.span`
   color: ${Orange.o500};
   ${typographyCss(Typography.heading2.bold)}
+
+  ${media.sm} {
+    ${typographyCss(Typography.title3.bold)}
+  }
 `;

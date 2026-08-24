@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
 
+import BackHeader from '@common/header/BackHeader';
 import Select from '@common/select/Select';
 import ListboxOptions from '@common/select/ListboxOptions';
 import TextField from '@common/textField/TextField';
@@ -13,7 +14,7 @@ import useListboxSelect from 'src/hooks/useListboxSelect';
 import useScrollToFirstError from 'src/hooks/useScrollToFirstError';
 import { AssignmentCreateRequest, AssignmentSubmitType } from 'src/apis/assignment';
 import { isUnfilled } from '@utils/index';
-import { IcCalendar, IcChevronLeft, IcCircleExclamation } from '@assets/svg';
+import { IcCalendar, IcCircleExclamation } from '@assets/svg';
 import { BackgroundWhite, Fill, Label, Line, Material, Orange, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { containerCss } from '@utils/constant/breakpoint';
@@ -185,117 +186,112 @@ const AssignmentCreateForm = ({
 
   return (
     <Page ref={formRef}>
-      <TopBar>
-        <CloseButton type="button" onClick={handleClose}>
-          <IcChevronLeft width={16} height={16} />
-          닫기
-        </CloseButton>
-        <PageTitle>{isEdit ? '과제 수정하기' : '과제 생성하기'}</PageTitle>
-      </TopBar>
-
-      <TopFields>
-        <TopField>
-          <StaticField>
-            <FieldHeadingSmall>
-              파트 구분<Required>*</Required>
-            </FieldHeadingSmall>
-            <ReadonlyBox>{partName}</ReadonlyBox>
-          </StaticField>
-        </TopField>
-        <TopField>
-          {isEdit ? (
+      <BackHeader label="과제 목록으로 돌아가기" onClick={handleClose} />
+      <FormContent>
+        <TopFields>
+          <TopField>
             <StaticField>
               <FieldHeadingSmall>
-                주차 구분<Required>*</Required>
+                파트 구분<Required>*</Required>
               </FieldHeadingSmall>
-              <ReadonlyBox>{week}</ReadonlyBox>
+              <ReadonlyBox>{partName}</ReadonlyBox>
             </StaticField>
-          ) : (
-            <TextField
-              heading="주차 구분"
-              required
-              placeholder="숫자 입력"
-              inputMode="numeric"
-              value={week}
-              onChange={(event) => setWeek(event.target.value.replace(/[^0-9]/g, ''))}
-              status={showErrors && isUnfilled(week) ? 'negative' : 'normal'}
-              description={showErrors && isUnfilled(week) ? '주차를 입력해 주세요.' : undefined}
-            />
-          )}
-        </TopField>
-      </TopFields>
-
-      <Cards>
-        {drafts.map((draft, index) => (
-          <Card key={index}>
-            <Field>
-              <FieldHeadingLarge>
-                과제 이름<Required $large>*</Required>
-              </FieldHeadingLarge>
-              <CompactTextarea
-                resize="fixed"
-                placeholder={`텍스트 입력(국문 포함 ${TITLE_MAX_KO}자/영문 ${TITLE_MAX_EN}자)`}
-                maxLength={getTitleMax(draft.title)}
-                value={draft.title}
-                onChange={(event) => handleTitleChange(index, event.target.value)}
-                status={
-                  showErrors && (isUnfilled(draft.title) || draft.title.length > getTitleMax(draft.title))
-                    ? 'negative'
-                    : 'normal'
-                }
-                description={
-                  showErrors && isUnfilled(draft.title)
-                    ? '과제 이름을 입력해 주세요.'
-                    : showErrors && draft.title.length > getTitleMax(draft.title)
-                      ? `${getTitleMax(draft.title)}자 이내로 입력해 주세요.`
-                      : undefined
-                }
-                bottomTrailingContent={<CharCount>{draft.title.length}</CharCount>}
+          </TopField>
+          <TopField>
+            {isEdit ? (
+              <StaticField>
+                <FieldHeadingSmall>
+                  주차 구분<Required>*</Required>
+                </FieldHeadingSmall>
+                <ReadonlyBox>{week}</ReadonlyBox>
+              </StaticField>
+            ) : (
+              <TextField
+                heading="주차 구분"
+                required
+                placeholder="숫자 입력"
+                inputMode="numeric"
+                value={week}
+                onChange={(event) => setWeek(event.target.value.replace(/[^0-9]/g, ''))}
+                status={showErrors && isUnfilled(week) ? 'negative' : 'normal'}
+                description={showErrors && isUnfilled(week) ? '주차를 입력해 주세요.' : undefined}
               />
-            </Field>
+            )}
+          </TopField>
+        </TopFields>
 
-            <Field>
-              <FieldHeadingLarge>
-                과제 설명<Required $large>*</Required>
-              </FieldHeadingLarge>
-              <CompactTextarea
-                resize="fixed"
-                placeholder="과제에 대한 설명을 작성해주세요."
-                maxLength={DETAIL_MAX}
-                value={draft.detail}
-                onChange={(event) => updateDraft(index, { detail: event.target.value })}
-                status={showErrors && isUnfilled(draft.detail) ? 'negative' : 'normal'}
-                description={showErrors && isUnfilled(draft.detail) ? '과제 설명을 입력해 주세요.' : undefined}
-                bottomTrailingContent={
-                  <CharCount>
-                    {draft.detail.length}/{DETAIL_MAX}
-                  </CharCount>
-                }
-              />
-            </Field>
-
-            <CardBottom>
-              <BottomLeft>
-                <DateField
-                  value={draft.endDate}
-                  onChange={(value) => updateDraft(index, { endDate: value })}
-                  invalid={showErrors && !draft.endDate}
+        <Cards>
+          {drafts.map((draft, index) => (
+            <Card key={index}>
+              <Field>
+                <FieldHeadingLarge>
+                  과제 이름<Required $large>*</Required>
+                </FieldHeadingLarge>
+                <CompactTextarea
+                  resize="fixed"
+                  placeholder={`텍스트 입력(국문 포함 ${TITLE_MAX_KO}자/영문 ${TITLE_MAX_EN}자)`}
+                  maxLength={getTitleMax(draft.title)}
+                  value={draft.title}
+                  onChange={(event) => handleTitleChange(index, event.target.value)}
+                  status={
+                    showErrors && (isUnfilled(draft.title) || draft.title.length > getTitleMax(draft.title))
+                      ? 'negative'
+                      : 'normal'
+                  }
+                  description={
+                    showErrors && isUnfilled(draft.title)
+                      ? '과제 이름을 입력해 주세요.'
+                      : showErrors && draft.title.length > getTitleMax(draft.title)
+                        ? `${getTitleMax(draft.title)}자 이내로 입력해 주세요.`
+                        : undefined
+                  }
+                  bottomTrailingContent={<CharCount>{draft.title.length}</CharCount>}
                 />
-                <SubmitTypeSelect value={draft.type} onChange={(type) => updateDraft(index, { type })} />
-              </BottomLeft>
-              {(isEdit || drafts.length > 1) && <RemoveCardButton onClick={() => handleRemoveCard(index)} />}
-            </CardBottom>
-          </Card>
-        ))}
-      </Cards>
+              </Field>
 
-      <AddCardButton onClick={addDraft} ariaLabel="과제 추가" />
+              <Field>
+                <FieldHeadingLarge>
+                  과제 설명<Required $large>*</Required>
+                </FieldHeadingLarge>
+                <CompactTextarea
+                  resize="fixed"
+                  placeholder="과제에 대한 설명을 작성해주세요."
+                  maxLength={DETAIL_MAX}
+                  value={draft.detail}
+                  onChange={(event) => updateDraft(index, { detail: event.target.value })}
+                  status={showErrors && isUnfilled(draft.detail) ? 'negative' : 'normal'}
+                  description={showErrors && isUnfilled(draft.detail) ? '과제 설명을 입력해 주세요.' : undefined}
+                  bottomTrailingContent={
+                    <CharCount>
+                      {draft.detail.length}/{DETAIL_MAX}
+                    </CharCount>
+                  }
+                />
+              </Field>
 
-      <SubmitRow>
-        <SubmitButton type="button" disabled={submitting} onClick={handleSubmit}>
-          {isEdit ? '저장하기' : '생성하기'}
-        </SubmitButton>
-      </SubmitRow>
+              <CardBottom>
+                <BottomLeft>
+                  <DateField
+                    value={draft.endDate}
+                    onChange={(value) => updateDraft(index, { endDate: value })}
+                    invalid={showErrors && !draft.endDate}
+                  />
+                  <SubmitTypeSelect value={draft.type} onChange={(type) => updateDraft(index, { type })} />
+                </BottomLeft>
+                {(isEdit || drafts.length > 1) && <RemoveCardButton onClick={() => handleRemoveCard(index)} />}
+              </CardBottom>
+            </Card>
+          ))}
+        </Cards>
+
+        <AddCardButton onClick={addDraft} ariaLabel="과제 추가" />
+
+        <SubmitRow>
+          <SubmitButton type="button" disabled={submitting} onClick={handleSubmit}>
+            {isEdit ? '저장하기' : '생성하기'}
+          </SubmitButton>
+        </SubmitRow>
+      </FormContent>
 
       {showLeaveConfirm && (
         <LeaveOverlay role="dialog" aria-modal="true">
@@ -429,37 +425,14 @@ const DateField = ({
 const Page = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 24px;
   ${containerCss}
-  padding-top: 40px;
   padding-bottom: 80px;
 `;
 
-const TopBar = styled.div`
+const FormContent = styled.div`
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  margin-bottom: 12px;
-`;
-
-const CloseButton = styled.button`
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-  padding: 8px 14px 8px 10px;
-  border: 1px solid ${Line.normal};
-  border-radius: 10px;
-  background: none;
-  color: ${Label.normal};
-  cursor: pointer;
-  ${typographyCss(Typography.body2Normal.medium)}
-`;
-
-const PageTitle = styled.h1`
-  margin: 0;
-  color: ${Orange.o500};
-  ${typographyCss(Typography.title2.bold)}
+  flex-direction: column;
+  gap: 24px;
 `;
 
 const TopFields = styled.div`
