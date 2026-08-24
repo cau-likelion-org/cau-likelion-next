@@ -78,6 +78,9 @@ const AssignmentSubmitCard = ({
 
   const isValid = item.format === 'file' ? files.length + keptFiles.length > 0 : link.trim() !== '';
 
+  const isMissed = !submission && !canSubmit;
+  const missedBadge = ITEM_BADGE_CONFIG.MISSED;
+
   useEffect(() => {
     if (!canSubmit) return;
     onValidityChange?.(item.id, isValid);
@@ -199,6 +202,17 @@ const AssignmentSubmitCard = ({
             />
           </Field>
         </AttachmentBox>
+      )}
+
+      {isMissed && (
+        <SubmissionBox>
+          <SubmissionGroup>
+            <SubmissionHeader>
+              <SubmissionTitle>제출 내역</SubmissionTitle>
+              <ContentBadge text={missedBadge.label} color={missedBadge.color} variant="solid" size="medium" />
+            </SubmissionHeader>
+          </SubmissionGroup>
+        </SubmissionBox>
       )}
 
       {submission && (
