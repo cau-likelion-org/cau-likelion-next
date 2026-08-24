@@ -1,4 +1,4 @@
-import { ReactElement, useState } from 'react';
+import { ReactElement, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import styled from 'styled-components';
@@ -26,10 +26,15 @@ const AssignmentEditPage = () => {
   const queryClient = useQueryClient();
 
   const week = Number(router.query.week);
-  // 회장이 다른 파트를 보고 넘어온 경우 그 파트로 조회 (없으면 본인 파트)
   const partId = router.query.partId ? Number(router.query.partId) : null;
 
   const { userProfile, isStaff } = useStaffOnly();
+  const isOtherPart = partId != null && !!userProfile && partId !== userProfile.partId;
+
+  useEffect(() => {
+    if (!isOtherPart) return;
+    router.replace({ pathname: `/mypage/assignment/status/${week}`, query: partId != null ? { partId } : undefined });
+  }, [isOtherPart, partId, week, router]);
 
   const assignmentsQueryKey = partId != null ? ['presidentAssignments', partId] : ['staffAssignments'];
   const { data: weekGroups } = useQuery<AssignmentWeekGroup[]>({
@@ -107,7 +112,7 @@ const AssignmentEditPage = () => {
 
   // 운영진이 아니면 훅이 리다이렉트하므로 그동안 아무것도 그리지 않는다.
   // weekGroups는 아직 안 왔을 때만 대기 (주차에 과제가 없어도 폼은 열려야 함)
-  if (!userProfile || !isStaff || !weekGroups || !details) return null;
+  if (!userProfile || !isStaff || isOtherPart || !weekGroups || !details) return null;
 
   return (
     <>

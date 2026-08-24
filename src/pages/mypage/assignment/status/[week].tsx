@@ -40,7 +40,8 @@ const MyPageAssignmentDetail = () => {
   // 회장이 목록에서 다른 파트를 보고 넘어온 경우 그 파트로 조회 (없으면 본인 파트)
   const partId = router.query.partId ? Number(router.query.partId) : null;
 
-  const { isStaff } = useStaffOnly();
+  const { userProfile, isStaff } = useStaffOnly();
+  const isOtherPart = partId != null && !!userProfile && partId !== userProfile.partId;
 
   // 해당 주차의 과제 목록 (탭/카드용)
   const { data: staffWeekGroups } = useQuery<AssignmentWeekGroup[]>({
@@ -107,6 +108,12 @@ const MyPageAssignmentDetail = () => {
   const [viewTarget, setViewTarget] = useState<AssignmentSubmission | null>(null);
   const [rejectTarget, setRejectTarget] = useState<number | null>(null);
 
+  const blockOtherPart = (action: '평가' | '수정') => {
+    if (!isOtherPart) return false;
+    showToast('negative', `본인 파트의 과제만 ${action}할 수 있습니다.`);
+    return true;
+  };
+
   const blockBeforeDeadline = (deadline: string) => {
     if (Date.now() >= new Date(deadline).getTime()) return false;
     showToast('negative', '과제 마감일 이전 승인/반려 처리는 불가능합니다.');
@@ -114,12 +121,12 @@ const MyPageAssignmentDetail = () => {
   };
 
   const handleApprove = (submitId: number, deadline: string) => {
-    if (blockBeforeDeadline(deadline)) return;
+    if (blockOtherPart('평가') || blockBeforeDeadline(deadline)) return;
     evaluateMutation.mutate({ submitId, payload: { status: 'APPROVED' } });
   };
 
   const handleReject = (submitId: number, deadline: string) => {
-    if (blockBeforeDeadline(deadline)) return;
+    if (blockOtherPart('평가') || blockBeforeDeadline(deadline)) return;
     setRejectTarget(submitId);
   };
 
@@ -151,12 +158,13 @@ const MyPageAssignmentDetail = () => {
           variant="solid"
           color="assistive"
           size="medium"
-          onClick={() =>
+          onClick={() => {
+            if (blockOtherPart('수정')) return;
             router.push({
               pathname: `/mypage/assignment/edit/${week}`,
               query: partId != null ? { partId } : undefined,
-            })
-          }
+            });
+          }}
         >
           과제 수정
         </Button>
@@ -171,7 +179,15 @@ const MyPageAssignmentDetail = () => {
             size="large"
           />
         )}
-        <Button variant="outlined" color="assistive" size="medium" onClick={() => setDeadlineOpen(true)}>
+        <Button
+          variant="outlined"
+          color="assistive"
+          size="medium"
+          onClick={() => {
+            if (blockOtherPart('수정')) return;
+            setDeadlineOpen(true);
+          }}
+        >
           개별 마감일 변경
         </Button>
       </TabRow>

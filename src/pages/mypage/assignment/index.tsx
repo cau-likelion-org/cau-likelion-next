@@ -118,10 +118,12 @@ const MyPageAssignment = () => {
 
   const partOptions = parts.map((part) => part.name);
   const [selectedPartName, setSelectedPartName] = useState('');
-  const currentPartName = selectedPartName || partOptions[0] || '';
+  const myPartName = userProfile?.partName ?? '';
+  const ownPartName = partOptions.includes(myPartName) ? myPartName : '';
+  const currentPartName = selectedPartName || ownPartName || partOptions[0] || '';
   const selectedPartId = parts.find((part) => part.name === currentPartName)?.id;
+  const canCreateAssignment = !isPresident || (!!ownPartName && currentPartName === ownPartName);
 
-  // 과제 생성·상세보기는 데스크톱 전용이라 모바일에서는 안내 모달을 띄운다
   const [isUnsupportedOpen, setIsUnsupportedOpen] = useState(false);
   const isMobileViewport = () => typeof window !== 'undefined' && window.matchMedia(XS_MEDIA_QUERY).matches;
 
@@ -205,10 +207,12 @@ const MyPageAssignment = () => {
                 userProfile.partName && <TrackName>{userProfile.partName} 파트</TrackName>
               )}
             </TitleRow>
-            <CreateButton type="button" onClick={handleCreate}>
-              과제 생성
-              <IcPlus width={16} height={16} />
-            </CreateButton>
+            {canCreateAssignment && (
+              <CreateButton type="button" onClick={handleCreate}>
+                과제 생성
+                <IcPlus width={16} height={16} />
+              </CreateButton>
+            )}
           </Header>
           {isWeekGroupsLoading || isPartResolving ? (
             <LoadingWrapper>

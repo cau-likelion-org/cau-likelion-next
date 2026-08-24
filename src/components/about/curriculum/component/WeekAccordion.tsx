@@ -17,16 +17,16 @@ export interface WeekAccordionProps {
 }
 
 const WeekAccordion = ({ weeks }: WeekAccordionProps) => {
-  const [expandedKey, setExpandedKey] = useState('');
+  const [expandedKeys, setExpandedKeys] = useState<string[]>([]);
 
   const onToggle = (key: string) => {
-    setExpandedKey((prev) => (prev === key ? '' : key));
+    setExpandedKeys((prev) => (prev.includes(key) ? prev.filter((prevKey) => prevKey !== key) : [...prev, key]));
   };
 
   return (
     <List>
       {weeks.map((week) => {
-        const expanded = week.key === expandedKey;
+        const expanded = expandedKeys.includes(week.key);
         return (
           <Item key={week.key} expanded={expanded} onClick={() => onToggle(week.key)}>
             <ItemHeader>

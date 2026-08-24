@@ -81,24 +81,18 @@ const WeeklyAssignmentCard = ({ group }: { group: WeeklyAssignmentGroup }) => {
       </Header>
       {isOpen &&
         group.cards.map((card, cardIndex) => {
-          const isClickable = !card.actionLabel;
-
           return (
             <GroupCard
               key={cardIndex}
-              $clickable={isClickable}
-              role={isClickable ? 'button' : undefined}
-              tabIndex={isClickable ? 0 : undefined}
-              onClick={isClickable ? () => handleOpenDetail(card) : undefined}
-              onKeyDown={
-                isClickable
-                  ? (event) => {
-                      if (event.key !== 'Enter' && event.key !== ' ') return;
-                      event.preventDefault();
-                      handleOpenDetail(card);
-                    }
-                  : undefined
-              }
+              role="button"
+              tabIndex={0}
+              aria-label={`${group.week}주차 세션 과제 상세 보기`}
+              onClick={() => handleOpenDetail(card)}
+              onKeyDown={(event) => {
+                if (event.key !== 'Enter' && event.key !== ' ') return;
+                event.preventDefault();
+                handleOpenDetail(card);
+              }}
             >
               {card.items.map((item, itemIndex) => {
                 const itemBadge = ITEM_BADGE_CONFIG[item.status];
@@ -118,12 +112,12 @@ const WeeklyAssignmentCard = ({ group }: { group: WeeklyAssignmentGroup }) => {
                 </DueDate>
                 {card.actionLabel && (
                   <>
-                    <DesktopAction>
+                    <DesktopAction onClick={(event) => event.stopPropagation()}>
                       <ActionButton size="medium" onClick={() => handleOpenDetail(card)}>
                         {card.actionLabel}
                       </ActionButton>
                     </DesktopAction>
-                    <MobileAction>
+                    <MobileAction onClick={(event) => event.stopPropagation()}>
                       <Button size="small" onClick={() => handleOpenDetail(card)}>
                         {card.actionLabel}
                       </Button>
@@ -198,13 +192,13 @@ const Chevron = styled.span<{ $open: boolean }>`
   }
 `;
 
-const GroupCard = styled.div<{ $clickable: boolean }>`
+const GroupCard = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px;
   width: 100%;
   padding: 20px;
-  cursor: ${(props) => (props.$clickable ? 'pointer' : 'default')};
+  cursor: pointer;
   border: 1px solid ${Line.subtle};
   border-radius: 14px;
   background-color: ${BackgroundWhite.tertiary};

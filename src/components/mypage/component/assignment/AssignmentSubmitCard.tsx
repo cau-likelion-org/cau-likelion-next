@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import ContentBadge from '@common/badge/ContentBadge';
 import Textarea from '@common/textarea/Textarea';
 import { ITEM_BADGE_CONFIG } from './WeeklyAssignmentCard';
-import { AssignmentSubmission } from 'src/apis/assignment';
+import { AssignmentFileInfo, AssignmentSubmission } from 'src/apis/assignment';
 import { IcCircleClose, IcDocument, IcLink, IcPlus } from '@assets/svg';
 import { BackgroundWhite, Black, Fill, Label, Line, Status } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -25,6 +25,9 @@ const FORMAT_LABEL: Record<SubmissionFormat, string> = {
 
 const DESCRIPTION_MAX_LENGTH = 300;
 
+const MAX_FILE_SIZE_MB = 100;
+const MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024;
+
 export interface AssignmentSubmitItem {
   id: string;
   name: string;
@@ -32,12 +35,18 @@ export interface AssignmentSubmitItem {
   format: SubmissionFormat;
 }
 
-// 제출에 필요한 입력값 — 파일은 업로드해야 하므로 File 객체 그대로 들고 있는다
+// 제출에 필요한 입력값 — 새로 고른 파일은 업로드해야 하므로 File 객체 그대로 들고 있고,
+// 기존 제출에서 그대로 유지하는 파일은 이미 URL이 있어 재업로드 없이 넘긴다
 export interface AssignmentSubmitValue {
   files: File[];
+  keptFiles: AssignmentFileInfo[];
   link: string;
   description: string;
 }
+
+// 반려된 건은 처음부터 다시 내는 흐름이라 비워두고, 기한 내 자의 수정만 기존 내용을 채운다
+const isEditableSubmission = (submission?: AssignmentSubmission) =>
+  !!submission && submission.displayStatus !== 'REJECTED';
 
 interface AssignmentSubmitCardProps {
   item: AssignmentSubmitItem;
@@ -46,6 +55,7 @@ interface AssignmentSubmitCardProps {
   errorMessage?: string; // 제출 실패 사유
   onValidityChange?: (itemId: string, isValid: boolean) => void;
   onValueChange?: (itemId: string, value: AssignmentSubmitValue) => void;
+  onFileRejected?: (message: string) => void;
 }
 
 const AssignmentSubmitCard = ({
@@ -55,13 +65,18 @@ const AssignmentSubmitCard = ({
   errorMessage,
   onValidityChange,
   onValueChange,
+  onFileRejected,
 }: AssignmentSubmitCardProps) => {
+  const prefill = isEditableSubmission(submission) ? submission : undefined;
   const [files, setFiles] = useState<File[]>([]);
-  const [link, setLink] = useState('');
-  const [description, setDescription] = useState('');
+  const [keptFiles, setKeptFiles] = useState<AssignmentFileInfo[]>(
+    () => prefill?.files.map(({ fileUrl, originalFilename }) => ({ fileUrl, originalFilename })) ?? [],
+  );
+  const [link, setLink] = useState(() => prefill?.url ?? '');
+  const [description, setDescription] = useState(() => prefill?.content ?? '');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const isValid = item.format === 'file' ? files.length > 0 : link.trim() !== '';
+  const isValid = item.format === 'file' ? files.length + keptFiles.length > 0 : link.trim() !== '';
 
   useEffect(() => {
     if (!canSubmit) return;
@@ -70,17 +85,26 @@ const AssignmentSubmitCard = ({
 
   useEffect(() => {
     if (!canSubmit) return;
-    onValueChange?.(item.id, { files, link, description });
-  }, [item.id, files, link, description, canSubmit, onValueChange]);
+    onValueChange?.(item.id, { files, keptFiles, link, description });
+  }, [item.id, files, keptFiles, link, description, canSubmit, onValueChange]);
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) setFiles((prev) => [...prev, file]);
     event.target.value = '';
+    if (!file) return;
+    if (file.size > MAX_FILE_SIZE) {
+      onFileRejected?.(`${MAX_FILE_SIZE_MB}MB 이하의 파일만 첨부할 수 있습니다.`);
+      return;
+    }
+    setFiles((prev) => [...prev, file]);
   };
 
   const handleFileRemove = (index: number) => {
     setFiles((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleKeptFileRemove = (index: number) => {
+    setKeptFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
   return (
@@ -101,6 +125,19 @@ const AssignmentSubmitCard = ({
               <FieldHeading>
                 파일 첨부 <Required>*</Required>
               </FieldHeading>
+              {keptFiles.map((file, index) => (
+                <AttachmentRow key={file.fileUrl}>
+                  <AttachmentField>
+                    <AttachmentIcon>
+                      <IcDocument width={22} height={22} />
+                    </AttachmentIcon>
+                    <AttachmentText>{file.originalFilename}</AttachmentText>
+                  </AttachmentField>
+                  <RemoveButton type="button" aria-label="파일 삭제" onClick={() => handleKeptFileRemove(index)}>
+                    <IcCircleClose width={24} height={24} />
+                  </RemoveButton>
+                </AttachmentRow>
+              ))}
               {files.map((file, index) => (
                 <AttachmentRow key={`${file.name}-${index}`}>
                   <AttachmentField>
@@ -114,7 +151,7 @@ const AssignmentSubmitCard = ({
                   </RemoveButton>
                 </AttachmentRow>
               ))}
-              {files.length === 0 ? (
+              {files.length + keptFiles.length === 0 ? (
                 <FilePickerButton type="button" onClick={() => fileInputRef.current?.click()}>
                   파일을 선택해 주세요. (100MB)
                 </FilePickerButton>
