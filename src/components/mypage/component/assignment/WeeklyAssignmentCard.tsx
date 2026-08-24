@@ -22,7 +22,7 @@ export interface AssignmentCard {
   assignmentIds?: number[];
   items: AssignmentItem[];
   dueDate: string;
-  actionLabel?: '재제출하기' | '제출하기';
+  actionLabel?: '재제출하기' | '제출하기' | '수정하기';
 }
 
 export interface WeeklyAssignmentGroup {
