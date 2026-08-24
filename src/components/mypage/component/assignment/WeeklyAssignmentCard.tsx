@@ -9,7 +9,7 @@ import { AssignmentDisplayStatus } from 'src/apis/assignment';
 import { IcChevronDown } from '@assets/svg';
 import { BackgroundWhite, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
-import { XS_MEDIA_QUERY, media } from '@utils/constant/breakpoint';
+import { isMobileViewport, media } from '@utils/constant/breakpoint';
 
 export interface AssignmentItem {
   name: string;
@@ -57,7 +57,7 @@ const WeeklyAssignmentCard = ({ group }: { group: WeeklyAssignmentGroup }) => {
   const weekBadge = WEEK_BADGE_CONFIG[group.status];
 
   const handleOpenDetail = (card: AssignmentCard) => {
-    if (typeof window !== 'undefined' && window.matchMedia(XS_MEDIA_QUERY).matches) {
+    if (isMobileViewport()) {
       setIsUnsupportedOpen(true);
       return;
     }
