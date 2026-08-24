@@ -57,15 +57,19 @@ const WeeklyAssignmentCard = ({ group }: { group: WeeklyAssignmentGroup }) => {
   const weekBadge = WEEK_BADGE_CONFIG[group.status];
 
   const handleOpenDetail = (card: AssignmentCard) => {
-    if (isMobileViewport()) {
-      setIsUnsupportedOpen(true);
-      return;
-    }
     if (!card.id) return;
     router.push({
       pathname: `/mypage/assignment/${card.id}`,
       query: card.assignmentIds?.length ? { ids: card.assignmentIds.join(',') } : undefined,
     });
+  };
+
+  const handleSubmitAction = (card: AssignmentCard) => {
+    if (isMobileViewport()) {
+      setIsUnsupportedOpen(true);
+      return;
+    }
+    handleOpenDetail(card);
   };
 
   return (
@@ -113,12 +117,12 @@ const WeeklyAssignmentCard = ({ group }: { group: WeeklyAssignmentGroup }) => {
                 {card.actionLabel && (
                   <>
                     <DesktopAction onClick={(event) => event.stopPropagation()}>
-                      <ActionButton size="medium" onClick={() => handleOpenDetail(card)}>
+                      <ActionButton size="medium" onClick={() => handleSubmitAction(card)}>
                         {card.actionLabel}
                       </ActionButton>
                     </DesktopAction>
                     <MobileAction onClick={(event) => event.stopPropagation()}>
-                      <Button size="small" onClick={() => handleOpenDetail(card)}>
+                      <Button size="small" onClick={() => handleSubmitAction(card)}>
                         {card.actionLabel}
                       </Button>
                     </MobileAction>
