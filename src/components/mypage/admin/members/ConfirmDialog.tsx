@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 
+import useScrollLock from 'src/hooks/useScrollLock';
 import { BackgroundWhite, Label, Material, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
@@ -11,6 +12,8 @@ interface ConfirmDialogProps {
 }
 
 const ConfirmDialog = ({ title, confirmLabel = '삭제', onCancel, onConfirm }: ConfirmDialogProps) => {
+  useScrollLock();
+
   return (
     <Overlay role="alertdialog" aria-modal="true" aria-label={title}>
       <Dimmer onClick={onCancel} />

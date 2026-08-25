@@ -6,6 +6,7 @@ import Radio from '@common/radio/Radio';
 import Select from '@common/select/Select';
 import ListboxOptions from '@common/select/ListboxOptions';
 import useListboxSelect from 'src/hooks/useListboxSelect';
+import useScrollLock from 'src/hooks/useScrollLock';
 import { AssignmentStaffSummary } from 'src/apis/assignment';
 import { IcCalendar } from '@assets/svg';
 import { Fill, Label, Line, Material, State, BackgroundColor } from '@utils/constant/color';
@@ -35,6 +36,8 @@ const AssignmentDeadlineModal = ({
   onClose,
   onSubmit,
 }: AssignmentDeadlineModalProps) => {
+  useScrollLock();
+
   const [assignmentId, setAssignmentId] = useState(initialAssignmentId);
   const [deadline, setDeadline] = useState('');
   const [memberIds, setMemberIds] = useState<number[]>([]);

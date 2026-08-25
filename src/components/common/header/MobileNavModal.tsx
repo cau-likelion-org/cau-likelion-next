@@ -10,6 +10,7 @@ import NotificationSetting from '@mypage/component/NotificationSetting';
 import { getUserProfile } from 'src/apis/account';
 import useTokenStore from 'src/store/useTokenStore';
 import useRecruitModalStore from 'src/store/useRecruitModalStore';
+import useScrollLock from 'src/hooks/useScrollLock';
 import { canManageSitePages } from '@utils/index';
 import { BackgroundColor, Black, Line } from '@utils/constant/color';
 import { media } from '@utils/constant/breakpoint';
@@ -30,6 +31,8 @@ const MY_PAGE_MENU = [
 ];
 
 const MobileNavModal = ({ isModalOn, onClose }: { isModalOn: boolean; onClose?: () => void }) => {
+  useScrollLock(isModalOn);
+
   const router = useRouter();
   const { access } = useTokenStore((state) => state.token);
   const hasHydrated = useTokenStore((state) => state.hasHydrated);

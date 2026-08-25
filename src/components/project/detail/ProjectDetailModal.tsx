@@ -10,6 +10,7 @@ import CircularLoading from '@common/loading/CircularLoading';
 import EmptyState from '@common/emptyState/EmptyState';
 import { getUserProfile } from 'src/apis/account';
 import { PROJECT_CATEGORY_LABEL, ProjectResponseDto, getProjectDetail, getSortedProjectImages } from 'src/apis/project';
+import useScrollLock from 'src/hooks/useScrollLock';
 import useTokenStore from 'src/store/useTokenStore';
 import { isAdminRole } from '@utils/index';
 import styled from 'styled-components';
@@ -39,14 +40,7 @@ const ProjectDetailModal = ({ projectId, staticData, onClose }: ProjectDetailMod
     initialData: staticData && String(staticData.id) === projectId ? staticData : undefined,
   });
 
-  useEffect(() => {
-    document.documentElement.style.overflow = 'hidden';
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.documentElement.style.overflow = '';
-      document.body.style.overflow = '';
-    };
-  }, []);
+  useScrollLock();
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {

@@ -2,6 +2,7 @@ import styled from 'styled-components';
 
 import TextButton from '@common/textButton/TextButton';
 import { AssignmentSubmission } from 'src/apis/assignment';
+import useScrollLock from 'src/hooks/useScrollLock';
 import { IcDocument, IcDownload, IcLink } from '@assets/svg';
 import { BackgroundColor, Label, Line, Material } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -12,6 +13,8 @@ interface AssignmentSubmissionModalProps {
 }
 
 const AssignmentSubmissionModal = ({ submission, onClose }: AssignmentSubmissionModalProps) => {
+  useScrollLock();
+
   return (
     <Overlay role="dialog" aria-modal="true" aria-label="제출물 보기">
       <Dimmer onClick={onClose} />

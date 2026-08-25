@@ -5,6 +5,7 @@ import { GenerationCreateRequestDto } from '@@types/request';
 import TextField from '@common/textField/TextField';
 import Button from '@common/button/Button';
 import TechStackInput from '@mypage/admin/component/TechStackInput';
+import useScrollLock from 'src/hooks/useScrollLock';
 import { NUMERIC_ONLY_REGEX } from '@utils/constant';
 import { isUnfilled } from '@utils/index';
 import { BackgroundWhite, Label, Material, State, Status } from '@utils/constant/color';
@@ -17,6 +18,8 @@ interface GenerationCreateModalProps {
 }
 
 const GenerationCreateModal = ({ onClose, onSubmit, isSubmitting = false }: GenerationCreateModalProps) => {
+  useScrollLock();
+
   const [number, setNumber] = useState('');
   const [year, setYear] = useState('');
   const [partNames, setPartNames] = useState<string[]>([]);

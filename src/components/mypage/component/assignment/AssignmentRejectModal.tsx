@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import styled from 'styled-components';
 
+import useScrollLock from 'src/hooks/useScrollLock';
 import { BackgroundWhite, Label, Line, Material, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
@@ -11,6 +12,8 @@ interface AssignmentRejectModalProps {
 
 // 제출물 반려 시 사유 입력 모달 (사유 없이는 반려할 수 없음)
 const AssignmentRejectModal = ({ onClose, onSubmit }: AssignmentRejectModalProps) => {
+  useScrollLock();
+
   const [reason, setReason] = useState('');
   const canSubmit = reason.trim().length > 0;
 
