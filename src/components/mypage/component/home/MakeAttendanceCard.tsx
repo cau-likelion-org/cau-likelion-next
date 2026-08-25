@@ -53,7 +53,11 @@ const MakeAttendanceCard = () => {
     onError: (error: unknown) => {
       const status = (error as { response?: { status?: number } })?.response?.status;
       const isDuplicate = status === 400 || status === 409;
-      setSubmitError(isDuplicate ? '이미 출석부를 생성했어요.' : '출석부 생성에 실패했어요.');
+      setSubmitError(
+        isDuplicate
+          ? `${weekNumber}주차 출석부가 이미 있어요. 주차 구분을 확인해 주세요.`
+          : '출석부 생성에 실패했어요.',
+      );
     },
   });
 
@@ -68,7 +72,23 @@ const MakeAttendanceCard = () => {
   const displayWeek = isLockedByExisting ? String(existingAttendance.weekNumber) : weekNumber;
   const displayPassword = isLockedByExisting ? existingAttendance.password : password;
 
+  const disabledReason =
+    isLockedByExisting && date
+      ? `이 날짜에는 ${existingAttendance.weekNumber}주차 출석부가 이미 있어요. 다른 날짜를 선택해 주세요.`
+      : hasPassword && !date
+        ? '출석 일자를 선택해 주세요.'
+        : hasPassword && !weekNumber
+          ? '주차 구분을 입력해 주세요.'
+          : '';
+
   const handleWeekChange = (value: string) => setWeekNumber(value.replace(/\D/g, '').slice(0, 2));
+
+  const handleDateChange = (value: string) => {
+    setDate(value);
+    setPassword('');
+    setSubmitError('');
+    createMutation.reset();
+  };
 
   // 1단계: 비밀번호 생성 → 2단계: 저장(출석부 생성)
   const handleButtonClick = () => {
@@ -89,7 +109,7 @@ const MakeAttendanceCard = () => {
         <FieldRow>
           <Field $width="158px" $mobileGrow>
             <FieldLabel>출석 일자 설정</FieldLabel>
-            <DateInputWrapper $disabled={isCreated} onClick={() => dateInputRef.current?.showPicker?.()}>
+            <DateInputWrapper onClick={() => dateInputRef.current?.showPicker?.()}>
               <IcCalendar width={22} height={22} />
               <DateValue $placeholder={!displayDate}>
                 {displayDate ? displayDate.replace(/-/g, '/') : '캘린더 선택'}
@@ -99,8 +119,7 @@ const MakeAttendanceCard = () => {
                 type="date"
                 value={date}
                 min={today}
-                disabled={isCreated}
-                onChange={(event) => setDate(event.target.value)}
+                onChange={(event) => handleDateChange(event.target.value)}
                 aria-label="출석 일자 설정"
               />
             </DateInputWrapper>
@@ -144,6 +163,7 @@ const MakeAttendanceCard = () => {
             </PasswordRow>
           </Field>
         </FieldRow>
+        {disabledReason && <ErrorText>{disabledReason}</ErrorText>}
       </Content>
 
       <ToastWrapper>
@@ -238,11 +258,11 @@ const inputBoxCss = `
     0 1px 2px -1px rgba(23, 23, 23, 0.1);
 `;
 
-const DateInputWrapper = styled.div<{ $disabled: boolean }>`
+const DateInputWrapper = styled.div`
   position: relative;
   ${inputBoxCss}
   color: ${Label.normal};
-  cursor: ${(props) => (props.$disabled ? 'not-allowed' : 'pointer')};
+  cursor: pointer;
 `;
 
 const DateValue = styled.span<{ $placeholder: boolean }>`
@@ -351,6 +371,12 @@ const GenerateButton = styled.button`
     color: ${Label.assistive};
     cursor: not-allowed;
   }
+`;
+
+const ErrorText = styled.p`
+  margin: 0;
+  color: ${State.error};
+  ${typographyCss(Typography.caption1.regular)}
 `;
 
 const ToastWrapper = styled.div`
