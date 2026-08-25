@@ -23,7 +23,7 @@ const ProjectList = ({
     router.push('/project', undefined, { shallow: true });
   };
 
-  if (router.isFallback) {
+  if (router.isFallback && !projectId) {
     return <div>로딩중</div>;
   }
 
