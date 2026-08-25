@@ -83,7 +83,11 @@ const AttendanceCheckCard = ({ isTarget = true }: { isTarget?: boolean }) => {
   };
 
   const handleSubmit = () => {
-    if (password) checkIn.mutate(password);
+    if (!password) {
+      setErrorMessage('비밀번호를 입력해 주세요.');
+      return;
+    }
+    checkIn.mutate(password);
   };
 
   return (
