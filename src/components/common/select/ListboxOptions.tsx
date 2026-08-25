@@ -49,7 +49,7 @@ const OptionList = styled.div`
   box-shadow:
     0px 10px 15px -3px rgba(23, 23, 23, 0.07),
     0px 4px 6px -2px rgba(23, 23, 23, 0.07);
-  z-index: 1;
+  z-index: 100;
 `;
 
 const Option = styled.button<{ $active: boolean }>`
