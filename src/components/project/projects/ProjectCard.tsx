@@ -28,7 +28,7 @@ const ProjectCard = ({
   const showThumbnail = !!thumbnail && failedThumbnail !== thumbnail;
 
   return (
-    <Link href={`/project/${id}`} prefetch={false} shallow>
+    <Link href={`/project/${id}`} prefetch={false} shallow scroll={false}>
       <Wrapper>
         <Thumbnail>
           {showThumbnail ? (
