@@ -68,7 +68,7 @@ const AttendanceCheckCard = ({ isTarget = true }: { isTarget?: boolean }) => {
       return todayRecord.statusDescription
         ? `이미 ${todayRecord.statusDescription} 처리된 세션이에요`
         : '아직 출석체크 시간이 아니에요';
-    return '아직 오늘의 출석체크가 열리지 않았어요';
+    return '아직 출석체크 시간이 아니에요';
   })();
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
