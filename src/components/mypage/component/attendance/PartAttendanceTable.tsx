@@ -375,7 +375,7 @@ const PartAttendanceTable = ({
 
             <PenaltyColumn>
               <PenaltyCard>
-                <HeadCell $penalty>감점</HeadCell>
+                <HeadCell $penalty>출결 감점</HeadCell>
                 {members.map((member) => (
                   <ValueCell key={member.memberId} $penalty>
                     {member.attendancePenalty}점
@@ -594,6 +594,8 @@ const TooltipBubble = styled.div`
   background-color: ${TOOLTIP_BG};
   color: ${Inverse.label};
   word-break: keep-all;
+  /* 띄어쓰기 없는 긴 사유는 끊을 곳이 없어 말풍선 밖으로 넘치므로 강제로 접는다 */
+  overflow-wrap: anywhere;
   ${typographyCss(Typography.label1Normal.medium)}
 `;
 

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import styled from 'styled-components';
 
+import useScrollLock from 'src/hooks/useScrollLock';
 import { BackgroundColor, Label, Line, Material, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
@@ -13,6 +14,8 @@ interface AttendanceReasonModalProps {
 
 // 결석·공결로 변경 시 사유 입력 모달 (Figma 8.3.5)
 const AttendanceReasonModal = ({ initialReason = '', onClose, onSave }: AttendanceReasonModalProps) => {
+  useScrollLock();
+
   const [reason, setReason] = useState(initialReason);
 
   useEffect(() => {

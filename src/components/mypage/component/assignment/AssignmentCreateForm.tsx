@@ -12,6 +12,7 @@ import AddCardButton from '@mypage/component/AddCardButton';
 import RemoveCardButton from '@mypage/component/RemoveCardButton';
 import useListboxSelect from 'src/hooks/useListboxSelect';
 import useScrollToFirstError from 'src/hooks/useScrollToFirstError';
+import useScrollLock from 'src/hooks/useScrollLock';
 import { AssignmentCreateRequest, AssignmentSubmitType } from 'src/apis/assignment';
 import { isUnfilled } from '@utils/index';
 import { IcCalendar, IcCircleExclamation } from '@assets/svg';
@@ -74,6 +75,8 @@ const AssignmentCreateForm = ({
   const formRef = useRef<HTMLDivElement>(null);
   const scrollToFirstError = useScrollToFirstError(formRef);
   const pendingUrlRef = useRef<string | null>(null); // 라우트 변경으로 막힌 목적지
+
+  useScrollLock(showLeaveConfirm || deleteTarget != null);
 
   const updateDraft = (index: number, patch: Partial<AssignmentDraft>) => {
     setDrafts((prev) => prev.map((draft, i) => (i === index ? { ...draft, ...patch } : draft)));

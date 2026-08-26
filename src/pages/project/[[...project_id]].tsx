@@ -20,10 +20,10 @@ const ProjectList = ({
   const projectId = Array.isArray(projectIdParam) ? projectIdParam[0] : undefined;
 
   const handleCloseDetail = () => {
-    router.push('/project', undefined, { shallow: true });
+    router.push('/project', undefined, { shallow: true, scroll: false });
   };
 
-  if (router.isFallback) {
+  if (router.isFallback && !projectId) {
     return <div>로딩중</div>;
   }
 

@@ -23,6 +23,7 @@ import {
   getMyAssignments,
   getPresidentAssignments,
   getStaffAssignments,
+  resolveAssignmentActionLabel,
 } from 'src/apis/assignment';
 import useTokenStore from 'src/store/useTokenStore';
 import { INACTIVE_MEMBER_NOTICE_KEY, TRACK_OPTIONS } from '@utils/constant';
@@ -59,10 +60,9 @@ const groupByDeadline = (assignments: AssignmentSummary[]) => {
 
 const resolveActionLabel = (assignments: AssignmentSummary[]) => {
   const submittable = assignments.filter((assignment) => canSubmitAssignment(assignment.status, assignment.endDate));
-  if (submittable.length === 0) return undefined;
-  if (submittable.some((assignment) => assignment.status === 'REJECTED')) return '재제출하기';
-  if (submittable.some((assignment) => !assignment.submittedAt)) return '제출하기';
-  return '수정하기';
+  return resolveAssignmentActionLabel(
+    submittable.map((assignment) => ({ status: assignment.status, submitted: !!assignment.submittedAt })),
+  );
 };
 
 const MyPageAssignment = () => {

@@ -11,9 +11,6 @@ import { BackgroundWhite, Black, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { media } from '@utils/constant/breakpoint';
 
-// 19:05 스케줄러가 미체크인원을 UNAUTHORIZED_ABSENT로 돌리지만, 22시 전까지는 늦게라도 체크인하면 LATE로 전환된다
-const LATE_CHECK_IN_DEADLINE_HOUR = 22;
-
 // 체크인 거절 사유(마감 시각 초과 등)는 서버 메시지를 그대로 보여준다
 const getServerMessage = (error: unknown) => {
   if (!axios.isAxiosError(error)) return undefined;
@@ -53,15 +50,13 @@ const AttendanceCheckCard = ({ isTarget = true }: { isTarget?: boolean }) => {
       queryClient.invalidateQueries({ queryKey: ['myScore'] });
     },
     onError: (error) => {
-      setErrorMessage(getServerMessage(error) ?? '비밀번호가 올바르지 않습니다.');
+      setErrorMessage(getServerMessage(error) ?? '입력값이 올바르지 않습니다.');
     },
   });
 
   const isCompleted = isTarget && (todayRecord?.status === 'PRESENT' || todayRecord?.status === 'LATE');
-  // 무단결석으로 넘어갔어도 마감 시각 전이면 지각으로 만회할 수 있다
-  const isLateWindow =
-    todayRecord?.status === 'UNAUTHORIZED_ABSENT' && new Date().getHours() < LATE_CHECK_IN_DEADLINE_HOUR;
-  const isAvailable = isTarget && !isLoading && (todayRecord?.status === 'BEFORE' || isLateWindow);
+  // 22시 스케줄러가 무단결석으로 확정하기 전까지는 BEFORE로 유지되고, 지각 여부는 서버가 판단한다
+  const isAvailable = isTarget && !isLoading && todayRecord?.status === 'BEFORE';
 
   // 체크할 수 없는 이유(조회 실패 / 출석부 미개설 / 마감 / 이미 처리됨)를 구분해서 안내한다
   const placeholder = (() => {
@@ -69,7 +64,6 @@ const AttendanceCheckCard = ({ isTarget = true }: { isTarget?: boolean }) => {
     if (isLoading) return '';
     if (isError) return '출석 정보를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.';
     if (isAvailable) return '비밀번호를 입력해 주세요.';
-    if (todayRecord?.status === 'UNAUTHORIZED_ABSENT') return '아직 출석체크 시간이 아니에요';
     if (todayRecord)
       return todayRecord.statusDescription
         ? `이미 ${todayRecord.statusDescription} 처리된 세션이에요`
@@ -83,7 +77,11 @@ const AttendanceCheckCard = ({ isTarget = true }: { isTarget?: boolean }) => {
   };
 
   const handleSubmit = () => {
-    if (password) checkIn.mutate(password);
+    if (!password) {
+      setErrorMessage('비밀번호를 입력해 주세요.');
+      return;
+    }
+    checkIn.mutate(password);
   };
 
   return (

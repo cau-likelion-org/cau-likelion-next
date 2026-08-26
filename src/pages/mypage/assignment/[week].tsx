@@ -17,6 +17,7 @@ import {
   MyAssignmentHistoryWeekGroup,
   canSubmitAssignment,
   getMyAssignmentHistory,
+  resolveAssignmentActionLabel,
   submitAssignment,
   uploadAssignmentFile,
 } from 'src/apis/assignment';
@@ -48,7 +49,10 @@ const AssignmentSubmit = () => {
   const queryClient = useQueryClient();
   const week = Number(router.query.week);
 
+  const isViewMode = router.query.mode === 'view';
+
   const [validityMap, setValidityMap] = useState<Record<string, boolean>>({});
+  const [dirtyMap, setDirtyMap] = useState<Record<string, boolean>>({});
   // 입력값은 렌더에 쓰지 않고 제출 시점에만 읽으므로 ref에 모은다 (매 타이핑마다 리렌더 방지)
   const valueMapRef = useRef<Record<string, AssignmentSubmitValue>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -100,12 +104,25 @@ const AssignmentSubmit = () => {
     setValidityMap((prev) => (prev[itemId] === isValid ? prev : { ...prev, [itemId]: isValid }));
   }, []);
 
+  const handleDirtyChange = useCallback((itemId: string, isDirty: boolean) => {
+    setDirtyMap((prev) => (prev[itemId] === isDirty ? prev : { ...prev, [itemId]: isDirty }));
+  }, []);
+
   const handleValueChange = useCallback((itemId: string, value: AssignmentSubmitValue) => {
     valueMapRef.current[itemId] = value;
   }, []);
 
+  const actionLabel = resolveAssignmentActionLabel(
+    submittableEntries.map((entry) => ({
+      status: entry.submission?.displayStatus ?? 'BEFORE_SUBMISSION',
+      submitted: !!entry.submission,
+    })),
+  );
+
   const isSubmitEnabled =
-    submittableEntries.length > 0 && submittableEntries.every((entry) => validityMap[entry.item.id]);
+    submittableEntries.length > 0 &&
+    submittableEntries.every((entry) => validityMap[entry.item.id]) &&
+    submittableEntries.some((entry) => dirtyMap[entry.item.id]);
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
@@ -171,8 +188,10 @@ const AssignmentSubmit = () => {
               item={item}
               submission={submission}
               canSubmit={canSubmit}
+              readOnly={isViewMode}
               errorMessage={submitErrors[item.id]}
               onValidityChange={handleValidityChange}
+              onDirtyChange={handleDirtyChange}
               onValueChange={handleValueChange}
               onFileRejected={setToastMessage}
             />
@@ -180,10 +199,10 @@ const AssignmentSubmit = () => {
         </Content>
 
         {/* 제출 가능한 과제가 하나도 없으면(승인 대기·제출 완료) 제출 내역만 보여준다 */}
-        {submittableEntries.length > 0 && (
+        {!isViewMode && submittableEntries.length > 0 && (
           <SubmitButtonWrapper>
             <Button size="large" disabled={!isSubmitEnabled || isSubmitting} onClick={handleSubmit}>
-              제출하기
+              {actionLabel ?? '제출하기'}
             </Button>
           </SubmitButtonWrapper>
         )}

@@ -49,7 +49,7 @@ const AttendanceCheckCard = ({ isTarget = true }: { isTarget?: boolean }) => {
       queryClient.invalidateQueries({ queryKey: ['myScore'] });
     },
     onError: (error) => {
-      setErrorMessage(getServerMessage(error) ?? '비밀번호가 올바르지 않습니다.');
+      setErrorMessage(getServerMessage(error) ?? '입력값이 올바르지 않습니다.');
     },
   });
 

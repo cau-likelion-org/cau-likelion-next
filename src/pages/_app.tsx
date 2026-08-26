@@ -78,7 +78,9 @@ function AppContent({ Component, pageProps }: AppPropsWithLayout) {
   useEffect(() => {
     const start = (url: string) => {
       const isInsideMyPage = NextRouter.asPath.startsWith('/mypage') && url.startsWith('/mypage');
-      setIsRouting(!isInsideMyPage);
+      const isProjectListRoute = (path: string) => /^\/project(\/\d+)?(\?|#|$)/.test(path);
+      const isInsideProjectList = isProjectListRoute(NextRouter.asPath) && isProjectListRoute(url);
+      setIsRouting(!isInsideMyPage && !isInsideProjectList);
     };
     const stop = () => setIsRouting(false);
 

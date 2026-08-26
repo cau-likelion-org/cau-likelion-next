@@ -1,6 +1,7 @@
 import { IProjectData } from '@@types/request';
 import { AccentTint, Black, Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
+import { media } from '@utils/constant/breakpoint';
 import Link from 'next/link';
 import { useState } from 'react';
 import styled from 'styled-components';
@@ -27,7 +28,7 @@ const ProjectCard = ({
   const showThumbnail = !!thumbnail && failedThumbnail !== thumbnail;
 
   return (
-    <Link href={`/project/${id}`} prefetch={false} shallow>
+    <Link href={`/project/${id}`} prefetch={false} shallow scroll={false}>
       <Wrapper>
         <Thumbnail>
           {showThumbnail ? (
@@ -120,8 +121,10 @@ const Thumbnail = styled.div`
     object-fit: cover;
   }
 
-  &:hover ${HoverOverlay} {
-    opacity: 1;
+  ${media.hover} {
+    &:hover ${HoverOverlay} {
+      opacity: 1;
+    }
   }
 `;
 

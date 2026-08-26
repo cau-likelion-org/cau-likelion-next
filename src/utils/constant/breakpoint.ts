@@ -10,12 +10,15 @@ export const XS_MEDIA_QUERY = `(max-width: ${Breakpoint.sm - 1}px)`;
 
 export const TOUCH_MEDIA_QUERY = '(pointer: coarse) and (hover: none)';
 
+export const HOVER_MEDIA_QUERY = '(hover: hover) and (pointer: fine)';
+
 // 데스크톱에서 창을 좁힌 경우를 모바일 기기로 오인하지 않도록 입력 장치까지 함께 본다
 export const MOBILE_DEVICE_MEDIA_QUERY = `${TOUCH_MEDIA_QUERY} and ${XS_MEDIA_QUERY}`;
 
 export const media = {
   xs: `@media ${XS_MEDIA_QUERY}`,
   mobileDevice: `@media ${MOBILE_DEVICE_MEDIA_QUERY}`,
+  hover: `@media ${HOVER_MEDIA_QUERY}`,
   sm: `@media (min-width: ${Breakpoint.sm}px)`,
   md: `@media (min-width: ${Breakpoint.md}px)`,
   lg: `@media (min-width: ${Breakpoint.lg}px)`,
