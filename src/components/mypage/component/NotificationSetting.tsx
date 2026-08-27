@@ -1,13 +1,14 @@
-import { useEffect, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useEffect, useRef, useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import styled from 'styled-components';
 
 import { UserProfile } from '@@types/request';
-import { deleteFcmToken, getUserProfile, updateFcmToken } from 'src/apis/account';
+import { deleteFcmToken, getUserProfile, updateFcmToken, updatePushSetting } from 'src/apis/account';
 import {
   clearCachedFcmToken,
   getCachedFcmToken,
   getNotificationPermission,
+  refreshFcmTokenIfGranted,
   requestFcmToken,
 } from 'src/lib/pushNotification';
 import useTokenStore from 'src/store/useTokenStore';
@@ -64,13 +65,16 @@ export const NotificationSettingView = ({
   );
 };
 
-// 과제 승인/반려 알림 on/off. 켜면 이 기기의 FCM 토큰을 서버에 등록하고, 끄면 삭제한다.
+// 과제 승인/반려 알림 on/off. 알림 수신 여부는 계정 단위 설정(pushEnabled)이 기준이고,
+// 이 기기의 FCM 토큰 등록/삭제는 그 설정을 실제로 동작시키기 위한 부수 작업이다.
 // 알림은 과제를 제출하는 아기사자에게만 발송되므로 다른 역할에는 노출하지 않는다.
 const NotificationSetting = ({ guideAlign }: { guideAlign?: GuideAlign }) => {
   const tokenState = useTokenStore((state) => state.token);
+  const queryClient = useQueryClient();
   const [permission, setPermission] = useState<NotificationPermissionState>('unsupported');
-  const [enabled, setEnabled] = useState(false);
+  const [optimisticEnabled, setOptimisticEnabled] = useState<boolean | null>(null);
   const [pending, setPending] = useState(false);
+  const hasRestoredToken = useRef(false);
 
   const { data: userProfile } = useQuery<UserProfile>({
     queryKey: ['userProfile'],
@@ -79,42 +83,46 @@ const NotificationSetting = ({ guideAlign }: { guideAlign?: GuideAlign }) => {
     enabled: !!tokenState.access,
   });
 
-  // Notification/localStorage는 서버에 없어 마운트 후에만 읽을 수 있다
+  const enabled = optimisticEnabled ?? userProfile?.pushEnabled ?? false;
+
+  // Notification은 서버에 없어 마운트 후에만 읽을 수 있다
   useEffect(() => {
-    const current = getNotificationPermission();
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setPermission(current);
-    setEnabled(current === 'granted' && !!getCachedFcmToken());
+    setPermission(getNotificationPermission());
   }, []);
 
-  // 토큰 발급이 안되어도 일단 스위치 토글은 ON으로
+  useEffect(() => {
+    if (!userProfile?.pushEnabled || hasRestoredToken.current) return;
+    hasRestoredToken.current = true;
+    refreshFcmTokenIfGranted().then((fcmToken) => {
+      if (fcmToken) updateFcmToken(tokenState, fcmToken).catch(() => undefined);
+    });
+  }, [userProfile?.pushEnabled, tokenState]);
+
   const handleToggle = async () => {
     if (pending) return;
     const next = !enabled;
-    setEnabled(next);
+    setOptimisticEnabled(next);
     setPending(true);
 
     try {
-      if (!next) {
+      if (next) {
+        const fcmToken = await requestFcmToken();
+        setPermission(getNotificationPermission());
+        // 권한을 거부했거나 토큰 발급에 실패하면 서버 값으로 되돌린다
+        if (!fcmToken) return;
+        await updateFcmToken(tokenState, fcmToken);
+      } else {
         const fcmToken = getCachedFcmToken();
         if (fcmToken) await deleteFcmToken(tokenState, fcmToken);
         clearCachedFcmToken();
-        return;
+        await updatePushSetting(tokenState, false);
       }
-
-      const fcmToken = await requestFcmToken();
-      setPermission(getNotificationPermission());
-      // 권한을 거부했거나 토큰 발급에 실패하면 켜진 상태를 되돌리기
-      if (!fcmToken) {
-        setEnabled(false);
-        return;
-      }
-
-      await updateFcmToken(tokenState, fcmToken);
+      await queryClient.invalidateQueries({ queryKey: ['userProfile'] });
     } catch (error) {
       console.error('[push] 알림 설정 변경 실패', error);
-      setEnabled(!next);
     } finally {
+      setOptimisticEnabled(null);
       setPending(false);
     }
   };

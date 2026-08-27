@@ -13,12 +13,7 @@ import { useState, useEffect } from 'react';
 import NextRouter, { Router } from 'next/router';
 import ErrorBoundary from '@common/errorBoundary/ErrorBoundary';
 import useTokenStore from 'src/store/useTokenStore';
-import {
-  refreshFcmTokenIfGranted,
-  registerMessagingServiceWorker,
-  subscribeForegroundNotification,
-} from 'src/lib/pushNotification';
-import { updateFcmToken } from 'src/apis/account';
+import { registerMessagingServiceWorker, subscribeForegroundNotification } from 'src/lib/pushNotification';
 
 type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -44,7 +39,6 @@ function AppContent({ Component, pageProps }: AppPropsWithLayout) {
         }),
       }),
   );
-  const tokenState = useTokenStore((state) => state.token);
   const hydrate = useTokenStore((state) => state.hydrate);
   const getLayout = Component.getLayout || ((page: ReactElement) => <LayoutDefault>{page}</LayoutDefault>);
 
@@ -65,14 +59,6 @@ function AppContent({ Component, pageProps }: AppPropsWithLayout) {
     });
     return () => unsubscribe?.();
   }, []);
-
-  // FCM 토큰은 브라우저가 주기적으로 재발급하므로, 이미 알림을 켠 기기는 로그인할 때마다 갱신해준다
-  useEffect(() => {
-    if (!tokenState.access) return;
-    refreshFcmTokenIfGranted().then((fcmToken) => {
-      if (fcmToken) updateFcmToken(tokenState, fcmToken).catch(() => undefined);
-    });
-  }, [tokenState]);
 
   const [isRouting, setIsRouting] = useState(false);
   useEffect(() => {
