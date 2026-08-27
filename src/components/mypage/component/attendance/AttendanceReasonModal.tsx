@@ -12,6 +12,8 @@ interface AttendanceReasonModalProps {
   onSave: (reason: string) => void;
 }
 
+const toSingleLine = (value: string) => value.replace(/[\r\n]+/g, ' ');
+
 // 결석·공결로 변경 시 사유 입력 모달 (Figma 8.3.5)
 const AttendanceReasonModal = ({ initialReason = '', onClose, onSave }: AttendanceReasonModalProps) => {
   useScrollLock();
@@ -43,7 +45,10 @@ const AttendanceReasonModal = ({ initialReason = '', onClose, onSave }: Attendan
             autoFocus
             value={reason}
             placeholder="텍스트를 입력해 주세요."
-            onChange={(event) => setReason(event.target.value)}
+            onChange={(event) => setReason(toSingleLine(event.target.value))}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter' && !event.nativeEvent.isComposing) event.preventDefault();
+            }}
           />
         </Information>
         <Actions>
