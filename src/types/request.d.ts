@@ -88,6 +88,7 @@ export interface UserProfile {
   partId: number;
   partName: string;
   generationNumber: number | null; // 소속 파트가 없으면 null
+  pushEnabled: boolean;
 }
 
 export interface UserAssignment {

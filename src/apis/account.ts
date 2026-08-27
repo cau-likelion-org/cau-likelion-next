@@ -112,3 +112,8 @@ export const deleteFcmToken = async (token: IToken, fcmToken: string) => {
   const authAxios = getAuthAxios(token);
   await authAxios.delete(`/api/members/me/fcm-token`, { data: { fcmToken } });
 };
+
+export const updatePushSetting = async (token: IToken, pushEnabled: boolean) => {
+  const authAxios = getAuthAxios(token);
+  await authAxios.patch(`/api/members/me/push-setting`, { pushEnabled });
+};

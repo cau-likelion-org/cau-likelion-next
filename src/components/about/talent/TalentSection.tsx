@@ -98,7 +98,7 @@ const Card = styled.div`
 
 const PartRow = styled.div`
   display: flex;
-  align-items: flex-start;
+  align-items: stretch;
   gap: 20px;
   width: 100%;
 

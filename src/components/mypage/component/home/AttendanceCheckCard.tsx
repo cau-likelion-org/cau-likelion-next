@@ -66,7 +66,7 @@ const AttendanceCheckCard = ({ isTarget = true }: { isTarget?: boolean }) => {
     if (isAvailable) return '비밀번호를 입력해 주세요.';
     if (todayRecord)
       return todayRecord.statusDescription
-        ? `이미 ${todayRecord.statusDescription} 처리된 세션이에요`
+        ? `${todayRecord.statusDescription} 처리되었습니다.`
         : '아직 출석체크 시간이 아니에요';
     return '아직 출석체크 시간이 아니에요';
   })();

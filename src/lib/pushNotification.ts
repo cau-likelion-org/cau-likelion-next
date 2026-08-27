@@ -113,7 +113,6 @@ export const requestFcmToken = async (): Promise<string | null> => {
 // 이미 허용한 기기에서만 조용히 토큰을 갱신한다 (권한 팝업을 띄우지 않음).
 // FCM 토큰은 브라우저가 주기적으로 재발급하므로 접속할 때마다 갱신해야 알림이 끊기지 않는다.
 export const refreshFcmTokenIfGranted = async (): Promise<string | null> => {
-  if (!getCachedFcmToken()) return null;
   if (!isPushSupported() || Notification.permission !== 'granted') return null;
   if (!(await (await loadMessaging()).isSupported())) return null;
 
