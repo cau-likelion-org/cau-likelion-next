@@ -2,7 +2,7 @@ import { InputHTMLAttributes, ReactNode, useId } from 'react';
 import styled from 'styled-components';
 
 import { IcCircleCheck, IcCircleExclamation } from '@assets/svg';
-import { Label, Line, Orange, State } from '@utils/constant/color';
+import { Fill, Label, Line, Orange, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 type TextFieldStatus = 'normal' | 'positive' | 'negative';
@@ -26,7 +26,7 @@ export interface TextFieldProps extends Omit<InputHTMLAttributes<HTMLInputElemen
 }
 
 const getBoxShadow = (status: TextFieldStatus, disabled: boolean) => {
-  if (disabled) return `inset 0 0 0 1px ${Line.alternative}, 0 1px 2px rgba(0, 0, 0, 0.03)`;
+  if (disabled) return `inset 0 0 0 1px ${Line.subtle}, 0 1px 2px rgba(0, 0, 0, 0.03)`;
   if (status === 'negative') return 'inset 0 0 0 1px rgba(255, 0, 0, 0.28), 0 1px 2px -1px rgba(23, 23, 23, 0.1)';
   return `inset 0 0 0 1px ${Line.normal}, 0 1px 2px -1px rgba(23, 23, 23, 0.1)`;
 };
@@ -61,19 +61,6 @@ const TextField = ({
       </IconSlot>
     ) : null;
 
-  const trailing = (
-    <>
-      {statusIcon}
-      {trailingButton ? (
-        <TrailingButton type="button" onClick={trailingButton.onClick} disabled={trailingButton.disabled}>
-          {trailingButton.label}
-        </TrailingButton>
-      ) : (
-        !statusIcon && (trailingContent ?? trailingIcon ?? null)
-      )}
-    </>
-  );
-
   return (
     <Root className={className}>
       {heading && (
@@ -82,19 +69,27 @@ const TextField = ({
           {required && <Required>*</Required>}
         </Heading>
       )}
-      <InputWrapper $status={status} $disabled={disabled} $readOnly={readOnly}>
-        {leadingIcon && <IconSlot $color={Label.alternative}>{leadingIcon}</IconSlot>}
-        <Input
-          id={inputId}
-          disabled={disabled}
-          readOnly={readOnly}
-          aria-invalid={status === 'negative'}
-          aria-describedby={descriptionId}
-          $readOnly={readOnly}
-          {...inputProps}
-        />
-        {trailing}
-      </InputWrapper>
+      <InputRow>
+        <InputWrapper $status={status} $disabled={disabled} $readOnly={readOnly} $attached={!!trailingButton}>
+          {leadingIcon && <IconSlot $color={Label.alternative}>{leadingIcon}</IconSlot>}
+          <Input
+            id={inputId}
+            disabled={disabled}
+            readOnly={readOnly}
+            aria-invalid={status === 'negative'}
+            aria-describedby={descriptionId}
+            $readOnly={readOnly}
+            {...inputProps}
+          />
+          {statusIcon}
+          {!trailingButton && !statusIcon && (trailingContent ?? trailingIcon ?? null)}
+        </InputWrapper>
+        {trailingButton && (
+          <TrailingButton type="button" onClick={trailingButton.onClick} disabled={trailingButton.disabled}>
+            {trailingButton.label}
+          </TrailingButton>
+        )}
+      </InputRow>
       {description && (
         <Description id={descriptionId} $status={status}>
           {description}
@@ -130,16 +125,28 @@ const Required = styled.span`
   ${typographyCss(Typography.label1Normal.medium)}
 `;
 
-const InputWrapper = styled.div<{ $status: TextFieldStatus; $disabled: boolean; $readOnly: boolean }>`
+const InputRow = styled.div`
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+`;
+
+const InputWrapper = styled.div<{
+  $status: TextFieldStatus;
+  $disabled: boolean;
+  $readOnly: boolean;
+  $attached: boolean;
+}>`
   position: relative;
   display: flex;
+  flex: 1 0 0;
   align-items: center;
   gap: 8px;
-  width: 100%;
+  min-width: 0;
   min-height: 24px;
   padding: 12px;
-  border-radius: 12px;
-  background-color: ${(props) => (props.$disabled ? '#F4F4F5' : 'rgba(255, 255, 255, 0.08)')};
+  border-radius: ${(props) => (props.$attached ? '12px 0 0 12px' : '12px')};
+  background-color: ${(props) => (props.$disabled ? Fill.subtle : 'rgba(255, 255, 255, 0.08)')};
   box-shadow: ${(props) => getBoxShadow(props.$status, props.$disabled)};
 
   ${(props) =>
@@ -191,12 +198,18 @@ const Description = styled.p<{ $status: TextFieldStatus }>`
 `;
 
 const TrailingButton = styled.button`
+  display: flex;
   flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  min-width: 80px;
   padding: 12px 16px;
   border: none;
-  border-radius: 12px;
+  border-radius: 0 12px 12px 0;
   box-shadow:
-    inset 0 0 0 1px ${Line.normal},
+    inset 0 1px 0 ${Line.normal},
+    inset -1px 0 0 ${Line.normal},
+    inset 0 -1px 0 ${Line.normal},
     0 1px 2px rgba(0, 0, 0, 0.03);
   background: none;
   color: ${Orange.o500};
@@ -204,6 +217,12 @@ const TrailingButton = styled.button`
   ${typographyCss(Typography.body1Normal.bold)}
 
   &:disabled {
+    box-shadow:
+      inset 0 1px 0 ${Line.subtle},
+      inset -1px 0 0 ${Line.subtle},
+      inset 0 -1px 0 ${Line.subtle},
+      0 1px 2px rgba(0, 0, 0, 0.03);
+    background-color: ${Fill.subtle};
     color: ${Label.assistive};
     cursor: not-allowed;
   }
