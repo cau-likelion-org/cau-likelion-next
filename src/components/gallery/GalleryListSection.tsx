@@ -339,7 +339,6 @@ const GalleryListSection = () => {
               onClose={() => setOpenFilter(null)}
               onSelect={(option) => {
                 setGeneration(option);
-                setTrack(ALL_OPTION);
                 setOpenFilter(null);
               }}
             />
