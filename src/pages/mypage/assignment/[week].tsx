@@ -1,7 +1,6 @@
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
 import styled from 'styled-components';
 
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
@@ -22,6 +21,7 @@ import {
   uploadAssignmentFile,
 } from 'src/apis/assignment';
 import useTokenStore from 'src/store/useTokenStore';
+import { getServerMessage } from '@utils/index';
 import { Black, Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { containerCss, media } from '@utils/constant/breakpoint';
@@ -31,15 +31,6 @@ const formatDueDate = (value: string) => {
   if (Number.isNaN(date.getTime())) return value;
   const pad = (n: number) => String(n).padStart(2, '0');
   return `${date.getFullYear()}/${pad(date.getMonth() + 1)}/${pad(date.getDate())}`;
-};
-
-// 파일 업로드·제출 실패 사유(예: 허용되지 않는 파일 형식)는 서버 메시지를 그대로 보여준다
-const getServerMessage = (error: unknown) => {
-  if (!axios.isAxiosError(error)) return undefined;
-  const data: unknown = error.response?.data;
-  if (typeof data === 'string') return data.trim() || undefined;
-  const message = (data as { message?: unknown } | undefined)?.message;
-  return typeof message === 'string' && message.trim() ? message : undefined;
 };
 
 const AssignmentSubmit = () => {

@@ -1,25 +1,16 @@
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
 import styled from 'styled-components';
 
 import TextField from '@common/textField/TextField';
 import { AttendanceStatusResponse, checkAttendance, getMyAttendances } from 'src/apis/attendance';
 import useTokenStore from 'src/store/useTokenStore';
-import { toDateString } from '@utils/index';
+import { getServerMessage, toDateString } from '@utils/index';
 import { BackgroundWhite, Black, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { media } from '@utils/constant/breakpoint';
 
 const LATE_CHECK_IN_DEADLINE_HOUR = 22;
-
-const getServerMessage = (error: unknown) => {
-  if (!axios.isAxiosError(error)) return undefined;
-  const data: unknown = error.response?.data;
-  if (typeof data === 'string') return data.trim() || undefined;
-  const message = (data as { message?: unknown } | undefined)?.message;
-  return typeof message === 'string' && message.trim() ? message : undefined;
-};
 
 const AttendanceCheckCard = ({ isTarget = true }: { isTarget?: boolean }) => {
   const tokenState = useTokenStore((state) => state.token);

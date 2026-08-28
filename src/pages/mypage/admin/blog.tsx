@@ -24,7 +24,7 @@ import useScrollToFirstError from 'src/hooks/useScrollToFirstError';
 import { getUserProfile, getGenerations } from 'src/apis/account';
 import { getBlogs, createBlog, updateBlog, deleteBlog, BlogResponse, BlogRequest } from 'src/apis/blog';
 import useTokenStore from 'src/store/useTokenStore';
-import { isAdminRole } from '@utils/index';
+import { getServerMessage, isAdminRole } from '@utils/index';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
@@ -80,6 +80,7 @@ const MyPageAdminBlog = () => {
 
   const [blogItems, setBlogItems] = useState<BlogItem[]>(() => (blogs ?? []).map(blogToLocal));
   const [toastMessage, setToastMessage] = useState<ReactNode>('');
+  const [toastVariant, setToastVariant] = useState<'positive' | 'negative'>('positive');
   const [showErrors, setShowErrors] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -132,10 +133,12 @@ const MyPageAdminBlog = () => {
         remove: (id) => deleteBlog(tokenState, id),
       });
       await queryClient.invalidateQueries({ queryKey: ['adminBlogs'] });
+      setToastVariant('positive');
       setToastMessage('변경사항이 저장되었습니다.');
       setIsEditing(false);
-    } catch {
-      setToastMessage('저장 중 오류가 발생했습니다. 다시 시도해 주세요.');
+    } catch (error) {
+      setToastVariant('negative');
+      setToastMessage(getServerMessage(error) ?? '저장 중 오류가 발생했습니다. 다시 시도해 주세요.');
     } finally {
       setIsSaving(false);
     }
@@ -180,7 +183,7 @@ const MyPageAdminBlog = () => {
         </>
       )}
       <ToastWrapper>
-        <Toast variant="positive" text={toastMessage} show={!!toastMessage} onHidden={() => setToastMessage('')} />
+        <Toast variant={toastVariant} text={toastMessage} show={!!toastMessage} onHidden={() => setToastMessage('')} />
       </ToastWrapper>
     </>
   );

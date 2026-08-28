@@ -1,24 +1,14 @@
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
 import styled from 'styled-components';
 
 import TextField from '@common/textField/TextField';
 import { AttendanceStatusResponse, checkAttendance, getMyAttendances } from 'src/apis/attendance';
 import useTokenStore from 'src/store/useTokenStore';
-import { toDateString } from '@utils/index';
+import { getServerMessage, toDateString } from '@utils/index';
 import { BackgroundWhite, Black, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { media } from '@utils/constant/breakpoint';
-
-// 체크인 거절 사유(마감 시각 초과 등)는 서버 메시지를 그대로 보여준다
-const getServerMessage = (error: unknown) => {
-  if (!axios.isAxiosError(error)) return undefined;
-  const data: unknown = error.response?.data;
-  if (typeof data === 'string') return data.trim() || undefined;
-  const message = (data as { message?: unknown } | undefined)?.message;
-  return typeof message === 'string' && message.trim() ? message : undefined;
-};
 
 // 출석체크 대상이 아닌 역할(운영진·회장·관리자·어른사자)은 조회 결과와 무관하게 비활성으로 보여준다
 const AttendanceCheckCard = ({ isTarget = true }: { isTarget?: boolean }) => {
