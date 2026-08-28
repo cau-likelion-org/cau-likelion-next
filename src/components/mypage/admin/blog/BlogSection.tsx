@@ -149,16 +149,17 @@ const BlogCard = ({
             aria-controls={categoryListId}
             status={showErrors && isUnfilled(item.category) ? 'negative' : 'normal'}
             description={showErrors && isUnfilled(item.category) ? '내용 구분을 선택해 주세요.' : undefined}
-          />
-          {isCategoryOpen && (
-            <ListboxOptions
-              listId={categoryListId}
-              options={BLOG_CATEGORY_OPTIONS}
-              value={item.category}
-              activeIndex={categoryActiveIndex}
-              onSelect={selectCategory}
-            />
-          )}
+          >
+            {isCategoryOpen && (
+              <ListboxOptions
+                listId={categoryListId}
+                options={BLOG_CATEGORY_OPTIONS}
+                value={item.category}
+                activeIndex={categoryActiveIndex}
+                onSelect={selectCategory}
+              />
+            )}
+          </Select>
         </SelectWrapper>
       </Row>
       <TextField

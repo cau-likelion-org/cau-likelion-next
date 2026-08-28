@@ -678,16 +678,17 @@ const CategorySelect = ({
         aria-controls={listId}
         status={status}
         description={description}
-      />
-      {isOpen && (
-        <ListboxOptions
-          listId={listId}
-          options={options}
-          value={value}
-          activeIndex={activeIndex}
-          onSelect={selectOption}
-        />
-      )}
+      >
+        {isOpen && (
+          <ListboxOptions
+            listId={listId}
+            options={options}
+            value={value}
+            activeIndex={activeIndex}
+            onSelect={selectOption}
+          />
+        )}
+      </Select>
     </NarrowSelectWrapper>
   );
 };

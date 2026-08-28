@@ -117,16 +117,17 @@ const RecruitNotifyModal = ({ onClose }: { onClose: () => void }) => {
                 aria-expanded={isDepartmentOpen}
                 aria-activedescendant={isDepartmentOpen ? `${departmentListId}-${activeDepartmentIndex}` : undefined}
                 aria-controls={departmentListId}
-              />
-              {isDepartmentOpen && (
-                <ListboxOptions
-                  listId={departmentListId}
-                  options={departmentOptions}
-                  value={department}
-                  activeIndex={activeDepartmentIndex}
-                  onSelect={selectDepartment}
-                />
-              )}
+              >
+                {isDepartmentOpen && (
+                  <ListboxOptions
+                    listId={departmentListId}
+                    options={departmentOptions}
+                    value={department}
+                    activeIndex={activeDepartmentIndex}
+                    onSelect={selectDepartment}
+                  />
+                )}
+              </Select>
             </SelectWrapper>
           </Row>
           <TextField

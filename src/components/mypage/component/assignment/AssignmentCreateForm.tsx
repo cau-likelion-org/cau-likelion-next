@@ -373,16 +373,17 @@ const SubmitTypeSelect = ({
         aria-expanded={isOpen}
         aria-activedescendant={isOpen ? `${listId}-${activeIndex}` : undefined}
         aria-controls={listId}
-      />
-      {isOpen && (
-        <ListboxOptions
-          listId={listId}
-          options={SUBMIT_OPTIONS}
-          value={currentLabel}
-          activeIndex={activeIndex}
-          onSelect={selectOption}
-        />
-      )}
+      >
+        {isOpen && (
+          <ListboxOptions
+            listId={listId}
+            options={SUBMIT_OPTIONS}
+            value={currentLabel}
+            activeIndex={activeIndex}
+            onSelect={selectOption}
+          />
+        )}
+      </Select>
     </SelectColumn>
   );
 };

@@ -169,16 +169,17 @@ const FilterSelect = ({
         aria-expanded={isOpen}
         aria-activedescendant={isOpen ? `${listId}-${activeIndex}` : undefined}
         aria-controls={listId}
-      />
-      {isOpen && (
-        <ListboxOptions
-          listId={listId}
-          options={options}
-          value={value}
-          activeIndex={activeIndex}
-          onSelect={selectOption}
-        />
-      )}
+      >
+        {isOpen && (
+          <ListboxOptions
+            listId={listId}
+            options={options}
+            value={value}
+            activeIndex={activeIndex}
+            onSelect={selectOption}
+          />
+        )}
+      </Select>
     </SelectWrapper>
   );
 };

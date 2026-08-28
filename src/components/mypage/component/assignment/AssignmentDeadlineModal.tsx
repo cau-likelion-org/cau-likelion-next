@@ -81,16 +81,17 @@ const AssignmentDeadlineModal = ({
               value={selectedAssignment?.title ?? ''}
               placeholder="과제 선택"
               onClick={() => setIsOpen((prev) => !prev)}
-            />
-            {isOpen && (
-              <ListboxOptions
-                listId={listId}
-                options={titles}
-                value={selectedAssignment?.title ?? ''}
-                activeIndex={activeIndex}
-                onSelect={selectOption}
-              />
-            )}
+            >
+              {isOpen && (
+                <ListboxOptions
+                  listId={listId}
+                  options={titles}
+                  value={selectedAssignment?.title ?? ''}
+                  activeIndex={activeIndex}
+                  onSelect={selectOption}
+                />
+              )}
+            </Select>
           </SelectField>
 
           <DateRow>
