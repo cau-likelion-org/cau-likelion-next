@@ -209,7 +209,10 @@ const MyPageAdminRecruitment = () => {
             .map((subscriber) => ({ id: subscriber.id, email: subscriber.email }))}
           onRemoveRecipient={toggleSelect}
           onSelectAll={() => setSelectedIds(new Set((subscribers ?? []).map((subscriber) => subscriber.id)))}
-          onClose={() => setIsComposeOpen(false)}
+          onClose={() => {
+            setIsComposeOpen(false);
+            setSelectedIds(new Set());
+          }}
           onSubmit={(form) => composeMutation.mutateAsync(form)}
           isSubmitting={composeMutation.isPending}
         />
