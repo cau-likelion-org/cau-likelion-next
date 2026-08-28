@@ -1,6 +1,7 @@
 import { useId, useRef } from 'react';
 import styled from 'styled-components';
 
+import ScrollArea from '@common/scrollArea/ScrollArea';
 import useFocusTrap from 'src/hooks/useFocusTrap';
 import { BackgroundColor, Label, Material, Orange } from '@utils/constant/color';
 import { media } from '@utils/constant/breakpoint';
@@ -25,12 +26,14 @@ const EmailCopyModal = ({ email, onClose }: { email: string; onClose: () => void
         tabIndex={-1}
         onClick={(event) => event.stopPropagation()}
       >
-        <Information>
-          <Title id={titleId}>이메일이 복사되었습니다</Title>
-          <EmailButton type="button" onClick={handleCopyAgain}>
-            {email}
-          </EmailButton>
-        </Information>
+        <InformationScroll>
+          <Information>
+            <Title id={titleId}>이메일이 복사되었습니다</Title>
+            <EmailButton type="button" onClick={handleCopyAgain}>
+              {email}
+            </EmailButton>
+          </Information>
+        </InformationScroll>
         <Actions>
           <CloseButton type="button" onClick={onClose}>
             닫기
@@ -55,11 +58,13 @@ const Backdrop = styled.div`
 `;
 
 const Modal = styled.div`
+  position: relative;
   width: 100%;
   max-width: 400px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  overflow: hidden;
   border-radius: 12px;
   background-color: ${BackgroundColor};
   box-shadow:
@@ -71,6 +76,10 @@ const Modal = styled.div`
   ${media.xs} {
     border-radius: 16px;
   }
+`;
+
+const InformationScroll = styled(ScrollArea)`
+  width: 100%;
 `;
 
 const Information = styled.div`

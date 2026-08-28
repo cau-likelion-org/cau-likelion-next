@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { RecruitmentTextResponse } from 'src/apis/recruitment';
 import { STATUS_BADGE } from './RecruitmentTextSection';
 import ContentBadge from '@common/badge/ContentBadge';
+import ScrollArea from '@common/scrollArea/ScrollArea';
 import LinkifiedText from './LinkifiedText';
 import { IcCaretDown, IcCaretUp } from '@assets/svg';
 import { BackgroundColor, Fill, Label, Line, Material, Orange, State } from '@utils/constant/color';
@@ -60,73 +61,75 @@ const RecruitmentTextDetailModal = ({
     <Overlay>
       <Dimmer onClick={onClose} />
       <Modal ref={modalRef} role="dialog" aria-modal="true" aria-label="발송 메일 보기" tabIndex={-1}>
-        <Information>
-          <Field>
-            <Heading>수신자 리스트</Heading>
-            <RecipientBox>
-              <RecipientSummaryRow>
-                {canResend ? (
-                  <ResendButton type="button" $disabled={isResending} onClick={onResend} disabled={isResending}>
-                    발송 실패건 재발송
-                  </ResendButton>
-                ) : (
-                  <ResendButton as="span" $disabled>
-                    발송 실패건 재발송
-                  </ResendButton>
-                )}
-                <RecipientCountRow
-                  as={hasOverflow ? 'button' : 'div'}
-                  type={hasOverflow ? 'button' : undefined}
-                  $clickable={hasOverflow}
-                  aria-expanded={hasOverflow ? isRecipientListExpanded : undefined}
-                  onClick={hasOverflow ? () => setIsRecipientListExpanded((prev) => !prev) : undefined}
-                >
-                  {text.status === 'SENT' && (
-                    <>
-                      <CountLabel>발송 완료 {text.successCount}명</CountLabel>
-                      <CountLabel $tone="negative">발송 실패 {text.failedCount}명</CountLabel>
-                    </>
+        <InformationScroll>
+          <Information>
+            <Field>
+              <Heading>수신자 리스트</Heading>
+              <RecipientBox>
+                <RecipientSummaryRow>
+                  {canResend ? (
+                    <ResendButton type="button" $disabled={isResending} onClick={onResend} disabled={isResending}>
+                      발송 실패건 재발송
+                    </ResendButton>
+                  ) : (
+                    <ResendButton as="span" $disabled>
+                      발송 실패건 재발송
+                    </ResendButton>
                   )}
-                  <ContentBadge text={`총 ${text.targetCount}명`} size="small" />
-                  {hasOverflow &&
-                    (isRecipientListExpanded ? (
-                      <IcCaretUp width={16} height={16} />
-                    ) : (
-                      <IcCaretDown width={16} height={16} />
-                    ))}
-                </RecipientCountRow>
-              </RecipientSummaryRow>
-              <RecipientChipRow
-                ref={recipientChipRowRef}
-                $expanded={isRecipientListExpanded}
-                $faded={isRecipientListFaded}
-              >
-                {text.recipients.map((recipient, index) => {
-                  const isFailed = text.status === 'SENT' && recipient.status === 'FAILED';
-                  return (
-                    <RecipientChip key={`${recipient.email}-${index}`} $failed={isFailed}>
-                      {recipient.email}
-                      {isFailed && <FailedIcon>×</FailedIcon>}
-                    </RecipientChip>
-                  );
-                })}
-              </RecipientChipRow>
-            </RecipientBox>
-          </Field>
+                  <RecipientCountRow
+                    as={hasOverflow ? 'button' : 'div'}
+                    type={hasOverflow ? 'button' : undefined}
+                    $clickable={hasOverflow}
+                    aria-expanded={hasOverflow ? isRecipientListExpanded : undefined}
+                    onClick={hasOverflow ? () => setIsRecipientListExpanded((prev) => !prev) : undefined}
+                  >
+                    {text.status === 'SENT' && (
+                      <>
+                        <CountLabel>발송 완료 {text.successCount}명</CountLabel>
+                        <CountLabel $tone="negative">발송 실패 {text.failedCount}명</CountLabel>
+                      </>
+                    )}
+                    <ContentBadge text={`총 ${text.targetCount}명`} size="small" />
+                    {hasOverflow &&
+                      (isRecipientListExpanded ? (
+                        <IcCaretUp width={16} height={16} />
+                      ) : (
+                        <IcCaretDown width={16} height={16} />
+                      ))}
+                  </RecipientCountRow>
+                </RecipientSummaryRow>
+                <RecipientChipRow
+                  ref={recipientChipRowRef}
+                  $expanded={isRecipientListExpanded}
+                  $faded={isRecipientListFaded}
+                >
+                  {text.recipients.map((recipient, index) => {
+                    const isFailed = text.status === 'SENT' && recipient.status === 'FAILED';
+                    return (
+                      <RecipientChip key={`${recipient.email}-${index}`} $failed={isFailed}>
+                        {recipient.email}
+                        {isFailed && <FailedIcon>×</FailedIcon>}
+                      </RecipientChip>
+                    );
+                  })}
+                </RecipientChipRow>
+              </RecipientBox>
+            </Field>
 
-          <MailTitle>{text.title}</MailTitle>
-          <MailContent>
-            <LinkifiedText text={text.content} />
-          </MailContent>
+            <MailTitle>{text.title}</MailTitle>
+            <MailContent>
+              <LinkifiedText text={text.content} />
+            </MailContent>
 
-          <StatusRow>
-            <ContentBadge text={badge.label} color={badge.color} variant={badge.variant} size="medium" />
-            <ScheduledAt>
-              발송 일시<Divider>ㅣ</Divider>
-              {formatDateTime(text.scheduledSendAt)}
-            </ScheduledAt>
-          </StatusRow>
-        </Information>
+            <StatusRow>
+              <ContentBadge text={badge.label} color={badge.color} variant={badge.variant} size="medium" />
+              <ScheduledAt>
+                발송 일시<Divider>ㅣ</Divider>
+                {formatDateTime(text.scheduledSendAt)}
+              </ScheduledAt>
+            </StatusRow>
+          </Information>
+        </InformationScroll>
         <Actions>
           {text.status !== 'SENT' && (
             <ActionTextButton type="button" onClick={onEdit}>
@@ -173,12 +176,15 @@ const Modal = styled.div`
   background-color: ${BackgroundColor};
 `;
 
+const InformationScroll = styled(ScrollArea)`
+  flex: 1 1 auto;
+`;
+
 const Information = styled.div`
   display: flex;
   flex-direction: column;
   gap: 42px;
   padding: 28px;
-  overflow-y: auto;
 `;
 
 const Field = styled.div`

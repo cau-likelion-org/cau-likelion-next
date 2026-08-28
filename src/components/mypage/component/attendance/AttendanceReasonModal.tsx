@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import styled from 'styled-components';
 
+import ScrollArea from '@common/scrollArea/ScrollArea';
 import useScrollLock from 'src/hooks/useScrollLock';
 import { BackgroundColor, Label, Line, Material, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -38,19 +39,21 @@ const AttendanceReasonModal = ({ initialReason = '', onClose, onSave }: Attendan
         aria-label="출석 수정사유"
         onMouseDown={(event) => event.stopPropagation()}
       >
-        <Information>
-          <ModalTitle>출석 수정사유</ModalTitle>
-          <ModalDescription>사유를 적어주어야 출석을 수정할 수 있어요</ModalDescription>
-          <ReasonInput
-            autoFocus
-            value={reason}
-            placeholder="텍스트를 입력해 주세요."
-            onChange={(event) => setReason(toSingleLine(event.target.value))}
-            onKeyDown={(event) => {
-              if (event.key === 'Enter' && !event.nativeEvent.isComposing) event.preventDefault();
-            }}
-          />
-        </Information>
+        <InformationScroll>
+          <Information>
+            <ModalTitle>출석 수정사유</ModalTitle>
+            <ModalDescription>사유를 적어주어야 출석을 수정할 수 있어요</ModalDescription>
+            <ReasonInput
+              autoFocus
+              value={reason}
+              placeholder="텍스트를 입력해 주세요."
+              onChange={(event) => setReason(toSingleLine(event.target.value))}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' && !event.nativeEvent.isComposing) event.preventDefault();
+              }}
+            />
+          </Information>
+        </InformationScroll>
         <Actions>
           <CloseButton type="button" onClick={onClose}>
             닫기
@@ -78,6 +81,7 @@ const Dimmer = styled.div`
 `;
 
 const Modal = styled.div`
+  position: relative;
   display: flex;
   flex-direction: column;
   width: 400px;
@@ -86,6 +90,8 @@ const Modal = styled.div`
   background-color: ${BackgroundColor};
   overflow: hidden;
 `;
+
+const InformationScroll = styled(ScrollArea)``;
 
 const Information = styled.div`
   display: flex;
