@@ -8,7 +8,7 @@ import Chip from '@common/chip/Chip';
 import ScrollArea from '@common/scrollArea/ScrollArea';
 import { IcCalendar, IcCaretDown, IcCaretUp, IcClock } from '@assets/svg';
 import { isUnfilled } from '@utils/index';
-import { BackgroundColor, Fill, Label, Line, Material, Orange, State } from '@utils/constant/color';
+import { BackgroundColor, Label, Line, Material, Orange, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import useFocusTrap from 'src/hooks/useFocusTrap';
 import useScrollToFirstError from 'src/hooks/useScrollToFirstError';
@@ -27,7 +27,6 @@ interface RecruitmentComposeRecipient {
 interface RecruitmentComposeModalProps {
   recipients: RecruitmentComposeRecipient[];
   onRemoveRecipient: (id: number) => void;
-  onSelectAll: () => void;
   onClose: () => void;
   onSubmit: (form: RecruitmentComposeForm) => void | Promise<unknown>;
   isSubmitting?: boolean;
@@ -42,7 +41,6 @@ const formatDate = (value: string) => (value ? value.slice(0, 10).replace(/-/g, 
 const RecruitmentComposeModal = ({
   recipients,
   onRemoveRecipient,
-  onSelectAll,
   onClose,
   onSubmit,
   isSubmitting = false,
@@ -114,29 +112,6 @@ const RecruitmentComposeModal = ({
                 tabIndex={-1}
                 aria-invalid={showErrors && recipients.length === 0}
               >
-                <RecipientSummaryRow>
-                  <AudiencePill type="button" onClick={onSelectAll}>
-                    사전 알림 신청자 전체선택
-                  </AudiencePill>
-                  {hasOverflow ? (
-                    <RecipientCount
-                      type="button"
-                      aria-expanded={isRecipientListExpanded}
-                      onClick={() => setIsRecipientListExpanded((prev) => !prev)}
-                    >
-                      <CountText>총 {recipients.length}명</CountText>
-                      {isRecipientListExpanded ? (
-                        <IcCaretUp width={16} height={16} />
-                      ) : (
-                        <IcCaretDown width={16} height={16} />
-                      )}
-                    </RecipientCount>
-                  ) : (
-                    <RecipientCount as="span">
-                      <CountText>총 {recipients.length}명</CountText>
-                    </RecipientCount>
-                  )}
-                </RecipientSummaryRow>
                 <RecipientChipRow
                   ref={recipientChipRowRef}
                   $expanded={isRecipientListExpanded}
@@ -160,6 +135,24 @@ const RecruitmentComposeModal = ({
                     </RecipientChip>
                   ))}
                 </RecipientChipRow>
+                {hasOverflow ? (
+                  <RecipientCount
+                    type="button"
+                    aria-expanded={isRecipientListExpanded}
+                    onClick={() => setIsRecipientListExpanded((prev) => !prev)}
+                  >
+                    <CountText>총 {recipients.length}명</CountText>
+                    {isRecipientListExpanded ? (
+                      <IcCaretUp width={16} height={16} />
+                    ) : (
+                      <IcCaretDown width={16} height={16} />
+                    )}
+                  </RecipientCount>
+                ) : (
+                  <RecipientCount as="span">
+                    <CountText>총 {recipients.length}명</CountText>
+                  </RecipientCount>
+                )}
               </RecipientBox>
               {showErrors && recipients.length === 0 && <FieldDescription>발송 대상을 선택해 주세요.</FieldDescription>}
             </Field>
@@ -363,7 +356,7 @@ const Required = styled.span`
 
 const RecipientBox = styled.div<{ $status: 'normal' | 'negative' }>`
   display: flex;
-  flex-direction: column;
+  align-items: flex-start;
   gap: 14px;
   width: 100%;
   padding: 12px;
@@ -382,34 +375,12 @@ const FieldDescription = styled.p`
   ${typographyCss(Typography.caption1.regular)}
 `;
 
-const RecipientSummaryRow = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  min-height: 24px;
-  width: 100%;
-`;
-
-const AudiencePill = styled.button`
-  display: inline-flex;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  padding: 7px 14px;
-  border-radius: 8px;
-  background-color: ${Fill.normal};
-  color: ${Label.neutral};
-  cursor: pointer;
-  ${typographyCss({ ...Typography.label2.bold, fontWeight: 500 })}
-`;
-
 const RecipientCount = styled.button`
   display: inline-flex;
   flex-shrink: 0;
   align-items: center;
   gap: 4px;
+  height: 24px;
   border: none;
   background: none;
   padding: 0;
@@ -427,8 +398,9 @@ const RecipientChipRow = styled.div<{ $expanded: boolean; $faded: boolean }>`
   display: flex;
   align-items: center;
   gap: 4px;
-  width: 100%;
+  flex: 1 0 0;
   min-width: 0;
+  min-height: 24px;
 
   ${(props) =>
     props.$expanded
