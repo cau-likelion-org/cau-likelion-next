@@ -13,6 +13,7 @@ import MemberSection, { ALL_FILTER, MemberEditUpdate, MemberSaveError } from '@m
 import AllowedMemberSection from '@mypage/admin/members/AllowedMemberSection';
 import PartManageSection from '@mypage/admin/members/PartManageSection';
 import GenerationCreateModal from '@mypage/admin/members/GenerationCreateModal';
+import ConfirmDialog from '@mypage/admin/members/ConfirmDialog';
 import {
   createGeneration,
   deleteMember,
@@ -127,10 +128,45 @@ const MyPageAdminMembers = () => {
     mutationFn: (id: number) => setCurrentGeneration(id, tokenState),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['adminGenerations'] });
-      showToast('positive', '현재 활동 기수가 변경되었습니다.');
     },
     onError: () => showToast('negative', '현재 활동 기수 전환에 실패했습니다. 다시 시도해 주세요.'),
   });
+
+  // 기수 전환 시, 직전까지 활동하던 기수의 아기사자는 이제 활동 기수가 아니므로 어른사자로 함께 전환한다
+  const [pendingGenerationId, setPendingGenerationId] = useState<number | null>(null);
+  const pendingFromGeneration = generations?.find((generation) => generation.status === 'IN_ACTIVITY');
+  const pendingAffectedMembers =
+    pendingGenerationId !== null && pendingFromGeneration
+      ? (members ?? []).filter(
+          (member) => member.role === 'BABY_LION' && member.generationNumber === pendingFromGeneration.number,
+        )
+      : [];
+
+  const handleConfirmGenerationSwitch = async () => {
+    if (pendingGenerationId === null) return;
+    const generationId = pendingGenerationId;
+    const affectedMembers = pendingAffectedMembers;
+    setPendingGenerationId(null);
+    try {
+      await setCurrentGenerationMutation.mutateAsync(generationId);
+      if (affectedMembers.length > 0) {
+        const results = await Promise.allSettled(
+          affectedMembers.map((member) =>
+            putUserProfile({
+              id: member.id,
+              form: { name: member.name, email: member.email, role: 'ADULT_LION', partId: member.partId },
+              tokenState,
+            }),
+          ),
+        );
+        if (results.some((result) => result.status === 'rejected')) throw new Error('일부 회원 권한 변경 실패');
+        queryClient.invalidateQueries({ queryKey: membersQueryKey });
+      }
+      showToast('positive', '기수 전환, 권한 변경이 완료되었습니다.');
+    } catch {
+      showToast('negative', '기수 전환에 실패했습니다. 다시 시도해 주세요.');
+    }
+  };
 
   const generationOptions = [...new Set((generations ?? []).map((generation) => generation.number))]
     .sort((a, b) => b - a)
@@ -213,7 +249,7 @@ const MyPageAdminMembers = () => {
           />
           <PartManageSection
             generations={generations ?? []}
-            onSelectCurrent={(id) => setCurrentGenerationMutation.mutate(id)}
+            onSelectCurrent={(id) => setPendingGenerationId(id)}
             isUpdatingCurrent={setCurrentGenerationMutation.isPending}
             onCreate={() => setIsCreateModalOpen(true)}
           />
@@ -224,6 +260,14 @@ const MyPageAdminMembers = () => {
           onClose={() => setIsCreateModalOpen(false)}
           onSubmit={(form) => createGenerationMutation.mutateAsync(form)}
           isSubmitting={createGenerationMutation.isPending}
+        />
+      )}
+      {pendingGenerationId !== null && (
+        <ConfirmDialog
+          title={`${pendingFromGeneration ? `${pendingFromGeneration.number}기 ` : ''}아기사자 ${pendingAffectedMembers.length}명을 어른사자로 전환합니다.`}
+          confirmLabel="전환"
+          onCancel={() => setPendingGenerationId(null)}
+          onConfirm={handleConfirmGenerationSwitch}
         />
       )}
     </>
