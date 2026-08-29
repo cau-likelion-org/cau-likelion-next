@@ -12,6 +12,10 @@ import { Black, BackgroundWhite, BackgroundLight, Line, Fill, Orange } from '@ut
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { MOBILE } from '@home/common/responsive';
 
+// 700~900px 구간은 이미지를 고정폭 300px로 유지한 채 가로 배치를 유지하고, 텍스트만 줄바꿈시킨다.
+// 그보다 좁아지면(Figma 모바일 시안 기준) 이미지가 카드 전체 폭을 차지하는 세로 배치로 전환한다.
+const CARD_MOBILE = 700;
+
 const PAGE_NAVIGATION_HREF: Record<PageNavigation, string> = {
   INTRO_CURRICULUM: '/about#curriculum',
   PROJECT: '/project',
@@ -158,8 +162,9 @@ const Thumbnail = styled.div<{ $imageUrl?: string }>`
   background-size: cover;
   background-position: center;
 
-  @media (max-width: ${MOBILE}px) {
+  @media (max-width: ${CARD_MOBILE}px) {
     width: 100%;
+    max-width: 300px;
     height: auto;
     aspect-ratio: 300 / 169;
   }
@@ -182,7 +187,7 @@ const CardDescription = styled.p`
   color: ${Black.b900};
   margin: 0;
 
-  @media (max-width: ${MOBILE}px) {
+  @media (max-width: ${CARD_MOBILE}px) {
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 3;
@@ -216,7 +221,7 @@ const Card = styled.div<{ $expanded: boolean }>`
     }
   }
 
-  @media (max-width: ${MOBILE}px) {
+  @media (max-width: ${CARD_MOBILE}px) {
     flex-direction: column;
     min-height: 0;
     cursor: pointer;
@@ -264,15 +269,17 @@ const Card = styled.div<{ $expanded: boolean }>`
 `;
 
 const TextGroup = styled.div`
-  width: 676px;
-  flex-shrink: 0;
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 676px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 14px;
 
-  @media (max-width: ${MOBILE}px) {
+  @media (max-width: ${CARD_MOBILE}px) {
     width: 100%;
+    max-width: none;
   }
 `;
 
