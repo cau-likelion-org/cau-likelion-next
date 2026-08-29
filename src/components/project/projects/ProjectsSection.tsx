@@ -3,9 +3,10 @@ import Button from '@common/button/Button';
 import CircularLoading from '@common/loading/CircularLoading';
 import EmptyState from '@common/emptyState/EmptyState';
 import Toast from '@common/toast/Toast';
+import PageScrollbar from '@common/pageScrollbar/PageScrollbar';
 import { IcAdd } from '@assets/svg';
 import { useQuery } from '@tanstack/react-query';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import { getUserProfile } from 'src/apis/account';
 import {
@@ -36,6 +37,7 @@ interface FlatProject extends IProjectData {
 }
 
 const ProjectsSection = ({ staticData }: { staticData: ArchivingArrayType<IProjectData> | null }) => {
+  const contentRef = useRef<HTMLDivElement>(null);
   const { data, isLoading, isError } = useQuery<ArchivingArrayType<IProjectData>>({
     queryKey: ['projects'],
     queryFn: getProjects,
@@ -106,72 +108,75 @@ const ProjectsSection = ({ staticData }: { staticData: ArchivingArrayType<IProje
   const hasLoadedProjects = flatProjects.length > 0;
 
   return (
-    <Wrapper>
-      <ToastWrapper>
-        <Toast
-          variant="positive"
-          text="삭제가 완료되었습니다."
-          show={isDeletedToastOpen}
-          onHidden={() => setIsDeletedToastOpen(false)}
-        />
-        <Toast
-          variant="positive"
-          text="등록이 완료되었습니다."
-          show={isCreatedToastOpen}
-          onHidden={() => setIsCreatedToastOpen(false)}
-        />
-        <Toast
-          variant="positive"
-          text="변경사항이 저장되었습니다."
-          show={isUpdatedToastOpen}
-          onHidden={() => setIsUpdatedToastOpen(false)}
-        />
-      </ToastWrapper>
-      <FilterRow>
-        <FilterGroup>
-          <ProjectFilterSelect
-            heading="기수 구분"
-            options={generationOptions}
-            value={selectedGeneration}
-            onChange={setSelectedGeneration}
+    <>
+      <Wrapper ref={contentRef}>
+        <ToastWrapper>
+          <Toast
+            variant="positive"
+            text="삭제가 완료되었습니다."
+            show={isDeletedToastOpen}
+            onHidden={() => setIsDeletedToastOpen(false)}
           />
-          <ProjectFilterSelect
-            heading="프로젝트 구분"
-            options={CATEGORY_OPTIONS}
-            value={selectedCategory}
-            onChange={setSelectedCategory}
+          <Toast
+            variant="positive"
+            text="등록이 완료되었습니다."
+            show={isCreatedToastOpen}
+            onHidden={() => setIsCreatedToastOpen(false)}
           />
-        </FilterGroup>
-        {userProfile && isAdminRole(userProfile.role) && (
-          <AddButtonWrapper>
-            <Button
-              variant="solid"
-              color="primary"
-              size="large"
-              trailingIcon={<IcAdd width={20} height={20} />}
-              onClick={() => router.push('/project/upload')}
-            >
-              프로젝트 추가
-            </Button>
-          </AddButtonWrapper>
+          <Toast
+            variant="positive"
+            text="변경사항이 저장되었습니다."
+            show={isUpdatedToastOpen}
+            onHidden={() => setIsUpdatedToastOpen(false)}
+          />
+        </ToastWrapper>
+        <FilterRow>
+          <FilterGroup>
+            <ProjectFilterSelect
+              heading="기수 구분"
+              options={generationOptions}
+              value={selectedGeneration}
+              onChange={setSelectedGeneration}
+            />
+            <ProjectFilterSelect
+              heading="프로젝트 구분"
+              options={CATEGORY_OPTIONS}
+              value={selectedCategory}
+              onChange={setSelectedCategory}
+            />
+          </FilterGroup>
+          {userProfile && isAdminRole(userProfile.role) && (
+            <AddButtonWrapper>
+              <Button
+                variant="solid"
+                color="primary"
+                size="large"
+                trailingIcon={<IcAdd width={20} height={20} />}
+                onClick={() => router.push('/project/upload')}
+              >
+                프로젝트 추가
+              </Button>
+            </AddButtonWrapper>
+          )}
+        </FilterRow>
+        {isLoading ? (
+          <LoadingWrapper>
+            <CircularLoading size={32} />
+          </LoadingWrapper>
+        ) : isError && !hasLoadedProjects ? (
+          <EmptyState variant="error" />
+        ) : sortedProjects.length === 0 ? (
+          <EmptyState message="조건에 맞는 프로젝트가 없습니다." />
+        ) : (
+          <CardGrid>
+            {sortedProjects.map((project) => (
+              <ProjectCard key={project.id} {...project} />
+            ))}
+          </CardGrid>
         )}
-      </FilterRow>
-      {isLoading ? (
-        <LoadingWrapper>
-          <CircularLoading size={32} />
-        </LoadingWrapper>
-      ) : isError && !hasLoadedProjects ? (
-        <EmptyState variant="error" />
-      ) : sortedProjects.length === 0 ? (
-        <EmptyState message="조건에 맞는 프로젝트가 없습니다." />
-      ) : (
-        <CardGrid>
-          {sortedProjects.map((project) => (
-            <ProjectCard key={project.id} {...project} />
-          ))}
-        </CardGrid>
-      )}
-    </Wrapper>
+      </Wrapper>
+      <PageScrollbar contentRef={contentRef} />
+    </>
   );
 };
 

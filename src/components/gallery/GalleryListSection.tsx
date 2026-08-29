@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -11,6 +11,7 @@ import Select from '@common/select/Select';
 import ListboxOptions from '@common/select/ListboxOptions';
 import Tab from '@common/tab/Tab';
 import Toast from '@common/toast/Toast';
+import PageScrollbar from '@common/pageScrollbar/PageScrollbar';
 import { IcAdd } from '@assets/svg';
 import PageHeader from '@common/pageHeader/PageHeader';
 import useListboxSelect from 'src/hooks/useListboxSelect';
@@ -75,6 +76,7 @@ const toPeriodDisplay = (startDate: string, endDate: string | null) =>
 
 const GalleryListSection = () => {
   const router = useRouter();
+  const contentRef = useRef<HTMLDivElement>(null);
   const [activeTab, setActiveTab] = useState<GalleryTabKey>('session');
   const [generation, setGeneration] = useState(ALL_OPTION);
   const [track, setTrack] = useState(ALL_OPTION);
@@ -324,176 +326,179 @@ const GalleryListSection = () => {
   };
 
   return (
-    <Wrapper>
-      <Header>
-        <Intro title="갤러리" subtitle="멋사 중앙대의 성장과 추억의 기록" />
-        <GalleryTab items={TABS} activeKey={activeTab} onChange={handleTabChange} size="medium" />
-        <FilterRow>
-          <FilterGroup>
-            <FilterSelect
-              label="기수 구분"
-              value={generation}
-              options={generationOptions}
-              isOpen={openFilter === 'generation'}
-              onToggle={() => setOpenFilter((prev) => (prev === 'generation' ? null : 'generation'))}
-              onClose={() => setOpenFilter(null)}
-              onSelect={(option) => {
-                setGeneration(option);
-                setOpenFilter(null);
-              }}
-            />
-            {activeTab === 'session' && (
+    <>
+      <Intro title="갤러리" subtitle="멋사 중앙대의 성장과 추억의 기록" />
+      <Wrapper ref={contentRef}>
+        <Header>
+          <GalleryTab items={TABS} activeKey={activeTab} onChange={handleTabChange} size="medium" />
+          <FilterRow>
+            <FilterGroup>
               <FilterSelect
-                label="파트 구분"
-                value={track}
-                options={partOptions}
-                isOpen={openFilter === 'track'}
-                onToggle={() => setOpenFilter((prev) => (prev === 'track' ? null : 'track'))}
+                label="기수 구분"
+                value={generation}
+                options={generationOptions}
+                isOpen={openFilter === 'generation'}
+                onToggle={() => setOpenFilter((prev) => (prev === 'generation' ? null : 'generation'))}
                 onClose={() => setOpenFilter(null)}
                 onSelect={(option) => {
-                  setTrack(option);
+                  setGeneration(option);
                   setOpenFilter(null);
                 }}
               />
+              {activeTab === 'session' && (
+                <FilterSelect
+                  label="파트 구분"
+                  value={track}
+                  options={partOptions}
+                  isOpen={openFilter === 'track'}
+                  onToggle={() => setOpenFilter((prev) => (prev === 'track' ? null : 'track'))}
+                  onClose={() => setOpenFilter(null)}
+                  onSelect={(option) => {
+                    setTrack(option);
+                    setOpenFilter(null);
+                  }}
+                />
+              )}
+              {activeTab === 'project' && (
+                <FilterSelect
+                  label="프로젝트 구분"
+                  value={projectCategory}
+                  options={PROJECT_CATEGORY_FILTER_OPTIONS}
+                  isOpen={openFilter === 'category'}
+                  onToggle={() => setOpenFilter((prev) => (prev === 'category' ? null : 'category'))}
+                  onClose={() => setOpenFilter(null)}
+                  onSelect={(option) => {
+                    setProjectCategory(option);
+                    setOpenFilter(null);
+                  }}
+                />
+              )}
+            </FilterGroup>
+            {isStaff && (
+              <AddButtonWrapper>
+                <Button
+                  variant="solid"
+                  color="primary"
+                  size="large"
+                  trailingIcon={<IcAdd width={20} height={20} />}
+                  onClick={() => setIsUploadModalOpen(true)}
+                >
+                  {ADD_BUTTON_LABEL[activeTab]}
+                </Button>
+              </AddButtonWrapper>
             )}
-            {activeTab === 'project' && (
-              <FilterSelect
-                label="프로젝트 구분"
-                value={projectCategory}
-                options={PROJECT_CATEGORY_FILTER_OPTIONS}
-                isOpen={openFilter === 'category'}
-                onToggle={() => setOpenFilter((prev) => (prev === 'category' ? null : 'category'))}
-                onClose={() => setOpenFilter(null)}
-                onSelect={(option) => {
-                  setProjectCategory(option);
-                  setOpenFilter(null);
-                }}
-              />
-            )}
-          </FilterGroup>
-          {isStaff && (
-            <AddButtonWrapper>
-              <Button
-                variant="solid"
-                color="primary"
-                size="large"
-                trailingIcon={<IcAdd width={20} height={20} />}
-                onClick={() => setIsUploadModalOpen(true)}
-              >
-                {ADD_BUTTON_LABEL[activeTab]}
-              </Button>
-            </AddButtonWrapper>
-          )}
-        </FilterRow>
-      </Header>
+          </FilterRow>
+        </Header>
 
-      {isUploadModalOpen && <UploadModal onClose={closeUploadModal} onSuccess={handleUploadSuccess} />}
-      {selectedId !== null && !isEditModalOpen && renderDetailModal()}
-      {selectedId !== null && isEditModalOpen && renderEditModal()}
-      <ToastWrapper>
-        <Toast variant="positive" text={toastText} show={isToastOpen} onHidden={() => setIsToastOpen(false)} />
-      </ToastWrapper>
-      {/* <WikiBanner
+        {isUploadModalOpen && <UploadModal onClose={closeUploadModal} onSuccess={handleUploadSuccess} />}
+        {selectedId !== null && !isEditModalOpen && renderDetailModal()}
+        {selectedId !== null && isEditModalOpen && renderEditModal()}
+        <ToastWrapper>
+          <Toast variant="positive" text={toastText} show={isToastOpen} onHidden={() => setIsToastOpen(false)} />
+        </ToastWrapper>
+        {/* <WikiBanner
         href={WIKI_URL}
         target="_blank"
         rel="noopener noreferrer"
         aria-label="중앙대학교 멋쟁이사자처럼 위키 바로가기"
       /> */}
 
-      {activeTab === 'session' &&
-        (isSessionsLoading ? (
-          <LoadingWrapper>
-            <CircularLoading size={32} />
-          </LoadingWrapper>
-        ) : isSessionsError ? (
-          <EmptyState variant="error" />
-        ) : sessionCards.length === 0 ? (
-          <EmptyState message="조건에 맞는 게시물이 없습니다." />
-        ) : (
-          <CardGrid>
-            {sessionCards.map((item) => (
-              <Card
-                key={item.id}
-                thumbnailRatio={16 / 9}
-                thumbnailSrc={item.thumbnailUrl}
-                title={item.title}
-                onClick={() => setSelectedId(item.id)}
-                bottomContent={
-                  <BottomContent>
-                    <BadgeRow>
-                      {[`${item.generationNumber}기`, item.partName, `${item.degree}주차`].map((badge) => (
-                        <ContentBadge key={badge} text={badge} color="accent" size="medium" />
-                      ))}
-                    </BadgeRow>
-                  </BottomContent>
-                }
-              />
-            ))}
-          </CardGrid>
-        ))}
-      {activeTab === 'project' &&
-        (isProjectsLoading ? (
-          <LoadingWrapper>
-            <CircularLoading size={32} />
-          </LoadingWrapper>
-        ) : isProjectsError ? (
-          <EmptyState variant="error" />
-        ) : projectCards.length === 0 ? (
-          <EmptyState message="조건에 맞는 게시물이 없습니다." />
-        ) : (
-          <CardGrid>
-            {projectCards.map((item) => (
-              <Card
-                key={item.id}
-                thumbnailRatio={16 / 9}
-                thumbnailSrc={item.thumbnailUrl}
-                title={item.title}
-                onClick={() => setSelectedId(item.id)}
-                bottomContent={
-                  <BottomContent>
-                    <BadgeRow>
-                      {[`${item.generationNumber}기`, GALLERY_PROJECT_CATEGORY_LABEL[item.category]].map((badge) => (
-                        <ContentBadge key={badge} text={badge} color="accent" size="medium" />
-                      ))}
-                    </BadgeRow>
-                    <Period>{toPeriodDisplay(item.startDate, item.endDate)}</Period>
-                  </BottomContent>
-                }
-              />
-            ))}
-          </CardGrid>
-        ))}
-      {activeTab === 'gallery' &&
-        (isHistoriesLoading ? (
-          <LoadingWrapper>
-            <CircularLoading size={32} />
-          </LoadingWrapper>
-        ) : isHistoriesError ? (
-          <EmptyState variant="error" />
-        ) : historyCards.length === 0 ? (
-          <EmptyState message="조건에 맞는 게시물이 없습니다." />
-        ) : (
-          <CardGrid>
-            {historyCards.map((item) => (
-              <Card
-                key={item.id}
-                thumbnailRatio={16 / 9}
-                thumbnailSrc={item.thumbnailUrl}
-                title={item.title}
-                onClick={() => setSelectedId(item.id)}
-                bottomContent={
-                  <BottomContent>
-                    <BadgeRow>
-                      <ContentBadge text={`${item.generationNumber}기`} color="accent" size="medium" />
-                    </BadgeRow>
-                    <Period>{toPeriodDisplay(item.startDate, item.endDate)}</Period>
-                  </BottomContent>
-                }
-              />
-            ))}
-          </CardGrid>
-        ))}
-    </Wrapper>
+        {activeTab === 'session' &&
+          (isSessionsLoading ? (
+            <LoadingWrapper>
+              <CircularLoading size={32} />
+            </LoadingWrapper>
+          ) : isSessionsError ? (
+            <EmptyState variant="error" />
+          ) : sessionCards.length === 0 ? (
+            <EmptyState message="조건에 맞는 게시물이 없습니다." />
+          ) : (
+            <CardGrid>
+              {sessionCards.map((item) => (
+                <Card
+                  key={item.id}
+                  thumbnailRatio={16 / 9}
+                  thumbnailSrc={item.thumbnailUrl}
+                  title={item.title}
+                  onClick={() => setSelectedId(item.id)}
+                  bottomContent={
+                    <BottomContent>
+                      <BadgeRow>
+                        {[`${item.generationNumber}기`, item.partName, `${item.degree}주차`].map((badge) => (
+                          <ContentBadge key={badge} text={badge} color="accent" size="medium" />
+                        ))}
+                      </BadgeRow>
+                    </BottomContent>
+                  }
+                />
+              ))}
+            </CardGrid>
+          ))}
+        {activeTab === 'project' &&
+          (isProjectsLoading ? (
+            <LoadingWrapper>
+              <CircularLoading size={32} />
+            </LoadingWrapper>
+          ) : isProjectsError ? (
+            <EmptyState variant="error" />
+          ) : projectCards.length === 0 ? (
+            <EmptyState message="조건에 맞는 게시물이 없습니다." />
+          ) : (
+            <CardGrid>
+              {projectCards.map((item) => (
+                <Card
+                  key={item.id}
+                  thumbnailRatio={16 / 9}
+                  thumbnailSrc={item.thumbnailUrl}
+                  title={item.title}
+                  onClick={() => setSelectedId(item.id)}
+                  bottomContent={
+                    <BottomContent>
+                      <BadgeRow>
+                        {[`${item.generationNumber}기`, GALLERY_PROJECT_CATEGORY_LABEL[item.category]].map((badge) => (
+                          <ContentBadge key={badge} text={badge} color="accent" size="medium" />
+                        ))}
+                      </BadgeRow>
+                      <Period>{toPeriodDisplay(item.startDate, item.endDate)}</Period>
+                    </BottomContent>
+                  }
+                />
+              ))}
+            </CardGrid>
+          ))}
+        {activeTab === 'gallery' &&
+          (isHistoriesLoading ? (
+            <LoadingWrapper>
+              <CircularLoading size={32} />
+            </LoadingWrapper>
+          ) : isHistoriesError ? (
+            <EmptyState variant="error" />
+          ) : historyCards.length === 0 ? (
+            <EmptyState message="조건에 맞는 게시물이 없습니다." />
+          ) : (
+            <CardGrid>
+              {historyCards.map((item) => (
+                <Card
+                  key={item.id}
+                  thumbnailRatio={16 / 9}
+                  thumbnailSrc={item.thumbnailUrl}
+                  title={item.title}
+                  onClick={() => setSelectedId(item.id)}
+                  bottomContent={
+                    <BottomContent>
+                      <BadgeRow>
+                        <ContentBadge text={`${item.generationNumber}기`} color="accent" size="medium" />
+                      </BadgeRow>
+                      <Period>{toPeriodDisplay(item.startDate, item.endDate)}</Period>
+                    </BottomContent>
+                  }
+                />
+              ))}
+            </CardGrid>
+          ))}
+      </Wrapper>
+      <PageScrollbar contentRef={contentRef} />
+    </>
   );
 };
 
@@ -567,8 +572,9 @@ const Header = styled.div`
 `;
 
 const Intro = styled(PageHeader)`
+  ${containerCss}
   gap: 24px;
-  padding-bottom: 22px;
+  padding-bottom: 64px;
 
   @media (max-width: 600px) {
     padding-top: 52px;
