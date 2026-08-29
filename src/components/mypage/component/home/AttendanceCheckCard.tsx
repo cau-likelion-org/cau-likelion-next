@@ -11,6 +11,7 @@ import { BackgroundWhite, Black, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { media } from '@utils/constant/breakpoint';
 
+const INVALID_INPUT_SERVER_MESSAGE = '입력값이 올바르지 않습니다';
 const WRONG_PASSWORD_MESSAGE = '비밀번호가 올바르지 않습니다.';
 
 const getServerMessage = (error: unknown) => {
@@ -51,12 +52,9 @@ const AttendanceCheckCard = ({ isTarget = true }: { isTarget?: boolean }) => {
       queryClient.invalidateQueries({ queryKey: ['myScore'] });
     },
     onError: (error) => {
-      const serverMessage = getServerMessage(error);
-      if (serverMessage?.includes('비밀번호')) {
-        setErrorMessage(WRONG_PASSWORD_MESSAGE);
-        return;
-      }
-      setErrorMessage(serverMessage ?? '입력값이 올바르지 않습니다.');
+      const serverMessage = getServerMessage(error)?.trim();
+      const isWrongPassword = !serverMessage || serverMessage.startsWith(INVALID_INPUT_SERVER_MESSAGE);
+      setErrorMessage(isWrongPassword ? WRONG_PASSWORD_MESSAGE : serverMessage);
     },
   });
 
