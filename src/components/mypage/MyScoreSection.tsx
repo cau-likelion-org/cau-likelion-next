@@ -9,9 +9,11 @@ import LinearLoading from '@common/loading/LinearLoading';
 import EmptyState from '@common/emptyState/EmptyState';
 import { BackgroundWhite, Black, Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
-import { media } from '@utils/constant/breakpoint';
+import { Breakpoint, media } from '@utils/constant/breakpoint';
 
 const TOTAL_SCORE_MAX = 3;
+
+const STACKED = `@media (max-width: ${Breakpoint.lg - 1}px)`;
 
 const MyScoreSection = ({ userProfile }: { userProfile: UserProfile }) => {
   const tokenValue = useTokenStore((state) => state.token);
@@ -103,7 +105,7 @@ const CardRow = styled.div`
   gap: 20px;
   width: 100%;
 
-  ${media.xs} {
+  ${STACKED} {
     flex-direction: column;
     align-items: stretch;
   }
@@ -137,7 +139,7 @@ const StatCardWrapper = styled.div`
   flex-shrink: 0;
   width: 340px;
 
-  ${media.xs} {
+  ${STACKED} {
     width: 100%;
   }
 
@@ -205,7 +207,7 @@ const TotalCardWrapper = styled.div`
   width: 160px;
   height: 164px;
 
-  ${media.xs} {
+  ${STACKED} {
     width: 100%;
   }
 `;
