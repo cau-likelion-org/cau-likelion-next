@@ -102,8 +102,10 @@ const RowLabel = styled.span`
 
 const DateRow = styled.div`
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 6px;
+  width: 100%;
 `;
 
 const ChipRow = styled.div`
