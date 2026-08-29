@@ -75,10 +75,12 @@ const MainSection = () => {
 
 export default MainSection;
 
+// 900~1440px 구간은 1440px 기준 데스크톱 시안을 뷰포트 너비에 비례해 그대로 축소한다
+// (예: left:190px → clamp(190*0.625px, (190/1440)*100vw, 190px))
 const Wrapper = styled.div`
   position: relative;
-  width: 1440px;
-  padding-top: 209px;
+  width: clamp(900px, 100vw, 1440px);
+  padding-top: clamp(130.625px, calc((209 / 1440) * 100vw), 209px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -95,6 +97,9 @@ const Wrapper = styled.div`
 `;
 
 const DesktopBg = styled(BgLanding)`
+  width: clamp(900px, 100vw, 1440px);
+  height: clamp(416.25px, calc((666 / 1440) * 100vw), 666px);
+
   @media (max-width: ${MOBILE}px) {
     display: none;
   }
@@ -116,8 +121,8 @@ const MobileBg = styled(BgLandingMobile)`
 
 const Content = styled.div`
   position: absolute;
-  left: 190px;
-  top: 114px;
+  left: clamp(118.75px, calc((190 / 1440) * 100vw), 190px);
+  top: clamp(71.25px, calc((114 / 1440) * 100vw), 114px);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -166,7 +171,12 @@ const MobileLogoRow = styled.div`
   }
 `;
 
+// 모바일에서는 335px로 고정(375px 기준 시안)되므로, 900px 지점에서 그 값과 이어지도록
+// 단순 비례식(694*0.625=433.75px) 대신 (900px→335px)~(1440px→694px) 구간을 직접 보간한다
 const Catchphrase = styled(LogoCatchphrase)`
+  width: clamp(335px, calc(335px + (359 / 540) * (100vw - 900px)), 694px);
+  height: auto;
+
   @media (max-width: ${MOBILE}px) {
     width: 100%;
     max-width: 335px;
