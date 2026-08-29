@@ -53,7 +53,7 @@ const ProjectDetailCarousel = ({ images }: { images: string[] }) => {
                 src={image}
                 alt="프로젝트 이미지"
                 fill
-                style={{ objectFit: 'cover', objectPosition: 'center' }}
+                style={{ objectFit: 'contain', objectPosition: 'center' }}
                 draggable={false}
               />
             </ImageSlide>

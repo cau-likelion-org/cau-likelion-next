@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 
+import ScrollArea from '@common/scrollArea/ScrollArea';
 import useScrollLock from 'src/hooks/useScrollLock';
 import { BackgroundWhite, Label, Material, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -18,9 +19,11 @@ const ConfirmDialog = ({ title, confirmLabel = '삭제', onCancel, onConfirm }: 
     <Overlay role="alertdialog" aria-modal="true" aria-label={title}>
       <Dimmer onClick={onCancel} />
       <Modal>
-        <Information>
-          <Title>{title}</Title>
-        </Information>
+        <InformationScroll>
+          <Information>
+            <Title>{title}</Title>
+          </Information>
+        </InformationScroll>
         <Actions>
           <TextButton type="button" onClick={onCancel}>
             취소
@@ -64,6 +67,8 @@ const Modal = styled.div`
   overflow: hidden;
   background-color: ${BackgroundWhite.primary};
 `;
+
+const InformationScroll = styled(ScrollArea)``;
 
 const Information = styled.div`
   padding: 28px;

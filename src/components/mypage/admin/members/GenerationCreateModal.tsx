@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { GenerationCreateRequestDto } from '@@types/request';
 import TextField from '@common/textField/TextField';
 import Button from '@common/button/Button';
+import ScrollArea from '@common/scrollArea/ScrollArea';
 import TechStackInput from '@mypage/admin/component/TechStackInput';
 import useScrollLock from 'src/hooks/useScrollLock';
 import { NUMERIC_ONLY_REGEX } from '@utils/constant';
@@ -39,41 +40,43 @@ const GenerationCreateModal = ({ onClose, onSubmit, isSubmitting = false }: Gene
     <Overlay role="dialog" aria-modal="true" aria-label="기수/파트 생성">
       <Dimmer onClick={onClose} />
       <Modal>
-        <Information>
-          <ModalTitle>기수/파트 생성</ModalTitle>
-          <FieldRow>
-            <FieldWrapper>
-              <TextField
-                heading="신규기수"
-                required
-                value={number}
-                placeholder="숫자 입력"
-                onChange={(event) => NUMERIC_ONLY_REGEX.test(event.target.value) && setNumber(event.target.value)}
-                status={showErrors && isUnfilled(number) ? 'negative' : 'normal'}
-                description={showErrors && isUnfilled(number) ? '기수를 입력해 주세요.' : undefined}
-              />
-            </FieldWrapper>
-            <FieldWrapper>
-              <TextField
-                heading="활동 년도"
-                required
-                value={year}
-                placeholder="숫자 입력"
-                onChange={(event) => NUMERIC_ONLY_REGEX.test(event.target.value) && setYear(event.target.value)}
-                status={showErrors && isUnfilled(year) ? 'negative' : 'normal'}
-                description={showErrors && isUnfilled(year) ? '활동 년도를 입력해 주세요.' : undefined}
-              />
-            </FieldWrapper>
-          </FieldRow>
-          <FieldColumn>
-            <Heading>
-              <HeadingLabel>파트명</HeadingLabel>
-              <Required>*</Required>
-            </Heading>
-            <TechStackInput value={partNames} onChange={setPartNames} placeholder="파트를 모두 입력해 주세요." />
-            {showErrors && partNames.length === 0 && <Description>파트명을 입력해 주세요.</Description>}
-          </FieldColumn>
-        </Information>
+        <InformationScroll>
+          <Information>
+            <ModalTitle>기수/파트 생성</ModalTitle>
+            <FieldRow>
+              <FieldWrapper>
+                <TextField
+                  heading="신규기수"
+                  required
+                  value={number}
+                  placeholder="숫자 입력"
+                  onChange={(event) => NUMERIC_ONLY_REGEX.test(event.target.value) && setNumber(event.target.value)}
+                  status={showErrors && isUnfilled(number) ? 'negative' : 'normal'}
+                  description={showErrors && isUnfilled(number) ? '기수를 입력해 주세요.' : undefined}
+                />
+              </FieldWrapper>
+              <FieldWrapper>
+                <TextField
+                  heading="활동 년도"
+                  required
+                  value={year}
+                  placeholder="숫자 입력"
+                  onChange={(event) => NUMERIC_ONLY_REGEX.test(event.target.value) && setYear(event.target.value)}
+                  status={showErrors && isUnfilled(year) ? 'negative' : 'normal'}
+                  description={showErrors && isUnfilled(year) ? '활동 년도를 입력해 주세요.' : undefined}
+                />
+              </FieldWrapper>
+            </FieldRow>
+            <FieldColumn>
+              <Heading>
+                <HeadingLabel>파트명</HeadingLabel>
+                <Required>*</Required>
+              </Heading>
+              <TechStackInput value={partNames} onChange={setPartNames} placeholder="파트를 모두 입력해 주세요." />
+              {showErrors && partNames.length === 0 && <Description>파트명을 입력해 주세요.</Description>}
+            </FieldColumn>
+          </Information>
+        </InformationScroll>
         <Actions>
           <WarningText>
             생성한 파트는 <EmphasisSpan>생성 후 수정할 수 없습니다.</EmphasisSpan>
@@ -124,12 +127,15 @@ const Modal = styled.div`
   background-color: ${BackgroundWhite.primary};
 `;
 
+const InformationScroll = styled(ScrollArea)`
+  flex: 1 1 auto;
+`;
+
 const Information = styled.div`
   display: flex;
   flex-direction: column;
   gap: 22px;
   padding: 28px;
-  overflow-y: auto;
 `;
 
 const ModalTitle = styled.p`

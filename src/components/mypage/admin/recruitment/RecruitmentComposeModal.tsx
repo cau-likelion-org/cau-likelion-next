@@ -5,9 +5,10 @@ import TextField from '@common/textField/TextField';
 import Textarea from '@common/textarea/Textarea';
 import Button from '@common/button/Button';
 import Chip from '@common/chip/Chip';
+import ScrollArea from '@common/scrollArea/ScrollArea';
 import { IcCalendar, IcCaretDown, IcCaretUp, IcClock } from '@assets/svg';
 import { isUnfilled } from '@utils/index';
-import { BackgroundColor, Fill, Label, Line, Material, Orange, State } from '@utils/constant/color';
+import { BackgroundColor, Label, Line, Material, Orange, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import useFocusTrap from 'src/hooks/useFocusTrap';
 import useScrollToFirstError from 'src/hooks/useScrollToFirstError';
@@ -26,7 +27,6 @@ interface RecruitmentComposeRecipient {
 interface RecruitmentComposeModalProps {
   recipients: RecruitmentComposeRecipient[];
   onRemoveRecipient: (id: number) => void;
-  onSelectAll: () => void;
   onClose: () => void;
   onSubmit: (form: RecruitmentComposeForm) => void | Promise<unknown>;
   isSubmitting?: boolean;
@@ -41,7 +41,6 @@ const formatDate = (value: string) => (value ? value.slice(0, 10).replace(/-/g, 
 const RecruitmentComposeModal = ({
   recipients,
   onRemoveRecipient,
-  onSelectAll,
   onClose,
   onSubmit,
   isSubmitting = false,
@@ -102,20 +101,40 @@ const RecruitmentComposeModal = ({
     <Overlay>
       <Dimmer onClick={onClose} />
       <Modal ref={modalRef} role="dialog" aria-modal="true" aria-label="메일 작성" tabIndex={-1}>
-        <Information>
-          <Field>
-            <LargeHeading>
-              발송 대상<LargeRequired>*</LargeRequired>
-            </LargeHeading>
-            <RecipientBox
-              $status={showErrors && recipients.length === 0 ? 'negative' : 'normal'}
-              tabIndex={-1}
-              aria-invalid={showErrors && recipients.length === 0}
-            >
-              <RecipientSummaryRow>
-                <AudiencePill type="button" onClick={onSelectAll}>
-                  사전 알림 신청자 전체선택
-                </AudiencePill>
+        <InformationScroll>
+          <Information>
+            <Field>
+              <LargeHeading>
+                발송 대상<LargeRequired>*</LargeRequired>
+              </LargeHeading>
+              <RecipientBox
+                $status={showErrors && recipients.length === 0 ? 'negative' : 'normal'}
+                tabIndex={-1}
+                aria-invalid={showErrors && recipients.length === 0}
+              >
+                <RecipientChipRow
+                  ref={recipientChipRowRef}
+                  $expanded={isRecipientListExpanded}
+                  $faded={isRecipientListFaded}
+                >
+                  {recipients.map((recipient) => (
+                    <RecipientChip
+                      key={recipient.id}
+                      size="xsmall"
+                      trailingIcon={
+                        <RemoveButton
+                          type="button"
+                          aria-label={`${recipient.email} 삭제`}
+                          onClick={() => onRemoveRecipient(recipient.id)}
+                        >
+                          ×
+                        </RemoveButton>
+                      }
+                    >
+                      {recipient.email}
+                    </RecipientChip>
+                  ))}
+                </RecipientChipRow>
                 {hasOverflow ? (
                   <RecipientCount
                     type="button"
@@ -134,98 +153,77 @@ const RecruitmentComposeModal = ({
                     <CountText>총 {recipients.length}명</CountText>
                   </RecipientCount>
                 )}
-              </RecipientSummaryRow>
-              <RecipientChipRow
-                ref={recipientChipRowRef}
-                $expanded={isRecipientListExpanded}
-                $faded={isRecipientListFaded}
-              >
-                {recipients.map((recipient) => (
-                  <RecipientChip
-                    key={recipient.id}
-                    size="xsmall"
-                    trailingIcon={
-                      <RemoveButton
-                        type="button"
-                        aria-label={`${recipient.email} 삭제`}
-                        onClick={() => onRemoveRecipient(recipient.id)}
-                      >
-                        ×
-                      </RemoveButton>
-                    }
-                  >
-                    {recipient.email}
-                  </RecipientChip>
-                ))}
-              </RecipientChipRow>
-            </RecipientBox>
-            {showErrors && recipients.length === 0 && <FieldDescription>발송 대상을 선택해 주세요.</FieldDescription>}
-          </Field>
+              </RecipientBox>
+              {showErrors && recipients.length === 0 && <FieldDescription>발송 대상을 선택해 주세요.</FieldDescription>}
+            </Field>
 
-          <Field>
-            <LargeHeading>
-              제목<LargeRequired>*</LargeRequired>
-            </LargeHeading>
-            <TextField
-              value={title}
-              placeholder="메시지를 입력해 주세요."
-              onChange={(event) => setTitle(event.target.value)}
-              status={showErrors && isUnfilled(title) ? 'negative' : 'normal'}
-              description={showErrors && isUnfilled(title) ? '제목을 입력해 주세요.' : undefined}
-            />
-          </Field>
+            <Field>
+              <LargeHeading>
+                제목<LargeRequired>*</LargeRequired>
+              </LargeHeading>
+              <TextField
+                value={title}
+                placeholder="메시지를 입력해 주세요."
+                onChange={(event) => setTitle(event.target.value)}
+                status={showErrors && isUnfilled(title) ? 'negative' : 'normal'}
+                description={showErrors && isUnfilled(title) ? '제목을 입력해 주세요.' : undefined}
+              />
+            </Field>
 
-          <Field>
-            <LargeHeading>
-              내용<LargeRequired>*</LargeRequired>
-            </LargeHeading>
-            <Textarea
-              value={content}
-              rows={7}
-              placeholder="메세지를 입력해 주세요."
-              onChange={(event) => setContent(event.target.value)}
-              status={showErrors && isUnfilled(content) ? 'negative' : 'normal'}
-              description={showErrors && isUnfilled(content) ? '내용을 입력해 주세요.' : undefined}
-            />
-          </Field>
+            <Field>
+              <LargeHeading>
+                내용<LargeRequired>*</LargeRequired>
+              </LargeHeading>
+              <Textarea
+                value={content}
+                rows={7}
+                placeholder="메세지를 입력해 주세요."
+                onChange={(event) => setContent(event.target.value)}
+                status={showErrors && isUnfilled(content) ? 'negative' : 'normal'}
+                description={showErrors && isUnfilled(content) ? '내용을 입력해 주세요.' : undefined}
+              />
+            </Field>
 
-          <Field>
-            <Heading>
-              발송 예약<Required>*</Required>
-            </Heading>
-            <DateRow>
-              <DateBox $status={showErrors && !date ? 'negative' : 'normal'}>
-                <DateIcon>
-                  <IcCalendar width={22} height={22} />
-                </DateIcon>
-                <DateText $filled={!!date}>{date ? formatDate(date) : '캘린더 선택'}</DateText>
-                <HiddenDateInput
-                  type="date"
-                  aria-label="발송 날짜"
-                  aria-invalid={showErrors && !date}
-                  value={date}
-                  onChange={(event) => setDate(event.target.value)}
-                  onClick={(event) => event.currentTarget.showPicker?.()}
-                />
-              </DateBox>
-              <DateBox $status={showErrors && !time ? 'negative' : 'normal'}>
-                <DateIcon>
-                  <IcClock width={22} height={22} />
-                </DateIcon>
-                <DateText $filled={!!time}>{time || '시간 선택'}</DateText>
-                <HiddenDateInput
-                  type="time"
-                  aria-label="발송 시간"
-                  aria-invalid={showErrors && !time}
-                  value={time}
-                  onChange={(event) => setTime(event.target.value)}
-                  onClick={(event) => event.currentTarget.showPicker?.()}
-                />
-              </DateBox>
-            </DateRow>
-            {showErrors && isScheduleInvalid && <FieldDescription>발송 날짜와 시각을 선택해 주세요.</FieldDescription>}
-          </Field>
-        </Information>
+            <Field>
+              <Heading>
+                발송 예약<Required>*</Required>
+              </Heading>
+              <DateRow>
+                <DateBox $status={showErrors && !date ? 'negative' : 'normal'}>
+                  <DateIcon>
+                    <IcCalendar width={22} height={22} />
+                  </DateIcon>
+                  <DateText $filled={!!date}>{date ? formatDate(date) : '캘린더 선택'}</DateText>
+                  <HiddenDateInput
+                    type="date"
+                    aria-label="발송 날짜"
+                    aria-invalid={showErrors && !date}
+                    value={date}
+                    onChange={(event) => setDate(event.target.value)}
+                    onClick={(event) => event.currentTarget.showPicker?.()}
+                  />
+                </DateBox>
+                <DateBox $status={showErrors && !time ? 'negative' : 'normal'}>
+                  <DateIcon>
+                    <IcClock width={22} height={22} />
+                  </DateIcon>
+                  <DateText $filled={!!time}>{time || '시간 선택'}</DateText>
+                  <HiddenDateInput
+                    type="time"
+                    aria-label="발송 시간"
+                    aria-invalid={showErrors && !time}
+                    value={time}
+                    onChange={(event) => setTime(event.target.value)}
+                    onClick={(event) => event.currentTarget.showPicker?.()}
+                  />
+                </DateBox>
+              </DateRow>
+              {showErrors && isScheduleInvalid && (
+                <FieldDescription>발송 날짜와 시각을 선택해 주세요.</FieldDescription>
+              )}
+            </Field>
+          </Information>
+        </InformationScroll>
         <Actions>
           {pendingCancelAction ? (
             <ConfirmBox>
@@ -310,12 +308,15 @@ const Modal = styled.div`
   background-color: ${BackgroundColor};
 `;
 
+const InformationScroll = styled(ScrollArea)`
+  flex: 1 1 auto;
+`;
+
 const Information = styled.div`
   display: flex;
   flex-direction: column;
   gap: 42px;
   padding: 28px;
-  overflow-y: auto;
 `;
 
 const Field = styled.div`
@@ -355,7 +356,7 @@ const Required = styled.span`
 
 const RecipientBox = styled.div<{ $status: 'normal' | 'negative' }>`
   display: flex;
-  flex-direction: column;
+  align-items: flex-start;
   gap: 14px;
   width: 100%;
   padding: 12px;
@@ -374,34 +375,12 @@ const FieldDescription = styled.p`
   ${typographyCss(Typography.caption1.regular)}
 `;
 
-const RecipientSummaryRow = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  min-height: 24px;
-  width: 100%;
-`;
-
-const AudiencePill = styled.button`
-  display: inline-flex;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  padding: 7px 14px;
-  border-radius: 8px;
-  background-color: ${Fill.normal};
-  color: ${Label.neutral};
-  cursor: pointer;
-  ${typographyCss({ ...Typography.label2.bold, fontWeight: 500 })}
-`;
-
 const RecipientCount = styled.button`
   display: inline-flex;
   flex-shrink: 0;
   align-items: center;
   gap: 4px;
+  height: 24px;
   border: none;
   background: none;
   padding: 0;
@@ -419,8 +398,9 @@ const RecipientChipRow = styled.div<{ $expanded: boolean; $faded: boolean }>`
   display: flex;
   align-items: center;
   gap: 4px;
-  width: 100%;
+  flex: 1 0 0;
   min-width: 0;
+  min-height: 24px;
 
   ${(props) =>
     props.$expanded

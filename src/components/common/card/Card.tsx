@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import styled from 'styled-components';
 import { MdBookmark, MdBookmarkBorder } from 'react-icons/md';
 
@@ -90,14 +90,23 @@ const Card = ({
   const showToggle = !skeleton && !!onToggleSave;
   const showOverlay = !skeleton && thumbnailOverlay && (!!overlayCaption || showToggle);
 
+  // 실패한 src를 기억해두면 thumbnailSrc가 바뀔 때 자동으로 다시 시도하게 된다
+  const [failedThumbnail, setFailedThumbnail] = useState<string | null>(null);
+  const showThumbnail = !!thumbnailSrc && failedThumbnail !== thumbnailSrc;
+
   return (
     <Wrapper className={className}>
       <CardBody as={onClick ? 'button' : 'div'} type={onClick ? 'button' : undefined} gap={style.gap} onClick={onClick}>
         <ThumbnailArea>
           {skeleton ? (
             <SkeletonThumbnail ratio={thumbnailRatio} />
-          ) : thumbnailSrc ? (
-            <Thumbnail src={thumbnailSrc} alt={thumbnailAlt} ratio={thumbnailRatio} />
+          ) : showThumbnail ? (
+            <Thumbnail
+              src={thumbnailSrc}
+              alt={thumbnailAlt}
+              ratio={thumbnailRatio}
+              onError={() => setFailedThumbnail(thumbnailSrc)}
+            />
           ) : (
             <ThumbnailPlaceholder ratio={thumbnailRatio} />
           )}
@@ -154,6 +163,7 @@ export default Card;
 const Wrapper = styled.div`
   position: relative;
   width: 100%;
+  min-width: 0;
 `;
 
 const CardBody = styled.div<{ gap: number }>`
@@ -259,6 +269,9 @@ const Content = styled.div<{ gap: number }>`
 const Title = styled.p<{ $style: (typeof PLATFORM_STYLE)[keyof typeof PLATFORM_STYLE] }>`
   margin: 0;
   width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   color: ${Label.normal};
   font-size: ${(props) => props.$style.titleFontSize}px;
   line-height: ${(props) => props.$style.titleLineHeight};

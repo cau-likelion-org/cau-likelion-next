@@ -26,8 +26,8 @@ const ListPageHead = ({ canoUrl, category }: ListPageHeadProps) => {
       <meta property="og:description" content={META_DESCRIPTION[category]} />
       <meta property="og:url" content={canoUrl ?? 'https://cau-likelion.org/'} />
       <meta property="og:type" content="website" />
-      <meta property="og:image" content={DEFAULT_OG_IMAGE} />
       <meta property="og:image" content={DEFAULT_OG_IMAGE_FALLBACK} />
+      <meta property="og:image" content={DEFAULT_OG_IMAGE} />
       <meta property="twitter:card" content="summary" />
       <meta property="twitter:title" content={`CAU LION | ${META_DESCRIPTION_HEAD[category]}`} />
       <meta property="twitter:description" content={META_DESCRIPTION[category]} />

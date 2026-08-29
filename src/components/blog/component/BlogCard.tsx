@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import styled from 'styled-components';
 import ContentBadge from '@common/badge/ContentBadge';
 import Thumbnail from '@common/thumbnail/Thumbnail';
@@ -15,31 +16,44 @@ export interface BlogCardProps {
   thumbnailAlt?: string;
 }
 
-const BlogCard = ({ title, description, badges, date, url, thumbnailUrl, thumbnailAlt }: BlogCardProps) => (
-  <Wrapper href={url} target="_blank" rel="noopener noreferrer">
-    <Container>
-      <TextGroup>
-        <Title>{title}</Title>
-        <Description>{description}</Description>
-      </TextGroup>
-      <BottomRow>
-        <BadgeRow>
-          {badges.map((badge) => (
-            <ContentBadge key={badge} text={badge} color="accent" size="medium" />
-          ))}
-        </BadgeRow>
-        <Date>{date}</Date>
-      </BottomRow>
-    </Container>
-    <ThumbnailSlot>
-      {thumbnailUrl ? (
-        <Thumbnail src={thumbnailUrl} alt={thumbnailAlt ?? title} ratio={1} radius border />
-      ) : (
-        <ThumbnailPlaceholder radius border />
-      )}
-    </ThumbnailSlot>
-  </Wrapper>
-);
+const BlogCard = ({ title, description, badges, date, url, thumbnailUrl, thumbnailAlt }: BlogCardProps) => {
+  // 실패한 src를 기억해두면 thumbnailUrl이 바뀔 때 자동으로 다시 시도하게 된다
+  const [failedThumbnail, setFailedThumbnail] = useState<string | null>(null);
+  const showThumbnail = !!thumbnailUrl && failedThumbnail !== thumbnailUrl;
+
+  return (
+    <Wrapper href={url} target="_blank" rel="noopener noreferrer">
+      <Container>
+        <TextGroup>
+          <Title>{title}</Title>
+          <Description>{description}</Description>
+        </TextGroup>
+        <BottomRow>
+          <BadgeRow>
+            {badges.map((badge) => (
+              <ContentBadge key={badge} text={badge} color="accent" size="medium" />
+            ))}
+          </BadgeRow>
+          <Date>{date}</Date>
+        </BottomRow>
+      </Container>
+      <ThumbnailSlot>
+        {showThumbnail ? (
+          <Thumbnail
+            src={thumbnailUrl}
+            alt={thumbnailAlt ?? title}
+            ratio={1}
+            radius
+            border
+            onError={() => setFailedThumbnail(thumbnailUrl)}
+          />
+        ) : (
+          <ThumbnailPlaceholder radius border />
+        )}
+      </ThumbnailSlot>
+    </Wrapper>
+  );
+};
 
 export default BlogCard;
 

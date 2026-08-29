@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import BackHeader from '@common/header/BackHeader';
 import ContentBadge from '@common/badge/ContentBadge';
 import Chip from '@common/chip/Chip';
+import ScrollArea from '@common/scrollArea/ScrollArea';
 import TextButton from '@common/textButton/TextButton';
 import ProjectDetailCarousel from '@project/detail/ProjectDetailCarousel';
 import IcLineHorizontal from '@assets/svg/icon/ic-line-horizontal.svg';
@@ -47,40 +48,42 @@ const PostDetailModal = ({
         tabIndex={-1}
         onClick={(event) => event.stopPropagation()}
       >
-        <MobileHeader>
-          <BackHeader label={headerTitle} onClick={onClose} />
-        </MobileHeader>
-        <Information>
-          <ImageGroup>
-            <ProjectDetailCarousel key={imageUrls.join(',')} images={imageUrls} />
-          </ImageGroup>
+        <ModalScrollArea>
+          <MobileHeader>
+            <BackHeader label={headerTitle} onClick={onClose} />
+          </MobileHeader>
+          <Information>
+            <ImageGroup>
+              <ProjectDetailCarousel key={imageUrls.join(',')} images={imageUrls} />
+            </ImageGroup>
 
-          <TextGroup>
-            <Title id={titleId}>{title}</Title>
-            <BadgeRow>
-              {badges.map((badge) => (
-                <ContentBadge key={badge} text={badge} color="accent" size="medium" />
-              ))}
-            </BadgeRow>
-            <Description>{description}</Description>
-          </TextGroup>
+            <TextGroup>
+              <Title id={titleId}>{title}</Title>
+              <BadgeRow>
+                {badges.map((badge) => (
+                  <ContentBadge key={badge} text={badge} color="accent" size="medium" />
+                ))}
+              </BadgeRow>
+              <Description>{description}</Description>
+            </TextGroup>
 
-          {Array.isArray(date) && date[0] !== date[1] ? (
-            <DateRangeRow>
+            {Array.isArray(date) && date[0] !== date[1] ? (
+              <DateRangeRow>
+                <Chip variant="filled" size="small">
+                  {date[0]}
+                </Chip>
+                <DateRangeDivider width={16} height={16} />
+                <Chip variant="filled" size="small">
+                  {date[1]}
+                </Chip>
+              </DateRangeRow>
+            ) : (
               <Chip variant="filled" size="small">
-                {date[0]}
+                {Array.isArray(date) ? date[0] : date}
               </Chip>
-              <DateRangeDivider width={16} height={16} />
-              <Chip variant="filled" size="small">
-                {date[1]}
-              </Chip>
-            </DateRangeRow>
-          ) : (
-            <Chip variant="filled" size="small">
-              {Array.isArray(date) ? date[0] : date}
-            </Chip>
-          )}
-        </Information>
+            )}
+          </Information>
+        </ModalScrollArea>
         <Actions>
           {onEdit && (
             <TextButton color="assistive" onClick={onEdit}>
@@ -113,13 +116,13 @@ const Backdrop = styled.div`
 `;
 
 const Modal = styled.div`
+  position: relative;
   width: 568px;
   max-width: calc(100vw - 40px);
   max-height: calc(100vh - 40px);
-  overflow-y: auto;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  overflow: hidden;
   border-radius: 16px;
   background-color: ${BackgroundColor};
   outline: none;
@@ -140,6 +143,10 @@ const Modal = styled.div`
     max-height: none;
     border-radius: 0;
   }
+`;
+
+const ModalScrollArea = styled(ScrollArea)`
+  flex: 1 1 auto;
 `;
 
 const MobileHeader = styled.div`

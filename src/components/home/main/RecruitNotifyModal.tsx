@@ -5,6 +5,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import Button from '@common/button/Button';
 import Select from '@common/select/Select';
 import ListboxOptions from '@common/select/ListboxOptions';
+import ScrollArea from '@common/scrollArea/ScrollArea';
 import TextField from '@common/textField/TextField';
 import { IcKakaotalk } from '@assets/svg';
 import useFocusTrap from 'src/hooks/useFocusTrap';
@@ -89,73 +90,76 @@ const RecruitNotifyModal = ({ onClose }: { onClose: () => void }) => {
         tabIndex={-1}
         onClick={(event) => event.stopPropagation()}
       >
-        <Information>
-          <Title id={titleId}>다음 기수 모집 알림받기</Title>
-          <Subtitle>리크루팅 페이지가 열리면 가장 먼저 알려드릴게요.</Subtitle>
-          <Row>
-            <FieldWrapper>
-              <TextField
-                heading="이름"
-                required
-                placeholder="이름 입력"
-                value={name}
-                onChange={(event) => setName(event.target.value)}
-              />
-            </FieldWrapper>
-            <SelectWrapper
-              ref={departmentSelectRef}
-              onKeyDownCapture={handleDepartmentKeyDown}
-              onBlur={handleDepartmentBlur}
-            >
-              <Select
-                ref={departmentTriggerRef}
-                heading="관심파트"
-                required
-                placeholder="선택"
-                value={department}
-                onClick={() => setIsDepartmentOpen((prev) => !prev)}
-                aria-expanded={isDepartmentOpen}
-                aria-activedescendant={isDepartmentOpen ? `${departmentListId}-${activeDepartmentIndex}` : undefined}
-                aria-controls={departmentListId}
-              />
-              {isDepartmentOpen && (
-                <ListboxOptions
-                  listId={departmentListId}
-                  options={departmentOptions}
-                  value={department}
-                  activeIndex={activeDepartmentIndex}
-                  onSelect={selectDepartment}
+        <InformationScroll>
+          <Information>
+            <Title id={titleId}>다음 기수 모집 알림받기</Title>
+            <Subtitle>리크루팅 페이지가 열리면 가장 먼저 알려드릴게요.</Subtitle>
+            <Row>
+              <FieldWrapper>
+                <TextField
+                  heading="이름"
+                  required
+                  placeholder="이름 입력"
+                  value={name}
+                  onChange={(event) => setName(event.target.value)}
                 />
-              )}
-            </SelectWrapper>
-          </Row>
-          <TextField
-            type="email"
-            heading="알림 받을 이메일"
-            required
-            placeholder="name@example.com"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            status={isEmailInvalid ? 'negative' : 'normal'}
-            description={isEmailInvalid ? '이메일 형식이 맞지 않습니다' : undefined}
-          />
-          <Promo>
-            <PromoText>
-              멋쟁이사자처럼 중앙대 공식 카카오톡 채널을
-              <MobileBreak /> 추가하면
-              <DesktopBreak /> 소식을 더 빠르게 받아볼 수 있어요.
-            </PromoText>
-            <Button
-              variant="solid"
-              color="assistive"
-              size="medium"
-              trailingIcon={<IcKakaotalk width={16} height={16} />}
-              onClick={() => window.open(KAKAO_CHANNEL_URL, '_blank', 'noopener noreferrer')}
-            >
-              카카오톡 채널 바로가기
-            </Button>
-          </Promo>
-        </Information>
+              </FieldWrapper>
+              <SelectWrapper
+                ref={departmentSelectRef}
+                onKeyDownCapture={handleDepartmentKeyDown}
+                onBlur={handleDepartmentBlur}
+              >
+                <Select
+                  ref={departmentTriggerRef}
+                  heading="관심파트"
+                  required
+                  placeholder="선택"
+                  value={department}
+                  onClick={() => setIsDepartmentOpen((prev) => !prev)}
+                  aria-expanded={isDepartmentOpen}
+                  aria-activedescendant={isDepartmentOpen ? `${departmentListId}-${activeDepartmentIndex}` : undefined}
+                  aria-controls={departmentListId}
+                >
+                  {isDepartmentOpen && (
+                    <ListboxOptions
+                      listId={departmentListId}
+                      options={departmentOptions}
+                      value={department}
+                      activeIndex={activeDepartmentIndex}
+                      onSelect={selectDepartment}
+                    />
+                  )}
+                </Select>
+              </SelectWrapper>
+            </Row>
+            <TextField
+              type="email"
+              heading="알림 받을 이메일"
+              required
+              placeholder="name@example.com"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              status={isEmailInvalid ? 'negative' : 'normal'}
+              description={isEmailInvalid ? '이메일 형식이 맞지 않습니다' : undefined}
+            />
+            <Promo>
+              <PromoText>
+                멋쟁이사자처럼 중앙대 공식 카카오톡 채널을
+                <MobileBreak /> 추가하면
+                <DesktopBreak /> 소식을 더 빠르게 받아볼 수 있어요.
+              </PromoText>
+              <Button
+                variant="solid"
+                color="assistive"
+                size="medium"
+                trailingIcon={<IcKakaotalk width={16} height={16} />}
+                onClick={() => window.open(KAKAO_CHANNEL_URL, '_blank', 'noopener noreferrer')}
+              >
+                카카오톡 채널 바로가기
+              </Button>
+            </Promo>
+          </Information>
+        </InformationScroll>
         <Actions>
           <Consent>이메일을 통한 모집 알림 수신에 동의합니다. (필수)</Consent>
           <ActionRow>
@@ -193,6 +197,7 @@ const Backdrop = styled.div`
 `;
 
 const Modal = styled.div`
+  position: relative;
   width: 100%;
   max-width: 400px;
   display: flex;
@@ -206,8 +211,12 @@ const Modal = styled.div`
 
   @media (max-width: ${MOBILE}px) {
     max-height: calc(100vh - 40px);
-    overflow-y: auto;
   }
+`;
+
+const InformationScroll = styled(ScrollArea)`
+  width: 100%;
+  flex: 1 1 auto;
 `;
 
 const Information = styled.div`

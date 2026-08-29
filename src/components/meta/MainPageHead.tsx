@@ -14,8 +14,8 @@ const MainPageHead = ({ canoUrl, title }: { canoUrl?: string; title?: string }) 
       <meta property="og:description" content="중앙대학교 멋쟁이사자처럼을 위한 단 하나뿐인 커뮤니티, CAU LION" />
       <meta property="og:url" content="https://cau-likelion.org" />
       <meta property="og:type" content="website" />
-      <meta property="og:image" content={DEFAULT_OG_IMAGE} />
       <meta property="og:image" content={DEFAULT_OG_IMAGE_FALLBACK} />
+      <meta property="og:image" content={DEFAULT_OG_IMAGE} />
       <meta property="twitter:card" content="summary" />
       <meta property="twitter:title" content={title ?? 'CAU LION | 중앙대학교 멋쟁이사자처럼'} />
       <meta property="twitter:description" content="중앙대학교 멋쟁이사자처럼을 위한 단 하나뿐인 커뮤니티, CAU LION" />

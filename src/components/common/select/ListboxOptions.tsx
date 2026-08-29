@@ -23,7 +23,11 @@ const ListboxOptions = ({ listId, options, value, activeIndex, onSelect }: Listb
           aria-selected={value === option}
           $active={index === activeIndex}
           onMouseDown={(event) => event.preventDefault()}
-          onClick={() => onSelect(option, index)}
+          onClick={(event) => {
+            // Trigger 안에 중첩되어 있어 막지 않으면 선택 직후 Trigger의 열기/닫기 토글이 다시 발동한다
+            event.stopPropagation();
+            onSelect(option, index);
+          }}
         >
           {option}
         </Option>

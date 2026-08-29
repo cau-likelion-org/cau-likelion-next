@@ -96,6 +96,12 @@ const MyPageAdminRecruitment = () => {
   };
 
   const [isComposeOpen, setIsComposeOpen] = useState(false);
+
+  // 관심 파트 드롭다운으로 좁혀진 현재 목록(subscribers) 전체를 수신자로 선택
+  const handleSelectAll = () => {
+    setSelectedIds(new Set((subscribers ?? []).map((subscriber) => subscriber.id)));
+  };
+
   const [selectedText, setSelectedText] = useState<RecruitmentTextResponse | null>(null);
   const [isResendReviewOpen, setIsResendReviewOpen] = useState(false);
   const [editingText, setEditingText] = useState<RecruitmentTextResponse | null>(null);
@@ -193,6 +199,7 @@ const MyPageAdminRecruitment = () => {
             onInterestPartFilterChange={setInterestPartFilter}
             selectedIds={selectedIds}
             onToggleSelect={toggleSelect}
+            onSelectAll={handleSelectAll}
           />
           <RecruitmentTextSection
             texts={texts ?? []}
@@ -208,8 +215,10 @@ const MyPageAdminRecruitment = () => {
             .filter((subscriber) => selectedIds.has(subscriber.id))
             .map((subscriber) => ({ id: subscriber.id, email: subscriber.email }))}
           onRemoveRecipient={toggleSelect}
-          onSelectAll={() => setSelectedIds(new Set((subscribers ?? []).map((subscriber) => subscriber.id)))}
-          onClose={() => setIsComposeOpen(false)}
+          onClose={() => {
+            setIsComposeOpen(false);
+            setSelectedIds(new Set());
+          }}
           onSubmit={(form) => composeMutation.mutateAsync(form)}
           isSubmitting={composeMutation.isPending}
         />
@@ -248,7 +257,6 @@ const MyPageAdminRecruitment = () => {
               return next;
             })
           }
-          onSelectAll={() => setEditRecipientIds(new Set((subscribers ?? []).map((subscriber) => subscriber.id)))}
           onClose={() => setEditingText(null)}
           onSubmit={(form) => updateMutation.mutateAsync(form)}
           isSubmitting={updateMutation.isPending}

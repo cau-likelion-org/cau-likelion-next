@@ -5,6 +5,7 @@ import Button from '@common/button/Button';
 import Radio from '@common/radio/Radio';
 import Select from '@common/select/Select';
 import ListboxOptions from '@common/select/ListboxOptions';
+import ScrollArea from '@common/scrollArea/ScrollArea';
 import TextButton from '@common/textButton/TextButton';
 import TextField from '@common/textField/TextField';
 import Textarea from '@common/textarea/Textarea';
@@ -366,225 +367,227 @@ const PostUploadModal = ({
   return (
     <Backdrop>
       <Modal ref={modalRef} role="dialog" aria-modal="true" aria-label={modalAriaLabel} tabIndex={-1}>
-        <Information>
-          <ImageUploadGroup>
-            <MainThumbnail as={images[featuredIndex] ? 'div' : 'label'} $empty={!images[featuredIndex]}>
-              <FeaturedChip>대표</FeaturedChip>
-              {images[featuredIndex] ? (
-                <MainThumbnailImage src={images[featuredIndex] as string} alt="대표 이미지" />
-              ) : (
-                <>
-                  <UploadGuide>
-                    사진을 {MAX_IMAGE_COUNT}장까지 업로드하고
-                    <br />
-                    표지가 되는 대표사진을 선택해주세요
-                  </UploadGuide>
-                  <HiddenFileInput
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    aria-label="대표 이미지 선택"
-                    onChange={(event) => handleFileChange(featuredIndex, event)}
-                  />
-                </>
-              )}
-            </MainThumbnail>
-            <ThumbnailRow
-              ref={thumbnailRowRef}
-              onMouseDown={handleThumbnailRowMouseDown}
-              onMouseMove={handleThumbnailRowMouseMove}
-              onMouseUp={handleThumbnailRowMouseUp}
-              onMouseLeave={handleThumbnailRowMouseUp}
-            >
-              {images.map((image, index) =>
-                image ? (
-                  <ThumbnailSlot
-                    key={index}
-                    as="div"
-                    role="button"
-                    tabIndex={0}
-                    data-thumbnail-index={index}
-                    $featured={index === featuredIndex}
-                    $dragging={draggingIndex === index}
-                    $dropTarget={dragOverIndex === index && draggingIndex !== index}
-                    aria-label={`${index + 1}번째 이미지를 대표사진으로 설정`}
-                    onClick={() => setFeaturedIndex(index)}
-                    onKeyDown={(event) => {
-                      if (event.key === 'Enter' || event.key === ' ') {
-                        event.preventDefault();
-                        setFeaturedIndex(index);
-                      }
-                    }}
-                    draggable
-                    onDragStart={(event: DragEvent<HTMLElement>) => {
-                      event.dataTransfer.effectAllowed = 'move';
-                      // Firefox는 데이터가 설정되어야 드래그를 시작함
-                      event.dataTransfer.setData('text/plain', String(index));
-                      setDraggingIndex(index);
-                    }}
-                    onDragEnd={() => {
-                      setDraggingIndex(null);
-                      setDragOverIndex(null);
-                    }}
-                    {...dropTargetProps(index)}
-                  >
-                    <ThumbnailImage src={image} alt="" draggable={false} />
-                    <RemoveThumbnailButton
-                      type="button"
-                      aria-label={`${index + 1}번째 이미지 삭제`}
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        handleRemoveImage(index);
-                      }}
-                    >
-                      <IcCloseCircle width={24} height={24} />
-                    </RemoveThumbnailButton>
-                  </ThumbnailSlot>
+        <ModalScrollArea>
+          <Information>
+            <ImageUploadGroup>
+              <MainThumbnail as={images[featuredIndex] ? 'div' : 'label'} $empty={!images[featuredIndex]}>
+                <FeaturedChip>대표</FeaturedChip>
+                {images[featuredIndex] ? (
+                  <MainThumbnailImage src={images[featuredIndex] as string} alt="대표 이미지" />
                 ) : (
-                  <ThumbnailSlot key={index} $featured={false}>
-                    <IcAdd width={24} height={24} />
+                  <>
+                    <UploadGuide>
+                      사진을 {MAX_IMAGE_COUNT}장까지 업로드하고
+                      <br />
+                      표지가 되는 대표사진을 선택해주세요
+                    </UploadGuide>
                     <HiddenFileInput
                       type="file"
                       accept="image/*"
                       multiple
-                      aria-label={`이미지 ${index + 1} 선택`}
-                      onChange={(event) => handleFileChange(index, event)}
+                      aria-label="대표 이미지 선택"
+                      onChange={(event) => handleFileChange(featuredIndex, event)}
                     />
-                  </ThumbnailSlot>
-                ),
-              )}
-            </ThumbnailRow>
-          </ImageUploadGroup>
+                  </>
+                )}
+              </MainThumbnail>
+              <ThumbnailRow
+                ref={thumbnailRowRef}
+                onMouseDown={handleThumbnailRowMouseDown}
+                onMouseMove={handleThumbnailRowMouseMove}
+                onMouseUp={handleThumbnailRowMouseUp}
+                onMouseLeave={handleThumbnailRowMouseUp}
+              >
+                {images.map((image, index) =>
+                  image ? (
+                    <ThumbnailSlot
+                      key={index}
+                      as="div"
+                      role="button"
+                      tabIndex={0}
+                      data-thumbnail-index={index}
+                      $featured={index === featuredIndex}
+                      $dragging={draggingIndex === index}
+                      $dropTarget={dragOverIndex === index && draggingIndex !== index}
+                      aria-label={`${index + 1}번째 이미지를 대표사진으로 설정`}
+                      onClick={() => setFeaturedIndex(index)}
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter' || event.key === ' ') {
+                          event.preventDefault();
+                          setFeaturedIndex(index);
+                        }
+                      }}
+                      draggable
+                      onDragStart={(event: DragEvent<HTMLElement>) => {
+                        event.dataTransfer.effectAllowed = 'move';
+                        // Firefox는 데이터가 설정되어야 드래그를 시작함
+                        event.dataTransfer.setData('text/plain', String(index));
+                        setDraggingIndex(index);
+                      }}
+                      onDragEnd={() => {
+                        setDraggingIndex(null);
+                        setDragOverIndex(null);
+                      }}
+                      {...dropTargetProps(index)}
+                    >
+                      <ThumbnailImage src={image} alt="" draggable={false} />
+                      <RemoveThumbnailButton
+                        type="button"
+                        aria-label={`${index + 1}번째 이미지 삭제`}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          handleRemoveImage(index);
+                        }}
+                      >
+                        <IcCloseCircle width={24} height={24} />
+                      </RemoveThumbnailButton>
+                    </ThumbnailSlot>
+                  ) : (
+                    <ThumbnailSlot key={index} $featured={false}>
+                      <IcAdd width={24} height={24} />
+                      <HiddenFileInput
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        aria-label={`이미지 ${index + 1} 선택`}
+                        onChange={(event) => handleFileChange(index, event)}
+                      />
+                    </ThumbnailSlot>
+                  ),
+                )}
+              </ThumbnailRow>
+            </ImageUploadGroup>
 
-          <FieldGroup>
-            <FieldHeading>
-              제목
-              <Required>*</Required>
-            </FieldHeading>
-            <TitleTextarea
-              placeholder={TITLE_PLACEHOLDER[postType]}
-              value={title}
-              onChange={(event) => setTitle(event.target.value)}
-              maxLength={70}
-              resize="fixed"
-              bottomTrailingContent={<CharCount>{title.length}/70</CharCount>}
-              status={showErrors && isUnfilled(title) ? 'negative' : 'normal'}
-              description={showErrors && isUnfilled(title) ? '제목을 입력해 주세요.' : undefined}
-            />
-          </FieldGroup>
-
-          <FieldGroup>
-            <FieldHeading>
-              내용
-              <Required>*</Required>
-            </FieldHeading>
-            <ContentTextarea
-              placeholder={CONTENT_PLACEHOLDER[postType]}
-              value={content}
-              onChange={(event) => setContent(event.target.value)}
-              maxLength={300}
-              resize="fixed"
-              bottomTrailingContent={<CharCount>{content.length}/300</CharCount>}
-              status={showErrors && isUnfilled(content) ? 'negative' : 'normal'}
-              description={showErrors && isUnfilled(content) ? '내용을 입력해 주세요.' : undefined}
-            />
-          </FieldGroup>
-
-          <Row>
-            <NarrowField>
-              <TextField
-                heading="기수 구분"
-                required
-                placeholder="숫자 입력"
-                value={generation}
-                onChange={onChangeGeneration}
-                status={generationError ? 'negative' : showErrors && isUnfilled(generation) ? 'negative' : 'normal'}
-                description={showErrors && isUnfilled(generation) ? '기수를 입력해 주세요.' : undefined}
+            <FieldGroup>
+              <FieldHeading>
+                제목
+                <Required>*</Required>
+              </FieldHeading>
+              <TitleTextarea
+                placeholder={TITLE_PLACEHOLDER[postType]}
+                value={title}
+                onChange={(event) => setTitle(event.target.value)}
+                maxLength={70}
+                resize="fixed"
+                bottomTrailingContent={<CharCount>{title.length}/70</CharCount>}
+                status={showErrors && isUnfilled(title) ? 'negative' : 'normal'}
+                description={showErrors && isUnfilled(title) ? '제목을 입력해 주세요.' : undefined}
               />
-            </NarrowField>
-            {categoryConfig && (
-              <CategorySelect
-                label={categoryConfig.label}
-                options={categoryOptions}
-                value={category}
-                onChange={setCategory}
-                disabled={postType === 'session' && (isUnfilled(generation) || !!generationError)}
-                status={showErrors && isUnfilled(category) ? 'negative' : 'normal'}
-                description={
-                  showErrors && isUnfilled(category) ? `${categoryConfig.label}을 선택해 주세요.` : undefined
-                }
+            </FieldGroup>
+
+            <FieldGroup>
+              <FieldHeading>
+                내용
+                <Required>*</Required>
+              </FieldHeading>
+              <ContentTextarea
+                placeholder={CONTENT_PLACEHOLDER[postType]}
+                value={content}
+                onChange={(event) => setContent(event.target.value)}
+                maxLength={300}
+                resize="fixed"
+                bottomTrailingContent={<CharCount>{content.length}/300</CharCount>}
+                status={showErrors && isUnfilled(content) ? 'negative' : 'normal'}
+                description={showErrors && isUnfilled(content) ? '내용을 입력해 주세요.' : undefined}
               />
-            )}
-            {showWeekField && (
+            </FieldGroup>
+
+            <Row>
               <NarrowField>
                 <TextField
-                  heading="주차 구분"
+                  heading="기수 구분"
                   required
                   placeholder="숫자 입력"
-                  value={week}
-                  onChange={onChangeWeek}
-                  status={showErrors && isUnfilled(week) ? 'negative' : 'normal'}
-                  description={showErrors && isUnfilled(week) ? '주차를 입력해 주세요.' : undefined}
+                  value={generation}
+                  onChange={onChangeGeneration}
+                  status={generationError ? 'negative' : showErrors && isUnfilled(generation) ? 'negative' : 'normal'}
+                  description={showErrors && isUnfilled(generation) ? '기수를 입력해 주세요.' : undefined}
                 />
               </NarrowField>
-            )}
-          </Row>
-
-          <Row>
-            <RowField $gap={8}>
-              <FieldHeadingSmall>
-                게시물 유형
-                <RequiredSmall>*</RequiredSmall>
-              </FieldHeadingSmall>
-              <RadioRow>
-                <RadioItem>
-                  <Radio
-                    label="세션"
-                    checked={postType === 'session'}
-                    disabled={postType !== 'session'}
-                    onChange={() => {}}
-                  />
-                </RadioItem>
-                <RadioItem>
-                  <Radio
-                    label="프로젝트"
-                    checked={postType === 'project'}
-                    disabled={postType !== 'project'}
-                    onChange={() => {}}
-                  />
-                </RadioItem>
-                <RadioItem>
-                  <Radio
-                    label="추억"
-                    checked={postType === 'gallery'}
-                    disabled={postType !== 'gallery'}
-                    onChange={() => {}}
-                  />
-                </RadioItem>
-              </RadioRow>
-            </RowField>
-            <RowField $gap={8}>
-              <FieldHeadingSmall>
-                {dateFieldLabel}
-                <RequiredSmall>*</RequiredSmall>
-              </FieldHeadingSmall>
-              <DateField
-                mode={dateMode}
-                value={date}
-                onChange={setDate}
-                rangeValue={dateRange}
-                onRangeChange={(index, value) =>
-                  setDateRange((prev) => (index === 0 ? [value, prev[1]] : [prev[0], value]))
-                }
-                invalid={showErrors && isDateInvalid}
-              />
-              {showErrors && isDateMissing && <DateDescription>날짜를 선택해 주세요.</DateDescription>}
-              {showErrors && isDateOrderInvalid && (
-                <DateDescription>종료일은 시작일 이후로 선택해 주세요.</DateDescription>
+              {categoryConfig && (
+                <CategorySelect
+                  label={categoryConfig.label}
+                  options={categoryOptions}
+                  value={category}
+                  onChange={setCategory}
+                  disabled={postType === 'session' && (isUnfilled(generation) || !!generationError)}
+                  status={showErrors && isUnfilled(category) ? 'negative' : 'normal'}
+                  description={
+                    showErrors && isUnfilled(category) ? `${categoryConfig.label}을 선택해 주세요.` : undefined
+                  }
+                />
               )}
-            </RowField>
-          </Row>
-        </Information>
+              {showWeekField && (
+                <NarrowField>
+                  <TextField
+                    heading="주차 구분"
+                    required
+                    placeholder="숫자 입력"
+                    value={week}
+                    onChange={onChangeWeek}
+                    status={showErrors && isUnfilled(week) ? 'negative' : 'normal'}
+                    description={showErrors && isUnfilled(week) ? '주차를 입력해 주세요.' : undefined}
+                  />
+                </NarrowField>
+              )}
+            </Row>
+
+            <Row>
+              <RowField $gap={8}>
+                <FieldHeadingSmall>
+                  게시물 유형
+                  <RequiredSmall>*</RequiredSmall>
+                </FieldHeadingSmall>
+                <RadioRow>
+                  <RadioItem>
+                    <Radio
+                      label="세션"
+                      checked={postType === 'session'}
+                      disabled={postType !== 'session'}
+                      onChange={() => {}}
+                    />
+                  </RadioItem>
+                  <RadioItem>
+                    <Radio
+                      label="프로젝트"
+                      checked={postType === 'project'}
+                      disabled={postType !== 'project'}
+                      onChange={() => {}}
+                    />
+                  </RadioItem>
+                  <RadioItem>
+                    <Radio
+                      label="추억"
+                      checked={postType === 'gallery'}
+                      disabled={postType !== 'gallery'}
+                      onChange={() => {}}
+                    />
+                  </RadioItem>
+                </RadioRow>
+              </RowField>
+              <RowField $gap={8}>
+                <FieldHeadingSmall>
+                  {dateFieldLabel}
+                  <RequiredSmall>*</RequiredSmall>
+                </FieldHeadingSmall>
+                <DateField
+                  mode={dateMode}
+                  value={date}
+                  onChange={setDate}
+                  rangeValue={dateRange}
+                  onRangeChange={(index, value) =>
+                    setDateRange((prev) => (index === 0 ? [value, prev[1]] : [prev[0], value]))
+                  }
+                  invalid={showErrors && isDateInvalid}
+                />
+                {showErrors && isDateMissing && <DateDescription>날짜를 선택해 주세요.</DateDescription>}
+                {showErrors && isDateOrderInvalid && (
+                  <DateDescription>종료일은 시작일 이후로 선택해 주세요.</DateDescription>
+                )}
+              </RowField>
+            </Row>
+          </Information>
+        </ModalScrollArea>
         <Actions $mode={mode}>
           {mode === 'edit' &&
             (isConfirmingDelete ? (
@@ -678,16 +681,17 @@ const CategorySelect = ({
         aria-controls={listId}
         status={status}
         description={description}
-      />
-      {isOpen && (
-        <ListboxOptions
-          listId={listId}
-          options={options}
-          value={value}
-          activeIndex={activeIndex}
-          onSelect={selectOption}
-        />
-      )}
+      >
+        {isOpen && (
+          <ListboxOptions
+            listId={listId}
+            options={options}
+            value={value}
+            activeIndex={activeIndex}
+            onSelect={selectOption}
+          />
+        )}
+      </Select>
     </NarrowSelectWrapper>
   );
 };
@@ -791,17 +795,21 @@ const Backdrop = styled.div`
 `;
 
 const Modal = styled.div`
+  position: relative;
   width: 1040px;
   max-width: calc(100vw - 40px);
   max-height: calc(100vh - 40px);
-  overflow-y: auto;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  overflow: hidden;
   border-radius: 16px;
   background-color: ${BackgroundColor};
   outline: none;
   z-index: 10000;
+`;
+
+const ModalScrollArea = styled(ScrollArea)`
+  flex: 1 1 auto;
 `;
 
 const Information = styled.div`

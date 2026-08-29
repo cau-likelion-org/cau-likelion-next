@@ -8,18 +8,10 @@ import CircularLoading from '@common/loading/CircularLoading';
 import Button from '@common/button/Button';
 import EditButton from '@mypage/admin/component/EditButton';
 import { IcCaretDown, IcCaretUp, IcPlus } from '@assets/svg';
-import { isEmailFormatInvalid, isUnfilled } from '@utils/index';
+import { getServerMessage, isEmailFormatInvalid, isUnfilled } from '@utils/index';
 import { BackgroundColor, Black, Label, Line, Orange, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { createId } from '../utils';
-
-const getServerMessage = (error: unknown) => {
-  if (!axios.isAxiosError(error)) return undefined;
-  const data: unknown = error.response?.data;
-  if (typeof data === 'string') return data.trim() || undefined;
-  const message = (data as { message?: unknown } | undefined)?.message;
-  return typeof message === 'string' && message.trim() ? message : undefined;
-};
 
 interface LocalAllowedItem {
   key: string;

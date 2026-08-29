@@ -151,16 +151,17 @@ const SignUpFormSection = () => {
               aria-expanded={openField === 'part'}
               aria-activedescendant={openField === 'part' ? `${partListId}-${partActiveIndex}` : undefined}
               aria-controls={partListId}
-            />
-            {openField === 'part' && (
-              <ListboxOptions
-                listId={partListId}
-                options={partOptions}
-                value={partName}
-                activeIndex={partActiveIndex}
-                onSelect={selectPartOption}
-              />
-            )}
+            >
+              {openField === 'part' && (
+                <ListboxOptions
+                  listId={partListId}
+                  options={partOptions}
+                  value={partName}
+                  activeIndex={partActiveIndex}
+                  onSelect={selectPartOption}
+                />
+              )}
+            </Select>
           </SelectWrapper>
         </FieldGroup>
       </ContentGroup>

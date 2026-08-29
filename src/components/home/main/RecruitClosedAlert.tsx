@@ -2,6 +2,7 @@ import { useId, useRef } from 'react';
 import styled from 'styled-components';
 
 import Button from '@common/button/Button';
+import ScrollArea from '@common/scrollArea/ScrollArea';
 import useFocusTrap from 'src/hooks/useFocusTrap';
 import { BackgroundColor, Label, Material } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -26,13 +27,15 @@ const RecruitClosedAlert = ({ onClose, onConfirm }: RecruitClosedAlertProps) => 
         tabIndex={-1}
         onClick={(event) => event.stopPropagation()}
       >
-        <Information>
-          <Title id={titleId}>
-            아직 지원 기간이 아닙니다.
-            <br />
-            리크루팅 사전 알림 신청을 하시겠습니까?
-          </Title>
-        </Information>
+        <InformationScroll>
+          <Information>
+            <Title id={titleId}>
+              아직 지원 기간이 아닙니다.
+              <br />
+              리크루팅 사전 알림 신청을 하시겠습니까?
+            </Title>
+          </Information>
+        </InformationScroll>
         <Actions>
           <Button variant="outlined" color="assistive" size="medium" onClick={onClose}>
             취소
@@ -69,6 +72,8 @@ const Modal = styled.div`
   outline: none;
   z-index: 10000;
 `;
+
+const InformationScroll = styled(ScrollArea)``;
 
 const Information = styled.div`
   padding: 28px;

@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 import Button from '@common/button/Button';
 import Chip from '@common/chip/Chip';
+import ScrollArea from '@common/scrollArea/ScrollArea';
 import LinkifiedText from './LinkifiedText';
 import { IcCaretDown, IcCaretUp } from '@assets/svg';
 import { BackgroundColor, Fill, Label, Line, Material, State } from '@utils/constant/color';
@@ -55,58 +56,60 @@ const RecruitmentResendModal = ({
     <Overlay>
       <Dimmer onClick={onClose} />
       <Modal ref={modalRef} role="dialog" aria-modal="true" aria-label="실패건 즉시 재발송" tabIndex={-1}>
-        <Information>
-          <Field>
-            <LargeHeading>
-              발송 대상<LargeRequired>*</LargeRequired>
-            </LargeHeading>
-            <RecipientBox>
-              <RecipientSummaryRow>
-                <RecipientChipRow
-                  ref={recipientChipRowRef}
-                  $expanded={isRecipientListExpanded}
-                  $faded={isRecipientListFaded}
-                >
-                  {recipients.map((email, index) => (
-                    <RecipientChip key={`${email}-${index}`} size="xsmall">
-                      {email}
-                    </RecipientChip>
-                  ))}
-                </RecipientChipRow>
-                {hasOverflow ? (
-                  <RecipientCount
-                    type="button"
-                    aria-expanded={isRecipientListExpanded}
-                    onClick={() => setIsRecipientListExpanded((prev) => !prev)}
+        <InformationScroll>
+          <Information>
+            <Field>
+              <LargeHeading>
+                발송 대상<LargeRequired>*</LargeRequired>
+              </LargeHeading>
+              <RecipientBox>
+                <RecipientSummaryRow>
+                  <RecipientChipRow
+                    ref={recipientChipRowRef}
+                    $expanded={isRecipientListExpanded}
+                    $faded={isRecipientListFaded}
                   >
-                    <CountText>총 {recipients.length}명</CountText>
-                    {isRecipientListExpanded ? (
-                      <IcCaretUp width={16} height={16} />
-                    ) : (
-                      <IcCaretDown width={16} height={16} />
-                    )}
-                  </RecipientCount>
-                ) : (
-                  <RecipientCount as="span">
-                    <CountText>총 {recipients.length}명</CountText>
-                  </RecipientCount>
-                )}
-              </RecipientSummaryRow>
-            </RecipientBox>
-          </Field>
+                    {recipients.map((email, index) => (
+                      <RecipientChip key={`${email}-${index}`} size="xsmall">
+                        {email}
+                      </RecipientChip>
+                    ))}
+                  </RecipientChipRow>
+                  {hasOverflow ? (
+                    <RecipientCount
+                      type="button"
+                      aria-expanded={isRecipientListExpanded}
+                      onClick={() => setIsRecipientListExpanded((prev) => !prev)}
+                    >
+                      <CountText>총 {recipients.length}명</CountText>
+                      {isRecipientListExpanded ? (
+                        <IcCaretUp width={16} height={16} />
+                      ) : (
+                        <IcCaretDown width={16} height={16} />
+                      )}
+                    </RecipientCount>
+                  ) : (
+                    <RecipientCount as="span">
+                      <CountText>총 {recipients.length}명</CountText>
+                    </RecipientCount>
+                  )}
+                </RecipientSummaryRow>
+              </RecipientBox>
+            </Field>
 
-          <Field>
-            <LargeHeading>제목</LargeHeading>
-            <ReadonlyBox>{title}</ReadonlyBox>
-          </Field>
+            <Field>
+              <LargeHeading>제목</LargeHeading>
+              <ReadonlyBox>{title}</ReadonlyBox>
+            </Field>
 
-          <Field>
-            <LargeHeading>내용</LargeHeading>
-            <ReadonlyTextarea>
-              <LinkifiedText text={content} />
-            </ReadonlyTextarea>
-          </Field>
-        </Information>
+            <Field>
+              <LargeHeading>내용</LargeHeading>
+              <ReadonlyTextarea>
+                <LinkifiedText text={content} />
+              </ReadonlyTextarea>
+            </Field>
+          </Information>
+        </InformationScroll>
         <Actions>
           <Button variant="outlined" color="assistive" size="large" onClick={onClose} disabled={isSubmitting}>
             취소
@@ -151,12 +154,15 @@ const Modal = styled.div`
   background-color: ${BackgroundColor};
 `;
 
+const InformationScroll = styled(ScrollArea)`
+  flex: 1 1 auto;
+`;
+
 const Information = styled.div`
   display: flex;
   flex-direction: column;
   gap: 42px;
   padding: 28px;
-  overflow-y: auto;
 `;
 
 const Field = styled.div`
