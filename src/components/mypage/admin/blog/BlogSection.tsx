@@ -1,18 +1,21 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 
+import Button from '@common/button/Button';
 import Select from '@common/select/Select';
 import ListboxOptions from '@common/select/ListboxOptions';
 import TextField from '@common/textField/TextField';
-import AddCardButton from '@mypage/component/AddCardButton';
+import ProjectFilterSelect from '@project/projects/ProjectFilterSelect';
 import RemoveCardButton from '@mypage/component/RemoveCardButton';
-import { IcCircleClose, IcLink } from '@assets/svg';
+import { IcAdd, IcCircleClose, IcLink, IcSearch } from '@assets/svg';
 import useListboxSelect from 'src/hooks/useListboxSelect';
 import { BlogCategory } from 'src/apis/blog';
 import { NUMERIC_ONLY_REGEX } from '@utils/constant';
 import { isUnfilled } from '@utils/index';
 import { BackgroundWhite, Label, Line } from '@utils/constant/color';
 import { createId } from '../utils';
+
+const ALL_OPTION = '전체';
 
 export interface BlogItem {
   id: string;
@@ -49,17 +52,80 @@ const BlogSection = ({
   showErrors: boolean;
   disabled?: boolean;
 }) => {
+  const [generationFilter, setGenerationFilter] = useState(ALL_OPTION);
+  const [writerQuery, setWriterQuery] = useState('');
+
+  const generationOptions = useMemo(() => {
+    const generations = Array.from(new Set(items.map((item) => item.generation).filter((generation) => generation)));
+    generations.sort((a, b) => Number(b) - Number(a));
+    return [ALL_OPTION, ...generations];
+  }, [items]);
+
+  const visibleItems = disabled
+    ? items
+    : items.filter((item) => {
+        const matchesGeneration = generationFilter === ALL_OPTION || item.generation === generationFilter;
+        const matchesWriter = item.writer.toLowerCase().includes(writerQuery.trim().toLowerCase());
+        return matchesGeneration && matchesWriter;
+      });
+
+  const pendingScrollIdRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    const id = pendingScrollIdRef.current;
+    if (!id) return;
+    const card = document.querySelector<HTMLElement>(`[data-blog-item-id="${id}"]`);
+    if (card) {
+      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      // preventScroll 없으면 focus()가 스크롤을 즉시 끊어버려 위 smooth scrollIntoView와 충돌한다
+      card.querySelector('input')?.focus({ preventScroll: true });
+      pendingScrollIdRef.current = null;
+    }
+  }, [items]);
+
   const updateItem = (id: string, patch: Partial<BlogItem>) => {
     onChange(items.map((item) => (item.id === id ? { ...item, ...patch } : item)));
   };
 
   const removeItem = (id: string) => onChange(items.filter((item) => item.id !== id));
 
-  const addItem = () => onChange([...items, createEmptyItem()]);
+  const addItem = () => {
+    const newItem = createEmptyItem();
+    pendingScrollIdRef.current = newItem.id;
+    setGenerationFilter(ALL_OPTION);
+    setWriterQuery('');
+    onChange([...items, newItem]);
+  };
 
   return (
     <Section>
-      {items.map((item) => (
+      {!disabled && (
+        <FilterRow>
+          <ProjectFilterSelect
+            heading="기수 구분"
+            options={generationOptions}
+            value={generationFilter}
+            onChange={setGenerationFilter}
+          />
+          <SearchField
+            heading="작성자 검색"
+            placeholder="텍스트를 입력해 주세요."
+            leadingIcon={<IcSearch width={22} height={22} />}
+            value={writerQuery}
+            onChange={(event) => setWriterQuery(event.target.value)}
+          />
+          <Button
+            variant="solid"
+            color="assistive"
+            size="large"
+            trailingIcon={<IcAdd width={20} height={20} />}
+            onClick={addItem}
+          >
+            블로그 글 추가
+          </Button>
+        </FilterRow>
+      )}
+      {visibleItems.map((item) => (
         <BlogCard
           key={item.id}
           item={item}
@@ -69,7 +135,6 @@ const BlogSection = ({
           onRemove={() => removeItem(item.id)}
         />
       ))}
-      {!disabled && <AddCardButton onClick={addItem} ariaLabel="블로그 추가" />}
     </Section>
   );
 };
@@ -108,7 +173,7 @@ const BlogCard = ({
   });
 
   return (
-    <Card>
+    <Card data-blog-item-id={item.id}>
       <Row>
         <FieldWrapper>
           <TextField
@@ -149,16 +214,17 @@ const BlogCard = ({
             aria-controls={categoryListId}
             status={showErrors && isUnfilled(item.category) ? 'negative' : 'normal'}
             description={showErrors && isUnfilled(item.category) ? '내용 구분을 선택해 주세요.' : undefined}
-          />
-          {isCategoryOpen && (
-            <ListboxOptions
-              listId={categoryListId}
-              options={BLOG_CATEGORY_OPTIONS}
-              value={item.category}
-              activeIndex={categoryActiveIndex}
-              onSelect={selectCategory}
-            />
-          )}
+          >
+            {isCategoryOpen && (
+              <ListboxOptions
+                listId={categoryListId}
+                options={BLOG_CATEGORY_OPTIONS}
+                value={item.category}
+                activeIndex={categoryActiveIndex}
+                onSelect={selectCategory}
+              />
+            )}
+          </Select>
         </SelectWrapper>
       </Row>
       <TextField
@@ -192,6 +258,18 @@ const Section = styled.div`
   flex-direction: column;
   gap: 20px;
   width: 100%;
+`;
+
+const FilterRow = styled.div`
+  display: flex;
+  align-items: flex-end;
+  gap: 20px;
+  width: 100%;
+`;
+
+const SearchField = styled(TextField)`
+  flex: 1 0 0;
+  min-width: 0;
 `;
 
 const Card = styled.div`

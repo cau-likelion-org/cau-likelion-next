@@ -27,6 +27,7 @@ export interface SelectProps {
   readOnly?: boolean;
   hideValue?: boolean;
   onClick?: () => void;
+  children?: ReactNode;
   'aria-expanded'?: boolean;
   'aria-label'?: string;
   'aria-activedescendant'?: string;
@@ -54,6 +55,7 @@ const Select = forwardRef<HTMLDivElement, SelectProps & { id?: string }>(functio
     readOnly = false,
     hideValue = false,
     onClick,
+    children,
     id,
     'aria-expanded': ariaExpanded,
     ...rest
@@ -130,6 +132,7 @@ const Select = forwardRef<HTMLDivElement, SelectProps & { id?: string }>(functio
             <IcChevronDown width={16} height={16} />
           </ChevronIconSlot>
         )}
+        {children}
       </Trigger>
       {description && (
         <Description id={descriptionId} $status={status}>

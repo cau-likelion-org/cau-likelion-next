@@ -1,6 +1,7 @@
 import { UserProfile } from '@@types/request';
 import { useQuery } from '@tanstack/react-query';
 import BackHeader from '@common/header/BackHeader';
+import ScrollArea from '@common/scrollArea/ScrollArea';
 import { AccentTint, Label, Material, Orange } from '@utils/constant/color';
 import { media } from '@utils/constant/breakpoint';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -54,55 +55,57 @@ const ProjectDetailModal = ({ projectId, staticData, onClose }: ProjectDetailMod
 
   return (
     <Backdrop onClick={onClose}>
-      <ModalCard onClick={(event) => event.stopPropagation()}>
-        {/* 모바일은 모달이 화면을 덮어 배경 클릭으로 닫을 수 없으므로, 로딩 중에도 닫기 버튼을 노출한다 */}
-        <MobileHeader>
-          <BackHeader label="프로젝트 목록으로 돌아가기" onClick={onClose} />
-        </MobileHeader>
-        {isError ? (
-          <LoadingWrapper>
-            <EmptyState variant="error" />
-          </LoadingWrapper>
-        ) : !project ? (
-          <LoadingWrapper>
-            <CircularLoading size={32} />
-          </LoadingWrapper>
-        ) : (
-          <>
-            <Contents>
-              <ProjectDetailCarousel images={getSortedProjectImages(project.images)} />
-              <TextBlock>
-                <Title>{project.title}</Title>
-                {project.tagline && <Description>{project.tagline}</Description>}
-                <BadgeRow>
-                  <Badge>{project.generationNumber}기</Badge>
-                  <Badge>{PROJECT_CATEGORY_LABEL[project.category]}</Badge>
-                </BadgeRow>
-                {project.summary && <Summary>{project.summary.replace(/\\n/g, '\n')}</Summary>}
-              </TextBlock>
-              <PanelRow>
-                <ProjectDetailTeamPanel teamName={project.teamName} members={project.members} />
-                <ProjectDetailMetaPanel
-                  startDate={project.startDate}
-                  endDate={project.endDate}
-                  stack={project.stack}
-                  links={project.links}
-                />
-              </PanelRow>
-            </Contents>
-            <Actions>
-              {userProfile && isAdminRole(userProfile.role) && (
-                <EditButton type="button" onClick={() => router.push(`/project/edit/${projectId}`)}>
-                  수정
-                </EditButton>
-              )}
-              <CloseButton type="button" onClick={onClose}>
-                닫기
-              </CloseButton>
-            </Actions>
-          </>
-        )}
-      </ModalCard>
+      <ModalOuter onClick={(event) => event.stopPropagation()}>
+        <ModalScrollArea deps={[project]}>
+          {/* 모바일은 모달이 화면을 덮어 배경 클릭으로 닫을 수 없으므로, 로딩 중에도 닫기 버튼을 노출한다 */}
+          <MobileHeader>
+            <BackHeader label="프로젝트 목록으로 돌아가기" onClick={onClose} />
+          </MobileHeader>
+          {isError ? (
+            <LoadingWrapper>
+              <EmptyState variant="error" />
+            </LoadingWrapper>
+          ) : !project ? (
+            <LoadingWrapper>
+              <CircularLoading size={32} />
+            </LoadingWrapper>
+          ) : (
+            <>
+              <Contents>
+                <ProjectDetailCarousel images={getSortedProjectImages(project.images)} />
+                <TextBlock>
+                  <Title>{project.title}</Title>
+                  {project.tagline && <Description>{project.tagline}</Description>}
+                  <BadgeRow>
+                    <Badge>{project.generationNumber}기</Badge>
+                    <Badge>{PROJECT_CATEGORY_LABEL[project.category]}</Badge>
+                  </BadgeRow>
+                  {project.summary && <Summary>{project.summary.replace(/\\n/g, '\n')}</Summary>}
+                </TextBlock>
+                <PanelRow>
+                  <ProjectDetailTeamPanel teamName={project.teamName} members={project.members} />
+                  <ProjectDetailMetaPanel
+                    startDate={project.startDate}
+                    endDate={project.endDate}
+                    stack={project.stack}
+                    links={project.links}
+                  />
+                </PanelRow>
+              </Contents>
+              <Actions>
+                {userProfile && isAdminRole(userProfile.role) && (
+                  <EditButton type="button" onClick={() => router.push(`/project/edit/${projectId}`)}>
+                    수정
+                  </EditButton>
+                )}
+                <CloseButton type="button" onClick={onClose}>
+                  닫기
+                </CloseButton>
+              </Actions>
+            </>
+          )}
+        </ModalScrollArea>
+      </ModalOuter>
     </Backdrop>
   );
 };
@@ -125,18 +128,14 @@ const Backdrop = styled.div`
   }
 `;
 
-const ModalCard = styled.div`
+const ModalOuter = styled.div`
+  position: relative;
+  display: flex;
+  flex-direction: column;
   width: 568px;
   max-width: 100%;
   max-height: 90vh;
-  overflow-y: auto;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
-
+  overflow: hidden;
   border-radius: 16px;
   background-color: #fff;
 
@@ -154,6 +153,10 @@ const ModalCard = styled.div`
     max-height: none;
     border-radius: 0;
   }
+`;
+
+const ModalScrollArea = styled(ScrollArea)`
+  flex: 1 1 auto;
 `;
 
 const MobileHeader = styled.div`

@@ -253,16 +253,17 @@ const ActivityCard = ({
             aria-controls={pageLinkListId}
             status={showErrors && isUnfilled(item.href) ? 'negative' : 'normal'}
             description={showErrors && isUnfilled(item.href) ? '페이지 이동을 선택해 주세요.' : undefined}
-          />
-          {isPageLinkOpen && (
-            <ListboxOptions
-              listId={pageLinkListId}
-              options={PAGE_LINK_OPTIONS}
-              value={item.href}
-              activeIndex={pageLinkActiveIndex}
-              onSelect={selectPageLink}
-            />
-          )}
+          >
+            {isPageLinkOpen && (
+              <ListboxOptions
+                listId={pageLinkListId}
+                options={PAGE_LINK_OPTIONS}
+                value={item.href}
+                activeIndex={pageLinkActiveIndex}
+                onSelect={selectPageLink}
+              />
+            )}
+          </Select>
         </SelectWrapper>
       </Row>
       {!disabled && (

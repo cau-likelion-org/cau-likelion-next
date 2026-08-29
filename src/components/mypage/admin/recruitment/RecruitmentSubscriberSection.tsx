@@ -2,12 +2,13 @@ import { useState } from 'react';
 import styled from 'styled-components';
 
 import { RecruitmentSubscriberResponse } from 'src/apis/recruitment';
+import Button from '@common/button/Button';
 import Checkbox from '@common/checkbox/Checkbox';
 import CircularLoading from '@common/loading/CircularLoading';
 import EmptyState from '@common/emptyState/EmptyState';
 import PaginationNavigation from '@common/pagination/PaginationNavigation';
 import PartSelect from '@mypage/component/PartSelect';
-import { Black, Label, Line } from '@utils/constant/color';
+import { Black, Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 export const ALL_PART_FILTER = '전체';
@@ -24,6 +25,7 @@ interface RecruitmentSubscriberSectionProps {
   onInterestPartFilterChange: (value: string) => void;
   selectedIds: Set<number>;
   onToggleSelect: (id: number) => void;
+  onSelectAll: () => void;
 }
 
 const RecruitmentSubscriberSection = ({
@@ -35,10 +37,12 @@ const RecruitmentSubscriberSection = ({
   onInterestPartFilterChange,
   selectedIds,
   onToggleSelect,
+  onSelectAll,
 }: RecruitmentSubscriberSectionProps) => {
   const [page, setPage] = useState(1);
   const totalPage = Math.max(1, Math.ceil(subscribers.length / PAGE_SIZE));
   const pageItems = subscribers.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const selectedInScopeCount = subscribers.filter((subscriber) => selectedIds.has(subscriber.id)).length;
 
   return (
     <Wrapper>
@@ -54,6 +58,16 @@ const RecruitmentSubscriberSection = ({
           ariaLabel="관심 파트 필터"
         />
       </TitleRow>
+
+      <SelectAllRow>
+        <Button variant="outlined" color="primary" size="small" onClick={onSelectAll}>
+          전체선택
+        </Button>
+        <SelectionSummary>
+          <SelectedCount $active={selectedInScopeCount > 0}>선택 {selectedInScopeCount}명</SelectedCount>
+          <TotalCount>총 {subscribers.length}명</TotalCount>
+        </SelectionSummary>
+      </SelectAllRow>
 
       <Table>
         <HeaderRow>
@@ -120,6 +134,32 @@ const Title = styled.p`
   margin: 0;
   color: ${Black.b900};
   ${typographyCss(Typography.title3.bold)}
+`;
+
+const SelectAllRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+`;
+
+const SelectionSummary = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const SelectedCount = styled.span<{ $active: boolean }>`
+  padding: 0 4px;
+  opacity: 0.74;
+  color: ${(props) => (props.$active ? Orange.o500 : Label.alternative)};
+  ${typographyCss(Typography.body2Normal.medium)}
+`;
+
+const TotalCount = styled.span`
+  padding: 0 4px;
+  opacity: 0.74;
+  color: ${Label.alternative};
+  ${typographyCss(Typography.body2Normal.medium)}
 `;
 
 const Table = styled.div`

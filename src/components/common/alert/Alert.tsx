@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import styled from 'styled-components';
 
+import ScrollArea from '@common/scrollArea/ScrollArea';
 import useFocusTrap from 'src/hooks/useFocusTrap';
 import { BackgroundColor, Label, Material, Orange, Status } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -35,10 +36,12 @@ const Alert = ({ className, heading, body, actions, onDimmerClick }: AlertProps)
     <Overlay className={className} role="dialog" aria-modal="true">
       <Dimmer onClick={onDimmerClick} />
       <Modal ref={modalRef} tabIndex={-1}>
-        <Information>
-          {heading && <Heading>{heading}</Heading>}
-          {body && <Body>{body}</Body>}
-        </Information>
+        <InformationScroll>
+          <Information>
+            {heading && <Heading>{heading}</Heading>}
+            {body && <Body>{body}</Body>}
+          </Information>
+        </InformationScroll>
         <Actions>
           {actions.map((action) => (
             <ActionButton
@@ -84,6 +87,8 @@ const Modal = styled.div`
   border-radius: 12px;
   overflow: hidden;
 `;
+
+const InformationScroll = styled(ScrollArea)``;
 
 const Information = styled.div`
   display: flex;

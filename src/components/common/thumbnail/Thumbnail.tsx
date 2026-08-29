@@ -11,6 +11,7 @@ export interface ThumbnailProps {
   radius?: boolean;
   border?: boolean;
   overlay?: ReactNode;
+  onError?: () => void;
 }
 
 const Thumbnail = ({
@@ -21,10 +22,11 @@ const Thumbnail = ({
   radius = false,
   border = false,
   overlay,
+  onError,
 }: ThumbnailProps) => {
   return (
     <Wrapper className={className} $ratio={ratio} $radius={radius} $border={border}>
-      <Image src={src} alt={alt} referrerPolicy="no-referrer" />
+      <Image key={src} src={src} alt={alt} referrerPolicy="no-referrer" onError={onError} />
       {overlay && <Overlay>{overlay}</Overlay>}
     </Wrapper>
   );

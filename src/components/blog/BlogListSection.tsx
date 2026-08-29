@@ -7,9 +7,12 @@ import ListboxOptions from '@common/select/ListboxOptions';
 import CircularLoading from '@common/loading/CircularLoading';
 import EmptyState from '@common/emptyState/EmptyState';
 import PaginationNavigation from '@common/pagination/PaginationNavigation';
+import TextField from '@common/textField/TextField';
+import { IcSearch } from '@assets/svg';
 import useListboxSelect from 'src/hooks/useListboxSelect';
 import { getBlogs, BlogCategory } from 'src/apis/blog';
 import { toDateString } from '@utils/index';
+import { Label } from '@utils/constant/color';
 
 import BlogCard from './component/BlogCard';
 import { containerCss, media } from '@utils/constant/breakpoint';
@@ -31,6 +34,7 @@ const BlogListSection = () => {
   const { data: blogs, isLoading, isError } = useQuery({ queryKey: ['blogs'], queryFn: getBlogs });
   const [generation, setGeneration] = useState(ALL_OPTION);
   const [category, setCategory] = useState(ALL_OPTION);
+  const [keyword, setKeyword] = useState('');
   const [openFilter, setOpenFilter] = useState<FilterKey | null>(null);
   const [page, setPage] = useState(1);
 
@@ -42,7 +46,10 @@ const BlogListSection = () => {
   const posts = (blogs ?? []).filter((blog) => {
     const matchesGeneration = generation === ALL_OPTION || `${blog.generationNumber}기` === generation;
     const matchesCategory = category === ALL_OPTION || CATEGORY_LABEL[blog.category] === category;
-    return matchesGeneration && matchesCategory;
+    const trimmedKeyword = keyword.trim().toLowerCase();
+    const matchesKeyword =
+      blog.title.toLowerCase().includes(trimmedKeyword) || blog.writer.toLowerCase().includes(trimmedKeyword);
+    return matchesGeneration && matchesCategory && matchesKeyword;
   });
   const totalPage = Math.max(1, Math.ceil(posts.length / PAGE_SIZE));
   const pagePosts = posts.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
@@ -75,6 +82,16 @@ const BlogListSection = () => {
             onSelect={(option) => {
               setCategory(option);
               setOpenFilter(null);
+              setPage(1);
+            }}
+          />
+          <SearchField
+            heading="검색"
+            placeholder="텍스트를 입력해 주세요."
+            leadingIcon={<IcSearch width={22} height={22} style={{ color: Label.normal }} />}
+            value={keyword}
+            onChange={(event) => {
+              setKeyword(event.target.value);
               setPage(1);
             }}
           />
@@ -152,16 +169,17 @@ const FilterSelect = ({
         aria-expanded={isOpen}
         aria-activedescendant={isOpen ? `${listId}-${activeIndex}` : undefined}
         aria-controls={listId}
-      />
-      {isOpen && (
-        <ListboxOptions
-          listId={listId}
-          options={options}
-          value={value}
-          activeIndex={activeIndex}
-          onSelect={selectOption}
-        />
-      )}
+      >
+        {isOpen && (
+          <ListboxOptions
+            listId={listId}
+            options={options}
+            value={value}
+            activeIndex={activeIndex}
+            onSelect={selectOption}
+          />
+        )}
+      </Select>
     </SelectWrapper>
   );
 };
@@ -203,10 +221,7 @@ const FilterRow = styled.div`
   display: flex;
   align-items: center;
   gap: 20px;
-
-  @media (max-width: 600px) {
-    width: 100%;
-  }
+  width: 100%;
 `;
 
 const SelectWrapper = styled.div`
@@ -221,6 +236,11 @@ const SelectWrapper = styled.div`
     min-width: 0;
     width: auto;
   }
+`;
+
+const SearchField = styled(TextField)`
+  flex: 1 0 0;
+  min-width: 0;
 `;
 
 const PostList = styled.div`

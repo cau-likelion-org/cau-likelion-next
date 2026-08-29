@@ -55,16 +55,17 @@ const ProjectFilterSelect = ({
         description={description}
         leadingIcon={leadingIcon}
         hideValue={hideValue}
-      />
-      {isOpen && (
-        <ListboxOptions
-          listId={listId}
-          options={options}
-          value={value}
-          activeIndex={activeIndex}
-          onSelect={selectOption}
-        />
-      )}
+      >
+        {isOpen && (
+          <ListboxOptions
+            listId={listId}
+            options={options}
+            value={value}
+            activeIndex={activeIndex}
+            onSelect={selectOption}
+          />
+        )}
+      </Select>
     </Wrapper>
   );
 };

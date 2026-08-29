@@ -181,16 +181,17 @@ const FilterSelect = ({
         value={value}
         disabled={disabled}
         onClick={() => setIsOpen((prev) => !prev)}
-      />
-      {!disabled && isOpen && (
-        <ListboxOptions
-          listId={listId}
-          options={options}
-          value={value}
-          activeIndex={activeIndex}
-          onSelect={selectOption}
-        />
-      )}
+      >
+        {!disabled && isOpen && (
+          <ListboxOptions
+            listId={listId}
+            options={options}
+            value={value}
+            activeIndex={activeIndex}
+            onSelect={selectOption}
+          />
+        )}
+      </Select>
     </SelectColumn>
   );
 };

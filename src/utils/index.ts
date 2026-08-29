@@ -1,5 +1,15 @@
+import axios from 'axios';
 import { ArchivingArrayType, IGalleryData, IProjectData, ISessionData, MemberRole } from '@@types/request';
 import { COMMON_PART_NAME } from '@utils/constant';
+
+// 서버가 내려주는 실패 사유(중복, 형식 오류, 마감 초과 등)를 그대로 보여줄 때 사용
+export const getServerMessage = (error: unknown) => {
+  if (!axios.isAxiosError(error)) return undefined;
+  const data: unknown = error.response?.data;
+  if (typeof data === 'string') return data.trim() || undefined;
+  const message = (data as { message?: unknown } | undefined)?.message;
+  return typeof message === 'string' && message.trim() ? message : undefined;
+};
 
 export const toDateString = (date?: Date, formatter = '-') => {
   if (!date) return '';
