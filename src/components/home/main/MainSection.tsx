@@ -75,11 +75,12 @@ const MainSection = () => {
 
 export default MainSection;
 
-// 900~1440px 구간은 1440px 기준 데스크톱 시안을 뷰포트 너비에 비례해 그대로 축소한다
+// 배경(Wrapper, DesktopBg)은 화면 너비에 항상 꽉 차게(100vw), 그 안의 콘텐츠는
+// 900~1440px 구간에서 1440px 기준 데스크톱 시안을 비례 축소해 배치한다
 // (예: left:190px → clamp(190*0.625px, (190/1440)*100vw, 190px))
 const Wrapper = styled.div`
   position: relative;
-  width: clamp(900px, 100vw, 1440px);
+  width: 100vw;
   padding-top: clamp(130.625px, calc((209 / 1440) * 100vw), 209px);
   display: flex;
   align-items: center;
@@ -97,8 +98,9 @@ const Wrapper = styled.div`
 `;
 
 const DesktopBg = styled(BgLanding)`
-  width: clamp(900px, 100vw, 1440px);
-  height: clamp(416.25px, calc((666 / 1440) * 100vw), 666px);
+  width: 100vw;
+  height: calc((666 / 1440) * 100vw);
+  margin-bottom: -2px;
 
   @media (max-width: ${MOBILE}px) {
     display: none;
