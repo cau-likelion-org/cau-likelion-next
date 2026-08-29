@@ -239,6 +239,7 @@ const Subtitle = styled.p`
   ${typographyCss(Typography.body2Normal.regular)}
   color: ${Label.alternative};
   text-align: center;
+  white-space: nowrap;
   margin: 0;
 `;
 
