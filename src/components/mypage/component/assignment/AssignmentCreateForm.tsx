@@ -16,7 +16,7 @@ import useScrollLock from 'src/hooks/useScrollLock';
 import { AssignmentCreateRequest, AssignmentSubmitType } from 'src/apis/assignment';
 import { isUnfilled } from '@utils/index';
 import { IcCalendar, IcCircleExclamation } from '@assets/svg';
-import { BackgroundWhite, Fill, Label, Line, Material, Orange, State } from '@utils/constant/color';
+import { BackgroundWhite, Black, Fill, Label, Line, Material, Orange, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { containerCss } from '@utils/constant/breakpoint';
 
@@ -190,6 +190,7 @@ const AssignmentCreateForm = ({
   return (
     <Page ref={formRef}>
       <BackHeader label="과제 목록으로 돌아가기" onClick={handleClose} />
+      <PageTitle>{isEdit ? '과제 수정하기' : '과제 생성하기'}</PageTitle>
       <FormContent>
         <TopFields>
           <TopField>
@@ -430,6 +431,12 @@ const Page = styled.div`
   flex-direction: column;
   ${containerCss}
   padding-bottom: 80px;
+`;
+
+const PageTitle = styled.h2`
+  margin: 0 0 42px;
+  color: ${Black.b900};
+  ${typographyCss(Typography.title2.bold)}
 `;
 
 const FormContent = styled.div`
