@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useEffect, useRef, useState } from 'react';
 import { Router } from 'next/router';
 import { useQuery } from '@tanstack/react-query';
 import styled from 'styled-components';
@@ -7,6 +7,7 @@ import { UserProfile } from '@@types/request';
 import LogoutButton from '@mypage/component/LogoutButton';
 import Sidebar, { PATHNAME_TO_ACTIVE, SidebarActive } from '@mypage/component/Sidebar';
 import PageLoadingGate from '@common/pageGate/PageLoadingGate';
+import PageScrollbar from '@common/pageScrollbar/PageScrollbar';
 import { IcChevronRight } from '@assets/svg';
 import { getUserProfile } from 'src/apis/account';
 import useTokenStore from 'src/store/useTokenStore';
@@ -73,6 +74,7 @@ const MyPageShell = ({
   }, []);
 
   const displayedActive = pendingActive ?? active;
+  const contentRef = useRef<HTMLDivElement>(null);
 
   return (
     <Wrapper>
@@ -87,12 +89,13 @@ const MyPageShell = ({
           <span>{BREADCRUMB_LABEL[displayedActive]}</span>
         </Breadcrumb>
       </Header>
-      <Content>
+      <Content ref={contentRef}>
         <SidebarSlot>
           <Sidebar active={displayedActive} isAdmin={showAdminMenu} />
         </SidebarSlot>
         <Main>{isRouting ? <PageLoadingGate /> : children}</Main>
       </Content>
+      {!isRouting && <PageScrollbar contentRef={contentRef} />}
     </Wrapper>
   );
 };

@@ -155,7 +155,6 @@ const StyledTextarea = styled.textarea<{ $resize: TextareaResize; $hasStatusIcon
   background: none;
   resize: ${(props) => getResizeCss(props.$resize)};
   color: ${Label.normal};
-  pointer-events: ${(props) => (props.$readOnly ? 'none' : 'auto')};
   cursor: ${(props) => (props.$readOnly ? 'default' : 'text')};
   ${typographyCss(Typography.body1Reading.regular)}
 

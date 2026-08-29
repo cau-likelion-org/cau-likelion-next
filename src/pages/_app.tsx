@@ -81,6 +81,32 @@ function AppContent({ Component, pageProps }: AppPropsWithLayout) {
     };
   }, []);
 
+  // iOS Safari는 scroll-snap-type이 켜진 채로 SPA 네비게이션하면 스크롤 리셋을 스냅 위치로 되받아친다
+  useEffect(() => {
+    const html = document.documentElement;
+    const disableSnap = (_url: string, { shallow }: { shallow: boolean }) => {
+      if (shallow) return;
+      html.style.scrollSnapType = 'none';
+    };
+    const restoreSnap = (_url: string, { shallow }: { shallow: boolean }) => {
+      if (shallow) return;
+      window.scrollTo(0, 0);
+      requestAnimationFrame(() => {
+        html.style.scrollSnapType = '';
+      });
+    };
+
+    Router.events.on('routeChangeStart', disableSnap);
+    Router.events.on('routeChangeComplete', restoreSnap);
+    Router.events.on('routeChangeError', restoreSnap);
+
+    return () => {
+      Router.events.off('routeChangeStart', disableSnap);
+      Router.events.off('routeChangeComplete', restoreSnap);
+      Router.events.off('routeChangeError', restoreSnap);
+    };
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <Head>

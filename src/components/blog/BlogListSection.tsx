@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { useQuery } from '@tanstack/react-query';
 import PageHeader from '@common/pageHeader/PageHeader';
@@ -8,6 +8,7 @@ import CircularLoading from '@common/loading/CircularLoading';
 import EmptyState from '@common/emptyState/EmptyState';
 import PaginationNavigation from '@common/pagination/PaginationNavigation';
 import TextField from '@common/textField/TextField';
+import PageScrollbar from '@common/pageScrollbar/PageScrollbar';
 import { IcSearch } from '@assets/svg';
 import useListboxSelect from 'src/hooks/useListboxSelect';
 import { getBlogs, BlogCategory } from 'src/apis/blog';
@@ -31,6 +32,7 @@ const CATEGORY_OPTIONS = [ALL_OPTION, ...Object.values(CATEGORY_LABEL)];
 const PAGE_SIZE = 10;
 
 const BlogListSection = () => {
+  const contentRef = useRef<HTMLDivElement>(null);
   const { data: blogs, isLoading, isError } = useQuery({ queryKey: ['blogs'], queryFn: getBlogs });
   const [generation, setGeneration] = useState(ALL_OPTION);
   const [category, setCategory] = useState(ALL_OPTION);
@@ -55,79 +57,87 @@ const BlogListSection = () => {
   const pagePosts = posts.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   return (
-    <Wrapper>
-      <Header>
-        <Intro title="블로그" subtitle="멋사인들이 직접 쓴 프로젝트·취업 후기" />
-        <FilterRow>
-          <FilterSelect
-            label="기수 구분"
-            value={generation}
-            options={generationOptions}
-            isOpen={openFilter === 'generation'}
-            onToggle={() => setOpenFilter((prev) => (prev === 'generation' ? null : 'generation'))}
-            onClose={() => setOpenFilter(null)}
-            onSelect={(option) => {
-              setGeneration(option);
-              setOpenFilter(null);
-              setPage(1);
-            }}
-          />
-          <FilterSelect
-            label="내용 구분"
-            value={category}
-            options={CATEGORY_OPTIONS}
-            isOpen={openFilter === 'category'}
-            onToggle={() => setOpenFilter((prev) => (prev === 'category' ? null : 'category'))}
-            onClose={() => setOpenFilter(null)}
-            onSelect={(option) => {
-              setCategory(option);
-              setOpenFilter(null);
-              setPage(1);
-            }}
-          />
-          <SearchField
-            heading="검색"
-            placeholder="텍스트를 입력해 주세요."
-            leadingIcon={<IcSearch width={22} height={22} style={{ color: Label.normal }} />}
-            value={keyword}
-            onChange={(event) => {
-              setKeyword(event.target.value);
-              setPage(1);
-            }}
-          />
-        </FilterRow>
-      </Header>
+    <>
+      <Intro title="블로그" subtitle="멋사인들이 직접 쓴 프로젝트·취업 후기" />
+      <Wrapper ref={contentRef}>
+        <Header>
+          <FilterRow>
+            <FilterSelect
+              label="기수 구분"
+              value={generation}
+              options={generationOptions}
+              isOpen={openFilter === 'generation'}
+              onToggle={() => setOpenFilter((prev) => (prev === 'generation' ? null : 'generation'))}
+              onClose={() => setOpenFilter(null)}
+              onSelect={(option) => {
+                setGeneration(option);
+                setOpenFilter(null);
+                setPage(1);
+              }}
+            />
+            <FilterSelect
+              label="내용 구분"
+              value={category}
+              options={CATEGORY_OPTIONS}
+              isOpen={openFilter === 'category'}
+              onToggle={() => setOpenFilter((prev) => (prev === 'category' ? null : 'category'))}
+              onClose={() => setOpenFilter(null)}
+              onSelect={(option) => {
+                setCategory(option);
+                setOpenFilter(null);
+                setPage(1);
+              }}
+            />
+            <SearchField
+              heading="검색"
+              placeholder="텍스트를 입력해 주세요."
+              leadingIcon={<IcSearch width={22} height={22} style={{ color: Label.normal }} />}
+              value={keyword}
+              onChange={(event) => {
+                setKeyword(event.target.value);
+                setPage(1);
+              }}
+            />
+          </FilterRow>
+        </Header>
 
-      {isLoading ? (
-        <LoadingWrapper>
-          <CircularLoading size={32} />
-        </LoadingWrapper>
-      ) : isError && posts.length === 0 ? (
-        <EmptyState variant="error" />
-      ) : posts.length === 0 ? (
-        <EmptyState message="조건에 맞는 블로그 글이 없습니다." />
-      ) : (
-        <>
-          <PostList>
-            {pagePosts.map((post) => (
-              <BlogCard
-                key={post.id}
-                title={post.title}
-                description={post.summary}
-                badges={[`${post.generationNumber}기`, post.writer, CATEGORY_LABEL[post.category]]}
-                date={toDateString(new Date(post.publishedDate ?? post.createdAt), '/')}
-                url={post.url}
-                thumbnailUrl={post.thumbnailUrl}
-                thumbnailAlt={post.title}
+        {isLoading ? (
+          <LoadingWrapper>
+            <CircularLoading size={32} />
+          </LoadingWrapper>
+        ) : isError && posts.length === 0 ? (
+          <EmptyState variant="error" />
+        ) : posts.length === 0 ? (
+          <EmptyState message="조건에 맞는 블로그 글이 없습니다." />
+        ) : (
+          <>
+            <PostList>
+              {pagePosts.map((post) => (
+                <BlogCard
+                  key={post.id}
+                  title={post.title}
+                  description={post.summary}
+                  badges={[`${post.generationNumber}기`, post.writer, CATEGORY_LABEL[post.category]]}
+                  date={toDateString(new Date(post.publishedDate ?? post.createdAt), '/')}
+                  url={post.url}
+                  thumbnailUrl={post.thumbnailUrl}
+                  thumbnailAlt={post.title}
+                />
+              ))}
+            </PostList>
+            <PaginationRow>
+              <PaginationNavigation
+                variant="extended"
+                currentPage={page}
+                totalPage={totalPage}
+                onPageChange={setPage}
               />
-            ))}
-          </PostList>
-          <PaginationRow>
-            <PaginationNavigation variant="extended" currentPage={page} totalPage={totalPage} onPageChange={setPage} />
-          </PaginationRow>
-        </>
-      )}
-    </Wrapper>
+            </PaginationRow>
+          </>
+        )}
+      </Wrapper>
+      <PageScrollbar contentRef={contentRef} />
+    </>
   );
 };
 
@@ -209,7 +219,13 @@ const Header = styled.div`
 `;
 
 const Intro = styled(PageHeader)`
+  ${containerCss}
   gap: 24px;
+  padding-bottom: 52px;
+
+  ${media.xs} {
+    padding-bottom: 32px;
+  }
 
   @media (max-width: 600px) {
     padding-top: 52px;

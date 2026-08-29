@@ -5,7 +5,7 @@ import { IcChevronDown } from '@assets/svg';
 import { getFaqs } from 'src/apis/faq';
 import LinearLoading from '@common/loading/LinearLoading';
 import EmptyState from '@common/emptyState/EmptyState';
-import { Black, BackgroundWhite, Line, Orange } from '@utils/constant/color';
+import { Black, BackgroundWhite, Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { MOBILE } from '@home/common/responsive';
 
@@ -127,6 +127,7 @@ const ChevronIcon = styled(IcChevronDown)<{ $open: boolean }>`
   flex-shrink: 0;
   width: 24px;
   height: 24px;
+  color: ${Label.normal};
   transform: rotate(${(props) => (props.$open ? '180deg' : '0deg')});
 `;
 
