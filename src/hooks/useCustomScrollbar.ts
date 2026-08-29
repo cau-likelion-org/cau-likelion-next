@@ -1,8 +1,10 @@
 import { DependencyList, RefObject, useEffect, useState } from 'react';
 
 // 네이티브 ::-webkit-scrollbar는 브라우저 크롬이라 카드의 overflow:hidden/border-radius에 묶이지
-// 않아 모서리를 뚫고 나온다. 직접 그리는 커스텀 오버레이로 대체하되, 썸 길이는 네이티브와 동일하게
-// 실제 콘텐츠 비율(clientHeight/scrollHeight)로 계산한다.
+// 않아 모서리를 뚫고 나온다. 직접 그리는 커스텀 오버레이로 대체한다.
+// 모달 스크롤바의 썸은 드래그 없는 위치 표시용이라 콘텐츠 비율 대신 디자인에 정의된 고정 길이를 쓴다.
+const THUMB_HEIGHT = 70;
+// 페이지 전체 스크롤바(PageScrollbar)는 네이티브처럼 콘텐츠 비율로 썸 길이를 계산하되 최소 길이를 둔다.
 const THUMB_MIN_HEIGHT = 24;
 // ScrollbarTrack의 top/bottom 여백과 반드시 같은 값이어야 한다 — 다르면 썸 위치 계산이 트랙 실제
 // 길이와 어긋나 스크롤 끝에서 썸이 트랙 밖으로 튀어나간다.
@@ -13,8 +15,9 @@ export interface CustomScrollbarState {
   thumbTop: number;
 }
 
-// trackHeight는 시각적 트랙 길이(헤더/푸터를 피해 clientHeight보다 짧을 수 있음) — 진행률(scrollProgress)은
-// 항상 실제 clientHeight 기준이어야 스크롤 끝에서 썸도 트랙 끝까지 도달한다.
+// PageScrollbar(페이지 전체 스크롤)에서 쓰는 콘텐츠 비율 기반 계산. trackHeight는 시각적 트랙
+// 길이(헤더/푸터를 피해 clientHeight보다 짧을 수 있음) — 진행률(scrollProgress)은 항상 실제
+// clientHeight 기준이어야 스크롤 끝에서 썸도 트랙 끝까지 도달한다.
 export const computeScrollbarState = (
   scrollTop: number,
   scrollHeight: number,
@@ -48,7 +51,16 @@ const useCustomScrollbar = (
 
     const update = () => {
       const { scrollTop, scrollHeight, clientHeight } = scrollEl;
-      setScrollbar(computeScrollbarState(scrollTop, scrollHeight, clientHeight));
+      if (scrollHeight <= clientHeight) {
+        setScrollbar(null);
+        return;
+      }
+      const trackHeight = clientHeight - SCROLLBAR_TRACK_INSET * 2;
+      const thumbHeight = Math.min(THUMB_HEIGHT, trackHeight);
+      const maxThumbTop = trackHeight - thumbHeight;
+      const scrollableDistance = scrollHeight - clientHeight;
+      const thumbTop = scrollableDistance > 0 ? (scrollTop / scrollableDistance) * maxThumbTop : 0;
+      setScrollbar({ thumbHeight, thumbTop });
     };
 
     update();

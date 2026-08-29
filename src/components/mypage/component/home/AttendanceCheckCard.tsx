@@ -10,6 +10,9 @@ import { BackgroundWhite, Black, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { media } from '@utils/constant/breakpoint';
 
+const INVALID_INPUT_SERVER_MESSAGE = '입력값이 올바르지 않습니다';
+const WRONG_PASSWORD_MESSAGE = '비밀번호가 올바르지 않습니다.';
+
 // 출석체크 대상이 아닌 역할(운영진·회장·관리자·어른사자)은 조회 결과와 무관하게 비활성으로 보여준다
 const AttendanceCheckCard = ({ isTarget = true }: { isTarget?: boolean }) => {
   const tokenState = useTokenStore((state) => state.token);
@@ -40,7 +43,9 @@ const AttendanceCheckCard = ({ isTarget = true }: { isTarget?: boolean }) => {
       queryClient.invalidateQueries({ queryKey: ['myScore'] });
     },
     onError: (error) => {
-      setErrorMessage(getServerMessage(error) ?? '입력값이 올바르지 않습니다.');
+      const serverMessage = getServerMessage(error)?.trim();
+      const isWrongPassword = !serverMessage || serverMessage.startsWith(INVALID_INPUT_SERVER_MESSAGE);
+      setErrorMessage(isWrongPassword ? WRONG_PASSWORD_MESSAGE : serverMessage);
     },
   });
 

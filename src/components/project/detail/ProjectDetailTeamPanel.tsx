@@ -54,9 +54,9 @@ const Panel = styled.div`
 
 const Row = styled.div`
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
   width: 100%;
 `;
 
@@ -74,6 +74,5 @@ const TeamName = styled.span`
 const ChipRow = styled.div`
   display: flex;
   flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: 6px;
+  gap: 10px;
 `;
