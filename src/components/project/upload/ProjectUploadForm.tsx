@@ -49,7 +49,7 @@ import useInput from 'src/hooks/useInput';
 import useListboxSelect from 'src/hooks/useListboxSelect';
 import useScrollToFirstError from 'src/hooks/useScrollToFirstError';
 import { NUMERIC_ONLY_REGEX, PROJECT_CATEGORY_OPTIONS } from '@utils/constant';
-import { AccentTint, BackgroundColor, Fill, Label, Line, Orange, State } from '@utils/constant/color';
+import { AccentTint, BackgroundColor, Black, Fill, Label, Line, Orange, State } from '@utils/constant/color';
 import { isUnfilled } from '@utils/index';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { containerCss } from '@utils/constant/breakpoint';
@@ -495,6 +495,7 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
   return (
     <Wrapper ref={formRef}>
       <BackHeader label="프로젝트 목록으로 돌아가기" onClick={handleCancel} />
+      <PageTitle>{isEditMode ? '프로젝트 수정하기' : '프로젝트 추가하기'}</PageTitle>
       <FormContent>
         <ImageUploadGroup>
           <MainThumbnail as={images[featuredIndex] ? 'div' : 'label'} $hasImage={!!images[featuredIndex]}>
@@ -1063,6 +1064,12 @@ const Wrapper = styled.div`
   align-items: flex-start;
   ${containerCss}
   padding-bottom: 80px;
+`;
+
+const PageTitle = styled.h2`
+  margin: 0 0 42px;
+  color: ${Black.b900};
+  ${typographyCss(Typography.display3.bold)}
 `;
 
 const FormContent = styled.div`
