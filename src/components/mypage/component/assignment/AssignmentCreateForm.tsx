@@ -18,7 +18,7 @@ import { isUnfilled } from '@utils/index';
 import { IcCalendar, IcCircleExclamation } from '@assets/svg';
 import { BackgroundWhite, Black, Fill, Label, Line, Material, Orange, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
-import { containerCss } from '@utils/constant/breakpoint';
+import { containerCss, media } from '@utils/constant/breakpoint';
 
 // 한글이 하나라도 섞이면 16자, 순수 영문·숫자면 20자 (모두 공백 포함) — 프로젝트 서비스명과 동일한 규칙
 const TITLE_MAX_KO = 16;
@@ -535,12 +535,24 @@ const CardBottom = styled.div`
   align-items: flex-end;
   justify-content: space-between;
   width: 100%;
+
+  ${media.xs} {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 42px;
+  }
 `;
 
 const BottomLeft = styled.div`
   display: flex;
   align-items: flex-end;
   gap: 24px;
+
+  ${media.xs} {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
 `;
 
 const SelectColumn = styled.div`
@@ -549,6 +561,10 @@ const SelectColumn = styled.div`
   flex-direction: column;
   gap: 8px;
   width: 160px;
+
+  ${media.xs} {
+    width: 100%;
+  }
 `;
 
 const DateColumn = styled.div`
@@ -557,6 +573,10 @@ const DateColumn = styled.div`
   flex-direction: column;
   gap: 8px;
   width: 236px;
+
+  ${media.xs} {
+    width: 100%;
+  }
 `;
 
 const DateBox = styled.div<{ $invalid: boolean }>`
