@@ -81,6 +81,7 @@ const SectionTitle = styled.p`
   margin: 0;
   width: 100%;
   text-align: center;
+  word-break: keep-all;
   color: #ffffff;
   ${typographyCss(Typography.display2.bold)}
 `;
