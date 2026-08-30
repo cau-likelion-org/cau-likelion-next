@@ -94,7 +94,7 @@ const BlogSection = ({
     pendingScrollIdRef.current = newItem.id;
     setGenerationFilter(ALL_OPTION);
     setWriterQuery('');
-    onChange([...items, newItem]);
+    onChange([newItem, ...items]);
   };
 
   return (
