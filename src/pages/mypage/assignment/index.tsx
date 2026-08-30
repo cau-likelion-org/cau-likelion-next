@@ -92,11 +92,15 @@ const MyPageAssignment = () => {
   const [toastMessage, setToastMessage] = useState('');
   useEffect(() => {
     const createdWeek = sessionStorage.getItem('assignmentCreatedWeek');
-    const isSubmitted = sessionStorage.getItem('assignmentSubmitted');
-    if (!createdWeek && !isSubmitted) return;
+    const submitted = sessionStorage.getItem('assignmentSubmitted');
+    if (!createdWeek && !submitted) return;
     sessionStorage.removeItem('assignmentCreatedWeek');
     sessionStorage.removeItem('assignmentSubmitted');
-    const message = createdWeek ? `${createdWeek}주차 과제가 생성되었습니다.` : '제출이 완료되었습니다.';
+    const message = createdWeek
+      ? `${createdWeek}주차 과제가 생성되었습니다.`
+      : submitted === 'edited'
+        ? '수정이 완료되었습니다.'
+        : '제출이 완료되었습니다.';
     const frame = requestAnimationFrame(() => setToastMessage(message));
     return () => cancelAnimationFrame(frame);
   }, []);
@@ -121,7 +125,10 @@ const MyPageAssignment = () => {
   const [selectedPartName, setSelectedPartName] = useState('');
   const myPartName = userProfile?.partName ?? '';
   const ownPartName = partOptions.includes(myPartName) ? myPartName : '';
-  const currentPartName = selectedPartName || ownPartName || partOptions[0] || '';
+  // 상세페이지에서 돌아올 때 보고 있던 파트를 유지한다
+  const queryPartId = router.query.partId ? Number(router.query.partId) : null;
+  const queryPartName = parts.find((part) => part.id === queryPartId)?.name ?? '';
+  const currentPartName = selectedPartName || queryPartName || ownPartName || partOptions[0] || '';
   const selectedPartId = parts.find((part) => part.name === currentPartName)?.id;
   const canCreateAssignment = !isPresident || (!!ownPartName && currentPartName === ownPartName);
 
