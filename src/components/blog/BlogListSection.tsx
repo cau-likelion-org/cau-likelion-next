@@ -90,7 +90,7 @@ const BlogListSection = () => {
             />
             <SearchField
               heading="검색"
-              placeholder="텍스트를 입력해 주세요."
+              placeholder="제목 또는 작성자명을 입력해 주세요."
               leadingIcon={<IcSearch width={22} height={22} style={{ color: Label.normal }} />}
               value={keyword}
               onChange={(event) => {
