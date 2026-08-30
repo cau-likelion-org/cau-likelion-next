@@ -156,7 +156,7 @@ const AssignmentSubmit = () => {
       setRetryIds(failedIds);
       return;
     }
-    sessionStorage.setItem('assignmentSubmitted', '1');
+    sessionStorage.setItem('assignmentSubmitted', actionLabel === '수정하기' ? 'edited' : '1');
     handleClose();
   };
 
