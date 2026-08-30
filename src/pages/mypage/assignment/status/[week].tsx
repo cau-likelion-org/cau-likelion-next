@@ -150,7 +150,10 @@ const MyPageAssignmentDetail = () => {
 
   return (
     <Page>
-      <BackHeader label="과제 목록으로 돌아가기" onClick={() => router.push('/mypage/assignment')} />
+      <BackHeader
+        label="과제 목록으로 돌아가기"
+        onClick={() => router.push({ pathname: '/mypage/assignment', query: partId != null ? { partId } : undefined })}
+      />
 
       <WeekRow>
         <WeekTitle>{week}주차 세션 과제</WeekTitle>
