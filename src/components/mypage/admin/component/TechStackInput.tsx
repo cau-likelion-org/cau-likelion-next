@@ -2,7 +2,8 @@ import { ChangeEvent, useState } from 'react';
 import styled from 'styled-components';
 
 import Chip from '@common/chip/Chip';
-import { Label, Line } from '@utils/constant/color';
+import { IcCircleExclamation } from '@assets/svg';
+import { Label, Line, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 const TechStackInput = ({
@@ -10,11 +11,13 @@ const TechStackInput = ({
   onChange,
   placeholder = '이름을 입력해 주세요.',
   disabled = false,
+  invalid = false,
 }: {
   value: string[];
   onChange: (next: string[]) => void;
   placeholder?: string;
   disabled?: boolean;
+  invalid?: boolean;
 }) => {
   const [draft, setDraft] = useState('');
 
@@ -43,7 +46,7 @@ const TechStackInput = ({
   };
 
   return (
-    <Wrapper>
+    <Wrapper $invalid={invalid}>
       {value.map((tag) =>
         disabled ? (
           <Chip key={tag} size="xsmall">
@@ -55,14 +58,26 @@ const TechStackInput = ({
           </Chip>
         ),
       )}
-      {!disabled && <Input value={draft} onChange={handleChange} placeholder={value.length === 0 ? placeholder : ''} />}
+      {!disabled && (
+        <Input
+          value={draft}
+          onChange={handleChange}
+          placeholder={value.length === 0 ? placeholder : ''}
+          aria-invalid={invalid}
+        />
+      )}
+      {invalid && (
+        <IconSlot>
+          <IcCircleExclamation width={22} height={22} />
+        </IconSlot>
+      )}
     </Wrapper>
   );
 };
 
 export default TechStackInput;
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{ $invalid: boolean }>`
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -71,9 +86,10 @@ const Wrapper = styled.div`
   min-height: 24px;
   padding: 12px;
   border-radius: 12px;
-  box-shadow:
-    inset 0 0 0 1px ${Line.normal},
-    0 1px 2px -1px rgba(23, 23, 23, 0.1);
+  box-shadow: ${(props) =>
+    props.$invalid
+      ? 'inset 0 0 0 1px rgba(255, 0, 0, 0.28), 0 1px 2px -1px rgba(23, 23, 23, 0.1)'
+      : `inset 0 0 0 1px ${Line.normal}, 0 1px 2px -1px rgba(23, 23, 23, 0.1)`};
 
   &:focus-within {
     box-shadow: inset 0 0 0 2px rgba(71, 172, 255, 0.43);
@@ -97,4 +113,10 @@ const Input = styled.input`
 const RemoveIcon = styled.span`
   font-size: 12px;
   line-height: 1;
+`;
+
+const IconSlot = styled.span`
+  display: flex;
+  flex-shrink: 0;
+  color: ${State.error};
 `;

@@ -101,6 +101,7 @@ const TrackSection = ({
                 value={item.techStack}
                 onChange={(techStack) => updateItem(item.id, { techStack })}
                 disabled={disabled}
+                invalid={showErrors && item.techStack.length === 0}
               />
               {showErrors && item.techStack.length === 0 && <ErrorText>기술 스택을 입력해 주세요.</ErrorText>}
             </StackField>

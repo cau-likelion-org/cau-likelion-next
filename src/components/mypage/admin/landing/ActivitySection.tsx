@@ -11,7 +11,7 @@ import CharCount from '@common/charCount/CharCount';
 import useListboxSelect from 'src/hooks/useListboxSelect';
 import { isUnfilled } from '@utils/index';
 import { PageNavigation } from 'src/apis/activity';
-import { IcCircleCloseOutline, IcImage } from '@assets/svg';
+import { IcCircleCloseOutline, IcCircleExclamation, IcImage } from '@assets/svg';
 import { BackgroundWhite, Label, Line, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { createId } from '../utils';
@@ -171,6 +171,9 @@ const ActivityCard = ({
           <ImageInputWrapper
             onClick={() => isImageInteractive && imageInputRef.current?.click()}
             $clickable={isImageInteractive}
+            $invalid={showErrors && isUnfilled(item.imageName)}
+            tabIndex={-1}
+            aria-invalid={showErrors && isUnfilled(item.imageName)}
           >
             <IconSlot>
               <IcImage width={22} height={22} />
@@ -193,6 +196,11 @@ const ActivityCard = ({
               >
                 <IcCircleCloseOutline width={20} height={20} />
               </ClearButton>
+            )}
+            {showErrors && isUnfilled(item.imageName) && !isUploading && (
+              <IconSlot $color={State.error}>
+                <IcCircleExclamation width={22} height={22} />
+              </IconSlot>
             )}
           </ImageInputWrapper>
           <HiddenInput
@@ -336,7 +344,7 @@ const ImageFieldHeading = styled.p`
   ${typographyCss(Typography.label1Normal.bold)}
 `;
 
-const ImageInputWrapper = styled.div<{ $clickable: boolean }>`
+const ImageInputWrapper = styled.div<{ $clickable: boolean; $invalid: boolean }>`
   display: flex;
   align-items: center;
   gap: 8px;
@@ -344,16 +352,17 @@ const ImageInputWrapper = styled.div<{ $clickable: boolean }>`
   min-height: 24px;
   padding: 12px;
   border-radius: 12px;
-  box-shadow:
-    inset 0 0 0 1px ${Line.normal},
-    0 1px 2px -1px rgba(23, 23, 23, 0.1);
+  box-shadow: ${(props) =>
+    props.$invalid
+      ? 'inset 0 0 0 1px rgba(255, 0, 0, 0.28), 0 1px 2px -1px rgba(23, 23, 23, 0.1)'
+      : `inset 0 0 0 1px ${Line.normal}, 0 1px 2px -1px rgba(23, 23, 23, 0.1)`};
   cursor: ${(props) => (props.$clickable ? 'pointer' : 'default')};
 `;
 
-const IconSlot = styled.span`
+const IconSlot = styled.span<{ $color?: string }>`
   display: flex;
   flex-shrink: 0;
-  color: ${Label.alternative};
+  color: ${(props) => props.$color ?? Label.alternative};
 `;
 
 const ImageFileName = styled.p<{ $empty: boolean }>`
