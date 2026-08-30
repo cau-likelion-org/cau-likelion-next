@@ -53,7 +53,15 @@ const TechStackInput = ({
             {tag}
           </Chip>
         ) : (
-          <Chip key={tag} size="xsmall" trailingIcon={<RemoveIcon>×</RemoveIcon>} onClick={() => removeTag(tag)}>
+          <Chip
+            key={tag}
+            size="xsmall"
+            trailingIcon={
+              <RemoveIcon type="button" onClick={() => removeTag(tag)} aria-label={`${tag} 삭제`}>
+                ×
+              </RemoveIcon>
+            }
+          >
             {tag}
           </Chip>
         ),
@@ -110,9 +118,14 @@ const Input = styled.input`
   }
 `;
 
-const RemoveIcon = styled.span`
+const RemoveIcon = styled.button`
+  border: none;
+  background: none;
+  padding: 0;
   font-size: 12px;
   line-height: 1;
+  color: inherit;
+  cursor: pointer;
 `;
 
 const IconSlot = styled.span`
