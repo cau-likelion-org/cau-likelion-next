@@ -21,8 +21,15 @@ export interface TrackIntroItem {
   techStack: string[];
 }
 
+const TECH_STACK_MAX_LENGTH = 10;
+const isTechStackTooLong = (techStack: string[]) => techStack.some((tag) => tag.length > TECH_STACK_MAX_LENGTH);
+
 export const isTrackItemInvalid = (item: TrackIntroItem) =>
-  isUnfilled(item.nameKo) || isUnfilled(item.nameEn) || isUnfilled(item.description) || item.techStack.length === 0;
+  isUnfilled(item.nameKo) ||
+  isUnfilled(item.nameEn) ||
+  isUnfilled(item.description) ||
+  item.techStack.length === 0 ||
+  isTechStackTooLong(item.techStack);
 
 const createEmptyItem = (): TrackIntroItem => ({
   id: createId(),
@@ -101,8 +108,12 @@ const TrackSection = ({
                 value={item.techStack}
                 onChange={(techStack) => updateItem(item.id, { techStack })}
                 disabled={disabled}
+                invalid={showErrors && (item.techStack.length === 0 || isTechStackTooLong(item.techStack))}
               />
               {showErrors && item.techStack.length === 0 && <ErrorText>기술 스택을 입력해 주세요.</ErrorText>}
+              {showErrors && item.techStack.length > 0 && isTechStackTooLong(item.techStack) && (
+                <ErrorText>기술스택은 최대 {TECH_STACK_MAX_LENGTH}자까지 입력 가능합니다.</ErrorText>
+              )}
             </StackField>
             {!disabled && <RemoveCardButton onClick={() => setPendingRemoveId(item.id)} />}
           </StackRow>

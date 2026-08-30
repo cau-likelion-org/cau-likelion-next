@@ -68,7 +68,7 @@ const ProjectSection = ({
 
   return (
     <Section>
-      <TitleRow>
+      <TitleRow tabIndex={-1} aria-invalid={showErrors && isProjectSelectionInvalid(projects)}>
         <Title>프로젝트</Title>
         {showErrors && isProjectSelectionInvalid(projects) && (
           <ErrorText>노출 프로젝트는 최소 {MIN_EXPOSED_PROJECT_COUNT}개 이상 선택해 주세요.</ErrorText>
