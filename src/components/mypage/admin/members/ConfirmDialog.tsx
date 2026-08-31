@@ -1,8 +1,9 @@
 import styled from 'styled-components';
 
+import ModalOverlay from '@common/modalOverlay/ModalOverlay';
 import ScrollArea from '@common/scrollArea/ScrollArea';
 import useScrollLock from 'src/hooks/useScrollLock';
-import { BackgroundWhite, Label, Material, Orange } from '@utils/constant/color';
+import { BackgroundWhite, Label, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 interface ConfirmDialogProps {
@@ -16,8 +17,7 @@ const ConfirmDialog = ({ title, confirmLabel = '삭제', onCancel, onConfirm }: 
   useScrollLock();
 
   return (
-    <Overlay role="alertdialog" aria-modal="true" aria-label={title}>
-      <Dimmer onClick={onCancel} />
+    <ModalOverlay role="alertdialog" aria-modal="true" aria-label={title} onDimmerClick={onCancel}>
       <Modal>
         <InformationScroll>
           <Information>
@@ -33,28 +33,11 @@ const ConfirmDialog = ({ title, confirmLabel = '삭제', onCancel, onConfirm }: 
           </TextButton>
         </Actions>
       </Modal>
-    </Overlay>
+    </ModalOverlay>
   );
 };
 
 export default ConfirmDialog;
-
-const Overlay = styled.div`
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 20px;
-  z-index: 1000;
-`;
-
-const Dimmer = styled.div`
-  position: absolute;
-  inset: 0;
-  background-color: ${Material.dimmer};
-  opacity: 0.43;
-`;
 
 const Modal = styled.div`
   position: relative;

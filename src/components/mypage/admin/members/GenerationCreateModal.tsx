@@ -4,12 +4,13 @@ import styled from 'styled-components';
 import { GenerationCreateRequestDto } from '@@types/request';
 import TextField from '@common/textField/TextField';
 import Button from '@common/button/Button';
+import ModalOverlay from '@common/modalOverlay/ModalOverlay';
 import ScrollArea from '@common/scrollArea/ScrollArea';
 import TechStackInput from '@mypage/admin/component/TechStackInput';
 import useScrollLock from 'src/hooks/useScrollLock';
 import { NUMERIC_ONLY_REGEX } from '@utils/constant';
 import { isUnfilled } from '@utils/index';
-import { BackgroundWhite, Label, Material, State, Status } from '@utils/constant/color';
+import { BackgroundWhite, Label, State, Status } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 interface GenerationCreateModalProps {
@@ -37,8 +38,7 @@ const GenerationCreateModal = ({ onClose, onSubmit, isSubmitting = false }: Gene
   };
 
   return (
-    <Overlay role="dialog" aria-modal="true" aria-label="기수/파트 생성">
-      <Dimmer onClick={onClose} />
+    <ModalOverlay role="dialog" aria-modal="true" aria-label="기수/파트 생성" onDimmerClick={onClose}>
       <Modal>
         <InformationScroll>
           <Information>
@@ -91,28 +91,11 @@ const GenerationCreateModal = ({ onClose, onSubmit, isSubmitting = false }: Gene
           </ModalActions>
         </Actions>
       </Modal>
-    </Overlay>
+    </ModalOverlay>
   );
 };
 
 export default GenerationCreateModal;
-
-const Overlay = styled.div`
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 20px;
-  z-index: 1000;
-`;
-
-const Dimmer = styled.div`
-  position: absolute;
-  inset: 0;
-  background-color: ${Material.dimmer};
-  opacity: 0.43;
-`;
 
 const Modal = styled.div`
   position: relative;

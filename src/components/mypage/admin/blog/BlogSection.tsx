@@ -9,6 +9,7 @@ import ProjectFilterSelect from '@project/projects/ProjectFilterSelect';
 import RemoveCardButton from '@mypage/component/RemoveCardButton';
 import { IcAdd, IcCircleClose, IcLink, IcSearch } from '@assets/svg';
 import useListboxSelect from 'src/hooks/useListboxSelect';
+import useListItems from 'src/hooks/useListItems';
 import { BlogCategory } from 'src/apis/blog';
 import { NUMERIC_ONLY_REGEX } from '@utils/constant';
 import { isUnfilled } from '@utils/index';
@@ -83,12 +84,9 @@ const BlogSection = ({
     }
   }, [items]);
 
-  const updateItem = (id: string, patch: Partial<BlogItem>) => {
-    onChange(items.map((item) => (item.id === id ? { ...item, ...patch } : item)));
-  };
+  const { updateItem, removeItem } = useListItems(items, onChange, createEmptyItem);
 
-  const removeItem = (id: string) => onChange(items.filter((item) => item.id !== id));
-
+  // 최상단 추가 + 스크롤/필터 리셋이 필요해 공용 훅의 addItem 대신 이 파일만의 동작을 유지한다
   const addItem = () => {
     const newItem = createEmptyItem();
     pendingScrollIdRef.current = newItem.id;

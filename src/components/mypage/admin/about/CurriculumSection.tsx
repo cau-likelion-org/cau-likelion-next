@@ -6,6 +6,7 @@ import TextField from '@common/textField/TextField';
 import CharCount from '@common/charCount/CharCount';
 import AddCardButton from '@mypage/component/AddCardButton';
 import RemoveCardButton from '@mypage/component/RemoveCardButton';
+import useListItems from 'src/hooks/useListItems';
 import { isUnfilled } from '@utils/index';
 import { BackgroundWhite, Black, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -53,17 +54,15 @@ const CurriculumSection = ({
 }) => {
   const activeTrack = tracks.find((track) => track.key === activeKey) ?? tracks[0];
 
-  const updateWeeks = (updater: (weeks: CurriculumWeekItem[]) => CurriculumWeekItem[]) => {
-    onChange(tracks.map((track) => (track.key === activeKey ? { ...track, weeks: updater(track.weeks) } : track)));
-  };
-
-  const updateWeek = (id: string, patch: Partial<CurriculumWeekItem>) => {
-    updateWeeks((weeks) => weeks.map((week) => (week.id === id ? { ...week, ...patch } : week)));
-  };
-
-  const removeWeek = (id: string) => updateWeeks((weeks) => weeks.filter((week) => week.id !== id));
-
-  const addWeek = () => updateWeeks((weeks) => [...weeks, createEmptyWeek()]);
+  const {
+    updateItem: updateWeek,
+    removeItem: removeWeek,
+    addItem: addWeek,
+  } = useListItems(
+    activeTrack?.weeks ?? [],
+    (weeks) => onChange(tracks.map((track) => (track.key === activeKey ? { ...track, weeks } : track))),
+    createEmptyWeek,
+  );
 
   // 커리큘럼은 트랙에 속하므로, 트랙이 없으면 입력 자체가 불가능하다
   if (!activeTrack) {

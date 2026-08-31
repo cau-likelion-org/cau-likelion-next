@@ -5,6 +5,7 @@ import TextField from '@common/textField/TextField';
 import AddCardButton from '@mypage/component/AddCardButton';
 import RemoveCardButton from '@mypage/component/RemoveCardButton';
 import CharCount from '@common/charCount/CharCount';
+import useListItems from 'src/hooks/useListItems';
 import { isUnfilled } from '@utils/index';
 import { BackgroundWhite, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -31,13 +32,7 @@ const FAQSection = ({
   showErrors: boolean;
   disabled?: boolean;
 }) => {
-  const updateItem = (id: string, patch: Partial<FaqItem>) => {
-    onChange(items.map((item) => (item.id === id ? { ...item, ...patch } : item)));
-  };
-
-  const removeItem = (id: string) => onChange(items.filter((item) => item.id !== id));
-
-  const addItem = () => onChange([...items, createEmptyItem()]);
+  const { updateItem, removeItem, addItem } = useListItems(items, onChange, createEmptyItem);
 
   return (
     <Section>

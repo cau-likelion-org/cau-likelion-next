@@ -8,6 +8,7 @@ import AddCardButton from '@mypage/component/AddCardButton';
 import RemoveCardButton from '@mypage/component/RemoveCardButton';
 import CharCount from '@common/charCount/CharCount';
 import TechStackInput from '@mypage/admin/component/TechStackInput';
+import useListItems from 'src/hooks/useListItems';
 import { isUnfilled } from '@utils/index';
 import { BackgroundWhite, Label, Line, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -53,13 +54,7 @@ const TrackSection = ({
   const [pendingRemoveId, setPendingRemoveId] = useState<string | null>(null);
   const [isAddAlertOpen, setIsAddAlertOpen] = useState(false);
 
-  const updateItem = (id: string, patch: Partial<TrackIntroItem>) => {
-    onChange(items.map((item) => (item.id === id ? { ...item, ...patch } : item)));
-  };
-
-  const removeItem = (id: string) => onChange(items.filter((item) => item.id !== id));
-
-  const addItem = () => onChange([...items, createEmptyItem()]);
+  const { updateItem, removeItem, addItem } = useListItems(items, onChange, createEmptyItem);
 
   return (
     <Section>

@@ -3,10 +3,11 @@ import styled from 'styled-components';
 
 import Button from '@common/button/Button';
 import Chip from '@common/chip/Chip';
+import ModalOverlay from '@common/modalOverlay/ModalOverlay';
 import ScrollArea from '@common/scrollArea/ScrollArea';
 import LinkifiedText from './LinkifiedText';
 import { IcCaretDown, IcCaretUp } from '@assets/svg';
-import { BackgroundColor, Fill, Label, Line, Material, State } from '@utils/constant/color';
+import { BackgroundColor, Fill, Label, Line, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import useFocusTrap from 'src/hooks/useFocusTrap';
 
@@ -53,8 +54,7 @@ const RecruitmentResendModal = ({
   }, [recipients, isRecipientListExpanded]);
 
   return (
-    <Overlay>
-      <Dimmer onClick={onClose} />
+    <ModalOverlay onDimmerClick={onClose}>
       <Modal ref={modalRef} role="dialog" aria-modal="true" aria-label="실패건 즉시 재발송" tabIndex={-1}>
         <InformationScroll>
           <Information>
@@ -119,28 +119,11 @@ const RecruitmentResendModal = ({
           </Button>
         </Actions>
       </Modal>
-    </Overlay>
+    </ModalOverlay>
   );
 };
 
 export default RecruitmentResendModal;
-
-const Overlay = styled.div`
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 20px;
-  z-index: 10000;
-`;
-
-const Dimmer = styled.div`
-  position: absolute;
-  inset: 0;
-  background-color: ${Material.dimmer};
-  opacity: 0.43;
-`;
 
 const Modal = styled.div`
   position: relative;

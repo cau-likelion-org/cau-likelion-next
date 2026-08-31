@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import styled from 'styled-components';
 
+import ModalOverlay from '@common/modalOverlay/ModalOverlay';
 import useScrollLock from 'src/hooks/useScrollLock';
-import { BackgroundWhite, Label, Line, Material, Orange } from '@utils/constant/color';
+import { BackgroundWhite, Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 interface AssignmentRejectModalProps {
@@ -18,8 +19,7 @@ const AssignmentRejectModal = ({ onClose, onSubmit }: AssignmentRejectModalProps
   const canSubmit = reason.trim().length > 0;
 
   return (
-    <Overlay role="dialog" aria-modal="true" aria-label="과제 반려 사유">
-      <Dimmer onClick={onClose} />
+    <ModalOverlay role="dialog" aria-modal="true" aria-label="과제 반려 사유" onDimmerClick={onClose}>
       <Modal>
         <Information>
           <ModalTitle>과제 반려 사유</ModalTitle>
@@ -40,28 +40,11 @@ const AssignmentRejectModal = ({ onClose, onSubmit }: AssignmentRejectModalProps
           </ModalButton>
         </ModalActions>
       </Modal>
-    </Overlay>
+    </ModalOverlay>
   );
 };
 
 export default AssignmentRejectModal;
-
-const Overlay = styled.div`
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 20px;
-  z-index: 1000;
-`;
-
-const Dimmer = styled.div`
-  position: absolute;
-  inset: 0;
-  background-color: ${Material.dimmer};
-  opacity: 0.43;
-`;
 
 const Modal = styled.div`
   position: relative;

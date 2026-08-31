@@ -1,9 +1,10 @@
 import { useRef } from 'react';
 import styled from 'styled-components';
 
+import ModalOverlay from '@common/modalOverlay/ModalOverlay';
 import ScrollArea from '@common/scrollArea/ScrollArea';
 import useFocusTrap from 'src/hooks/useFocusTrap';
-import { BackgroundColor, Label, Material, Orange, Status } from '@utils/constant/color';
+import { BackgroundColor, Label, Orange, Status } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 export type AlertActionVariant = 'primary' | 'assistive' | 'negative';
@@ -33,8 +34,7 @@ const Alert = ({ className, heading, body, actions, onDimmerClick }: AlertProps)
   useFocusTrap(modalRef, onDimmerClick ?? (() => {}));
 
   return (
-    <Overlay className={className} role="dialog" aria-modal="true">
-      <Dimmer onClick={onDimmerClick} />
+    <ModalOverlay className={className} role="dialog" aria-modal="true" onDimmerClick={onDimmerClick}>
       <Modal ref={modalRef} tabIndex={-1}>
         <InformationScroll>
           <Information>
@@ -55,28 +55,11 @@ const Alert = ({ className, heading, body, actions, onDimmerClick }: AlertProps)
           ))}
         </Actions>
       </Modal>
-    </Overlay>
+    </ModalOverlay>
   );
 };
 
 export default Alert;
-
-const Overlay = styled.div`
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 20px;
-  z-index: 10000;
-`;
-
-const Dimmer = styled.div`
-  position: absolute;
-  inset: 0;
-  background-color: ${Material.dimmer};
-  opacity: 0.43;
-`;
 
 const Modal = styled.div`
   position: relative;

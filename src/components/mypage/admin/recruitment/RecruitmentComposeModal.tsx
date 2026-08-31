@@ -5,10 +5,11 @@ import TextField from '@common/textField/TextField';
 import Textarea from '@common/textarea/Textarea';
 import Button from '@common/button/Button';
 import Chip from '@common/chip/Chip';
+import ModalOverlay from '@common/modalOverlay/ModalOverlay';
 import ScrollArea from '@common/scrollArea/ScrollArea';
 import { IcCalendar, IcCaretDown, IcCaretUp, IcClock } from '@assets/svg';
 import { isUnfilled } from '@utils/index';
-import { BackgroundColor, Label, Line, Material, Orange, State } from '@utils/constant/color';
+import { BackgroundColor, Label, Line, Orange, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import useFocusTrap from 'src/hooks/useFocusTrap';
 import useScrollToFirstError from 'src/hooks/useScrollToFirstError';
@@ -98,8 +99,7 @@ const RecruitmentComposeModal = ({
   };
 
   return (
-    <Overlay>
-      <Dimmer onClick={onClose} />
+    <ModalOverlay onDimmerClick={onClose}>
       <Modal ref={modalRef} role="dialog" aria-modal="true" aria-label="메일 작성" tabIndex={-1}>
         <InformationScroll>
           <Information>
@@ -273,28 +273,11 @@ const RecruitmentComposeModal = ({
           </ButtonGroup>
         </Actions>
       </Modal>
-    </Overlay>
+    </ModalOverlay>
   );
 };
 
 export default RecruitmentComposeModal;
-
-const Overlay = styled.div`
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 20px;
-  z-index: 10000;
-`;
-
-const Dimmer = styled.div`
-  position: absolute;
-  inset: 0;
-  background-color: ${Material.dimmer};
-  opacity: 0.43;
-`;
 
 const Modal = styled.div`
   position: relative;
@@ -504,7 +487,7 @@ const Actions = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  padding: 0 28px 20px;
+  padding: 20px 28px;
 `;
 
 const ButtonGroup = styled.div`

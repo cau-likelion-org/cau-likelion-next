@@ -2,6 +2,7 @@ import { useState } from 'react';
 import styled from 'styled-components';
 
 import Button from '@common/button/Button';
+import ModalOverlay from '@common/modalOverlay/ModalOverlay';
 import Radio from '@common/radio/Radio';
 import Select from '@common/select/Select';
 import ListboxOptions from '@common/select/ListboxOptions';
@@ -9,7 +10,7 @@ import useListboxSelect from 'src/hooks/useListboxSelect';
 import useScrollLock from 'src/hooks/useScrollLock';
 import { AssignmentStaffSummary } from 'src/apis/assignment';
 import { IcCalendar } from '@assets/svg';
-import { Fill, Label, Line, Material, State, BackgroundColor } from '@utils/constant/color';
+import { Fill, Label, Line, State, BackgroundColor } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 const formatDate = (value: string) => (value ? value.slice(0, 10).replace(/-/g, '/') : '');
@@ -64,8 +65,7 @@ const AssignmentDeadlineModal = ({
   const canSubmit = !!deadline && memberIds.length > 0 && !submitting;
 
   return (
-    <Overlay role="dialog" aria-modal="true" aria-label="개별 마감일 변경">
-      <Dimmer onClick={onClose} />
+    <ModalOverlay role="dialog" aria-modal="true" aria-label="개별 마감일 변경" onDimmerClick={onClose}>
       <Modal>
         <Information>
           <SelectField ref={wrapperRef} onKeyDownCapture={handleKeyDown} onBlur={handleBlur}>
@@ -152,28 +152,11 @@ const AssignmentDeadlineModal = ({
           </Button>
         </Actions>
       </Modal>
-    </Overlay>
+    </ModalOverlay>
   );
 };
 
 export default AssignmentDeadlineModal;
-
-const Overlay = styled.div`
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 20px;
-  z-index: 1000;
-`;
-
-const Dimmer = styled.div`
-  position: absolute;
-  inset: 0;
-  background-color: ${Material.dimmer};
-  opacity: 0.43;
-`;
 
 const Modal = styled.div`
   position: relative;
