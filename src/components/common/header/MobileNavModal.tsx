@@ -111,7 +111,7 @@ export default MobileNavModal;
 
 const Wrapper = styled.div<{ $open: boolean }>`
   position: fixed;
-  top: 60px;
+  top: calc(60px + env(safe-area-inset-top, 0px));
   left: 0;
   right: 0;
   bottom: 0;
