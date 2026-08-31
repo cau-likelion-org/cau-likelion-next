@@ -101,4 +101,5 @@ const Card = styled.div`
 
 const FieldWrapper = styled.div`
   flex: 0 0 160px;
+  min-width: 0;
 `;
