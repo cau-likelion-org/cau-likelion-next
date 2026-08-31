@@ -93,6 +93,7 @@ const Wrapper = styled.div<{ $isScrolled: boolean }>`
   top: 0;
   left: 0;
   right: 0;
+  padding-top: env(safe-area-inset-top, 0px);
   z-index: 9999;
   background-color: ${(props) => (props.$isScrolled ? 'rgba(255, 255, 255, 0.88)' : 'transparent')};
   backdrop-filter: ${(props) => (props.$isScrolled ? 'blur(32px)' : 'none')};

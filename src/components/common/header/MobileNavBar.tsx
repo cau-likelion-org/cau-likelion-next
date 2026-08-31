@@ -57,8 +57,9 @@ const Wrapper = styled.div`
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  height: 60px;
+  height: calc(60px + env(safe-area-inset-top, 0px));
   padding: 0 20px;
+  padding-top: env(safe-area-inset-top, 0px);
   background-color: ${BackgroundColor};
 
   ${media.sm} {
