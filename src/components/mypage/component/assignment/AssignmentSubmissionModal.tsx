@@ -1,10 +1,11 @@
 import styled from 'styled-components';
 
+import ModalOverlay from '@common/modalOverlay/ModalOverlay';
 import TextButton from '@common/textButton/TextButton';
 import { AssignmentSubmission } from 'src/apis/assignment';
 import useScrollLock from 'src/hooks/useScrollLock';
 import { IcDocument, IcDownload, IcLink } from '@assets/svg';
-import { BackgroundColor, Label, Line, Material } from '@utils/constant/color';
+import { BackgroundColor, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 interface AssignmentSubmissionModalProps {
@@ -16,8 +17,7 @@ const AssignmentSubmissionModal = ({ submission, onClose }: AssignmentSubmission
   useScrollLock();
 
   return (
-    <Overlay role="dialog" aria-modal="true" aria-label="제출물 보기">
-      <Dimmer onClick={onClose} />
+    <ModalOverlay role="dialog" aria-modal="true" aria-label="제출물 보기" onDimmerClick={onClose}>
       <Modal>
         <Information>
           <Field>
@@ -67,28 +67,11 @@ const AssignmentSubmissionModal = ({ submission, onClose }: AssignmentSubmission
           </TextButton>
         </Actions>
       </Modal>
-    </Overlay>
+    </ModalOverlay>
   );
 };
 
 export default AssignmentSubmissionModal;
-
-const Overlay = styled.div`
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 20px;
-  z-index: 1000;
-`;
-
-const Dimmer = styled.div`
-  position: absolute;
-  inset: 0;
-  background-color: ${Material.dimmer};
-  opacity: 0.43;
-`;
 
 const Modal = styled.div`
   position: relative;

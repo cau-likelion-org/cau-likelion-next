@@ -4,10 +4,11 @@ import styled from 'styled-components';
 import { RecruitmentTextResponse } from 'src/apis/recruitment';
 import { STATUS_BADGE } from './RecruitmentTextSection';
 import ContentBadge from '@common/badge/ContentBadge';
+import ModalOverlay from '@common/modalOverlay/ModalOverlay';
 import ScrollArea from '@common/scrollArea/ScrollArea';
 import LinkifiedText from './LinkifiedText';
 import { IcCaretDown, IcCaretUp } from '@assets/svg';
-import { BackgroundColor, Fill, Label, Line, Material, Orange, State } from '@utils/constant/color';
+import { BackgroundColor, Fill, Label, Line, Orange, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import useFocusTrap from 'src/hooks/useFocusTrap';
 
@@ -58,8 +59,7 @@ const RecruitmentTextDetailModal = ({
   }, [text.recipients, isRecipientListExpanded]);
 
   return (
-    <Overlay>
-      <Dimmer onClick={onClose} />
+    <ModalOverlay onDimmerClick={onClose}>
       <Modal ref={modalRef} role="dialog" aria-modal="true" aria-label="발송 메일 보기" tabIndex={-1}>
         <InformationScroll>
           <Information>
@@ -141,28 +141,11 @@ const RecruitmentTextDetailModal = ({
           </ActionTextButton>
         </Actions>
       </Modal>
-    </Overlay>
+    </ModalOverlay>
   );
 };
 
 export default RecruitmentTextDetailModal;
-
-const Overlay = styled.div`
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 20px;
-  z-index: 10000;
-`;
-
-const Dimmer = styled.div`
-  position: absolute;
-  inset: 0;
-  background-color: ${Material.dimmer};
-  opacity: 0.43;
-`;
 
 const Modal = styled.div`
   position: relative;
