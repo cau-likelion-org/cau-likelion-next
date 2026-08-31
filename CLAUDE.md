@@ -87,19 +87,19 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 - PR 설명 없이 새 의존성 추가 금지
 - `console.log` commit 금지 → `console.warn` / `console.error`만 허용
 - `tsconfig.json`의 `paths` alias와 `next.config.js`의 webpack alias 중 한쪽만 수정 금지 → 두 파일 항상 동기화
-- `next.config.js`의 이미지 `domains` 목록 임의 삭제 금지 (S3/CloudFront 캐시 전략과 연결되어 있음)
+- `next.config.js`의 이미지 `remotePatterns` 목록 임의 삭제 금지 (S3/CloudFront 캐시 전략과 연결되어 있음)
 
 ---
 
 ## 프로젝트 개요
 
-- **스택**: Next.js 12.2.2 (Pages Router) + TypeScript 4.9.4
-- **스타일링**: styled-components v5 + styled-reset
-- **전역 상태**: Zustand (Recoil v0.7에서 마이그레이션 중 — 신규 코드는 Zustand, 기존 `src/utils/state.ts`의 Recoil atom은 점진적으로 이전)
-- **서버 상태**: TanStack Query(react-query) v3 + axios (커스텀 `authAxios` 인터셉터)
-- **CMS**: Notion (`@notionhq/client`, `notion-client`, `react-notion`)
+- **스택**: Next.js 16 (Pages Router, dev·build 모두 webpack 고정 — Turbopack은 SVG 컴포넌트 변환이 안 돼 사용 안 함) + TypeScript 5
+- **스타일링**: styled-components v5 (`styled-reset`은 `package.json`에 남아있으나 소스에서 미사용)
+- **전역 상태**: Zustand (`src/store/`) — Recoil 마이그레이션 완료
+- **서버 상태**: TanStack Query(react-query) v5 + axios (커스텀 `authAxios` 인터셉터)
+- **에러 모니터링**: Sentry (`@sentry/nextjs`, `src/lib/errorReporter.ts`에서 지연 로드)
 - **테스트**: 미도입 (테스트 프레임워크 없음 — 신규 도입 시 별도 논의 필요)
-- **배포**: AWS Amplify (Managed Hosting, Git 기반 CI/CD)
+- **배포**: Vercel (Git 기반 CI/CD) — `main` push 시 GitHub Actions로 빌드 검증(`.github/workflows/deploy.yml`)
 
 ---
 
@@ -108,24 +108,23 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 ```
 src/
 ├── pages/               # Pages Router
-├── apis/                # API 함수 + axios 인스턴스 (도메인별: account, attendance, gallery, mypage, project, session, signUp)
+├── apis/                # API 함수 + axios 인스턴스 (도메인별: account, attendance, blog, gallery, mypage, project 등)
 ├── components/          # 공용 UI / 기능별 컴포넌트 (기능 단위 하위 폴더)
 ├── hooks/               # 공용 훅
-├── lib/                 # gtag 등 외부 연동 설정
-├── store/                # Zustand 스토어 (신규 클라이언트 전역 상태)
-├── utils/               # 공용 유틸 + 기존 Recoil atom (state.ts, 마이그레이션 전까지 유지), localStorage 래퍼
+├── lib/                 # Sentry(errorReporter), Firebase 푸시(pushNotification) 등 외부 연동 설정
+├── store/                # Zustand 스토어 (클라이언트 전역 상태)
+├── utils/               # 공용 유틸, localStorage 래퍼
 ├── styles/              # 전역 스타일
-├── types/               # 전역 타입 정의
-└── test/                # 실험/임시 코드 (GA.tsx 등 — 프로덕션 사용 여부 확인 필요, 신규 코드 추가 지양)
+└── types/               # 전역 타입 정의
 ```
 
-**import alias**: 단일 `@/`가 아니라 **기능별로 세분화된 alias**를 사용합니다: `@common`, `@home`, `@gallery`, `@project`, `@session`, `@signup`, `@login`, `@attendance`, `@mypage`, `@archiving`, `@pages`, `@styles`, `@utils`, `@@types`, `@image`.
+**import alias**: 단일 `@/`가 아니라 **기능별로 세분화된 alias**를 사용합니다: `@common`, `@home`, `@about`, `@gallery`, `@blog`, `@project`, `@signup`, `@login`, `@mypage`, `@pages`, `@styles`, `@utils`, `@@types`, `@image`, `@assets`.
 alias는 `tsconfig.json`의 `paths`와 `next.config.js`의 webpack `resolve.alias` **두 곳에 동일하게** 등록되어 있으므로, alias를 추가/변경할 때는 두 파일을 함께 수정합니다.
 
 ```ts
 import LayoutDefault from '@common/layout/LayoutDefault';
-import { token } from '@utils/state';
-import { getAttendanceList } from '../../apis/attendance';
+import useTokenStore from 'src/store/useTokenStore';
+import { getAttendanceList } from 'src/apis/attendance';
 ```
 
 ---
@@ -134,7 +133,7 @@ import { getAttendanceList } from '../../apis/attendance';
 
 - 컴포넌트는 화살표 함수 또는 `function` 선언 모두 사용 중 (`React.FC`는 사용하지 않음) — 신규 컴포넌트는 명시적 props 타입 선언 필수
 - default export: 이 프로젝트는 페이지뿐 아니라 일반 컴포넌트에도 default export를 광범위하게 사용 중인 기존 컨벤션 → 유지
-- `console.log` 커밋 금지 (`console.warn`/`console.error`만 허용, 현재 2곳 잔존 — 리팩토링 시 정리 대상)
+- `console.log` 커밋 금지 (`console.warn`/`console.error`만 허용)
 - Prettier 설정 그대로 따름: `singleQuote`, `semi`, `trailingComma: all`, `printWidth: 120`, `arrowParens: always`
 - ESLint: `next/core-web-vitals` 기준
 
@@ -144,24 +143,22 @@ import { getAttendanceList } from '../../apis/attendance';
 
 ### Zustand — 클라이언트/전역 상태
 
-- Recoil에서 마이그레이션 중. 신규 클라이언트 전역 상태는 `src/store/`에 Zustand 스토어로 작성
-- 기존 `src/utils/state.ts`의 Recoil atom은 마이그레이션 전까지 유지 — 해당 코드를 건드리지 않는 PR에서는 그대로 두고, 손대는 경우에 한해 Zustand로 옮기는 것을 고려
+- 클라이언트 전역 상태는 `src/store/`에 Zustand 스토어로 작성 (예: `useTokenStore`)
 - 서버에서 받아온 데이터를 그대로 스토어에 저장하지 않음 — 로그인 토큰, UI 플래그 등 클라이언트 상태만
 
 ### react-query — 서버 상태
 
 - `src/apis/[도메인].ts`에 axios 기반 API 함수를 정의하고, 컴포넌트/훅에서 `useQuery`/`useMutation`으로 호출
-- 인증이 필요한 요청은 `getAuthAxios(token)` 사용 (401 응답 시 refresh token으로 자동 재발급)
-- ⚠️ 알려진 이슈: `src/apis/authAxios.ts`의 401 재시도 로직이 원본 HTTP 메서드를 무시하고 항상 GET으로 재요청하는 버그가 있음 — 이 파일을 건드릴 때는 함께 수정할 것
+- 인증이 필요한 요청은 `getAuthAxios(token)` 사용 (401/403 응답 시 refresh token으로 자동 재발급 후 원래 메서드로 재요청)
 - `src/hooks/`에는 순수 클라이언트 훅만 두고, 서버 상태 훅은 `src/apis/` 옆에 두거나 컴포넌트 내부에 정의
 
 ---
 
 ## 스타일링 규칙 (styled-components)
 
-- 전역 리셋은 `styled-reset` 사용, 전역 스타일은 `src/styles/`에 위치
+- 전역 리셋/스타일은 `src/styles/global.css`에 위치
 - 컴포넌트 파일이 길어지면 (예: `MainSection.tsx`처럼 styled 정의가 절반 이상을 차지하는 경우) 스타일을 별도 파일로 분리 고려
-- SVG는 `@svgr/webpack`으로 컴포넌트화해서 사용, mp4 등 미디어 파일은 `file-loader` 사용
+- SVG는 `@svgr/webpack`으로 컴포넌트화해서 사용 (webpack·Turbopack 양쪽에 동일하게 등록, `next.config.js` 참고)
 
 ---
 
@@ -194,7 +191,7 @@ chore: sharp 0.31.3으로 업그레이드
 ## 브랜치 네이밍
 
 ```
-main              ← 프로덕션 (main push/merge 시 Amplify 자동 빌드+배포)
+main              ← 프로덕션 (main push/merge 시 Vercel 자동 빌드+배포)
 dev               ← 스테이징 / 통합
 feat/#123         ← 기능 브랜치 (123 = GitHub 이슈 번호)
 fix/설명          ← 버그 수정 브랜치 (이슈 번호 없이 설명형으로도 사용, 예: fix/attendance)
