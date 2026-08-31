@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { ReactElement, useEffect, useState } from 'react';
+import { ReactElement } from 'react';
 import dynamic from 'next/dynamic';
 import MainSection from '@home/main/MainSection';
 import IntroduceSection from '@home/introduction/IntroduceSection';
@@ -9,20 +9,13 @@ import FAQSection from '@home/faq/FAQSection';
 import LayoutLanding from '@common/layout/LayoutLanding';
 import MainPageHead from 'src/components/meta/MainPageHead';
 import Toast from '@common/toast/Toast';
+import useSessionFlagToast from 'src/hooks/useSessionFlagToast';
 import { LOGOUT_SUCCESS_FLAG_KEY } from 'src/apis/account';
 
 const ProjectSection = dynamic(() => import('@home/project/ProjectSection'), { ssr: false });
 
 function Landing() {
-  const [showLogoutToast, setShowLogoutToast] = useState(() => {
-    if (typeof window === 'undefined') return false;
-    return sessionStorage.getItem(LOGOUT_SUCCESS_FLAG_KEY) === 'true';
-  });
-
-  useEffect(() => {
-    if (!showLogoutToast) return;
-    sessionStorage.removeItem(LOGOUT_SUCCESS_FLAG_KEY);
-  }, [showLogoutToast]);
+  const logoutToast = useSessionFlagToast(LOGOUT_SUCCESS_FLAG_KEY);
 
   return (
     <>
@@ -31,9 +24,9 @@ function Landing() {
         <Toast
           variant="positive"
           text="로그아웃이 완료되었습니다."
-          show={showLogoutToast}
+          show={logoutToast.isOpen}
           width={348}
-          onHidden={() => setShowLogoutToast(false)}
+          onHidden={logoutToast.onHidden}
         />
       </ToastWrapper>
       <SectionWrapper>

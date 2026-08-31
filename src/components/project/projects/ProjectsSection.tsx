@@ -6,9 +6,10 @@ import Toast from '@common/toast/Toast';
 import PageScrollbar from '@common/pageScrollbar/PageScrollbar';
 import { IcAdd } from '@assets/svg';
 import { useQuery } from '@tanstack/react-query';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import { getUserProfile } from 'src/apis/account';
+import useSessionFlagToast from 'src/hooks/useSessionFlagToast';
 import {
   PROJECT_CATEGORY_LABEL,
   PROJECT_CREATED_FLAG_KEY,
@@ -56,29 +57,9 @@ const ProjectsSection = ({ staticData }: { staticData: ArchivingArrayType<IProje
   const [selectedGeneration, setSelectedGeneration] = useState(ALL_OPTION);
   const [selectedCategory, setSelectedCategory] = useState(ALL_OPTION);
 
-  const [isDeletedToastOpen, setIsDeletedToastOpen] = useState(
-    () => typeof window !== 'undefined' && sessionStorage.getItem(PROJECT_DELETED_FLAG_KEY) === 'true',
-  );
-  useEffect(() => {
-    if (!isDeletedToastOpen) return;
-    sessionStorage.removeItem(PROJECT_DELETED_FLAG_KEY);
-  }, [isDeletedToastOpen]);
-
-  const [isCreatedToastOpen, setIsCreatedToastOpen] = useState(
-    () => typeof window !== 'undefined' && sessionStorage.getItem(PROJECT_CREATED_FLAG_KEY) === 'true',
-  );
-  useEffect(() => {
-    if (!isCreatedToastOpen) return;
-    sessionStorage.removeItem(PROJECT_CREATED_FLAG_KEY);
-  }, [isCreatedToastOpen]);
-
-  const [isUpdatedToastOpen, setIsUpdatedToastOpen] = useState(
-    () => typeof window !== 'undefined' && sessionStorage.getItem(PROJECT_UPDATED_FLAG_KEY) === 'true',
-  );
-  useEffect(() => {
-    if (!isUpdatedToastOpen) return;
-    sessionStorage.removeItem(PROJECT_UPDATED_FLAG_KEY);
-  }, [isUpdatedToastOpen]);
+  const deletedToast = useSessionFlagToast(PROJECT_DELETED_FLAG_KEY);
+  const createdToast = useSessionFlagToast(PROJECT_CREATED_FLAG_KEY);
+  const updatedToast = useSessionFlagToast(PROJECT_UPDATED_FLAG_KEY);
 
   const sortedGroups = useMemo(() => (data ? sortArchivingListDesc(data) : []), [data]);
 
@@ -114,20 +95,20 @@ const ProjectsSection = ({ staticData }: { staticData: ArchivingArrayType<IProje
           <Toast
             variant="positive"
             text="삭제가 완료되었습니다."
-            show={isDeletedToastOpen}
-            onHidden={() => setIsDeletedToastOpen(false)}
+            show={deletedToast.isOpen}
+            onHidden={deletedToast.onHidden}
           />
           <Toast
             variant="positive"
             text="등록이 완료되었습니다."
-            show={isCreatedToastOpen}
-            onHidden={() => setIsCreatedToastOpen(false)}
+            show={createdToast.isOpen}
+            onHidden={createdToast.onHidden}
           />
           <Toast
             variant="positive"
             text="변경사항이 저장되었습니다."
-            show={isUpdatedToastOpen}
-            onHidden={() => setIsUpdatedToastOpen(false)}
+            show={updatedToast.isOpen}
+            onHidden={updatedToast.onHidden}
           />
         </ToastWrapper>
         <FilterRow>

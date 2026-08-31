@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useState } from 'react';
+import { ReactElement, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import dynamic from 'next/dynamic';
 import styled from 'styled-components';
@@ -8,6 +8,7 @@ import Button from '@common/button/Button';
 import PageHeader from '@common/pageHeader/PageHeader';
 import { IllustSignupComplete } from '@assets/svg';
 import confettiAnimation from 'src/assets/lottie/confetti-success.json';
+import useSessionFlagToast from 'src/hooks/useSessionFlagToast';
 import { SIGNUP_SUCCESS_FLAG_KEY } from 'src/apis/signUp';
 import useTokenStore from 'src/store/useTokenStore';
 
@@ -18,14 +19,7 @@ const SignUpSuccess = () => {
   const hasHydrated = useTokenStore((state) => state.hasHydrated);
   const router = useRouter();
 
-  const [isJustSignedUp] = useState(
-    () => typeof window !== 'undefined' && sessionStorage.getItem(SIGNUP_SUCCESS_FLAG_KEY) === 'true',
-  );
-
-  useEffect(() => {
-    if (!isJustSignedUp) return;
-    sessionStorage.removeItem(SIGNUP_SUCCESS_FLAG_KEY);
-  }, [isJustSignedUp]);
+  const { isOpen: isJustSignedUp } = useSessionFlagToast(SIGNUP_SUCCESS_FLAG_KEY);
 
   useEffect(() => {
     if (!hasHydrated) return;
