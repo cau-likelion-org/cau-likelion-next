@@ -5,6 +5,7 @@ import TextField from '@common/textField/TextField';
 import CharCount from '@common/charCount/CharCount';
 import AddCardButton from '@mypage/component/AddCardButton';
 import RemoveCardButton from '@mypage/component/RemoveCardButton';
+import useListItems from 'src/hooks/useListItems';
 import { isUnfilled } from '@utils/index';
 import { BackgroundWhite, Black, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -33,13 +34,7 @@ const TalentSection = ({
   showErrors: boolean;
   disabled?: boolean;
 }) => {
-  const updateItem = (id: string, patch: Partial<TalentItem>) => {
-    onChange(items.map((item) => (item.id === id ? { ...item, ...patch } : item)));
-  };
-
-  const removeItem = (id: string) => onChange(items.filter((item) => item.id !== id));
-
-  const addItem = () => onChange([...items, createEmptyItem()]);
+  const { updateItem, removeItem, addItem } = useListItems(items, onChange, createEmptyItem);
 
   return (
     <Section>
