@@ -80,6 +80,13 @@ body {
   }
 }
 
+/* 모바일 헤더(MobileNavBar) 높이가 60px이라, 데스크톱과 다르게 맞춘다 */
+@media (max-width: 767px) {
+  html {
+    scroll-padding-top: 60px;
+  }
+}
+
 a {
   color: inherit;
   text-decoration: none;
