@@ -111,25 +111,23 @@ const nextConfig = {
       }),
     );
 
-    config.resolve = {
-      alias: {
-        '@common': path.resolve(__dirname, 'src/components/common'),
-        '@home': path.resolve(__dirname, 'src/components/home'),
-        '@about': path.resolve(__dirname, 'src/components/about'),
-        '@gallery': path.resolve(__dirname, 'src/components/gallery'),
-        '@blog': path.resolve(__dirname, 'src/components/blog'),
-        '@project': path.resolve(__dirname, 'src/components/project'),
-        '@signup': path.resolve(__dirname, 'src/components/signup'),
-        '@login': path.resolve(__dirname, 'src/components/login'),
-        '@mypage': path.resolve(__dirname, 'src/components/mypage'),
-        '@pages': path.resolve(__dirname, 'src/pages'),
-        '@styles': path.resolve(__dirname, 'src/styles'),
-        '@utils': path.resolve(__dirname, 'src/utils'),
-        '@@types': path.resolve(__dirname, 'src/types'),
-        '@image': path.resolve(__dirname, 'public/image'),
-        '@assets': path.resolve(__dirname, 'src/assets'),
-      },
-      ...config.resolve,
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@common': path.resolve(__dirname, 'src/components/common'),
+      '@home': path.resolve(__dirname, 'src/components/home'),
+      '@about': path.resolve(__dirname, 'src/components/about'),
+      '@gallery': path.resolve(__dirname, 'src/components/gallery'),
+      '@blog': path.resolve(__dirname, 'src/components/blog'),
+      '@project': path.resolve(__dirname, 'src/components/project'),
+      '@signup': path.resolve(__dirname, 'src/components/signup'),
+      '@login': path.resolve(__dirname, 'src/components/login'),
+      '@mypage': path.resolve(__dirname, 'src/components/mypage'),
+      '@pages': path.resolve(__dirname, 'src/pages'),
+      '@styles': path.resolve(__dirname, 'src/styles'),
+      '@utils': path.resolve(__dirname, 'src/utils'),
+      '@@types': path.resolve(__dirname, 'src/types'),
+      '@image': path.resolve(__dirname, 'public/image'),
+      '@assets': path.resolve(__dirname, 'src/assets'),
     };
 
     config.module.rules.push({
