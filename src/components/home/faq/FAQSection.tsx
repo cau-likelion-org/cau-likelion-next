@@ -55,6 +55,7 @@ const Wrapper = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 52px;
+  scroll-snap-align: start;
 
   @media (max-width: ${MOBILE}px) {
     width: 100%;
