@@ -71,9 +71,7 @@ const Wrapper = styled.div<{ isLandingLayout: boolean }>`
   align-items: center;
   background-color: ${BackgroundLight.secondary};
   box-shadow: inset 0 1px 0 0 ${Line.subtle};
-  ${media.md} {
-    scroll-snap-align: ${(props) => props.isLandingLayout && 'end'};
-  }
+  scroll-snap-align: ${(props) => props.isLandingLayout && 'end'};
 `;
 
 const Container = styled.div`
