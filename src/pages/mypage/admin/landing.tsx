@@ -34,9 +34,13 @@ import { getTracks, createTrack, updateTrack, deleteTrack, TrackResponse } from 
 import { getActivities, createActivity, updateActivity, deleteActivity, ActivityResponse } from 'src/apis/activity';
 import { getFaqs, createFaq, updateFaq, deleteFaq, FaqResponse } from 'src/apis/faq';
 import { getIntroduce, updateIntroduce, IntroduceResponse } from 'src/apis/introduce';
-import { getAdminProjectList, updateProjectExposure, AdminProjectListItem } from 'src/apis/project';
+import {
+  getAdminProjectList,
+  updateProjectExposure,
+  AdminProjectListItem,
+  PROJECT_CATEGORY_LABEL,
+} from 'src/apis/project';
 import { uploadFile } from 'src/apis/upload';
-import { PROJECT_CATEGORY_LABEL } from '@home/project/component/ProjectCard';
 import useTokenStore from 'src/store/useTokenStore';
 import { isAdminRole } from '@utils/index';
 import { Label } from '@utils/constant/color';

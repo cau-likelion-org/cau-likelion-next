@@ -20,6 +20,8 @@ import {
   AssignmentSummaryWeekGroup,
   AssignmentWeekGroup,
   canSubmitAssignment,
+  formatDueDate,
+  formatSubmittedAt,
   getMyAssignments,
   getPresidentAssignments,
   getStaffAssignments,
@@ -32,21 +34,6 @@ import { IcPlus } from '@assets/svg';
 import { Fill, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { media } from '@utils/constant/breakpoint';
-
-const formatDueDate = (value: string) => {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return value;
-  const pad = (n: number) => String(n).padStart(2, '0');
-  return `${date.getFullYear()}/${pad(date.getMonth() + 1)}/${pad(date.getDate())}`;
-};
-
-// 제출 시각(ISO) → 2026/12/12 17:48
-const formatSubmittedAt = (value: string) => {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return value;
-  const pad = (n: number) => String(n).padStart(2, '0');
-  return `${formatDueDate(value)} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
-};
 
 const groupByDeadline = (assignments: AssignmentSummary[]) => {
   const buckets = new Map<string, AssignmentSummary[]>();

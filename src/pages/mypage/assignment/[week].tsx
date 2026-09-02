@@ -15,6 +15,7 @@ import AssignmentSubmitCard, {
 import {
   MyAssignmentHistoryWeekGroup,
   canSubmitAssignment,
+  formatDueDate,
   getMyAssignmentHistory,
   resolveAssignmentActionLabel,
   submitAssignment,
@@ -25,13 +26,6 @@ import { getServerMessage } from '@utils/index';
 import { Black, Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { containerCss, media } from '@utils/constant/breakpoint';
-
-const formatDueDate = (value: string) => {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return value;
-  const pad = (n: number) => String(n).padStart(2, '0');
-  return `${date.getFullYear()}/${pad(date.getMonth() + 1)}/${pad(date.getDate())}`;
-};
 
 const AssignmentSubmit = () => {
   const tokenState = useTokenStore((state) => state.token);

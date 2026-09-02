@@ -68,7 +68,6 @@ const LIST_QUERY_KEY_BY_TAB: Record<GalleryTabKey, string> = {
 
 const PROJECT_CATEGORY_FILTER_OPTIONS = ['전체', ...Object.values(GALLERY_PROJECT_CATEGORY_LABEL)];
 const ALL_OPTION = '전체';
-// const WIKI_URL = 'https://wiki.cau-likelion.org';
 
 const toDisplayDate = (isoDate: string | undefined) => (isoDate ?? '').split('T')[0].replaceAll('-', '/');
 const toPeriodDisplay = (startDate: string, endDate: string | null) =>
@@ -396,13 +395,6 @@ const GalleryListSection = () => {
         <ToastWrapper>
           <Toast variant="positive" text={toastText} show={isToastOpen} onHidden={() => setIsToastOpen(false)} />
         </ToastWrapper>
-        {/* <WikiBanner
-        href={WIKI_URL}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="중앙대학교 멋쟁이사자처럼 위키 바로가기"
-      /> */}
-
         {activeTab === 'session' &&
           (isSessionsLoading ? (
             <LoadingWrapper>
@@ -636,15 +628,6 @@ const ToastWrapper = styled.div`
   z-index: 10001;
   pointer-events: none;
 `;
-
-// const WikiBanner = styled.a`
-//   display: block;
-//   width: 100%;
-//   height: 80px;
-//   border-radius: 8px;
-//   background-color: ${Fill.subtle};
-//   cursor: pointer;
-// `;
 
 const LoadingWrapper = styled.div`
   display: flex;

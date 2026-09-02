@@ -2,15 +2,11 @@ import axios from 'axios';
 import { IToken } from 'src/store/useTokenStore';
 import { url } from '.';
 import { getAuthAxios } from './authAxios';
+import { PROJECT_CATEGORY_LABEL, ProjectCategoryCode } from './project';
 
-export type GalleryProjectCategory = 'IDEATHON' | 'HACKATHON' | 'CHUNGKATHON' | 'ETC';
+export type GalleryProjectCategory = ProjectCategoryCode;
 
-export const GALLERY_PROJECT_CATEGORY_LABEL: Record<GalleryProjectCategory, string> = {
-  IDEATHON: '아이디어톤',
-  HACKATHON: '해커톤',
-  CHUNGKATHON: '중커톤',
-  ETC: '기타',
-};
+export const GALLERY_PROJECT_CATEGORY_LABEL = PROJECT_CATEGORY_LABEL;
 
 export interface GalleryProjectListItem {
   id: number;

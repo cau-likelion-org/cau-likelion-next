@@ -173,6 +173,20 @@ export type AssignmentDisplayStatus =
 // 지각 제출을 받아주는 유예 기간
 const LATE_SUBMISSION_GRACE_MS = 5 * 24 * 60 * 60 * 1000;
 
+const padTwo = (n: number) => String(n).padStart(2, '0');
+
+export function formatDueDate(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return `${date.getFullYear()}/${padTwo(date.getMonth() + 1)}/${padTwo(date.getDate())}`;
+}
+
+export function formatSubmittedAt(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return `${formatDueDate(value)} ${padTwo(date.getHours())}:${padTwo(date.getMinutes())}`;
+}
+
 // 아기사자가 지금 제출/재제출할 수 있는 과제인지 판정
 // 반려는 운영진 검토가 보통 마감 후라서 마감과 무관하게 다시 제출할 수 있어야 하고,
 // 승인이 끝난 건(승인 완료·지각 제출)은 더 제출할 수 없는게 맞음
