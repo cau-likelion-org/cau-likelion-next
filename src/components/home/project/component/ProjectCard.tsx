@@ -5,17 +5,10 @@ import styled from 'styled-components';
 import ContentBadge from '@common/badge/ContentBadge';
 import ThumbnailPlaceholder from '@common/thumbnail/ThumbnailPlaceholder';
 import { IcTrophy } from '@assets/svg';
-import { ProjectCategory } from 'src/apis/project';
+import { PROJECT_CATEGORY_LABEL, ProjectCategory } from 'src/apis/project';
 import { Black, Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { MOBILE } from '@home/common/responsive';
-
-export const PROJECT_CATEGORY_LABEL: Record<ProjectCategory, string> = {
-  IDEATHON: '아이디어톤',
-  HACKATHON: '해커톤',
-  CHUNGKATHON: '중커톤',
-  ETC: '기타',
-};
 
 export interface IProject {
   title: string;

@@ -18,6 +18,7 @@ import ProjectFilterSelect from '@project/projects/ProjectFilterSelect';
 import { Generation } from '@@types/request';
 import {
   LinkPlatform,
+  PROJECT_CATEGORY_LABEL,
   PROJECT_CREATED_FLAG_KEY,
   PROJECT_DELETED_FLAG_KEY,
   PROJECT_UPDATED_FLAG_KEY,
@@ -87,18 +88,10 @@ const LINK_TYPE_ICON: Record<string, ReactNode> = {
   Behance: <IcBehance width={20} height={14} />,
 };
 
-const CATEGORY_LABEL_TO_CODE: Record<string, ProjectCategoryCode> = {
-  아이디어톤: 'IDEATHON',
-  해커톤: 'HACKATHON',
-  중커톤: 'CHUNGKATHON',
-  기타: 'ETC',
-};
-const CATEGORY_CODE_TO_LABEL: Record<ProjectCategoryCode, string> = {
-  IDEATHON: '아이디어톤',
-  HACKATHON: '해커톤',
-  CHUNGKATHON: '중커톤',
-  ETC: '기타',
-};
+const CATEGORY_CODE_TO_LABEL = PROJECT_CATEGORY_LABEL;
+const CATEGORY_LABEL_TO_CODE: Record<string, ProjectCategoryCode> = Object.fromEntries(
+  Object.entries(CATEGORY_CODE_TO_LABEL).map(([code, label]) => [label, code as ProjectCategoryCode]),
+);
 
 const PART_LABELS = {
   pm: '기획',

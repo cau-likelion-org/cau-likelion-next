@@ -162,7 +162,7 @@ export const uploadProjectImage = async (token: IToken, file: File) => {
   return response.data.url;
 };
 
-export type ProjectCategory = 'IDEATHON' | 'HACKATHON' | 'CHUNGKATHON' | 'ETC';
+export type ProjectCategory = ProjectCategoryCode;
 
 export interface ProjectListItem {
   id: number;

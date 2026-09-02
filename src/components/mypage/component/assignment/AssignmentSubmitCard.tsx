@@ -4,17 +4,10 @@ import styled from 'styled-components';
 import ContentBadge from '@common/badge/ContentBadge';
 import Textarea from '@common/textarea/Textarea';
 import { ITEM_BADGE_CONFIG } from './WeeklyAssignmentCard';
-import { AssignmentFileInfo, AssignmentSubmission } from 'src/apis/assignment';
+import { AssignmentFileInfo, AssignmentSubmission, formatSubmittedAt } from 'src/apis/assignment';
 import { IcCircleClose, IcDocument, IcLink, IcPlus } from '@assets/svg';
 import { BackgroundWhite, Black, Fill, Label, Line, Status } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
-
-const formatSubmittedAt = (value: string) => {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return value;
-  const pad = (n: number) => String(n).padStart(2, '0');
-  return `${date.getFullYear()}/${pad(date.getMonth() + 1)}/${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
-};
 
 export type SubmissionFormat = 'file' | 'link';
 
