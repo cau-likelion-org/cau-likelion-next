@@ -46,6 +46,7 @@ const BlogCard = ({ title, description, badges, date, url, thumbnailUrl, thumbna
             radius
             border
             sizes="(max-width: 600px) 100vw, 213px"
+            unoptimized
             onError={() => setFailedThumbnail(thumbnailUrl)}
           />
         ) : (
