@@ -70,41 +70,41 @@ const ProjectDetailModal = ({ projectId, staticData, onClose }: ProjectDetailMod
               <CircularLoading size={32} />
             </LoadingWrapper>
           ) : (
-            <>
-              <Contents>
-                <ProjectDetailCarousel images={getSortedProjectImages(project.images)} />
-                <TextBlock>
-                  <Title>{project.title}</Title>
-                  {project.tagline && <Description>{project.tagline}</Description>}
-                  <BadgeRow>
-                    <Badge>{project.generationNumber}기</Badge>
-                    <Badge>{PROJECT_CATEGORY_LABEL[project.category]}</Badge>
-                  </BadgeRow>
-                  {project.summary && <Summary>{project.summary.replace(/\\n/g, '\n')}</Summary>}
-                </TextBlock>
-                <PanelRow>
-                  <ProjectDetailTeamPanel teamName={project.teamName} members={project.members} />
-                  <ProjectDetailMetaPanel
-                    startDate={project.startDate}
-                    endDate={project.endDate}
-                    stack={project.stack}
-                    links={project.links}
-                  />
-                </PanelRow>
-              </Contents>
-              <Actions>
-                {userProfile && isAdminRole(userProfile.role) && (
-                  <EditButton type="button" onClick={() => router.push(`/project/edit/${projectId}`)}>
-                    수정
-                  </EditButton>
-                )}
-                <CloseButton type="button" onClick={onClose}>
-                  닫기
-                </CloseButton>
-              </Actions>
-            </>
+            <Contents>
+              <ProjectDetailCarousel images={getSortedProjectImages(project.images)} />
+              <TextBlock>
+                <Title>{project.title}</Title>
+                {project.tagline && <Description>{project.tagline}</Description>}
+                <BadgeRow>
+                  <Badge>{project.generationNumber}기</Badge>
+                  <Badge>{PROJECT_CATEGORY_LABEL[project.category]}</Badge>
+                </BadgeRow>
+                {project.summary && <Summary>{project.summary.replace(/\\n/g, '\n')}</Summary>}
+              </TextBlock>
+              <PanelRow>
+                <ProjectDetailTeamPanel teamName={project.teamName} members={project.members} />
+                <ProjectDetailMetaPanel
+                  startDate={project.startDate}
+                  endDate={project.endDate}
+                  stack={project.stack}
+                  links={project.links}
+                />
+              </PanelRow>
+            </Contents>
           )}
         </ModalScrollArea>
+        {!isError && project && (
+          <Actions>
+            {userProfile && isAdminRole(userProfile.role) && (
+              <EditButton type="button" onClick={() => router.push(`/project/edit/${projectId}`)}>
+                수정
+              </EditButton>
+            )}
+            <CloseButton type="button" onClick={onClose}>
+              닫기
+            </CloseButton>
+          </Actions>
+        )}
       </ModalOuter>
     </Backdrop>
   );
