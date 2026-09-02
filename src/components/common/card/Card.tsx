@@ -28,6 +28,9 @@ export interface CardProps {
   onClick?: () => void;
 }
 
+const CARD_GRID_SIZES =
+  '(max-width: 600px) 100vw, (max-width: 767px) 50vw, (max-width: 991px) 33vw, (max-width: 1599px) 25vw, 20vw';
+
 const PLATFORM_STYLE = {
   desktop: {
     gap: 10,
@@ -105,6 +108,7 @@ const Card = ({
               src={thumbnailSrc}
               alt={thumbnailAlt}
               ratio={thumbnailRatio}
+              sizes={CARD_GRID_SIZES}
               onError={() => setFailedThumbnail(thumbnailSrc)}
             />
           ) : (

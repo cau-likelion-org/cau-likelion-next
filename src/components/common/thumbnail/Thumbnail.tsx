@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import Image from 'next/image';
 import styled from 'styled-components';
 
 import { Line } from '@utils/constant/color';
@@ -11,6 +12,7 @@ export interface ThumbnailProps {
   radius?: boolean;
   border?: boolean;
   overlay?: ReactNode;
+  sizes?: string;
   onError?: () => void;
 }
 
@@ -22,11 +24,21 @@ const Thumbnail = ({
   radius = false,
   border = false,
   overlay,
+  sizes = '100vw',
   onError,
 }: ThumbnailProps) => {
   return (
     <Wrapper className={className} $ratio={ratio} $radius={radius} $border={border}>
-      <Image key={src} src={src} alt={alt} referrerPolicy="no-referrer" onError={onError} />
+      <Image
+        key={src}
+        src={src}
+        alt={alt}
+        fill
+        sizes={sizes}
+        style={{ objectFit: 'cover' }}
+        referrerPolicy="no-referrer"
+        onError={onError}
+      />
       {overlay && <Overlay>{overlay}</Overlay>}
     </Wrapper>
   );
@@ -41,13 +53,6 @@ const Wrapper = styled.div<{ $ratio: number; $radius: boolean; $border: boolean 
   overflow: hidden;
   border-radius: ${(props) => (props.$radius ? '12px' : '0')};
   border: ${(props) => (props.$border ? `1px solid ${Line.normal}` : 'none')};
-`;
-
-const Image = styled.img`
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
 `;
 
 const Overlay = styled.div`
