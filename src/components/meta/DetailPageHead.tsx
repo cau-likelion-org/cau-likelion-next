@@ -1,4 +1,4 @@
-import { ARCHIVING, DEFAULT_OG_IMAGE, DEFAULT_OG_IMAGE_FALLBACK, META_DESCRIPTION_HEAD } from '@utils/constant';
+import { DEFAULT_OG_IMAGE, DEFAULT_OG_IMAGE_FALLBACK, META_DESCRIPTION_HEAD, MetaCategory } from '@utils/constant';
 import Head from 'next/head';
 import React from 'react';
 
@@ -6,7 +6,7 @@ interface DetailPageHeadProps {
   title?: string;
   img?: string;
   canoUrl: string;
-  category: ARCHIVING;
+  category: MetaCategory;
   description?: string;
 }
 

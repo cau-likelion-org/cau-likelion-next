@@ -2,7 +2,6 @@ import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import ProjectDetailModal from '@project/detail/ProjectDetailModal';
 import ProjectPageHeader from '@project/projects/ProjectPageHeader';
 import ProjectsSection from '@project/projects/ProjectsSection';
-import { ARCHIVING } from '@utils/constant';
 import { getPaths } from '@utils/index';
 import { GetStaticPaths, InferGetStaticPropsType } from 'next';
 import { useRouter } from 'next/router';
@@ -34,11 +33,11 @@ const ProjectList = ({
           title={projectDetailStaticData.title}
           canoUrl={`https://cau-likelion.org/project/${projectDetailStaticData.id}`}
           img={getProjectThumbnail(projectDetailStaticData.images)}
-          category={ARCHIVING.PROJECT}
+          category="PROJECT"
           description={projectDetailStaticData.tagline}
         />
       ) : (
-        <ListPageHead category={ARCHIVING.PROJECT} canoUrl={'https://cau-likelion.org/project'} />
+        <ListPageHead category="PROJECT" canoUrl={'https://cau-likelion.org/project'} />
       )}
       <ProjectPageHeader title="프로젝트" subtitle="멋쟁이사자처럼 중앙대학교에서 탄생한 프로젝트를 소개합니다." />
       <ProjectsSection staticData={projectStaticData} />
