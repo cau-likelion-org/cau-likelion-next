@@ -1,9 +1,16 @@
 import type { ReactElement } from 'react';
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import BlogListSection from '@blog/BlogListSection';
+import { ARCHIVING } from '@utils/constant';
+import ListPageHead from 'src/components/meta/ListPageHead';
 
 const Blog = () => {
-  return <BlogListSection />;
+  return (
+    <>
+      <ListPageHead category={ARCHIVING.BLOG} canoUrl="https://cau-likelion.org/blog" />
+      <BlogListSection />
+    </>
+  );
 };
 
 Blog.getLayout = function getLayout(page: ReactElement) {
