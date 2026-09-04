@@ -33,22 +33,18 @@ export const COMMON_PART_NAME = '공통';
 
 export const MAIN_META_DESCRIPTION = 'IT로 세상을 바꾸는 경험, 중앙대학교 IT 창업 동아리입니다.';
 
-export enum ARCHIVING {
-  GALLERY,
-  PROJECT,
-  BLOG,
-}
+export type MetaCategory = 'GALLERY' | 'PROJECT' | 'BLOG';
 
-export const META_DESCRIPTION: { [key: number]: string } = {
-  [ARCHIVING.GALLERY]: '멋쟁이사자처럼 중앙대학교의 추억 가득한 갤러리를 둘러보세요.',
-  [ARCHIVING.PROJECT]: '멋쟁이사자처럼 중앙대학교에서 탄생한 프로젝트를 소개합니다.',
-  [ARCHIVING.BLOG]: '멋쟁이사자처럼 중앙대학교 구성원들이 작성한 블로그를 읽어보세요.',
+export const META_DESCRIPTION: Record<MetaCategory, string> = {
+  GALLERY: '멋쟁이사자처럼 중앙대학교의 추억 가득한 갤러리를 둘러보세요.',
+  PROJECT: '멋쟁이사자처럼 중앙대학교에서 탄생한 프로젝트를 소개합니다.',
+  BLOG: '멋쟁이사자처럼 중앙대학교 구성원들이 작성한 블로그를 읽어보세요.',
 };
 
-export const META_DESCRIPTION_HEAD = {
-  [ARCHIVING.GALLERY]: '갤러리',
-  [ARCHIVING.PROJECT]: '프로젝트 소개',
-  [ARCHIVING.BLOG]: '블로그',
+export const META_DESCRIPTION_HEAD: Record<MetaCategory, string> = {
+  GALLERY: '갤러리',
+  PROJECT: '프로젝트 소개',
+  BLOG: '블로그',
 };
 
 export const PROJECT_CATEGORY_OPTIONS = ['아이디어톤', '해커톤', '중커톤', '기타'];

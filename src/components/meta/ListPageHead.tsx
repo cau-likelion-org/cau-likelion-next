@@ -1,16 +1,16 @@
 import {
-  ARCHIVING,
   DEFAULT_OG_IMAGE,
   DEFAULT_OG_IMAGE_FALLBACK,
   META_DESCRIPTION,
   META_DESCRIPTION_HEAD,
+  MetaCategory,
 } from '@utils/constant';
 import Head from 'next/head';
 import React from 'react';
 
 interface ListPageHeadProps {
   canoUrl: string;
-  category: ARCHIVING;
+  category: MetaCategory;
 }
 
 const ListPageHead = ({ canoUrl, category }: ListPageHeadProps) => {
