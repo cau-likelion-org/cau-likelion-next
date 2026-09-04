@@ -1,15 +1,15 @@
 import Head from 'next/head';
 import React from 'react';
-import { DEFAULT_OG_IMAGE, DEFAULT_OG_IMAGE_FALLBACK, MAIN_META_DESCRIPTION } from '@utils/constant';
+import { DEFAULT_OG_IMAGE, DEFAULT_OG_IMAGE_FALLBACK, MAIN_META_DESCRIPTION, META_TITLE } from '@utils/constant';
 
-const MainPageHead = ({ canoUrl, title }: { canoUrl?: string; title?: string }) => {
+const MainPageHead = ({ canoUrl }: { canoUrl?: string }) => {
   return (
     <Head>
-      <title>{title ?? 'CAU LION | 중앙대학교 멋쟁이사자처럼'}</title>
+      <title>{META_TITLE}</title>
       <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       <meta name="description" content={MAIN_META_DESCRIPTION} />
       <meta name="keywords" content="IT개발, 웹개발, 중앙대학교, 멋쟁이사자처럼, 동아리" />
-      <meta property="og:title" content={title ?? 'CAU LION | 중앙대학교 멋쟁이사자처럼'} />
+      <meta property="og:title" content={META_TITLE} />
       <meta property="og:site_name" content="CAU LION" />
       <meta property="og:description" content={MAIN_META_DESCRIPTION} />
       <meta property="og:url" content={canoUrl ?? 'https://cau-likelion.org'} />
@@ -17,7 +17,7 @@ const MainPageHead = ({ canoUrl, title }: { canoUrl?: string; title?: string }) 
       <meta property="og:image" content={DEFAULT_OG_IMAGE_FALLBACK} />
       <meta property="og:image" content={DEFAULT_OG_IMAGE} />
       <meta property="twitter:card" content="summary" />
-      <meta property="twitter:title" content={title ?? 'CAU LION | 중앙대학교 멋쟁이사자처럼'} />
+      <meta property="twitter:title" content={META_TITLE} />
       <meta property="twitter:description" content={MAIN_META_DESCRIPTION} />
       <meta property="twitter:image" content={DEFAULT_OG_IMAGE} />
       <meta property="twitter:url" content={canoUrl ?? 'https://cau-likelion.org'} />
