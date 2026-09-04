@@ -19,14 +19,6 @@ export const toDateString = (date?: Date, formatter = '-') => {
   return year + formatter + month + formatter + day;
 };
 
-export const concatDateString = (startDate: string, endDate: string) => {
-  const startDateArray = startDate.split('-');
-  const endDateArray = endDate.split('-');
-  const newStartDate = startDateArray.join('.');
-  const newEndDate = endDateArray.join('.');
-  return newStartDate + '~' + newEndDate;
-};
-
 export const isUnfilled = (value: string) => value.trim().length === 0;
 
 // 한글 등 이메일에 쓰일 수 없는 문자가 섞여 들어가는 것을 막기 위해 허용 문자를 제한한다
@@ -62,12 +54,6 @@ export const sortArchivingListDesc = <T extends IGalleryData | IProjectData>(
   data: ArchivingArrayType<T>,
 ): Array<[string, T[]]> => {
   return Object.entries(data).sort(([a], [b]) => Number(b) - Number(a));
-};
-
-export const getIdFromAsPath = (asPath: string, type: 'project' | 'session' | 'gallery'): string => {
-  const regExp = new RegExp(`\/${type}\/(.*)`);
-  const match = asPath.match(regExp);
-  return match ? match[1] : '';
 };
 
 interface IPath {
