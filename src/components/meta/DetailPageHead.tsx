@@ -1,23 +1,28 @@
-import { DEFAULT_OG_IMAGE, DEFAULT_OG_IMAGE_FALLBACK, META_DESCRIPTION_HEAD, MetaCategory } from '@utils/constant';
+import {
+  DEFAULT_OG_IMAGE,
+  DEFAULT_OG_IMAGE_FALLBACK,
+  META_DESCRIPTION_HEAD,
+  MetaCategory,
+  META_TITLE,
+} from '@utils/constant';
 import Head from 'next/head';
 import React from 'react';
 
 interface DetailPageHeadProps {
-  title?: string;
   img?: string;
   canoUrl: string;
   category: MetaCategory;
   description?: string;
 }
 
-const DetailPageHead = ({ title, category, img, canoUrl, description }: DetailPageHeadProps) => {
+const DetailPageHead = ({ category, img, canoUrl, description }: DetailPageHeadProps) => {
   return (
     <Head>
-      <title>{`${META_DESCRIPTION_HEAD[category]} | ${title}`}</title>
+      <title>{META_TITLE}</title>
       <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       <meta name="description" content={`${META_DESCRIPTION_HEAD[category]} | ${description}`} />
       <meta name="keywords" content="IT개발, 웹개발, 중앙대학교, 멋쟁이사자처럼, 동아리" />
-      <meta property="og:title" content={title} />
+      <meta property="og:title" content={META_TITLE} />
       <meta property="og:site_name" content="CAU LION" />
       <meta property="og:description" content={description} />
       <meta property="og:url" content={canoUrl ?? 'https://cau-likelion.org/'} />
@@ -25,7 +30,7 @@ const DetailPageHead = ({ title, category, img, canoUrl, description }: DetailPa
       {!img && <meta property="og:image" content={DEFAULT_OG_IMAGE_FALLBACK} />}
       <meta property="og:image" content={img ? img : DEFAULT_OG_IMAGE} />
       <meta property="twitter:card" content="summary" />
-      <meta property="twitter:title" content={title} />
+      <meta property="twitter:title" content={META_TITLE} />
       <meta property="twitter:description" content={description} />
       <meta property="twitter:image" content={img ? img : DEFAULT_OG_IMAGE} />
       <meta property="twitter:url" content={canoUrl ?? 'https:/cau-likelion.org/'} />

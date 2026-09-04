@@ -32,7 +32,7 @@ const About = () => {
 
   return (
     <>
-      <MainPageHead title="CAU LION | 소개" canoUrl="https://cau-likelion.org/about" />
+      <MainPageHead canoUrl="https://cau-likelion.org/about" />
       <AboutHero />
       <TalentSection />
       <CurriculumSection />

@@ -31,6 +31,7 @@ export const TRACK_OPTIONS = [TRACK_NAME[TRACK.PM_DESIGN], TRACK_NAME[TRACK.FRON
 // 쓰지만, 회원가입/회원관리 등 개인이 속한 파트를 다루는 화면에서는 excludeCommonPart로 걸러낸다.
 export const COMMON_PART_NAME = '공통';
 
+export const META_TITLE = 'CAU LION | 중앙대학교 멋쟁이사자처럼';
 export const MAIN_META_DESCRIPTION = 'IT로 세상을 바꾸는 경험, 중앙대학교 IT 창업 동아리입니다.';
 
 export type MetaCategory = 'GALLERY' | 'PROJECT' | 'BLOG';

@@ -30,7 +30,6 @@ const ProjectList = ({
     <>
       {projectDetailStaticData ? (
         <DetailPageHead
-          title={projectDetailStaticData.title}
           canoUrl={`https://cau-likelion.org/project/${projectDetailStaticData.id}`}
           img={getProjectThumbnail(projectDetailStaticData.images)}
           category="PROJECT"
