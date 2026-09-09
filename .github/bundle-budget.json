@@ -1,0 +1,30 @@
+{
+  "toleranceKb": 3,
+  "newRouteMaxKb": 223,
+  "shared": 169.8,
+  "routes": {
+    "/": 196.5,
+    "/_error": 170.1,
+    "/about": 180.3,
+    "/blog": 181.8,
+    "/gallery": 195,
+    "/login": 172.6,
+    "/mypage": 179.6,
+    "/mypage/admin/about": 180.5,
+    "/mypage/admin/blog": 177.7,
+    "/mypage/admin/landing": 194.8,
+    "/mypage/admin/members": 187.8,
+    "/mypage/admin/recruitment": 187,
+    "/mypage/assignment": 179.5,
+    "/mypage/assignment/[week]": 177.9,
+    "/mypage/assignment/create": 177.7,
+    "/mypage/assignment/edit/[week]": 178.2,
+    "/mypage/assignment/status/[week]": 182.3,
+    "/mypage/attendance": 182.6,
+    "/project/[[...project_id]]": 182.7,
+    "/project/edit/[project_id]": 185.4,
+    "/project/upload": 185.3,
+    "/signup": 172.2,
+    "/signup/success": 176.5
+  }
+}

@@ -1,147 +1,220 @@
-import { TRACK, TRACK_INDEX, TRACK_NAME } from '@utils/constant';
-import { Basic } from '@utils/constant/color';
-import { isEmptyString } from '@utils/index';
-import { token } from '@utils/state';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
-import React from 'react';
-import { useEffect } from 'react';
-import { useState } from 'react';
-import { useMutation } from 'react-query';
-import { useRecoilState } from 'recoil';
-import { signUp, SignUpMutationProps } from 'src/apis/signUp';
-import useInput from 'src/hooks/useInput';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import axios from 'axios';
 import styled from 'styled-components';
-import CauMailAuthenticationBox from './component/CauMailAuthenticationBox';
-import DropdownMenuBox from './component/DropdownMenuBox';
-import FormSendButton from './component/FormSendButton';
-import TextInputBox from './component/TextInputBox';
-import ToggleBox from './component/ToggleBox';
-import LocalStorage from '@utils/localStorage';
+
+import Button from '@common/button/Button';
+import PageHeader from '@common/pageHeader/PageHeader';
+import Select from '@common/select/Select';
+import ListboxOptions from '@common/select/ListboxOptions';
+import TextField from '@common/textField/TextField';
+import useListboxSelect from 'src/hooks/useListboxSelect';
+import useTokenStore from 'src/store/useTokenStore';
+import { getGenerations } from 'src/apis/account';
+import {
+  signUp,
+  clearPendingSignupToken,
+  PENDING_SIGNUP_TOKEN_KEY,
+  SIGNUP_SUCCESS_FLAG_KEY,
+  SIGNUP_UNAPPROVED_EMAIL_FLAG_KEY,
+} from 'src/apis/signUp';
+import { excludeCommonPart, isUnfilled } from '@utils/index';
+
+type OpenField = 'part' | null;
 
 const SignUpFormSection = () => {
-  // const track = [TRACK_NAME[TRACK.PM], TRACK_NAME[TRACK.DESIGN], TRACK_NAME[TRACK.FRONTEND], TRACK_NAME[TRACK.BACKEND], TRACK_NAME[TRACK.ETC]];
-  const track = [
-    TRACK_NAME[TRACK.PM_DESIGN],
-    TRACK_NAME[TRACK.FRONTEND],
-    TRACK_NAME[TRACK.BACKEND],
-    TRACK_NAME[TRACK.ETC],
-  ];
-  const [nameValue, onChangeName] = useInput('');
-  const [generationValue, onChangeGeneration] = useInput('', /^[0-9]*$/);
-  const [emailValue, onChangeEmail] = useInput('');
-  const [emailSecretValue, onChangeEmailSecret] = useInput('');
-  const [toggleIsClicked, setToggleIsClicked] = useState([true, false]);
-  const [dropdownValue, setDropdownValue] = useState(track[0]);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isFormActivated, setIsFormActivated] = useState(false);
-  const [{ access, refresh }, setToken] = useRecoilState(token);
+  const [name, setName] = useState('');
+  const [partName, setPartName] = useState('');
+  const [openField, setOpenField] = useState<OpenField>(null);
+  const [signupToken] = useState(() =>
+    typeof window === 'undefined' ? null : sessionStorage.getItem(PENDING_SIGNUP_TOKEN_KEY),
+  );
+
+  const setToken = useTokenStore((state) => state.setToken);
   const router = useRouter();
-  const { accessToken, refreshToken } = router.query;
+
+  const { data: generations } = useQuery({
+    queryKey: ['generations'],
+    queryFn: getGenerations,
+  });
+
+  // 기수는 더 이상 사용자가 선택하지 않고, 운영진이 Admin에서 지정한 현재 기수로 고정
+  const activeGeneration = useMemo(
+    () => generations?.find((g) => g.status === 'IN_ACTIVITY') ?? generations?.[generations.length - 1],
+    [generations],
+  );
+  const partOptions = useMemo(
+    () => excludeCommonPart(activeGeneration?.parts ?? []).map((p) => p.name),
+    [activeGeneration],
+  );
+
+  const {
+    listId: partListId,
+    wrapperRef: partWrapperRef,
+    triggerRef: partTriggerRef,
+    activeIndex: partActiveIndex,
+    handleKeyDown: handlePartKeyDown,
+    handleBlur: handlePartBlur,
+    selectOption: selectPartOption,
+  } = useListboxSelect({
+    isOpen: openField === 'part',
+    options: partOptions,
+    value: partName,
+    onOpen: () => setOpenField('part'),
+    onClose: () => setOpenField(null),
+    onSelect: (option) => {
+      setPartName(option);
+      setOpenField(null);
+    },
+  });
 
   useEffect(() => {
-    if (access) {
-      router.push('/');
-    }
-    if (!accessToken) {
+    if (!signupToken) {
       router.push('/login');
     }
-    if (
-      !isEmptyString(nameValue) &&
-      !isEmptyString(generationValue) &&
-      !isEmptyString(emailValue) &&
-      !isEmptyString(emailSecretValue) &&
-      isAuthenticated
-    )
-      setIsFormActivated(true);
-    else setIsFormActivated(false);
-  }, [nameValue, generationValue, emailValue, emailSecretValue, isAuthenticated, accessToken]);
+  }, [router, signupToken]);
+
+  const selectedPart = activeGeneration?.parts.find((p) => p.name === partName);
+  const isFormActivated = !isUnfilled(name) && !!activeGeneration && !!selectedPart;
 
   const signUpFormPost = useMutation({
-    mutationFn: (props: SignUpMutationProps) => signUp(props),
-    onSuccess: (res: any) => {
-      if (res) {
-        setToken((prev) => {
-          const obj = { ...prev };
-          obj.access = accessToken as string;
-          obj.refresh = refreshToken as string;
-          return obj;
-        });
-        LocalStorage.setItem('access', accessToken as string);
-        LocalStorage.setItem('refresh', refreshToken as string);
-        router.push('/signup/success');
+    mutationFn: signUp,
+    onSuccess: (res) => {
+      setToken({ access: res.accessToken, refresh: res.refreshToken });
+      clearPendingSignupToken();
+      sessionStorage.setItem(SIGNUP_SUCCESS_FLAG_KEY, 'true');
+      router.push('/signup/success');
+    },
+    onError: (error) => {
+      const status = axios.isAxiosError(error) ? error.response?.status : undefined;
+      // 4xx만 "사전 미등록 이메일" 업무 오류로 간주. 5xx·네트워크 오류는 폼에 남겨 재시도할 수 있게 함
+      if (status !== undefined && status >= 400 && status < 500) {
+        clearPendingSignupToken();
+        sessionStorage.setItem(SIGNUP_UNAPPROVED_EMAIL_FLAG_KEY, 'true');
+        router.push('/login');
       }
     },
   });
 
   const handleSubmit = () => {
-    if (isFormActivated && accessToken) {
-      signUpFormPost.mutate({
-        form: {
-          name: nameValue,
-          generation: Number(generationValue),
-          track: TRACK_INDEX[dropdownValue],
-          is_admin: toggleIsClicked[1],
-        },
-        accessToken,
-        refreshToken,
-      } as SignUpMutationProps);
-    }
+    if (!isFormActivated || !activeGeneration || !selectedPart || typeof signupToken !== 'string') return;
+    signUpFormPost.mutate({
+      signupToken,
+      name,
+      generationId: activeGeneration.id,
+      partId: selectedPart.id,
+    });
   };
 
   return (
-    <>
-      <FormWrapper>
-        <TextInputBox
-          title={'이름'}
-          description={'실명으로 입력해주세요.'}
-          placeholder={'중하하'}
-          value={nameValue}
-          onChange={onChangeName}
+    <Wrapper>
+      <ContentGroup>
+        <Header
+          align="center"
+          title="회원가입"
+          subtitle={
+            <>
+              반가워요, 아기사자 여러분!
+              <br />
+              기본 정보를 입력해주세요.
+            </>
+          }
         />
-        <TextInputBox
-          title={'기수'}
-          description={'마지막 활동 기수를 숫자로 입력해주세요.'}
-          placeholder={'기수를 입력해주세요.'}
-          value={generationValue}
-          onChange={onChangeGeneration}
-        />
-        <DropdownMenuBox
-          title={'파트'}
-          menu={track}
-          description={'트랙을 선택해주세요'}
-          selectedMenu={dropdownValue}
-          setSelectedMenu={setDropdownValue}
-        />
-        <ToggleBox
-          title={'일반회원/운영진'}
-          toggle={toggleIsClicked}
-          setToggle={setToggleIsClicked}
-          description={'현 기수 운영진을 제외한 이전 기수 운영진과 기타 회원은 일반회원을 선택해 주세요.'}
-        />
-        <CauMailAuthenticationBox
-          title={'중앙대학교 메일 인증'}
-          emailValue={emailValue}
-          onChangeEmail={onChangeEmail}
-          secretValue={emailSecretValue}
-          onChangeSecret={onChangeEmailSecret}
-          isAuthenticated={isAuthenticated}
-          setIsAuthenticated={setIsAuthenticated}
-          accessTokenOnce={accessToken as string}
-          refreshTokenOnce={refreshToken as string}
-        />
-      </FormWrapper>
-      <FormSendButton isActive={isFormActivated} handleSubmit={handleSubmit} buttonTitle={'회원가입'} />
-    </>
+        <FieldGroup>
+          <TextField
+            heading="이름"
+            required
+            placeholder="홍길동"
+            description="실명으로 입력해 주세요."
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+          />
+          <TextField
+            heading="기수"
+            required
+            disabled
+            readOnly
+            value={activeGeneration ? String(activeGeneration.number) : ''}
+            description="수정이 필요한 경우 운영진에게 문의해주세요."
+          />
+          <SelectWrapper ref={partWrapperRef} onKeyDownCapture={handlePartKeyDown} onBlur={handlePartBlur}>
+            <Select
+              ref={partTriggerRef}
+              heading="파트"
+              required
+              placeholder="선택"
+              value={partName}
+              onClick={() => setOpenField((prev) => (prev === 'part' ? null : 'part'))}
+              description="파트를 선택해 주세요."
+              disabled={!activeGeneration}
+              aria-expanded={openField === 'part'}
+              aria-activedescendant={openField === 'part' ? `${partListId}-${partActiveIndex}` : undefined}
+              aria-controls={partListId}
+            >
+              {openField === 'part' && (
+                <ListboxOptions
+                  listId={partListId}
+                  options={partOptions}
+                  value={partName}
+                  activeIndex={partActiveIndex}
+                  onSelect={selectPartOption}
+                />
+              )}
+            </Select>
+          </SelectWrapper>
+        </FieldGroup>
+      </ContentGroup>
+      <SubmitButton
+        variant="solid"
+        color="primary"
+        size="large"
+        disabled={!isFormActivated}
+        loading={signUpFormPost.isPending}
+        onClick={handleSubmit}
+      >
+        회원가입
+      </SubmitButton>
+    </Wrapper>
   );
 };
 
 export default SignUpFormSection;
 
-const FormWrapper = styled.div`
-  margin-top: 60px;
-  width: 100%;
+const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
-  border-top: 2px solid ${Basic.default};
-  border-bottom: 2px solid ${Basic.default};
+  align-items: center;
+  gap: 78px;
+  width: 520px;
+  max-width: 100%;
+`;
+
+const ContentGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 62px;
+  width: 100%;
+`;
+
+const Header = styled(PageHeader)`
+  gap: 24px;
+`;
+
+const FieldGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 39px;
+  width: 100%;
+`;
+
+const SelectWrapper = styled.div`
+  position: relative;
+  width: 100%;
+`;
+
+const SubmitButton = styled(Button)`
+  width: 340px;
 `;

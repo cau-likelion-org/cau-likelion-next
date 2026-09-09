@@ -1,32 +1,43 @@
 import styled from 'styled-components';
-import { ReactElement, useRef } from 'react';
+import { ReactElement } from 'react';
+import dynamic from 'next/dynamic';
 import MainSection from '@home/main/MainSection';
-import PlanSection from '@home/plan/PlanSection';
 import IntroduceSection from '@home/introduction/IntroduceSection';
-import ProjectSection from '@home/project/ProjectSection';
 import TrackSection from '@home/track/TrackSection';
 import ActivitySection from '@home/activity/ActivitySection';
-import ScrollBar from '@home/scrollBar/ScrollBar';
+import FAQSection from '@home/faq/FAQSection';
 import LayoutLanding from '@common/layout/LayoutLanding';
 import MainPageHead from 'src/components/meta/MainPageHead';
+import Toast from '@common/toast/Toast';
+import useSessionFlagToast from 'src/hooks/useSessionFlagToast';
+import { LOGOUT_SUCCESS_FLAG_KEY } from 'src/apis/account';
+
+const ProjectSection = dynamic(() => import('@home/project/ProjectSection'), { ssr: false });
 
 function Landing() {
-  const ref = useRef(null);
-  const clickMore = () => {
-    (ref as any).current.scrollIntoView({ behavior: 'smooth' });
-  };
+  const logoutToast = useSessionFlagToast(LOGOUT_SUCCESS_FLAG_KEY);
 
   return (
     <>
-      <MainPageHead canoUrl='https://cau-likelion.org/' />
+      <MainPageHead canoUrl="https://cau-likelion.org/" />
+      <ToastWrapper>
+        <Toast
+          variant="positive"
+          text="로그아웃이 완료되었습니다."
+          show={logoutToast.isOpen}
+          width={348}
+          onHidden={logoutToast.onHidden}
+        />
+      </ToastWrapper>
       <SectionWrapper>
-        <ScrollBar />
-        <MainSection clickMore={clickMore} />
-        <IntroduceSection innerRef={ref} />
-        <ActivitySection />
+        <HeroGroup>
+          <MainSection />
+          <IntroduceSection />
+        </HeroGroup>
         <TrackSection />
+        <ActivitySection />
         <ProjectSection />
-        <PlanSection />
+        <FAQSection />
       </SectionWrapper>
     </>
   );
@@ -40,6 +51,21 @@ const SectionWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 100px;
   width: 100%;
+`;
+
+const HeroGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+`;
+
+const ToastWrapper = styled.div`
+  position: fixed;
+  top: 110px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10001;
+  pointer-events: none;
 `;

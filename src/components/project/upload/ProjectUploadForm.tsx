@@ -1,0 +1,1512 @@
+import { ChangeEvent, DragEvent, KeyboardEvent, ReactNode, useRef, useState } from 'react';
+import { useRouter } from 'next/router';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import styled from 'styled-components';
+
+import Alert from '@common/alert/Alert';
+import BackHeader from '@common/header/BackHeader';
+import Button from '@common/button/Button';
+import CharCount from '@common/charCount/CharCount';
+import Chip from '@common/chip/Chip';
+import Menu from '@common/menu/Menu';
+import Select from '@common/select/Select';
+import TextButton from '@common/textButton/TextButton';
+import TextField from '@common/textField/TextField';
+import Textarea from '@common/textarea/Textarea';
+import Toast from '@common/toast/Toast';
+import ProjectFilterSelect from '@project/projects/ProjectFilterSelect';
+import { Generation } from '@@types/request';
+import {
+  LinkPlatform,
+  PROJECT_CATEGORY_LABEL,
+  PROJECT_CREATED_FLAG_KEY,
+  PROJECT_DELETED_FLAG_KEY,
+  PROJECT_UPDATED_FLAG_KEY,
+  ProjectCategoryCode,
+  ProjectImagePayload,
+  ProjectLinkPayload,
+  ProjectMemberPayload,
+  ProjectRequestPayload,
+  ProjectResponseDto,
+  createProject,
+  deleteProject,
+  getGenerations,
+  updateProject,
+  uploadProjectImage,
+} from 'src/apis/project';
+import useTokenStore from 'src/store/useTokenStore';
+import {
+  IcAdd,
+  IcBehance,
+  IcCalendar,
+  IcCircleClose,
+  IcCircleExclamation,
+  IcGithub,
+  IcLineHorizontal,
+  IcLink,
+  IcTrash,
+} from '@assets/svg';
+import useInput from 'src/hooks/useInput';
+import useListboxSelect from 'src/hooks/useListboxSelect';
+import useScrollToFirstError from 'src/hooks/useScrollToFirstError';
+import { NUMERIC_ONLY_REGEX, PROJECT_CATEGORY_OPTIONS } from '@utils/constant';
+import { AccentTint, BackgroundColor, Black, Fill, Label, Line, Orange, State } from '@utils/constant/color';
+import { isUnfilled } from '@utils/index';
+import { Typography, typographyCss } from '@utils/constant/typography';
+import { containerCss } from '@utils/constant/breakpoint';
+
+const MAX_IMAGE_COUNT = 4;
+const MAX_BANNER_LENGTH = 15;
+// 한글이 하나라도 섞이면 16자, 순수 영문·숫자면 20자 (모두 공백 포함)
+const MAX_TITLE_LENGTH_KO = 16;
+const MAX_TITLE_LENGTH_EN = 20;
+const HANGUL_REGEX = /[ㄱ-ㅎㅏ-ㅣ가-힣]/;
+const getMaxTitleLength = (value: string) => (HANGUL_REGEX.test(value) ? MAX_TITLE_LENGTH_KO : MAX_TITLE_LENGTH_EN);
+const LINK_TYPE_OPTIONS = ['Web', 'GitHub', 'Behance'];
+const CONTENT_PLACEHOLDER = '서비스 기획 배경, 핵심 기능 등을 자유롭게 입력해주세요.';
+const TAG_SEPARATOR_REGEX = /[\s,]+/;
+
+const LINK_TYPE_TO_PLATFORM: Record<string, LinkPlatform> = {
+  Web: 'WEB',
+  GitHub: 'GITHUB',
+  Behance: 'BEHANCE',
+};
+const PLATFORM_TO_LINK_TYPE: Record<LinkPlatform, string> = {
+  GITHUB: 'GitHub',
+  WEB: 'Web',
+  BEHANCE: 'Behance',
+};
+
+const LINK_TYPE_LABEL: Record<string, string> = {
+  Web: '웹링크',
+  GitHub: '깃허브',
+  Behance: '비핸스',
+};
+const LINK_TYPE_ICON: Record<string, ReactNode> = {
+  Web: <IcLink width={20} height={20} />,
+  GitHub: <IcGithub width={20} height={20} />,
+  Behance: <IcBehance width={20} height={14} />,
+};
+
+const CATEGORY_CODE_TO_LABEL = PROJECT_CATEGORY_LABEL;
+const CATEGORY_LABEL_TO_CODE: Record<string, ProjectCategoryCode> = Object.fromEntries(
+  Object.entries(CATEGORY_CODE_TO_LABEL).map(([code, label]) => [label, code as ProjectCategoryCode]),
+);
+
+const PART_LABELS = {
+  pm: '기획',
+  design: '디자인',
+  frontend: '프론트엔드',
+  backend: '백엔드',
+} as const;
+const KNOWN_PART_LABELS: string[] = Object.values(PART_LABELS);
+
+const ImagePlaceholderIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" strokeWidth="1.5" />
+    <circle cx="8.5" cy="9.5" r="1.5" stroke="currentColor" strokeWidth="1.5" />
+    <path
+      d="M3 16L8 11L12 15L16 11L21 16"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+interface ExtraPart {
+  id: number;
+  name: string;
+  members: string[];
+}
+
+interface LinkRow {
+  id: number;
+  type: string;
+  url: string;
+}
+
+interface ProjectUploadFormProps {
+  mode?: 'create' | 'edit';
+  initialData?: ProjectResponseDto;
+}
+
+const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormProps) => {
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const tokenState = useTokenStore((state) => state.token);
+  const isEditMode = mode === 'edit';
+
+  const idCounterRef = useRef(0);
+  const nextId = () => {
+    idCounterRef.current += 1;
+    return idCounterRef.current;
+  };
+
+  const formRef = useRef<HTMLDivElement>(null);
+  const scrollToFirstError = useScrollToFirstError(formRef);
+
+  const sortedInitialImages = initialData
+    ? [...initialData.images].sort((a, b) => a.displayOrder - b.displayOrder)
+    : [];
+  const initialImages =
+    sortedInitialImages.length > 0
+      ? Array.from({ length: MAX_IMAGE_COUNT }, (_, index) => sortedInitialImages[index]?.imageUrl ?? null)
+      : Array(MAX_IMAGE_COUNT).fill(null);
+  const initialFeaturedIndex = Math.max(
+    sortedInitialImages.findIndex((image) => image.isMain),
+    0,
+  );
+
+  const initialLinkRows: LinkRow[] = initialData
+    ? initialData.links.map((link) => ({ id: nextId(), type: PLATFORM_TO_LINK_TYPE[link.platform], url: link.url }))
+    : [];
+
+  const initialExtraParts: ExtraPart[] = initialData
+    ? Object.entries(
+        initialData.members
+          .filter((member) => !KNOWN_PART_LABELS.includes(member.part))
+          .reduce<Record<string, string[]>>((acc, member) => {
+            const key = member.part || '기타';
+            acc[key] = [...(acc[key] ?? []), member.name];
+            return acc;
+          }, {}),
+      ).map(([name, members]) => ({ id: nextId(), name, members }))
+    : [];
+
+  const membersByPart = (part: string) =>
+    initialData?.members.filter((member) => member.part === part).map((member) => member.name) ?? [];
+
+  const [images, setImages] = useState<(string | null)[]>(initialImages);
+  const [imageFiles, setImageFiles] = useState<(File | null)[]>(Array(MAX_IMAGE_COUNT).fill(null));
+  const [featuredIndex, setFeaturedIndex] = useState(initialFeaturedIndex);
+  const [isUploadingImages, setIsUploadingImages] = useState(false);
+  const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+
+  const handleFileChange = (index: number, event: ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files ?? []);
+    event.target.value = '';
+    if (files.length === 0) return;
+
+    const hadNoImages = images.every((image) => image === null);
+
+    const targets: { targetIndex: number; file: File }[] = [];
+    let cursor = index;
+    for (const file of files) {
+      while (cursor < MAX_IMAGE_COUNT && images[cursor] !== null) cursor++;
+      if (cursor >= MAX_IMAGE_COUNT) break;
+      targets.push({ targetIndex: cursor, file });
+      cursor++;
+    }
+    if (targets.length === 0) return;
+
+    setImages((prev) => {
+      const next = [...prev];
+      targets.forEach(({ targetIndex, file }) => {
+        if (next[targetIndex]) URL.revokeObjectURL(next[targetIndex] as string);
+        next[targetIndex] = URL.createObjectURL(file);
+      });
+      return next;
+    });
+    setImageFiles((prev) => {
+      const next = [...prev];
+      targets.forEach(({ targetIndex, file }) => {
+        next[targetIndex] = file;
+      });
+      return next;
+    });
+    if (hadNoImages) setFeaturedIndex(targets[0].targetIndex);
+  };
+
+  const handleRemoveImage = (index: number) => {
+    const removed = images[index];
+    if (removed) URL.revokeObjectURL(removed);
+
+    const compact = <T,>(list: T[]) => {
+      const next = [...list];
+      next.splice(index, 1);
+      next.push(null as T);
+      return next;
+    };
+    const nextImages = compact(images);
+    setImages(nextImages);
+    setImageFiles(compact);
+    setFeaturedIndex((prev) => {
+      if (prev < index) return prev;
+      if (prev > index) return prev - 1;
+      const fallback = nextImages.findIndex((image) => image !== null);
+      return fallback === -1 ? 0 : fallback;
+    });
+  };
+
+  const moveImage = (from: number, to: number) => {
+    if (from === to) return;
+    const reorder = <T,>(list: T[]) => {
+      const next = [...list];
+      const [moved] = next.splice(from, 1);
+      next.splice(to, 0, moved);
+      return next;
+    };
+    setImages(reorder);
+    setImageFiles(reorder);
+    setFeaturedIndex((prev) => {
+      if (prev === from) return to;
+      if (from < prev && prev <= to) return prev - 1;
+      if (to <= prev && prev < from) return prev + 1;
+      return prev;
+    });
+  };
+
+  const dropTargetProps = (index: number) => ({
+    onDragOver: (event: DragEvent<HTMLElement>) => {
+      if (draggingIndex === null) return;
+      event.preventDefault();
+      event.dataTransfer.dropEffect = 'move';
+      setDragOverIndex(index);
+    },
+    onDragLeave: () => setDragOverIndex((prev) => (prev === index ? null : prev)),
+    onDrop: (event: DragEvent<HTMLElement>) => {
+      event.preventDefault();
+      if (draggingIndex !== null) moveImage(draggingIndex, index);
+      setDraggingIndex(null);
+      setDragOverIndex(null);
+    },
+  });
+
+  const [title, setTitle] = useState(initialData?.title ?? '');
+  const [subtitle, setSubtitle] = useState(initialData?.tagline ?? '');
+  const [description, setDescription] = useState(initialData?.summary ?? '');
+  const [generation, onChangeGeneration] = useInput(
+    initialData ? String(initialData.generationNumber) : '',
+    NUMERIC_ONLY_REGEX,
+  );
+  const [category, setCategory] = useState(
+    initialData ? CATEGORY_CODE_TO_LABEL[initialData.category] : PROJECT_CATEGORY_OPTIONS[0],
+  );
+  const [teamName, setTeamName] = useState(initialData?.teamName ?? '');
+  const [pmMembers, setPmMembers] = useState<string[]>(membersByPart(PART_LABELS.pm));
+  const [designMembers, setDesignMembers] = useState<string[]>(membersByPart(PART_LABELS.design));
+  const [frontendMembers, setFrontendMembers] = useState<string[]>(membersByPart(PART_LABELS.frontend));
+  const [backendMembers, setBackendMembers] = useState<string[]>(membersByPart(PART_LABELS.backend));
+  const [extraParts, setExtraParts] = useState<ExtraPart[]>(initialExtraParts);
+  const [dateRange, setDateRange] = useState<[string, string]>([
+    initialData?.startDate ?? '',
+    initialData?.endDate ?? '',
+  ]);
+  const [techStackItems, setTechStackItems] = useState<string[]>(
+    initialData?.stack
+      ? initialData.stack
+          .split(',')
+          .map((item) => item.trim())
+          .filter(Boolean)
+      : [],
+  );
+  const [banner, setBanner] = useState(initialData?.banner ?? '');
+  const [linkRows, setLinkRows] = useState<LinkRow[]>(
+    initialLinkRows.length > 0 ? initialLinkRows : [{ id: nextId(), type: LINK_TYPE_OPTIONS[0], url: '' }],
+  );
+  const [showErrors, setShowErrors] = useState(false);
+  const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+
+  const { data: generations, isError: isGenerationsError } = useQuery<Generation[]>({
+    queryKey: ['generations'],
+    queryFn: () => getGenerations(tokenState),
+    enabled: !!tokenState.access,
+  });
+  const matchedGeneration = generations?.find((item) => item.number === Number(generation));
+
+  const isDateMissing = isUnfilled(dateRange[0]) || isUnfilled(dateRange[1]);
+  const isDateOrderInvalid = !isDateMissing && dateRange[1] < dateRange[0];
+  const isDateInvalid = isDateMissing || isDateOrderInvalid;
+  // 저장에는 generationId가 필요하므로 목록을 못 받은 경우에도 제출은 막되, 원인은 구분해서 안내한다
+  const isGenerationUnresolved = !isUnfilled(generation) && !matchedGeneration;
+  const isGenerationInvalid = isGenerationUnresolved && !!generations;
+  const maxTitleLength = getMaxTitleLength(title);
+  const isTitleOverflow = title.length > maxTitleLength;
+  const isSubtitleOverflow = subtitle.length > 80;
+  const isDescriptionOverflow = description.length > 300;
+  const hasError =
+    isUnfilled(title) ||
+    isTitleOverflow ||
+    isUnfilled(subtitle) ||
+    isSubtitleOverflow ||
+    isUnfilled(description) ||
+    isDescriptionOverflow ||
+    isUnfilled(generation) ||
+    isGenerationUnresolved ||
+    isUnfilled(category) ||
+    isUnfilled(teamName) ||
+    isDateInvalid;
+
+  // 영문만 있을 땐 20자지만 한글이 섞이는 순간 한도가 16자로 줄어든다. 한도를 넘기는 입력은 막되,
+  // 이미 입력된 글자를 잘라내지는 않는다(지우는 방향은 항상 허용).
+  const handleTitleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
+    const next = event.target.value;
+    if (next.length > title.length && next.length > getMaxTitleLength(next)) return;
+    setTitle(next);
+  };
+
+  const handleAddPart = () => {
+    setExtraParts((prev) => [...prev, { id: nextId(), name: '', members: [] }]);
+  };
+
+  const handleRemovePart = (id: number) => {
+    setExtraParts((prev) => prev.filter((part) => part.id !== id));
+  };
+
+  const handleAddLinkRow = () => {
+    setLinkRows((prev) => [...prev, { id: nextId(), type: LINK_TYPE_OPTIONS[0], url: '' }]);
+  };
+
+  const handleRemoveLinkRow = (id: number) => {
+    setLinkRows((prev) => prev.filter((row) => row.id !== id));
+  };
+
+  const handleCancel = () => {
+    router.push('/project');
+  };
+
+  const createMutation = useMutation({
+    mutationFn: (payload: ProjectRequestPayload) => createProject(tokenState, payload),
+  });
+  const updateMutation = useMutation({
+    mutationFn: (payload: ProjectRequestPayload) => updateProject(tokenState, initialData!.id, payload),
+  });
+  const deleteMutation = useMutation({
+    mutationFn: () => deleteProject(tokenState, initialData!.id),
+  });
+  const isSubmitting = createMutation.isPending || updateMutation.isPending || isUploadingImages;
+
+  const buildImagesPayload = async (): Promise<ProjectImagePayload[]> => {
+    const filledIndices = images.map((image, index) => (image ? index : -1)).filter((index) => index !== -1);
+
+    const imageUrls = await Promise.all(
+      filledIndices.map((index) => {
+        const file = imageFiles[index];
+        return file ? uploadProjectImage(tokenState, file) : Promise.resolve(images[index] as string);
+      }),
+    );
+
+    return filledIndices.map((index, order) => ({
+      imageUrl: imageUrls[order],
+      isMain: index === featuredIndex,
+      displayOrder: order,
+    }));
+  };
+
+  const buildPayload = (): ProjectRequestPayload | null => {
+    if (!matchedGeneration) return null;
+
+    const categoryCode = CATEGORY_LABEL_TO_CODE[category];
+    if (!categoryCode) return null;
+
+    const members: ProjectMemberPayload[] = [
+      ...pmMembers.map((name) => ({ name, part: PART_LABELS.pm })),
+      ...designMembers.map((name) => ({ name, part: PART_LABELS.design })),
+      ...frontendMembers.map((name) => ({ name, part: PART_LABELS.frontend })),
+      ...backendMembers.map((name) => ({ name, part: PART_LABELS.backend })),
+      ...extraParts.flatMap((part) => part.members.map((name) => ({ name, part: part.name || '기타' }))),
+    ];
+
+    const links: ProjectLinkPayload[] = linkRows
+      .filter((row) => row.url.trim())
+      .map((row) => ({ platform: LINK_TYPE_TO_PLATFORM[row.type], url: row.url.trim() }));
+
+    return {
+      generationId: matchedGeneration.id,
+      title,
+      category: categoryCode,
+      stack: techStackItems.join(', '),
+      tagline: subtitle,
+      summary: description,
+      teamName,
+      startDate: dateRange[0],
+      endDate: dateRange[1],
+      banner: banner || undefined,
+      images: [],
+      links,
+      members,
+    };
+  };
+
+  const handleSubmit = async () => {
+    if (hasError || isSubmitting) {
+      setShowErrors(true);
+      scrollToFirstError();
+      return;
+    }
+    const payload = buildPayload();
+    if (!payload) {
+      setShowErrors(true);
+      scrollToFirstError();
+      return;
+    }
+    setSubmitError('');
+
+    setIsUploadingImages(true);
+    try {
+      payload.images = await buildImagesPayload();
+    } catch {
+      setSubmitError('이미지 업로드에 실패했어요. 잠시 후 다시 시도해 주세요.');
+      setIsUploadingImages(false);
+      return;
+    }
+    setIsUploadingImages(false);
+
+    const mutation = isEditMode ? updateMutation : createMutation;
+    mutation.mutate(payload, {
+      onSuccess: () => {
+        // 폼은 initialData로 state를 최초 1회만 초기화하므로,
+        // 캐시가 남아 있으면 다시 수정에 들어왔을 때 저장 전 데이터로 초기화된다
+        if (isEditMode) queryClient.removeQueries({ queryKey: ['adminProject', initialData!.id] });
+        sessionStorage.setItem(isEditMode ? PROJECT_UPDATED_FLAG_KEY : PROJECT_CREATED_FLAG_KEY, 'true');
+        router.push('/project');
+      },
+      onError: () => setSubmitError('저장에 실패했어요. 잠시 후 다시 시도해 주세요.'),
+    });
+  };
+
+  const handleDelete = () => {
+    setIsDeleteAlertOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    setIsDeleteAlertOpen(false);
+    deleteMutation.mutate(undefined, {
+      onSuccess: () => {
+        queryClient.removeQueries({ queryKey: ['adminProject', initialData!.id] });
+        sessionStorage.setItem(PROJECT_DELETED_FLAG_KEY, 'true');
+        router.push('/project');
+      },
+      onError: () => setSubmitError('삭제에 실패했어요. 잠시 후 다시 시도해 주세요.'),
+    });
+  };
+
+  return (
+    <Wrapper ref={formRef}>
+      <BackHeader label="프로젝트 목록으로 돌아가기" onClick={handleCancel} />
+      <PageTitle>{isEditMode ? '프로젝트 수정하기' : '프로젝트 추가하기'}</PageTitle>
+      <FormContent>
+        <ImageUploadGroup>
+          <MainThumbnail as={images[featuredIndex] ? 'div' : 'label'} $hasImage={!!images[featuredIndex]}>
+            {images[featuredIndex] ? (
+              <MainThumbnailImage src={images[featuredIndex]} alt="대표 이미지" />
+            ) : (
+              <>
+                <UploadGuide>
+                  사진을 {MAX_IMAGE_COUNT}장까지 업로드하고
+                  <br />
+                  표지가 되는 대표사진을 선택해주세요
+                </UploadGuide>
+                <HiddenFileInput
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  aria-label="대표 이미지 선택"
+                  onChange={(event) => handleFileChange(featuredIndex, event)}
+                />
+              </>
+            )}
+            <FeaturedChip>대표</FeaturedChip>
+          </MainThumbnail>
+          <ThumbnailRow>
+            {images.map((image, index) =>
+              image ? (
+                <ThumbnailSlot
+                  key={index}
+                  as="div"
+                  role="button"
+                  tabIndex={0}
+                  $active={index === featuredIndex}
+                  $dragging={draggingIndex === index}
+                  $dropTarget={dragOverIndex === index && draggingIndex !== index}
+                  aria-label={`${index + 1}번째 이미지를 대표사진으로 설정`}
+                  onClick={() => setFeaturedIndex(index)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault();
+                      setFeaturedIndex(index);
+                    }
+                  }}
+                  draggable
+                  onDragStart={(event: DragEvent<HTMLElement>) => {
+                    event.dataTransfer.effectAllowed = 'move';
+                    // Firefox는 데이터가 설정되어야 드래그를 시작함
+                    event.dataTransfer.setData('text/plain', String(index));
+                    setDraggingIndex(index);
+                  }}
+                  onDragEnd={() => {
+                    setDraggingIndex(null);
+                    setDragOverIndex(null);
+                  }}
+                  {...dropTargetProps(index)}
+                >
+                  <ThumbnailImage src={image} alt="" draggable={false} />
+                  <RemoveThumbnailButton
+                    type="button"
+                    aria-label={`${index + 1}번째 이미지 삭제`}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      handleRemoveImage(index);
+                    }}
+                  >
+                    <IcCircleClose width={24} height={24} />
+                  </RemoveThumbnailButton>
+                </ThumbnailSlot>
+              ) : (
+                <ThumbnailSlot key={index}>
+                  <ImagePlaceholderIcon />
+                  <HiddenFileInput
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    aria-label={`이미지 ${index + 1} 선택`}
+                    onChange={(event) => handleFileChange(index, event)}
+                  />
+                </ThumbnailSlot>
+              ),
+            )}
+          </ThumbnailRow>
+        </ImageUploadGroup>
+
+        <FieldGroup>
+          <FieldHeading>
+            서비스명
+            <Required>*</Required>
+          </FieldHeading>
+          <TitleTextarea
+            placeholder={`서비스명을 입력해주세요. (국문 포함 ${MAX_TITLE_LENGTH_KO}자/영문 ${MAX_TITLE_LENGTH_EN}자)`}
+            value={title}
+            onChange={handleTitleChange}
+            resize="fixed"
+            maxLength={maxTitleLength}
+            bottomTrailingContent={<CharCount>{title.length}</CharCount>}
+            status={showErrors && (isUnfilled(title) || isTitleOverflow) ? 'negative' : 'normal'}
+            description={
+              showErrors && isUnfilled(title)
+                ? '서비스명을 입력해 주세요.'
+                : showErrors && isTitleOverflow
+                  ? `${maxTitleLength}자 이내로 입력해 주세요.`
+                  : undefined
+            }
+          />
+        </FieldGroup>
+
+        <FieldGroup>
+          <FieldHeading>
+            서비스 한줄소개
+            <Required>*</Required>
+          </FieldHeading>
+          <TitleTextarea
+            placeholder="서비스 한줄소개를 입력해주세요."
+            value={subtitle}
+            onChange={(event) => setSubtitle(event.target.value.slice(0, 80))}
+            resize="fixed"
+            maxLength={80}
+            bottomTrailingContent={<CharCount>{subtitle.length}/80</CharCount>}
+            status={showErrors && (isUnfilled(subtitle) || isSubtitleOverflow) ? 'negative' : 'normal'}
+            description={
+              showErrors && isUnfilled(subtitle)
+                ? '서비스 한줄소개를 입력해 주세요.'
+                : showErrors && isSubtitleOverflow
+                  ? '80자 이내로 입력해 주세요.'
+                  : undefined
+            }
+          />
+        </FieldGroup>
+
+        <FieldGroup>
+          <FieldHeading>
+            서비스 설명
+            <Required>*</Required>
+          </FieldHeading>
+          <ContentTextarea
+            placeholder={CONTENT_PLACEHOLDER}
+            value={description}
+            onChange={(event) => setDescription(event.target.value.slice(0, 300))}
+            resize="fixed"
+            maxLength={300}
+            bottomTrailingContent={<CharCount>{description.length}/300</CharCount>}
+            status={showErrors && (isUnfilled(description) || isDescriptionOverflow) ? 'negative' : 'normal'}
+            description={
+              showErrors && isUnfilled(description)
+                ? '서비스 설명을 입력해 주세요.'
+                : showErrors && isDescriptionOverflow
+                  ? '300자 이내로 입력해 주세요.'
+                  : undefined
+            }
+          />
+        </FieldGroup>
+
+        <Row>
+          <NarrowField>
+            <TextField
+              heading="기수 구분"
+              required
+              placeholder="숫자 입력"
+              value={generation}
+              onChange={onChangeGeneration}
+              status={showErrors && (isUnfilled(generation) || isGenerationUnresolved) ? 'negative' : 'normal'}
+              description={
+                showErrors && isUnfilled(generation)
+                  ? '기수를 입력해 주세요.'
+                  : showErrors && isGenerationsError
+                    ? '기수 정보를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.'
+                    : showErrors && isGenerationInvalid
+                      ? '존재하지 않는 기수예요.'
+                      : undefined
+              }
+            />
+          </NarrowField>
+          <ProjectFilterSelect
+            heading="프로젝트 구분"
+            required
+            options={PROJECT_CATEGORY_OPTIONS}
+            value={category}
+            onChange={setCategory}
+            status={showErrors && isUnfilled(category) ? 'negative' : 'normal'}
+            description={showErrors && isUnfilled(category) ? '프로젝트 구분을 선택해 주세요.' : undefined}
+          />
+        </Row>
+
+        <TeamRow>
+          <TeamColumn>
+            <TextField
+              heading="팀명"
+              required
+              placeholder="텍스트 입력"
+              value={teamName}
+              onChange={(event) => setTeamName(event.target.value)}
+              status={showErrors && isUnfilled(teamName) ? 'negative' : 'normal'}
+              description={showErrors && isUnfilled(teamName) ? '팀명을 입력해 주세요.' : undefined}
+            />
+            <TagChipInput
+              heading="기획"
+              placeholder="텍스트 입력 후 띄어쓰기"
+              values={pmMembers}
+              onChange={setPmMembers}
+            />
+            <TagChipInput
+              heading="디자인"
+              placeholder="텍스트 입력 후 띄어쓰기"
+              values={designMembers}
+              onChange={setDesignMembers}
+            />
+            <TagChipInput
+              heading="프론트엔드"
+              placeholder="텍스트 입력 후 띄어쓰기"
+              values={frontendMembers}
+              onChange={setFrontendMembers}
+            />
+            <TagChipInput
+              heading="백엔드"
+              placeholder="텍스트 입력 후 띄어쓰기"
+              values={backendMembers}
+              onChange={setBackendMembers}
+            />
+            {extraParts.map((part) => (
+              <ExtraPartGroup key={part.id}>
+                <ExtraPartHeaderRow>
+                  <PartNameInput
+                    placeholder="파트 이름 입력"
+                    value={part.name}
+                    onChange={(event) =>
+                      setExtraParts((prev) =>
+                        prev.map((p) => (p.id === part.id ? { ...p, name: event.target.value } : p)),
+                      )
+                    }
+                  />
+                  <TextButton size="small" color="assistive" onClick={() => handleRemovePart(part.id)}>
+                    삭제
+                  </TextButton>
+                </ExtraPartHeaderRow>
+                <TagChipInput
+                  placeholder="텍스트 입력 후 띄어쓰기"
+                  values={part.members}
+                  onChange={(members) =>
+                    setExtraParts((prev) => prev.map((p) => (p.id === part.id ? { ...p, members } : p)))
+                  }
+                />
+              </ExtraPartGroup>
+            ))}
+            <Button
+              variant="solid"
+              color="assistive"
+              size="medium"
+              trailingIcon={<IcAdd width={16} height={16} />}
+              onClick={handleAddPart}
+            >
+              파트 추가
+            </Button>
+          </TeamColumn>
+          <TeamColumn>
+            <DateFieldGroup>
+              <FieldHeadingSmall>
+                프로젝트 기간
+                <RequiredSmall>*</RequiredSmall>
+              </FieldHeadingSmall>
+              <DateRangeRow>
+                <SingleDateInput
+                  placeholder="시작일 선택"
+                  ariaLabel="시작일"
+                  value={dateRange[0]}
+                  onChange={(next) => setDateRange([next, dateRange[1]])}
+                  invalid={showErrors && isDateInvalid}
+                />
+                <DateRangeDivider width={16} height={16} />
+                <SingleDateInput
+                  placeholder="종료일 선택"
+                  ariaLabel="종료일"
+                  value={dateRange[1]}
+                  min={dateRange[0] || undefined}
+                  onChange={(next) => setDateRange([dateRange[0], next])}
+                  invalid={showErrors && isDateInvalid}
+                />
+              </DateRangeRow>
+              {showErrors && isDateMissing && <DateDescription>프로젝트 기간을 선택해 주세요.</DateDescription>}
+              {showErrors && isDateOrderInvalid && (
+                <DateDescription>종료일은 시작일 이후로 선택해 주세요.</DateDescription>
+              )}
+            </DateFieldGroup>
+            <TagChipInput
+              heading="기술스택"
+              placeholder="텍스트 입력 후 띄어쓰기"
+              values={techStackItems}
+              onChange={setTechStackItems}
+            />
+            <TextField
+              heading="배너 추가하기"
+              placeholder="예시) 2026 해커톤 본선진출작"
+              value={banner}
+              onChange={(event) => setBanner(event.target.value.slice(0, MAX_BANNER_LENGTH))}
+              maxLength={MAX_BANNER_LENGTH}
+              trailingContent={
+                <CharCount>
+                  {banner.length}/{MAX_BANNER_LENGTH}
+                </CharCount>
+              }
+            />
+          </TeamColumn>
+        </TeamRow>
+
+        <FieldGroup>
+          <LinkHeading>링크첨부</LinkHeading>
+          {linkRows.map((row, index) => (
+            <LinkRowWrapper key={row.id}>
+              <LinkTypeSelect
+                value={row.type}
+                options={LINK_TYPE_OPTIONS}
+                onChange={(type) => setLinkRows((prev) => prev.map((r) => (r.id === row.id ? { ...r, type } : r)))}
+              />
+              <TextField
+                placeholder="복사한 링크를 붙여넣어 주세요."
+                value={row.url}
+                onChange={(event) =>
+                  setLinkRows((prev) => prev.map((r) => (r.id === row.id ? { ...r, url: event.target.value } : r)))
+                }
+              />
+              {index > 0 && (
+                <DeleteLinkButton type="button" onClick={() => handleRemoveLinkRow(row.id)} aria-label="링크 삭제">
+                  <IcTrash width={24} height={24} />
+                </DeleteLinkButton>
+              )}
+            </LinkRowWrapper>
+          ))}
+          <AddLinkButton type="button" onClick={handleAddLinkRow} aria-label="링크 추가">
+            <IcAdd width={20} height={20} />
+          </AddLinkButton>
+        </FieldGroup>
+
+        <ActionArea>
+          {isEditMode ? (
+            <EditActionGroup>
+              <Button
+                variant="solid"
+                color="primary"
+                size="large"
+                onClick={handleSubmit}
+                loading={isSubmitting}
+                disabled={deleteMutation.isPending}
+              >
+                수정하기
+              </Button>
+              <Button
+                variant="outlined"
+                color="assistive"
+                size="large"
+                onClick={handleDelete}
+                loading={deleteMutation.isPending}
+                disabled={isSubmitting}
+              >
+                삭제하기
+              </Button>
+            </EditActionGroup>
+          ) : (
+            <>
+              <ActionDescription>등록 후 수정할 수 있어요</ActionDescription>
+              <Button variant="solid" color="primary" size="large" onClick={handleSubmit} loading={isSubmitting}>
+                등록하기
+              </Button>
+            </>
+          )}
+        </ActionArea>
+      </FormContent>
+
+      <ToastWrapper>
+        <Toast variant="negative" text={submitError} show={!!submitError} onHidden={() => setSubmitError('')} />
+      </ToastWrapper>
+
+      {isDeleteAlertOpen && (
+        <Alert
+          heading="프로젝트를 삭제하시겠습니까?"
+          body="삭제 후 되돌릴 수 없습니다."
+          onDimmerClick={() => setIsDeleteAlertOpen(false)}
+          actions={[
+            { label: '취소', variant: 'assistive', onClick: () => setIsDeleteAlertOpen(false) },
+            { label: '삭제', variant: 'primary', onClick: handleConfirmDelete },
+          ]}
+        />
+      )}
+    </Wrapper>
+  );
+};
+
+export default ProjectUploadForm;
+
+const LinkTypeSelect = ({
+  value,
+  options,
+  onChange,
+}: {
+  value: string;
+  options: string[];
+  onChange: (value: string) => void;
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const { listId, wrapperRef, triggerRef, activeIndex, handleKeyDown, handleBlur, selectOption } = useListboxSelect({
+    isOpen,
+    options,
+    value,
+    onOpen: () => setIsOpen(true),
+    onClose: () => setIsOpen(false),
+    onSelect: onChange,
+  });
+
+  return (
+    <LinkTypeWrapper ref={wrapperRef} onKeyDownCapture={handleKeyDown} onBlur={handleBlur}>
+      <Select
+        ref={triggerRef}
+        value={value}
+        onClick={() => setIsOpen((prev) => !prev)}
+        aria-expanded={isOpen}
+        aria-activedescendant={isOpen ? `${listId}-${activeIndex}` : undefined}
+        aria-controls={listId}
+        aria-label="링크 타입 선택"
+        hideValue
+        leadingIcon={LINK_TYPE_ICON[value]}
+      />
+      {isOpen && (
+        <MenuPositioner>
+          <Menu
+            items={options.map((option, index) => ({
+              id: `${listId}-${index}`,
+              label: LINK_TYPE_LABEL[option],
+              icon: LINK_TYPE_ICON[option],
+              selected: option === value,
+              active: index === activeIndex,
+              onClick: () => selectOption(option, index),
+            }))}
+          />
+        </MenuPositioner>
+      )}
+    </LinkTypeWrapper>
+  );
+};
+
+const TagChipInput = ({
+  heading,
+  required,
+  placeholder,
+  values,
+  onChange,
+}: {
+  heading?: string;
+  required?: boolean;
+  placeholder?: string;
+  values: string[];
+  onChange: (values: string[]) => void;
+}) => {
+  const [inputValue, setInputValue] = useState('');
+  const isComposingRef = useRef(false);
+
+  const commitValue = () => {
+    const trimmed = inputValue.trim();
+    if (trimmed) onChange([...values, trimmed]);
+    setInputValue('');
+  };
+
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const raw = event.target.value;
+    if (!TAG_SEPARATOR_REGEX.test(raw)) {
+      setInputValue(raw);
+      return;
+    }
+    const parts = raw.split(TAG_SEPARATOR_REGEX);
+    const pending = parts.pop() ?? '';
+    const committed = parts.filter(Boolean);
+    if (committed.length > 0) onChange([...values, ...committed]);
+    setInputValue(pending);
+  };
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (isComposingRef.current) return;
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      commitValue();
+    } else if (event.key === 'Backspace' && !inputValue && values.length > 0) {
+      onChange(values.slice(0, -1));
+    }
+  };
+
+  const handleRemove = (index: number) => {
+    onChange(values.filter((_, i) => i !== index));
+  };
+
+  return (
+    <TagInputRoot>
+      {heading && (
+        <TagInputHeading>
+          {heading}
+          {required && <RequiredSmall>*</RequiredSmall>}
+        </TagInputHeading>
+      )}
+      <TagInputWrapper>
+        {values.map((value, index) => (
+          <Chip
+            key={`${value}-${index}`}
+            size="xsmall"
+            trailingIcon={<RemoveIcon>×</RemoveIcon>}
+            onClick={() => handleRemove(index)}
+          >
+            {value}
+          </Chip>
+        ))}
+        <TagTextInput
+          value={inputValue}
+          onChange={handleInputChange}
+          onKeyDown={handleKeyDown}
+          onCompositionStart={() => {
+            isComposingRef.current = true;
+          }}
+          onCompositionEnd={() => {
+            isComposingRef.current = false;
+          }}
+          onBlur={commitValue}
+          placeholder={values.length === 0 ? placeholder : ''}
+        />
+      </TagInputWrapper>
+    </TagInputRoot>
+  );
+};
+
+const SingleDateInput = ({
+  placeholder,
+  ariaLabel,
+  value,
+  min,
+  onChange,
+  invalid = false,
+}: {
+  placeholder: string;
+  ariaLabel: string;
+  value: string;
+  min?: string;
+  onChange: (value: string) => void;
+  invalid?: boolean;
+}) => {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  return (
+    <DateInputWrapper $invalid={invalid} onClick={() => inputRef.current?.showPicker?.()}>
+      <IcCalendar width={22} height={22} />
+      <DateValue $placeholder={!value}>{value || placeholder}</DateValue>
+      {invalid && (
+        <IconSlot>
+          <IcCircleExclamation width={22} height={22} />
+        </IconSlot>
+      )}
+      <HiddenDateInput
+        ref={inputRef}
+        type="date"
+        value={value}
+        min={min}
+        onChange={(event) => onChange(event.target.value)}
+        aria-label={ariaLabel}
+        aria-invalid={invalid}
+      />
+    </DateInputWrapper>
+  );
+};
+
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  ${containerCss}
+  padding-bottom: 80px;
+`;
+
+const PageTitle = styled.h2`
+  margin: 0 0 42px;
+  color: ${Black.b900};
+  ${typographyCss(Typography.display3.bold)}
+`;
+
+const FormContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 46px;
+  width: 100%;
+`;
+
+const ImageUploadGroup = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 46px;
+`;
+
+const MainThumbnail = styled.label<{ $hasImage: boolean }>`
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 22px;
+  background-color: ${(props) => (props.$hasImage ? BackgroundColor : '#f4f4f5')};
+  cursor: pointer;
+`;
+
+const MainThumbnailImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+`;
+
+const UploadGuide = styled.p`
+  ${typographyCss(Typography.body2Normal.regular)}
+  color: ${Orange.o500};
+  text-align: center;
+  margin: 0;
+`;
+
+const FeaturedChip = styled.span`
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  background-color: ${Orange.o50};
+  box-shadow:
+    inset 0 0 0 9999px rgba(255, 96, 0, 0.05),
+    inset 0 0 0 1px ${AccentTint.border};
+  color: ${Orange.o500};
+  ${typographyCss(Typography.body2Normal.medium)}
+`;
+
+const ThumbnailRow = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+`;
+
+const ThumbnailSlot = styled.label<{ $active?: boolean; $dragging?: boolean; $dropTarget?: boolean }>`
+  position: relative;
+  flex-shrink: 0;
+  width: 160px;
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: ${(props) => (props.$active ? `2px solid ${Orange.o500}` : 'none')};
+  border-radius: 8px;
+  background-color: ${Fill.subtle};
+  color: ${Line.normal};
+  cursor: pointer;
+  padding: 0;
+  opacity: ${(props) => (props.$dragging ? 0.4 : 1)};
+  outline: ${(props) => (props.$dropTarget ? `2px dashed ${Orange.o500}` : 'none')};
+  outline-offset: 2px;
+`;
+
+const RemoveThumbnailButton = styled.button`
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background-color: ${BackgroundColor};
+  color: ${Orange.o500};
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+
+  ${ThumbnailSlot}:hover &,
+  ${ThumbnailSlot}:focus-within & {
+    opacity: 1;
+    pointer-events: auto;
+  }
+`;
+
+const ThumbnailImage = styled.img`
+  width: 100%;
+  height: 100%;
+  border-radius: 6px;
+  object-fit: cover;
+`;
+
+const HiddenFileInput = styled.input`
+  display: none;
+`;
+
+const TagInputRoot = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+`;
+
+const TagInputHeading = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: ${Label.neutral};
+  ${typographyCss(Typography.label1Normal.bold)}
+`;
+
+const TagInputWrapper = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  min-height: 24px;
+  padding: 12px;
+  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.08);
+  box-shadow:
+    inset 0 0 0 1px ${Line.normal},
+    0 1px 2px -1px rgba(23, 23, 23, 0.1);
+
+  &:focus-within {
+    box-shadow: inset 0 0 0 2px rgba(71, 172, 255, 0.43);
+  }
+`;
+
+const TagTextInput = styled.input`
+  flex: 1 0 60px;
+  min-width: 60px;
+  padding: 0 4px;
+  border: none;
+  outline: none;
+  background: none;
+  color: ${Label.normal};
+  ${typographyCss(Typography.body1Normal.regular)}
+
+  &::placeholder {
+    color: ${Label.assistive};
+  }
+`;
+
+const RemoveIcon = styled.span`
+  font-size: 12px;
+  line-height: 1;
+`;
+
+const FieldGroup = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+`;
+
+const FieldHeading = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  ${typographyCss(Typography.title3.bold)}
+  color: ${Label.neutral};
+`;
+
+const FieldHeadingSmall = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  ${typographyCss(Typography.label1Normal.bold)}
+  color: ${Label.neutral};
+`;
+
+const Required = styled.span`
+  color: ${State.error};
+  ${typographyCss(Typography.title3.bold)}
+`;
+
+const RequiredSmall = styled.span`
+  color: ${State.error};
+  ${typographyCss(Typography.label1Normal.medium)}
+`;
+
+const TitleTextarea = styled(Textarea)`
+  textarea {
+    min-height: 26px;
+  }
+`;
+
+const ContentTextarea = styled(Textarea)`
+  textarea {
+    min-height: 172px;
+  }
+`;
+
+const Row = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+`;
+
+const NarrowField = styled.div`
+  flex-shrink: 0;
+  width: 160px;
+`;
+
+const TeamRow = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+`;
+
+const TeamColumn = styled.div`
+  flex: 1 0 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 24px;
+`;
+
+const ExtraPartGroup = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+`;
+
+const ExtraPartHeaderRow = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+`;
+
+const PartNameInput = styled.input`
+  flex-shrink: 0;
+  width: 94px;
+  padding: 4px 6px;
+  margin: 0 -6px;
+  border: none;
+  border-radius: 6px;
+  outline: none;
+  background-color: rgba(0, 0, 0, 0.04);
+  color: ${Label.normal};
+  ${typographyCss(Typography.label1Normal.medium)}
+
+  &::placeholder {
+    color: ${Label.assistive};
+  }
+`;
+
+const DateFieldGroup = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+`;
+
+const DateRangeRow = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+`;
+
+const DateInputWrapper = styled.div<{ $invalid: boolean }>`
+  position: relative;
+  display: flex;
+  flex: 1 0 0;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+  min-height: 24px;
+  padding: 12px;
+  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.08);
+  color: ${Label.normal};
+  box-shadow: ${(props) =>
+    props.$invalid
+      ? 'inset 0 0 0 1px rgba(255, 0, 0, 0.28), 0 1px 2px -1px rgba(23, 23, 23, 0.1)'
+      : `inset 0 0 0 1px ${Line.normal}, 0 1px 2px -1px rgba(23, 23, 23, 0.1)`};
+  cursor: pointer;
+
+  &:focus-within {
+    box-shadow: inset 0 0 0 2px rgba(71, 172, 255, 0.43);
+  }
+`;
+
+const IconSlot = styled.span`
+  display: flex;
+  flex-shrink: 0;
+  color: ${State.error};
+`;
+
+const DateDescription = styled.p`
+  margin: 0;
+  width: 100%;
+  color: ${State.error};
+  ${typographyCss(Typography.caption1.regular)}
+`;
+
+const DateRangeDivider = styled(IcLineHorizontal)`
+  flex-shrink: 0;
+  color: ${Label.assistive};
+`;
+
+const DateValue = styled.span<{ $placeholder: boolean }>`
+  flex: 1 0 0;
+  min-width: 0;
+  ${typographyCss(Typography.body1Normal.regular)}
+  color: ${(props) => (props.$placeholder ? Label.assistive : Label.normal)};
+`;
+
+const HiddenDateInput = styled.input`
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  opacity: 0;
+  cursor: pointer;
+`;
+
+const LinkHeading = styled.p`
+  margin: 0;
+  color: ${Label.neutral};
+  ${typographyCss(Typography.title3.bold)}
+`;
+
+const LinkRowWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+`;
+
+const LinkTypeWrapper = styled.div`
+  position: relative;
+  flex-shrink: 0;
+  width: fit-content;
+`;
+
+const MenuPositioner = styled.div`
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 1;
+`;
+
+const DeleteLinkButton = styled.button`
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  background: none;
+  color: ${Label.normal};
+  cursor: pointer;
+`;
+
+const AddLinkButton = styled.button`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  background-color: ${Fill.normal};
+  color: ${Label.neutral};
+  cursor: pointer;
+`;
+
+const ActionArea = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 16px;
+  width: 375px;
+  max-width: 100%;
+  margin: 0 auto;
+
+  button {
+    width: 100%;
+  }
+`;
+
+const EditActionGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 20px;
+  width: 100%;
+`;
+
+const ActionDescription = styled.p`
+  margin: 0;
+  text-align: center;
+  color: ${Label.alternative};
+  ${typographyCss(Typography.label2.regular)}
+`;
+
+const ToastWrapper = styled.div`
+  position: fixed;
+  top: 110px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10001;
+  pointer-events: none;
+`;

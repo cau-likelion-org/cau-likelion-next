@@ -1,17 +1,71 @@
-import { ArchivingArrayType, IGalleryData, IGalleryDetail, ResponseData } from '@@types/request';
 import axios from 'axios';
+import { IToken } from 'src/store/useTokenStore';
 import { url } from '.';
+import { getAuthAxios } from './authAxios';
+import { PROJECT_CATEGORY_LABEL, ProjectCategoryCode } from './project';
 
-export async function getGalleries() {
-  const data = await axios
-    .get<ResponseData<ArchivingArrayType<IGalleryData>>>(`${url}/api/gallery`, { timeout: 5000 })
-    .then((res) => res.data.data);
-  return data;
+export type GalleryProjectCategory = ProjectCategoryCode;
+
+export const GALLERY_PROJECT_CATEGORY_LABEL = PROJECT_CATEGORY_LABEL;
+
+export interface GalleryProjectListItem {
+  id: number;
+  thumbnailUrl: string;
+  title: string;
+  generationNumber: number;
+  category: GalleryProjectCategory;
+  categoryDescription: string;
+  startDate: string;
+  endDate: string | null;
 }
 
-export async function getGalleryDetail(id: string) {
-  const data = await axios
-    .get<ResponseData<IGalleryDetail>>(`${url}/api/gallery/${id}`, { timeout: 5000 })
-    .then((res) => res.data.data);
-  return data;
+export interface GalleryProjectDetail {
+  id: number;
+  title: string;
+  generationNumber: number;
+  category: GalleryProjectCategory;
+  categoryDescription: string;
+  description: string;
+  startDate: string;
+  endDate: string | null;
+  imageUrls: string[];
 }
+
+export const getGalleryProjectList = () => {
+  return axios.get<GalleryProjectListItem[]>(`${url}/api/gallery/projects`).then((res) => res.data);
+};
+
+export const getGalleryProject = (id: number) => {
+  return axios.get<GalleryProjectDetail>(`${url}/api/gallery/projects/${id}`).then((res) => res.data);
+};
+
+export interface GalleryProjectCreateRequestPayload {
+  generationId: number;
+  category: GalleryProjectCategory;
+  title: string;
+  description?: string;
+  startDate: string;
+  endDate?: string;
+  thumbnailUrl?: string;
+  imageUrls: string[];
+}
+
+export type GalleryProjectUpdateRequestPayload = Omit<GalleryProjectCreateRequestPayload, 'imageUrls'> & {
+  imageUrls?: string[];
+};
+
+export const createGalleryProject = (token: IToken, payload: GalleryProjectCreateRequestPayload) => {
+  return getAuthAxios(token)
+    .post<GalleryProjectDetail>('/api/gallery/projects', payload)
+    .then((res) => res.data);
+};
+
+export const updateGalleryProject = (token: IToken, id: number, payload: GalleryProjectUpdateRequestPayload) => {
+  return getAuthAxios(token)
+    .put<GalleryProjectDetail>(`/api/gallery/projects/${id}`, payload)
+    .then((res) => res.data);
+};
+
+export const deleteGalleryProject = (token: IToken, id: number) => {
+  return getAuthAxios(token).delete(`/api/gallery/projects/${id}`);
+};

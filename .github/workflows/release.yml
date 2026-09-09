@@ -1,0 +1,174 @@
+name: Release
+
+# pull_request_target을 쓰지 않는다.
+# 그쪽은 base 브랜치 권한으로 PR의 코드를 다루게 되어 포크 PR이 시크릿·쓰기 토큰에
+# 접근하는 경로가 열린다. 여기서는 closed 이벤트 + merged == true인 PR만 처리한다.
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+
+# 여러 PR이 연달아 머지돼도 태그 번호가 꼬이지 않도록 릴리즈는 한 번에 하나씩 순차 실행한다.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions: {}
+
+jobs:
+  # 버전 계산까지는 읽기 권한만으로 충분하다. 쓰기 토큰은 publish job에만 준다.
+  resolve:
+    name: 버전 계산
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      bump: ${{ steps.label.outputs.bump }}
+      version: ${{ steps.version.outputs.version }}
+      previous: ${{ steps.version.outputs.previous }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 릴리즈 라벨 판별
+        id: label
+        env:
+          LABELS_JSON: ${{ toJSON(github.event.pull_request.labels.*.name) }}
+        run: |
+          BUMPS=$(jq -c '[.[] | select(startswith("release:")) | ltrimstr("release:")] | unique' <<< "$LABELS_JSON")
+          COUNT=$(jq -r 'length' <<< "$BUMPS")
+
+          if [ "$COUNT" -eq 0 ]; then
+            echo "::warning::release:* 라벨 없이 머지됐습니다. 릴리즈를 생성하지 않습니다."
+            echo "bump=none" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if [ "$COUNT" -gt 1 ]; then
+            echo "::error::release:* 라벨이 여러 개입니다: $(jq -r 'join(", ")' <<< "$BUMPS")"
+            exit 1
+          fi
+
+          BUMP=$(jq -r '.[0]' <<< "$BUMPS")
+          # 허용 목록을 통과한 값만 output에 쓴다.
+          # 라벨 문자열을 검증 없이 GITHUB_OUTPUT에 넘기면 개행을 섞어 다른 output을 위조할 수 있다.
+          case "$BUMP" in
+            major|minor|patch|skip) ;;
+            *)
+              echo "::error::정의되지 않은 릴리즈 라벨입니다: release:$BUMP"
+              exit 1
+              ;;
+          esac
+
+          echo "bump=$BUMP" >> "$GITHUB_OUTPUT"
+
+      - name: 다음 버전 계산
+        id: version
+        if: steps.label.outputs.bump != 'none' && steps.label.outputs.bump != 'skip'
+        env:
+          BUMP: ${{ steps.label.outputs.bump }}
+        run: |
+          PREV=$(git tag --list 'v*' --sort=-v:refname | head -n 1)
+
+          if [ -z "$PREV" ]; then
+            NEXT="v0.1.0"
+            echo "기존 태그가 없어 $NEXT 로 시작합니다."
+          else
+            if ! printf '%s' "$PREV" | grep -qE '^v[0-9]+\.[0-9]+\.[0-9]+$'; then
+              echo "::error::최신 태그 형식을 해석할 수 없습니다: $PREV"
+              exit 1
+            fi
+            CORE=${PREV#v}
+            MAJOR=$(printf '%s' "$CORE" | cut -d. -f1)
+            MINOR=$(printf '%s' "$CORE" | cut -d. -f2)
+            PATCH=$(printf '%s' "$CORE" | cut -d. -f3)
+
+            case "$BUMP" in
+              major) MAJOR=$((MAJOR + 1)); MINOR=0; PATCH=0 ;;
+              minor) MINOR=$((MINOR + 1)); PATCH=0 ;;
+              patch) PATCH=$((PATCH + 1)) ;;
+            esac
+            NEXT="v${MAJOR}.${MINOR}.${PATCH}"
+          fi
+
+          if git rev-parse "$NEXT" >/dev/null 2>&1; then
+            echo "::error::$NEXT 태그가 이미 존재합니다."
+            exit 1
+          fi
+
+          echo "version=$NEXT" >> "$GITHUB_OUTPUT"
+          echo "previous=$PREV" >> "$GITHUB_OUTPUT"
+          echo "$PREV → $NEXT ($BUMP)"
+
+  publish:
+    name: 태그·릴리즈 생성
+    needs: resolve
+    if: needs.resolve.outputs.version != ''
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # PR 제목·커밋 메시지는 사용자 입력이므로 shell 인자로 넘기지 않고
+      # env를 거쳐 printf로, 커밋 목록은 git 출력을 그대로 파일에 붙인다.
+      - name: 릴리즈 노트 작성
+        env:
+          VERSION: ${{ needs.resolve.outputs.version }}
+          PREVIOUS: ${{ needs.resolve.outputs.previous }}
+          BUMP: ${{ needs.resolve.outputs.bump }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+          MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+        run: |
+          {
+            printf '## %s\n\n' "$VERSION"
+            printf -- '- PR: #%s — %s\n' "$PR_NUMBER" "$PR_TITLE"
+            printf -- '- 작성자: @%s\n' "$PR_AUTHOR"
+            printf -- '- 배포 커밋: %s\n\n' "$MERGE_SHA"
+            printf 'main 병합과 함께 AWS Amplify가 이 커밋을 자동 배포합니다.\n\n'
+          } > notes.md
+
+          # 이번 릴리즈의 번들 사이즈와 직전 태그 대비 변화.
+          # 예산 파일은 CI가 검증한 값이라 별도 빌드 없이 그대로 쓸 수 있다.
+          CUR_SHARED=$(jq -r '.shared' .github/bundle-budget.json)
+          CUR_ROUTES=$(jq -r '.routes | length' .github/bundle-budget.json)
+
+          {
+            printf '### 번들 사이즈\n\n'
+            printf -- '- 공유 청크: %s kB (라우트 %s개)\n' "$CUR_SHARED" "$CUR_ROUTES"
+          } >> notes.md
+
+          if [ -n "$PREVIOUS" ]; then
+            PREV_SHARED=$(git show "$PREVIOUS:.github/bundle-budget.json" 2>/dev/null | jq -r '.shared // empty')
+            if [ -n "$PREV_SHARED" ]; then
+              DELTA=$(awk -v a="$CUR_SHARED" -v b="$PREV_SHARED" 'BEGIN { printf "%+.1f", a - b }')
+              printf -- '- 직전 릴리즈(%s) 대비: %s kB\n' "$PREVIOUS" "$DELTA" >> notes.md
+            fi
+          fi
+
+          printf '\n### 변경 사항\n\n' >> notes.md
+          if [ -n "$PREVIOUS" ]; then
+            git log --no-merges --pretty=format:'- %s' "$PREVIOUS..HEAD" >> notes.md
+          else
+            git log --no-merges --pretty=format:'- %s' -n 20 >> notes.md
+          fi
+          printf '\n' >> notes.md
+
+      - name: 태그 및 릴리즈 생성
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          VERSION: ${{ needs.resolve.outputs.version }}
+          MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+        run: |
+          gh release create "$VERSION" \
+            --target "$MERGE_SHA" \
+            --title "$VERSION" \
+            --notes-file notes.md
+          echo "릴리즈 $VERSION 생성 완료"

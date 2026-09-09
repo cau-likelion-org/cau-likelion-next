@@ -1,0 +1,185 @@
+import styled from 'styled-components';
+
+import Tab from '@common/tab/Tab';
+import Textarea from '@common/textarea/Textarea';
+import TextField from '@common/textField/TextField';
+import CharCount from '@common/charCount/CharCount';
+import AddCardButton from '@mypage/component/AddCardButton';
+import RemoveCardButton from '@mypage/component/RemoveCardButton';
+import useListItems from 'src/hooks/useListItems';
+import { isUnfilled } from '@utils/index';
+import { BackgroundWhite, Black, Label, Line } from '@utils/constant/color';
+import { Typography, typographyCss } from '@utils/constant/typography';
+import { createId } from '../utils';
+
+export interface CurriculumWeekItem {
+  id: string;
+  week: string;
+  title: string;
+  description: string;
+}
+
+export interface CurriculumTrackItems {
+  key: string;
+  label: string;
+  weeks: CurriculumWeekItem[];
+}
+
+// 설명은 실제 소개 페이지 데이터(CurriculumWeek.content)에서도 선택 항목이라 필수에서 제외
+const isCurriculumWeekInvalid = (week: CurriculumWeekItem) => isUnfilled(week.week) || isUnfilled(week.title);
+
+export const isCurriculumTracksInvalid = (tracks: CurriculumTrackItems[]) =>
+  tracks.some((track) => track.weeks.some(isCurriculumWeekInvalid));
+
+// 저장 시 에러가 있는 트랙(탭)으로 자동 전환하기 위한 첫 번째 미입력 트랙 조회
+export const getFirstInvalidTrackKey = (tracks: CurriculumTrackItems[]) =>
+  tracks.find((track) => track.weeks.some(isCurriculumWeekInvalid))?.key;
+
+const createEmptyWeek = (): CurriculumWeekItem => ({ id: createId(), week: '', title: '', description: '' });
+
+const CurriculumSection = ({
+  tracks,
+  onChange,
+  showErrors,
+  activeKey,
+  onActiveKeyChange,
+  disabled = false,
+}: {
+  tracks: CurriculumTrackItems[];
+  onChange: (tracks: CurriculumTrackItems[]) => void;
+  showErrors: boolean;
+  activeKey: string;
+  onActiveKeyChange: (key: string) => void;
+  disabled?: boolean;
+}) => {
+  const activeTrack = tracks.find((track) => track.key === activeKey) ?? tracks[0];
+
+  const {
+    updateItem: updateWeek,
+    removeItem: removeWeek,
+    addItem: addWeek,
+  } = useListItems(
+    activeTrack?.weeks ?? [],
+    (weeks) => onChange(tracks.map((track) => (track.key === activeKey ? { ...track, weeks } : track))),
+    createEmptyWeek,
+  );
+
+  // 커리큘럼은 트랙에 속하므로, 트랙이 없으면 입력 자체가 불가능하다
+  if (!activeTrack) {
+    return (
+      <Section>
+        <Title>커리큘럼 관리</Title>
+        <EmptyText>등록된 트랙이 없습니다. 랜딩페이지 관리에서 트랙을 먼저 등록해 주세요.</EmptyText>
+      </Section>
+    );
+  }
+
+  return (
+    <Section>
+      <Title>커리큘럼 관리</Title>
+      <Tab
+        items={tracks.map((track) => ({ key: track.key, label: track.label }))}
+        activeKey={activeKey}
+        onChange={onActiveKeyChange}
+        size="large"
+      />
+      {activeTrack.weeks.map((week) => (
+        <Card key={week.id}>
+          <Row>
+            <WeekFieldWrapper>
+              <TextField
+                heading="주차"
+                value={week.week}
+                placeholder="텍스트 입력"
+                readOnly={disabled}
+                onChange={(event) => updateWeek(week.id, { week: event.target.value })}
+                status={showErrors && isUnfilled(week.week) ? 'negative' : 'normal'}
+                description={showErrors && isUnfilled(week.week) ? '주차를 입력해 주세요.' : undefined}
+              />
+            </WeekFieldWrapper>
+            <TitleFieldWrapper>
+              <TextField
+                heading="커리큘럼 제목"
+                value={week.title}
+                placeholder="텍스트 입력"
+                readOnly={disabled}
+                onChange={(event) => updateWeek(week.id, { title: event.target.value })}
+                status={showErrors && isUnfilled(week.title) ? 'negative' : 'normal'}
+                description={showErrors && isUnfilled(week.title) ? '커리큘럼 제목을 입력해 주세요.' : undefined}
+              />
+            </TitleFieldWrapper>
+          </Row>
+          <Textarea
+            heading="설명"
+            value={week.description}
+            placeholder="텍스트 입력"
+            maxLength={1000}
+            readOnly={disabled}
+            bottomTrailingContent={<CharCount>{week.description.length}/1000</CharCount>}
+            onChange={(event) => updateWeek(week.id, { description: event.target.value })}
+          />
+          {!disabled && (
+            <ButtonRow>
+              <RemoveCardButton onClick={() => removeWeek(week.id)} />
+            </ButtonRow>
+          )}
+        </Card>
+      ))}
+      {!disabled && <AddCardButton onClick={addWeek} ariaLabel="커리큘럼 주차 추가" />}
+    </Section>
+  );
+};
+
+export default CurriculumSection;
+
+const EmptyText = styled.p`
+  margin: 0;
+  color: ${Label.alternative};
+  ${typographyCss(Typography.body1Normal.medium)}
+`;
+
+const Section = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+`;
+
+const Title = styled.p`
+  margin: 0;
+  color: ${Black.b900};
+  ${typographyCss(Typography.title3.bold)}
+`;
+
+const Card = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  padding: 20px;
+  border: 1px solid ${Line.subtle};
+  border-radius: 14px;
+  background-color: ${BackgroundWhite.secondary};
+`;
+
+const Row = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  width: 100%;
+`;
+
+const WeekFieldWrapper = styled.div`
+  flex: 0 0 160px;
+`;
+
+const TitleFieldWrapper = styled.div`
+  flex: 1 0 0;
+  min-width: 0;
+`;
+
+const ButtonRow = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+`;

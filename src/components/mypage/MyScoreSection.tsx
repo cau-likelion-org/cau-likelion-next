@@ -1,128 +1,254 @@
-import { UserAttendance, UserProfile } from '@@types/request';
-import { ATTENDANCE_CATEGORY_NAME } from '@utils/constant';
-import { GreyScale } from '@utils/constant/color';
-import { getTotalScore } from '@utils/index';
-import { token } from '@utils/state';
-import { AxiosError } from 'axios';
-import React, { useEffect, useState } from 'react';
-import { useQuery } from 'react-query';
-import { useRecoilValue } from 'recoil';
-import { getAssignments, getUserAttendance } from 'src/apis/mypage';
+import { ReactNode } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import styled from 'styled-components';
-import ScoreHeader from './component/ScoreHeader';
+
+import { UserProfile } from '@@types/request';
+import { getMyScore } from 'src/apis/mypage';
+import useTokenStore from 'src/store/useTokenStore';
+import LinearLoading from '@common/loading/LinearLoading';
+import EmptyState from '@common/emptyState/EmptyState';
+import { BackgroundWhite, Black, Label, Line, Orange } from '@utils/constant/color';
+import { Typography, typographyCss } from '@utils/constant/typography';
+import { Breakpoint, media } from '@utils/constant/breakpoint';
+
+const TOTAL_SCORE_MAX = 3;
+
+const STACKED = `@media (max-width: ${Breakpoint.lg - 1}px)`;
 
 const MyScoreSection = ({ userProfile }: { userProfile: UserProfile }) => {
-  const [totalScore, setTotalScore] = useState<number>(0);
-  const tokenValue = useRecoilValue(token);
+  const tokenValue = useTokenStore((state) => state.token);
+  const isActiveGeneration = userProfile.role === 'BABY_LION';
 
   const {
-    data: userAttendance,
-    isLoading: attendanceLoading,
-    error: attendanceError,
-  } = useQuery<UserAttendance, AxiosError>(['userAttendance'], () => getUserAttendance(tokenValue), {
-    enabled: !!tokenValue.access,
+    data: score,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ['myScore'],
+    queryFn: () => getMyScore(tokenValue),
+    enabled: !!tokenValue.access && isActiveGeneration,
   });
 
-  const {
-    data: userAssignment,
-    isLoading: assignmentLoading,
-    error: assignmentError,
-  } = useQuery(
-    ['userAssignment'],
-    () => getAssignments().then((data) => data.filter((user: any) => user['이름'] == userProfile!.name)),
-    {
-      enabled: !!userProfile,
-    },
-  );
-
-  useEffect(() => {
-    if (userAttendance && userAssignment) {
-      const score = getTotalScore({
-        absence: userAttendance.absence,
-        truancy: userAttendance.truancy,
-        tardiness: userAttendance.tardiness,
-        notSubmitted: userAssignment[0]['과제 미제출'],
-        lateSubmitted: userAssignment[0]['과제 지각제출'],
-      });
-      setTotalScore(score);
-    }
-  }, [userAssignment, userAttendance]);
-
   return (
-    <Wrapper>
-      <ScoreHeader isAdmin={false} />
-      <ScoreWrapper>
-        {userAttendance && userAssignment && (
-          <>
-            <ScoreRow>
-              {Array.from({ length: 6 }, (_, i) => (
-                <ScoreTitle index={i} key={i}>
-                  {ATTENDANCE_CATEGORY_NAME[i]}
-                </ScoreTitle>
-              ))}
-            </ScoreRow>
-            <ScoreRow>
-              <Score>{userAttendance.absence}</Score>
-              <Score>{userAttendance.truancy}</Score>
-              <Score>{userAttendance.tardiness}</Score>
-              <Score>{userAssignment[0]['과제 미제출']}</Score>
-              <Score>{userAssignment[0]['과제 지각제출']}</Score>
-              <Score type={'total'}>{totalScore}</Score>
-            </ScoreRow>
-          </>
-        )}
-      </ScoreWrapper>
-    </Wrapper>
+    <Section>
+      <SectionTitle>상벌점내역표</SectionTitle>
+      {!isActiveGeneration ? (
+        <EmptyCard>올해 활동 내역이 없습니다</EmptyCard>
+      ) : isLoading ? (
+        <LoadingWrapper>
+          <LinearLoading />
+        </LoadingWrapper>
+      ) : isError ? (
+        <EmptyState variant="error" />
+      ) : (
+        <CardRow>
+          <StatCard title="출결">
+            <StatItem label="지각" value={score?.lateCount ?? 0} />
+            <StatItem label="결석" value={score?.absentCount ?? 0} />
+            <StatItem label="무단결석" value={score?.unauthorizedAbsentCount ?? 0} />
+          </StatCard>
+          <StatCard title="과제">
+            <StatItem label="지각제출" value={score?.lateSubmitCount ?? 0} />
+            <StatItem label="미제출" value={score?.missedCount ?? 0} />
+          </StatCard>
+          <TotalScoreCard score={score?.total ?? 0} />
+        </CardRow>
+      )}
+    </Section>
   );
 };
 
 export default MyScoreSection;
 
-const Wrapper = styled.div`
+const StatCard = ({ title, children }: { title: string; children: ReactNode }) => (
+  <StatCardWrapper>
+    <StatCardHeader>{title}</StatCardHeader>
+    <StatCardBody>{children}</StatCardBody>
+  </StatCardWrapper>
+);
+
+const StatItem = ({ label, value }: { label: string; value: number }) => (
+  <StatItemWrapper>
+    <StatLabel>{label}</StatLabel>
+    <StatValue $highlight={value > 0}>{value}회</StatValue>
+  </StatItemWrapper>
+);
+
+const TotalScoreCard = ({ score }: { score: number }) => (
+  <TotalCardWrapper>
+    <TotalCardHeader>총점</TotalCardHeader>
+    <TotalCardBody>
+      <TotalScoreValue>{score}점</TotalScoreValue>
+      <TotalScoreMax> / {TOTAL_SCORE_MAX}점</TotalScoreMax>
+    </TotalCardBody>
+  </TotalCardWrapper>
+);
+
+const Section = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+  width: 100%;
 `;
 
-const ScoreWrapper = styled.div`
-  margin: 3rem 0;
+const SectionTitle = styled.p`
+  margin: 0;
   width: 100%;
-  border-radius: 10px;
+  color: ${Label.normal};
+  ${typographyCss(Typography.heading2.bold)}
+`;
+
+const CardRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+
+  ${STACKED} {
+    flex-direction: column;
+    align-items: stretch;
+  }
+`;
+
+const EmptyCard = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 80px;
+  border-radius: 12px;
+  border: 1px solid ${Line.subtle};
+  background-color: ${BackgroundWhite.secondary};
+  color: ${Label.assistive};
+  ${typographyCss(Typography.body1Normal.medium)}
+`;
+
+const LoadingWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 164px;
+`;
+
+const StatCardWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  border: 1px solid #bbbbbb;
-  justify-content: space-between;
-  overflow: hidden;
+  align-items: center;
+  flex-shrink: 0;
+  width: 340px;
+
+  ${STACKED} {
+    width: 100%;
+  }
+
+  ${media.xl} {
+    flex-grow: 1;
+  }
 `;
 
-const ScoreRow = styled.div`
+const StatCardHeader = styled.div`
   display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
+  height: 52px;
+  padding: 12px 20px;
+  border: 1px solid ${Line.subtle};
+  border-top-left-radius: 14px;
+  border-top-right-radius: 14px;
+  background-color: ${BackgroundWhite.tertiary};
+  color: ${Black.b900};
+  ${typographyCss(Typography.heading2.bold)}
 `;
 
-const ScoreTitle = styled.div<{ index: number }>`
-  font-family: 'Pretendard';
-  font-style: normal;
-  font-weight: 500;
-  font-size: 1.4rem;
-  flex-basis: 50%;
-  padding: 1rem 0;
+const StatCardBody = styled.div`
   display: flex;
-  justify-content: center;
   align-items: center;
-  background-color: ${GreyScale.light};
-  border-right: ${(props) => (props.index == 5 ? 'none' : '1px solid gray')};
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  padding: 20px;
+  border: 1px solid ${Line.subtle};
+  border-top: none;
+  border-bottom-left-radius: 14px;
+  border-bottom-right-radius: 14px;
+  background-color: ${BackgroundWhite.secondary};
 `;
 
-const Score = styled.div<{ type?: string }>`
-  font-family: 'Pretendard';
-  padding: 0.8rem 0;
-  font-style: normal;
-  font-weight: 500;
-  font-size: 1.4rem;
-  flex-basis: 50%;
+const StatItemWrapper = styled.div`
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  background-color: #fefefe;
-  border-right: ${(props) => (props.type == 'total' ? 'none' : '1px solid gray')};
+  justify-content: center;
+  gap: 10px;
+  width: 80px;
+  text-align: center;
+`;
+
+const StatLabel = styled.p`
+  margin: 0;
+  color: ${Label.assistive};
+  ${typographyCss(Typography.body1Normal.medium)}
+`;
+
+const StatValue = styled.p<{ $highlight: boolean }>`
+  margin: 0;
+  color: ${(props) => (props.$highlight ? Orange.o500 : Label.strong)};
+  ${typographyCss(Typography.title3.bold)}
+`;
+
+const TotalCardWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  width: 160px;
+  height: 164px;
+
+  ${STACKED} {
+    width: 100%;
+  }
+`;
+
+const TotalCardHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 52px;
+  padding: 12px 20px;
+  border: 1px solid ${Orange.o100};
+  border-top-left-radius: 14px;
+  border-top-right-radius: 14px;
+  background-color: ${Orange.o75};
+  color: ${Black.b900};
+  ${typographyCss(Typography.heading2.bold)}
+`;
+
+const TotalCardBody = styled.div`
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  padding: 20px;
+  border: 1px solid ${Orange.o100};
+  border-top: none;
+  border-bottom-left-radius: 14px;
+  border-bottom-right-radius: 14px;
+  background-color: ${Orange.o50};
+`;
+
+const TotalScoreValue = styled.p`
+  margin: 0;
+  color: ${Label.strong};
+  ${typographyCss(Typography.title3.bold)}
+`;
+
+const TotalScoreMax = styled.span`
+  color: ${Label.assistive};
+  ${typographyCss(Typography.headline1.medium)}
 `;

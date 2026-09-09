@@ -1,7 +1,15 @@
 html {
-  -webkit-text-size-adjust​: ​none​;
+  -webkit-text-size-adjust: none;
+  text-size-adjust: none;
   width: 100%;
   margin: 0;
+  font-family:
+    'Pretendard',
+    -apple-system,
+    BlinkMacSystemFont,
+    system-ui,
+    'Apple SD Gothic Neo',
+    sans-serif;
   font-size: 62.5%;
   overflow: scroll;
   scroll-snap-type: y mandatory;
@@ -34,7 +42,6 @@ body {
 @media (max-width: 1920px) {
   html {
     font-size: 10px;
-    /* margin: 0 360px; */
   }
 }
 
@@ -42,7 +49,6 @@ body {
 @media (max-width: 1280px) {
   html {
     font-size: 10px;
-    /* margin: 0 200px; */
   }
 }
 
@@ -50,7 +56,6 @@ body {
 @media (max-width: 1024px) {
   html {
     font-size: 10px;
-    /* margin: 0 200px; */
   }
 }
 
@@ -58,7 +63,6 @@ body {
 @media (max-width: 768px) {
   html {
     font-size: 9px;
-    /* margin: 0 150px; */
   }
 }
 
@@ -66,7 +70,6 @@ body {
 @media (max-width: 768px) {
   html {
     font-size: 8px;
-    /* margin: 0 150px; */
   }
 }
 
@@ -74,13 +77,26 @@ body {
 @media (max-width: 576px) {
   html {
     font-size: 8px;
-    /* margin: 0 130px; */
+  }
+}
+
+/* 모바일 헤더(MobileNavBar) 높이가 60px이라, 데스크톱과 다르게 맞춘다 */
+@media (max-width: 767px) {
+  html {
+    scroll-padding-top: 60px;
   }
 }
 
 a {
   color: inherit;
   text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
 }
 
 * {
@@ -94,7 +110,8 @@ a {
   border-radius: 30px;
   border: none;
   overflow: hidden;
-  @media (max-width: 900px) {
+
+  @media (max-width: 767px) {
     height: 30vh;
   }
 }
