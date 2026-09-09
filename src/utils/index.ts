@@ -1,12 +1,15 @@
-import {
-  ArchivingArrayType,
-  IGalleryData,
-  IProjectData,
-  ISessionData,
-  TotalScoreParams,
-  UserScore,
-} from '@@types/request';
-import { GENERATION_CHECKER, TRACK_INDEX } from './constant';
+import axios from 'axios';
+import { ArchivingArrayType, IGalleryData, IProjectData, ISessionData, MemberRole } from '@@types/request';
+import { COMMON_PART_NAME } from '@utils/constant';
+
+// 서버가 내려주는 실패 사유(중복, 형식 오류, 마감 초과 등)를 그대로 보여줄 때 사용
+export const getServerMessage = (error: unknown) => {
+  if (!axios.isAxiosError(error)) return undefined;
+  const data: unknown = error.response?.data;
+  if (typeof data === 'string') return data.trim() || undefined;
+  const message = (data as { message?: unknown } | undefined)?.message;
+  return typeof message === 'string' && message.trim() ? message : undefined;
+};
 
 export const toDateString = (date?: Date, formatter = '-') => {
   if (!date) return '';
@@ -16,67 +19,41 @@ export const toDateString = (date?: Date, formatter = '-') => {
   return year + formatter + month + formatter + day;
 };
 
-export const concatDateString = (startDate: string, endDate: string) => {
-  const startDateArray = startDate.split('-');
-  const endDateArray = endDate.split('-');
-  const newStartDate = startDateArray.join('.');
-  const newEndDate = endDateArray.join('.');
-  return newStartDate + '~' + newEndDate;
-};
+export const isUnfilled = (value: string) => value.trim().length === 0;
 
-export const isEmptyString = (str: string) => {
-  if (str.length == 0) return true;
-  else return false;
-};
+// 한글 등 이메일에 쓰일 수 없는 문자가 섞여 들어가는 것을 막기 위해 허용 문자를 제한한다
+const EMAIL_REGEX = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+export const isEmailFormatInvalid = (email: string) => !isUnfilled(email) && !EMAIL_REGEX.test(email);
 
-export const getTotalScore = (target: TotalScoreParams) => {
-  let defaultScore = 3;
-  const totalScore =
-    defaultScore -
-    (1 * target.absence +
-      0.2 * target.lateSubmitted +
-      1 * target.notSubmitted +
-      0.5 * target.tardiness +
-      1.5 * target.truancy);
+// 갤러리 게시물 파트 선택지에만 있는 "공통"은 관리자 화면의 파트 목록·드롭다운에서는 제외한다
+export const excludeCommonPart = <T extends { name: string }>(parts: T[]) =>
+  parts.filter((part) => part.name !== COMMON_PART_NAME);
 
-  return Number(totalScore.toFixed(1)) > 0 ? Number(totalScore.toFixed(1)) : 0;
-};
+// 운영진(STAFF) 이상 — 담당 파트에 한정된 관리 권한까지 포함해 "관리자 화면 접근 가능 여부" 판단에 사용
+const ADMIN_ROLES: MemberRole[] = ['STAFF', 'PRESIDENT', 'ADMIN'];
 
-export const checkGeneration = (generation: number) => {
-  let year = new Date().getFullYear();
-  if (year - generation == GENERATION_CHECKER) return true;
-  return false;
-};
+// 회장(PRESIDENT)/중하하 관리자(ADMIN) — 전체 파트·전체 회원 데이터에 대한 무제한 권한이 필요한 기능에 사용
+const FULL_ADMIN_ROLES: MemberRole[] = ['PRESIDENT', 'ADMIN'];
 
-export const getTotalNameObject = (data: any): Record<string, UserScore> => {
-  let totalNameObject: Record<string, UserScore> = {};
-  data.forEach((user: any, i: number) => {
-    totalNameObject[user['이름']] = {
-      user_id: 0,
-      name: user['이름'],
-      track: TRACK_INDEX[user['트랙']],
-      lateSubmitted: user['과제 지각제출'],
-      notSubmitted: user['과제 미제출'],
-      absence: 0,
-      truancy: 0,
-      tardiness: 0,
-      totalScore: 0,
-    };
-  });
-  return totalNameObject;
-};
+export const isAdminRole = (role: MemberRole) => ADMIN_ROLES.includes(role);
+export const isFullAdminRole = (role: MemberRole) => FULL_ADMIN_ROLES.includes(role);
+
+// 출석체크는 활동 중인 아기사자만 대상
+export const isAttendanceTarget = (role: MemberRole) => role === 'BABY_LION';
+
+// 출석부 생성은 회장 전용 권한
+export const canCreateAttendance = (role: MemberRole) => role === 'PRESIDENT';
+
+// 사이드바 '관리자' 메뉴(랜딩·소개 페이지 관리)는 중하하 관리자 전용 — 운영진·회장에게는 보이지 않는다
+export const canManageSitePages = (role: MemberRole) => role === 'ADMIN';
+
+// 전체 구성원 권한 설정은 중하하 관리자 전용 권한
+export const canManageMemberRoles = (role: MemberRole) => role === 'ADMIN';
 
 export const sortArchivingListDesc = <T extends IGalleryData | IProjectData>(
   data: ArchivingArrayType<T>,
 ): Array<[string, T[]]> => {
-  const newData = Object.entries(data).sort((year, _) => Number(year));
-  return newData.reverse();
-};
-
-export const getIdFromAsPath = (asPath: string, type: 'project' | 'session' | 'gallery'): string => {
-  const regExp = new RegExp(`\/${type}\/(.*)`);
-  const match = asPath.match(regExp);
-  return match ? match[1] : '';
+  return Object.entries(data).sort(([a], [b]) => Number(b) - Number(a));
 };
 
 interface IPath {

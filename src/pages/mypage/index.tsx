@@ -1,99 +1,107 @@
 import { UserProfile } from '@@types/request';
-import { token, userProfileChanged } from '@utils/state';
 import { AxiosError } from 'axios';
-import React, { useEffect, useState } from 'react';
-import { useQuery } from 'react-query';
-import { useRecoilValue } from 'recoil';
+import { ReactElement, useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import useTokenStore from 'src/store/useTokenStore';
 import { getUserProfile } from 'src/apis/account';
-import NameCard from '@mypage/component/NameCard';
+import { INACTIVE_MEMBER_NOTICE_KEY } from '@utils/constant';
+import { canCreateAttendance, isAdminRole, isAttendanceTarget } from '@utils/index';
 import styled from 'styled-components';
-import ProfileCard from '@mypage/component/ProfileCard';
-import { GreyScale } from '@utils/constant/color';
-import { checkGeneration } from '@utils/index';
+import LayoutFullWidth from '@common/layout/LayoutFullWidth';
+import Toast from '@common/toast/Toast';
+import MyPageShell from '@mypage/component/MyPageShell';
+import PageLoadingGate from '@common/pageGate/PageLoadingGate';
+import ProfileCard from '@mypage/component/home/ProfileCard';
+import AttendanceCheckCard from '@mypage/component/home/AttendanceCheckCard';
+import MakeAttendanceCard from '@mypage/component/home/MakeAttendanceCard';
 import MyScoreSection from '@mypage/MyScoreSection';
-import TotalScoreSection from '@mypage/TotalScoreSection';
+import MemberScoreSection from '@mypage/MemberScoreSection';
 import { useRouter } from 'next/router';
+import { media } from '@utils/constant/breakpoint';
 
 const MyPage = () => {
-  const tokenState = useRecoilValue(token);
-  const [isActiveGeneration, setIsActiveGeneration] = useState(false);
-  const [isLogin, setIsLogin] = useState(false);
-  const profileChanged = useRecoilValue(userProfileChanged);
+  const tokenState = useTokenStore((state) => state.token);
+  const hasHydrated = useTokenStore((state) => state.hasHydrated);
   const router = useRouter();
 
-  const {
-    data: userProfile,
-    isLoading: profileLoading,
-    error: profileError,
-  } = useQuery<UserProfile, AxiosError>(['userProfile', profileChanged], () => getUserProfile(tokenState), {
+  const { data: userProfile, isError: isUserProfileError } = useQuery<UserProfile, AxiosError>({
+    queryKey: ['userProfile'],
+    queryFn: () => getUserProfile(tokenState),
     retry: false,
     enabled: !!tokenState.access,
   });
 
   useEffect(() => {
-    if (tokenState.access) setIsLogin(true);
-    else {
-      setIsLogin(false);
-      router.push('/login');
-    }
-  }, [tokenState]);
+    if (hasHydrated && !tokenState.access) router.push('/login');
+  }, [hasHydrated, tokenState, router]);
 
+  // 활동 전용 메뉴에서 돌려보내진 경우에만 안내 (홈 자체 진입에는 띄우지 않는다)
+  const [toastMessage, setToastMessage] = useState('');
   useEffect(() => {
-    if (userProfile && checkGeneration(userProfile.generation)) {
-      setIsActiveGeneration(true);
-    } else {
-      setIsActiveGeneration(false);
-    }
-  }, [userProfile]);
+    const frame = requestAnimationFrame(() => {
+      if (!sessionStorage.getItem(INACTIVE_MEMBER_NOTICE_KEY)) return;
+      sessionStorage.removeItem(INACTIVE_MEMBER_NOTICE_KEY);
+      setToastMessage('현재 활동 중인 구성원이 아닙니다.');
+    });
+    return () => cancelAnimationFrame(frame);
+  }, []);
+
   return (
     <>
-      {userProfile && (
-        <Wrapper>
-          <Header>
-            <NameCard name={userProfile.name} generation={userProfile?.generation} />
-          </Header>
-          <RowWrapper>
+      <ToastWrapper>
+        <Toast variant="negative" text={toastMessage} show={!!toastMessage} onHidden={() => setToastMessage('')} />
+      </ToastWrapper>
+      {!userProfile ? (
+        <PageLoadingGate isError={isUserProfileError} />
+      ) : (
+        <>
+          <CardRow>
             <ProfileCard user={userProfile} />
-            {isActiveGeneration ? (
-              userProfile.is_admin ? (
-                <TotalScoreSection myName={userProfile.name} />
-              ) : (
-                <MyScoreSection userProfile={userProfile} />
-              )
-            ) : null}
-          </RowWrapper>
-        </Wrapper>
+            {canCreateAttendance(userProfile.role) ? (
+              <MakeAttendanceCard />
+            ) : (
+              <AttendanceCheckCard isTarget={isAttendanceTarget(userProfile.role)} />
+            )}
+          </CardRow>
+          {isAdminRole(userProfile.role) ? (
+            <MemberScoreSection userProfile={userProfile} />
+          ) : (
+            <MyScoreSection userProfile={userProfile} />
+          )}
+        </>
       )}
     </>
   );
 };
 
+MyPage.getLayout = function getLayout(page: ReactElement) {
+  return (
+    <LayoutFullWidth>
+      <MyPageShell active="home">{page}</MyPageShell>
+    </LayoutFullWidth>
+  );
+};
+
 export default MyPage;
 
-const Wrapper = styled.div`
+const ToastWrapper = styled.div`
+  position: fixed;
+  top: 110px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10001;
+  pointer-events: none;
+`;
+
+const CardRow = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: stretch;
+  gap: 20px;
   width: 100%;
-`;
 
-const Header = styled.div`
-  display: flex;
-  align-items: center;
-  font-family: 'Inter';
-  font-style: normal;
-  font-weight: 400;
-  font-size: 1.6rem;
-  color: ${GreyScale.default};
-`;
-
-const RowWrapper = styled.div`
-  margin-top: 2rem;
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  gap: 35px;
-
-  @media (max-width: 900px) {
-    flex-direction: column;
+  ${media.lg} {
+    flex-direction: row;
+    align-items: center;
   }
 `;

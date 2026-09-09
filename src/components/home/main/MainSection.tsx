@@ -1,457 +1,226 @@
-import Image from 'next/image';
-import union from '@image/union.png';
-import generationDia from '@image/generationDia.png';
-import circle from '@image/circle.png';
-import loadingPic from '@image/loading.png';
 import styled from 'styled-components';
-import { Primary } from '@utils/constant/color';
-import LandingRectangle from '@image/landingRectangle.svg';
-import { motion } from 'framer-motion';
-import { HiOutlineArrowDown } from 'react-icons/hi';
-import { GENERATION_CHECKER } from '@utils/constant';
+import { HiOutlineBell } from 'react-icons/hi';
+import Button from '@common/button/Button';
+import { Black } from '@utils/constant/color';
+import { Typography, typographyCss } from '@utils/constant/typography';
+import BgLanding from 'src/assets/svg/bg-landing.svg';
+import BgLandingMobile from 'src/assets/svg/bg-landing-mobile.svg';
+import LogoLikelion from 'src/assets/svg/logo/logo-likelion.svg';
+import LogoX from 'src/assets/svg/logo/logo-x.svg';
+import LogoCAU from 'src/assets/svg/logo/logo-cau.svg';
+import LogoCatchphrase from 'src/assets/svg/logo/logo-catchphrase.svg';
+import useRecruitModalStore from 'src/store/useRecruitModalStore';
+import { MOBILE } from '@home/common/responsive';
 
-const MainSection = ({ clickMore }: { clickMore: () => void }) => {
-  const generation = new Date().getFullYear() - GENERATION_CHECKER;
+const DESCRIPTION =
+  '중앙대학교 멋쟁이사자처럼은 중앙대학교 학생들로 구성된 IT 창업 동아리입니다.\n세상에 필요한 아이디어를 현실로 만들 첫 발자국을 멋쟁이사자처럼에서 내딛어보세요.';
+
+const MOBILE_DESCRIPTION =
+  '중앙대학교 멋쟁이사자처럼은\n중앙대학교 학생들로 구성된 IT 창업 동아리입니다.\n세상에 필요한 아이디어를 현실로 만들\n첫 발자국을 멋쟁이사자처럼에서 내딛어보세요.';
+
+const BUTTON_LABEL = '다음 기수 모집 알림받기';
+
+const MainSection = () => {
+  const openRecruitModal = useRecruitModalStore((state) => state.openNotifyModal);
 
   return (
     <Wrapper>
-      <MainWrapper>
-        <LeftSection>
-          <LionWrapper>
-            {Array.from({ length: 3 }).map((_, i) => (
-              <ImageWrapper key={i} animate={animationSetting(i)}>
-                <Lion key={i} src={loadingPic} layout="fill" objectFit="cover" objectPosition="center" />
-              </ImageWrapper>
-            ))}
-          </LionWrapper>
-          <TextWrapper>
-            <UnionTextWrapper>
-              <BlueBlockText>멋쟁이</BlueBlockText>
-              <UnionText className="union">
-                <Union src={union} />
-              </UnionText>
-            </UnionTextWrapper>
-            <BlueBlockText>사자처럼</BlueBlockText>
-            <LandingRectangle style={{ marginTop: '22px' }} />
-            <WhiteBlockText>중앙대학교</WhiteBlockText>
-          </TextWrapper>
-        </LeftSection>
+      <DesktopBg width={1440} height={666} aria-label="배경 이미지" />
+      <MobileBg aria-label="배경 이미지" />
 
-        <RightSection>
-          <ImagesWrapper>
-            <GenerationDiaWrapper>
-              <GenerationText>{generation}기</GenerationText>
-              <GenerationDia src={generationDia} />
-            </GenerationDiaWrapper>
-            <CircleWrapper className="circle">
-              <Circle src={circle} />
-            </CircleWrapper>
-            <UnionRow>
-              <UnionWrapper className="union">
-                <Union src={union} />
-              </UnionWrapper>
-            </UnionRow>
-          </ImagesWrapper>
-        </RightSection>
-      </MainWrapper>
+      <Content>
+        <TopGroup>
+          <LogoRow>
+            <LogoLikelion />
+            <LogoX />
+            <LogoCAU />
+          </LogoRow>
+          <MobileLogoRow>
+            <LogoLikelion width={93.68} height={10.61} />
+            <LogoX width={7.79} height={7.79} />
+            <LogoCAU width={39.47} height={22.39} />
+          </MobileLogoRow>
+          <Catchphrase />
+        </TopGroup>
 
-      <MoreWrapper>
-        <Text onClick={clickMore}>더 알아보기</Text>
-        <ArrowCircle onClick={clickMore}>
-          <HiOutlineArrowDown className="arrow" color={Primary.default} />
-        </ArrowCircle>
-      </MoreWrapper>
+        <DesktopGroup>
+          <Description>{DESCRIPTION}</Description>
+          <BlurButton
+            variant="solid"
+            color="assistive"
+            size="large"
+            trailingIcon={<HiOutlineBell />}
+            onClick={openRecruitModal}
+          >
+            {BUTTON_LABEL}
+          </BlurButton>
+        </DesktopGroup>
+
+        <MobileGroup>
+          <Description>{MOBILE_DESCRIPTION}</Description>
+          <BlurButton
+            variant="solid"
+            color="assistive"
+            size="small"
+            trailingIcon={<HiOutlineBell />}
+            onClick={openRecruitModal}
+          >
+            {BUTTON_LABEL}
+          </BlurButton>
+        </MobileGroup>
+      </Content>
     </Wrapper>
   );
 };
 
 export default MainSection;
 
+// 배경(Wrapper, DesktopBg)은 화면 너비에 항상 꽉 차게(100vw), 그 안의 콘텐츠는
+// 900~1440px 구간에서 1440px 기준 데스크톱 시안을 비례 축소해 배치한다
+// (예: left:190px → clamp(190*0.625px, (190/1440)*100vw, 190px))
 const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: space-evenly;
-  width: 100%;
-  @media (min-width: 900px) {
-    scroll-snap-align: start;
-    min-height: 70vh;
-    height: 100vh;
-  }
-`;
-
-const MainWrapper = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
   position: relative;
-
-  @media (max-width: 900px) {
-    justify-content: space-between;
-  }
-`;
-
-const LeftSection = styled.div``;
-
-const RightSection = styled.div``;
-
-const LionWrapper = styled.div`
+  width: 100vw;
+  padding-top: clamp(130.625px, calc((209 / 1440) * 100vw), 209px);
   display: flex;
-  justify-content: flex-start;
-  gap: 9px;
-  @media (max-width: 900px) {
-    gap: 0;
+  align-items: center;
+  justify-content: center;
+  scroll-snap-align: start;
+
+  @media (max-width: ${MOBILE}px) {
+    width: 100%;
+    height: 652px;
+    padding-top: 0;
+    align-items: flex-start;
+    justify-content: flex-start;
+    overflow: hidden;
   }
 `;
 
-const Lion = styled(Image)``;
+const DesktopBg = styled(BgLanding)`
+  width: 100vw;
+  height: calc((666 / 1440) * 100vw);
+  margin-bottom: -2px;
 
-const animationSetting = (i: number) => {
-  return {
-    rotate: 360,
-    transition: {
-      duration: 1,
-      delay: i,
-      repeat: Infinity,
-      repeatDelay: 3,
-    },
-  };
-};
-
-const ImageWrapper = styled(motion.div)`
-  position: relative;
-  width: 7rem;
-  height: 7rem;
-  margin-left: 4.5px;
-  margin-right: 4.5px;
-  @media (max-width: 1440px) {
-    width: 5.6rem;
-    height: 5.6rem;
-  }
-  @media (max-width: 900px) {
-    width: 4.4rem;
-    height: 4.4rem;
-  }
-  @media (max-width: 750px) {
-    width: 3.6rem;
-    height: 3.6rem;
-  }
-  @media (max-width: 524px) {
-    width: 2.5rem;
-    height: 2.5rem;
+  @media (max-width: ${MOBILE}px) {
+    display: none;
   }
 `;
 
-const ImagesWrapper = styled.div`
+const MobileBg = styled(BgLandingMobile)`
+  display: none;
+
+  @media (max-width: ${MOBILE}px) {
+    display: block;
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    margin-left: -476px;
+    width: 756px;
+    height: auto;
+  }
+`;
+
+const Content = styled.div`
   position: absolute;
-  right: 0;
-  bottom: 30rem;
+  left: clamp(118.75px, calc((190 / 1440) * 100vw), 190px);
+  top: clamp(71.25px, calc((114 / 1440) * 100vw), 114px);
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  align-items: flex-start;
+  gap: 77px;
 
-  @media (max-width: 1920px) {
-    bottom: 25rem;
-  }
-
-  @media (max-width: 1440px) {
-    bottom: 13rem;
-  }
-
-  @media (max-width: 900px) {
-    bottom: 10rem;
-  }
-
-  @media (max-width: 750px) {
-    bottom: 19rem;
-  }
-
-  @media (max-width: 524px) {
-    bottom: 19rem;
-  }
-
-  @media (max-width: 360px) {
-    bottom: 16rem;
+  @media (max-width: ${MOBILE}px) {
+    position: relative;
+    z-index: 1;
+    left: auto;
+    top: auto;
+    width: 100%;
+    padding: 76px 20px 0;
+    gap: 22px;
   }
 `;
 
-const GenerationDiaWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 19.6rem;
-  height: 19.6rem;
-  z-index: 1;
-  margin-bottom: -9.4rem;
-
-  @media (max-width: 1600px) {
-    width: 15rem;
-    height: 15rem;
-    margin-bottom: -8rem;
-  }
-
-  @media (max-width: 1440px) {
-    width: 14rem;
-    height: 14rem;
-    margin-bottom: -8.3rem;
-  }
-
-  @media (max-width: 900px) {
-    width: 13rem;
-    height: 13rem;
-    margin-bottom: -7rem;
-  }
-
-  @media (max-width: 750px) {
-    width: 9rem;
-    height: 9rem;
-    margin-bottom: -5rem;
-  }
-
-  @media (max-width: 524px) {
-    width: 7rem;
-    height: 7rem;
-    margin-bottom: -3.7rem;
-  }
-
-  @media (max-width: 360px) {
-    width: 6rem;
-    height: 6rem;
-    margin-bottom: -2.7rem;
-  }
-`;
-
-const CircleWrapper = styled.div`
-  width: 40rem;
-  height: 22rem;
-  @media (max-width: 1280px) {
-    width: 36rem;
-    height: 18rem;
-  }
-
-  @media (max-width: 900px) {
-    width: 288px;
-    height: 161.8px;
-  }
-  @media (max-width: 750px) {
-    width: 21rem;
-    height: 12rem;
-  }
-
-  @media (max-width: 524px) {
-    width: 17rem;
-    height: 9.5rem;
-  }
-  @media (max-width: 360px) {
-    width: 15rem;
-    height: 7rem;
-  }
-`;
-
-const UnionRow = styled.div`
-  display: flex;
-  width: 80%;
-  justify-content: flex-end;
-`;
-
-const UnionWrapper = styled.div`
-  width: 10rem;
-  height: 10rem;
-
-  margin-top: -20px;
-
-  @media (max-width: 1280px) {
-    width: 6rem;
-    height: 6rem;
-  }
-
-  @media (max-width: 900px) {
-    width: 5rem;
-    height: 5rem;
-  }
-
-  @media (max-width: 750px) {
-    width: 4rem;
-    height: 4rem;
-  }
-
-  @media (max-width: 524px) {
-    width: 3rem;
-    height: 3rem;
-  }
-
-  @media (max-width: 360px) {
-    width: 3rem;
-    height: 3rem;
-  }
-`;
-
-const UnionText = styled.div`
-  width: 7rem;
-  height: 7rem;
-  margin-left: -2.3rem;
-  margin-top: -3.5rem;
-  rotate: calc(45deg);
-
-  @media (max-width: 750px) {
-    width: 6rem;
-    height: 6rem;
-    margin-left: -2rem;
-    margin-top: -3rem;
-  }
-
-  @media (max-width: 524px) {
-    width: 5rem;
-    height: 5rem;
-    margin-left: -1.8rem;
-    margin-top: -2.5rem;
-  }
-
-  @media (max-width: 360px) {
-    width: 4rem;
-    height: 4rem;
-    margin-left: -1.3rem;
-    margin-top: -2.2rem;
-  }
-`;
-
-const GenerationDia = styled(Image)`
-  position: absolute;
-`;
-
-const Circle = styled(Image)``;
-const Union = styled(Image)``;
-
-const GenerationText = styled.div`
-  position: absolute;
-  z-index: 1;
-  font-family: 'Gmarket Sans';
-  font-style: normal;
-  font-weight: 700;
-  font-size: 5rem;
-  color: #ffffff;
-
-  @media (max-height: 1280px) {
-    font-size: 4rem;
-  }
-
-  @media (max-width: 900px) {
-    font-size: 3rem;
-  }
-
-  @media (max-width: 750px) {
-    font-size: 2rem;
-  }
-
-  @media (max-height: 524px) {
-    font-size: 1.7rem;
-  }
-
-  @media (max-width: 360px) {
-    font-size: 1.7rem;
-  }
-`;
-
-const TextWrapper = styled.div`
+const TopGroup = styled.div`
   display: flex;
   flex-direction: column;
-`;
+  align-items: flex-start;
+  gap: 36px;
 
-const BlueBlockText = styled.div`
-  font-family: 'Gmarket Sans';
-  font-weight: 700;
-  font-size: 13rem;
-  color: #1a21bd;
-  @media (max-width: 1440px) {
-    font-size: 9.5rem;
-  }
-  @media (max-width: 900px) {
-    font-size: 7rem;
-  }
-
-  @media (max-width: 360px) {
-    font-size: 4rem;
+  @media (max-width: ${MOBILE}px) {
+    width: 100%;
+    gap: 22px;
   }
 `;
 
-const WhiteBlockText = styled(BlueBlockText)`
-  margin-top: 22px;
-  color: white;
-  text-shadow: -1px -1px 0 ${Primary.default}, 1px -1px 0 ${Primary.default}, -1px 1px 0 ${Primary.default},
-    1px 1px 0 ${Primary.default};
-
-  @media (max-width: 360px) {
-    font-size: 4rem;
-  }
-`;
-
-const UnionTextWrapper = styled.div`
+const LogoRow = styled.div`
   display: flex;
+  align-items: center;
+  gap: 14px;
+
+  @media (max-width: ${MOBILE}px) {
+    display: none;
+  }
 `;
 
-const MoreWrapper = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  margin: 2rem 0;
-  @media (max-width: 524px) {
-    justify-content: center;
-  }
-  @media (max-width: 360px) {
+const MobileLogoRow = styled.div`
+  display: none;
+
+  @media (max-width: ${MOBILE}px) {
+    display: flex;
     align-items: center;
-    justify-content: center;
+    gap: 8.25px;
+  }
+`;
+
+// 모바일에서는 335px로 고정(375px 기준 시안)되므로, 900px 지점에서 그 값과 이어지도록
+// 단순 비례식(694*0.625=433.75px) 대신 (900px→335px)~(1440px→694px) 구간을 직접 보간한다
+const Catchphrase = styled(LogoCatchphrase)`
+  width: clamp(335px, calc(335px + (359 / 540) * (100vw - 900px)), 694px);
+  height: auto;
+
+  @media (max-width: ${MOBILE}px) {
+    width: 100%;
+    max-width: 335px;
+    height: auto;
+  }
+`;
+
+const Description = styled.p`
+  ${typographyCss(Typography.body1Normal.medium)}
+  color: ${Black.b70};
+  white-space: pre-line;
+  margin: 0;
+
+  @media (max-width: ${MOBILE}px) {
+    ${typographyCss(Typography.caption2.regular)}
+  }
+`;
+
+const DesktopGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 32px;
+
+  @media (max-width: ${MOBILE}px) {
+    display: none;
+  }
+`;
+
+const MobileGroup = styled.div`
+  display: none;
+
+  @media (max-width: ${MOBILE}px) {
+    display: flex;
     flex-direction: column;
+    align-items: flex-start;
+    gap: 22px;
+    width: 100%;
   }
 `;
 
-const ArrowCircle = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 100%;
-  width: 5rem;
-  cursor: pointer;
-
-  height: 5rem;
-  border: 2px solid ${Primary.default};
-  box-shadow: 1rem 1rem 1rem 0rem #2b22784d;
-  .arrow {
-    width: 3rem;
-    height: 3rem;
-    @media (max-width: 900px) {
-      width: 1.8rem;
-      height: 1.8rem;
-    }
-    @media (max-width: 750px) {
-      width: 1.3rem;
-      height: 1.3rem;
-    }
-  }
-  @media (max-width: 900px) {
-    width: 3rem;
-    height: 3rem;
-    box-shadow: 0.4rem 0.4rem 0.4rem 0rem #2b22784d;
-  }
-  @media (max-width: 750px) {
-    width: 2.3rem;
-    height: 2.3rem;
-    box-shadow: 0.2rem 0.2rem 0.2rem 0rem #2b22784d;
-  }
-`;
-
-const Text = styled.div`
-  display: flex;
-  cursor: pointer;
-  justify-content: center;
-  align-items: center;
-  font-family: 'Gmarket Sans';
-  font-size: 2.3rem;
-  color: ${Primary.default};
-  font-weight: 700;
-
-  @media (max-width: 900px) {
-    font-size: 1.7rem;
-  }
+const BlurButton = styled(Button)`
+  backdrop-filter: blur(32px);
+  -webkit-backdrop-filter: blur(32px);
 `;

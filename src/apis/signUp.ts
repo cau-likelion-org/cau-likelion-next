@@ -1,42 +1,15 @@
-import { RequestSignUpForm } from '@@types/request';
-import { IToken } from '@utils/state';
+import { JoinRequest, TokenResponse } from '@@types/request';
+import axios from 'axios';
 import { url } from '.';
-import { getAuthAxios } from './authAxios';
 
-export const getEmailSecret = async (token: IToken, emailValue: string) => {
-  const axiosInstance = getAuthAxios(token);
-  const response = await axiosInstance.get(`/api/caumail`, {
-    params: { email: `${emailValue}@cau.ac.kr` },
-  });
-  return response;
+export const SIGNUP_SUCCESS_FLAG_KEY = 'signupSuccess';
+export const SIGNUP_UNAPPROVED_EMAIL_FLAG_KEY = 'signupUnapprovedEmail';
+export const PENDING_SIGNUP_TOKEN_KEY = 'pendingSignupToken';
+
+export const clearPendingSignupToken = () => {
+  sessionStorage.removeItem(PENDING_SIGNUP_TOKEN_KEY);
 };
 
-interface IMailResponse {
-  data: boolean;
-}
-
-export const postEmailSecret = async (token: IToken, secretValue: string) => {
-  const axiosInstance = getAuthAxios(token);
-  const response = await axiosInstance.post<IMailResponse>(`/api/caumail`, {
-    code: secretValue,
-  });
-
-  return response.data;
-};
-
-export interface SignUpMutationProps {
-  form: RequestSignUpForm;
-  accessToken: string | null;
-  refreshToken: string | null;
-}
-
-export const signUp = async (props: SignUpMutationProps) => {
-  const axiosInstance = getAuthAxios({ access: props.accessToken, refresh: props.refreshToken });
-  const response = await axiosInstance.put(`/api/signup`, {
-    name: props.form.name,
-    generation: props.form.generation,
-    track: props.form.track,
-    is_admin: props.form.is_admin,
-  });
-  return response.data;
+export const signUp = (form: JoinRequest) => {
+  return axios.post<TokenResponse>(`${url}/api/auth/join`, form).then((res) => res.data);
 };

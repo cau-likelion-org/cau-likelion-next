@@ -1,0 +1,295 @@
+import { ReactElement, useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import styled from 'styled-components';
+
+import BackHeader from '@common/header/BackHeader';
+import Button from '@common/button/Button';
+import LayoutFullWidth from '@common/layout/LayoutFullWidth';
+import Tab from '@common/tab/Tab';
+import Toast from '@common/toast/Toast';
+import { NarrowBreak, WIDE_TOAST_WIDTH } from '@common/toast/toastLayout';
+import AssignmentDeadlineModal from '@mypage/component/assignment/AssignmentDeadlineModal';
+import AssignmentInfoCard from '@mypage/component/assignment/AssignmentInfoCard';
+import AssignmentRejectModal from '@mypage/component/assignment/AssignmentRejectModal';
+import AssignmentSubmissionModal from '@mypage/component/assignment/AssignmentSubmissionModal';
+import AssignmentSubmissionTable from '@mypage/component/assignment/AssignmentSubmissionTable';
+import {
+  AssignmentSubmissionHistory,
+  AssignmentSubmission,
+  AssignmentWeekGroup,
+  IndividualDeadlinePayload,
+  SubmissionEvaluatePayload,
+  evaluateSubmission,
+  getAssignmentSubmissions,
+  getPresidentAssignments,
+  getStaffAssignments,
+  updateIndividualDeadlines,
+} from 'src/apis/assignment';
+import useStaffOnly from 'src/hooks/useStaffOnly';
+import useTokenStore from 'src/store/useTokenStore';
+import { Typography, typographyCss } from '@utils/constant/typography';
+import { containerCss } from '@utils/constant/breakpoint';
+
+const MyPageAssignmentDetail = () => {
+  const router = useRouter();
+  const tokenState = useTokenStore((state) => state.token);
+  const queryClient = useQueryClient();
+
+  const week = Number(router.query.week);
+  // 회장이 목록에서 다른 파트를 보고 넘어온 경우 그 파트로 조회 (없으면 본인 파트)
+  const partId = router.query.partId ? Number(router.query.partId) : null;
+
+  const { userProfile, isStaff } = useStaffOnly();
+  const isOtherPart = partId != null && !!userProfile && partId !== userProfile.partId;
+
+  // 해당 주차의 과제 목록 (탭/카드용)
+  const { data: staffWeekGroups } = useQuery<AssignmentWeekGroup[]>({
+    queryKey: partId != null ? ['presidentAssignments', partId] : ['staffAssignments'],
+    queryFn: () => (partId != null ? getPresidentAssignments(tokenState, partId) : getStaffAssignments(tokenState)),
+    enabled: isStaff,
+  });
+  const assignments = staffWeekGroups?.find((group) => group.week === week)?.assignments ?? [];
+
+  const [activeId, setActiveId] = useState<number | null>(null);
+  const activeAssignmentId = activeId ?? assignments[0]?.assignmentId ?? null;
+  const activeAssignment = assignments.find((assignment) => assignment.assignmentId === activeAssignmentId);
+
+  const { data: submissionHistory } = useQuery<AssignmentSubmissionHistory>({
+    queryKey: ['assignmentSubmissions', activeAssignmentId],
+    queryFn: () => getAssignmentSubmissions(tokenState, activeAssignmentId as number),
+    enabled: isStaff && activeAssignmentId != null,
+  });
+  const members = submissionHistory?.submissions ?? [];
+
+  const evaluateMutation = useMutation({
+    mutationFn: ({ submitId, payload }: { submitId: number; payload: SubmissionEvaluatePayload }) =>
+      evaluateSubmission(tokenState, activeAssignmentId as number, submitId, payload),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['assignmentSubmissions', activeAssignmentId] }),
+    onError: (_error, variables) =>
+      showToast('negative', failureText(variables.payload.status === 'APPROVED' ? '승인 처리' : '반려 처리')),
+  });
+
+  const [deadlineOpen, setDeadlineOpen] = useState(false);
+  const [toastMessage, setToastMessage] = useState<React.ReactNode>('');
+  const [toastVariant, setToastVariant] = useState<'positive' | 'negative'>('positive');
+
+  const showToast = (variant: 'positive' | 'negative', message: React.ReactNode) => {
+    setToastVariant(variant);
+    setToastMessage(message);
+  };
+
+  const failureText = (action: string) => (
+    <>
+      {action}에 실패했습니다. <NarrowBreak />
+      잠시 후 다시 시도해 주세요.
+    </>
+  );
+
+  // 과제 수정 후 넘어오면 토스트 표시
+  useEffect(() => {
+    if (!sessionStorage.getItem('assignmentEdited')) return;
+    sessionStorage.removeItem('assignmentEdited');
+    const frame = requestAnimationFrame(() => showToast('positive', '변경사항이 저장되었습니다.'));
+    return () => cancelAnimationFrame(frame);
+  }, []);
+
+  const deadlineMutation = useMutation({
+    mutationFn: ({ assignmentId, payload }: { assignmentId: number; payload: IndividualDeadlinePayload }) =>
+      updateIndividualDeadlines(tokenState, assignmentId, payload),
+    onSuccess: () => {
+      setDeadlineOpen(false);
+      showToast('positive', '개별 마감일이 변경되었습니다.');
+      queryClient.invalidateQueries({ queryKey: ['assignmentSubmissions'] });
+    },
+    onError: () => showToast('negative', failureText('개별 마감일 변경')),
+  });
+
+  const [viewTarget, setViewTarget] = useState<AssignmentSubmission | null>(null);
+  const [rejectTarget, setRejectTarget] = useState<number | null>(null);
+
+  const blockOtherPart = (action: '평가' | '수정') => {
+    if (!isOtherPart) return false;
+    showToast('negative', `본인 파트의 과제만 ${action}할 수 있습니다.`);
+    return true;
+  };
+
+  const blockBeforeDeadline = (deadline: string) => {
+    if (Date.now() >= new Date(deadline).getTime()) return false;
+    showToast('negative', '과제 마감일 이전 승인/반려 처리는 불가능합니다.');
+    return true;
+  };
+
+  const handleApprove = (submitId: number, deadline: string) => {
+    if (blockOtherPart('평가') || blockBeforeDeadline(deadline)) return;
+    evaluateMutation.mutate({ submitId, payload: { status: 'APPROVED' } });
+  };
+
+  const handleReject = (submitId: number, deadline: string) => {
+    if (blockOtherPart('평가') || blockBeforeDeadline(deadline)) return;
+    setRejectTarget(submitId);
+  };
+
+  const confirmReject = (reason: string) => {
+    if (rejectTarget == null) return;
+    evaluateMutation.mutate(
+      { submitId: rejectTarget, payload: { status: 'REJECTED', rejectionReason: reason } },
+      // 알림 발송까지 끝난 뒤에만 완료 토스트를 띄운다
+      { onSuccess: () => showToast('positive', '반려 처리가 완료되었습니다.') },
+    );
+    setRejectTarget(null);
+  };
+
+  const tabs = assignments.map((assignment, index) => ({
+    key: String(assignment.assignmentId),
+    label: `과제 ${index + 1}`,
+  }));
+
+  // 운영진이 아니면 훅이 리다이렉트하므로 그동안 아무것도 그리지 않는다
+  if (!isStaff) return null;
+
+  return (
+    <Page>
+      <BackHeader
+        label="과제 목록으로 돌아가기"
+        onClick={() => router.push({ pathname: '/mypage/assignment', query: partId != null ? { partId } : undefined })}
+      />
+
+      <WeekRow>
+        <WeekTitle>{week}주차 세션 과제</WeekTitle>
+        <Button
+          variant="solid"
+          color="assistive"
+          size="medium"
+          onClick={() => {
+            if (blockOtherPart('수정')) return;
+            router.push({
+              pathname: `/mypage/assignment/edit/${week}`,
+              query: partId != null ? { partId } : undefined,
+            });
+          }}
+        >
+          과제 수정
+        </Button>
+      </WeekRow>
+
+      <TabRow>
+        {tabs.length > 0 && (
+          <Tab
+            items={tabs}
+            activeKey={String(activeAssignmentId)}
+            onChange={(key) => setActiveId(Number(key))}
+            size="large"
+          />
+        )}
+        <Button
+          variant="outlined"
+          color="assistive"
+          size="medium"
+          onClick={() => {
+            if (blockOtherPart('수정')) return;
+            setDeadlineOpen(true);
+          }}
+        >
+          개별 마감일 변경
+        </Button>
+      </TabRow>
+
+      {activeAssignment && (
+        <InfoCardSlot>
+          {/* 설명은 목록 API에 없어 제출 이력 응답(단건 기준)에서 가져온다 */}
+          <AssignmentInfoCard
+            title={submissionHistory?.title ?? activeAssignment.title}
+            detail={submissionHistory?.detail}
+            endDate={submissionHistory?.endDate ?? activeAssignment.endDate}
+          />
+        </InfoCardSlot>
+      )}
+
+      <AssignmentSubmissionTable
+        members={members}
+        assignmentEndDate={submissionHistory?.endDate ?? activeAssignment?.endDate}
+        onApprove={handleApprove}
+        onReject={handleReject}
+        onViewSubmission={setViewTarget}
+      />
+
+      {viewTarget && <AssignmentSubmissionModal submission={viewTarget} onClose={() => setViewTarget(null)} />}
+
+      {deadlineOpen && activeAssignmentId != null && (
+        <AssignmentDeadlineModal
+          assignments={assignments}
+          initialAssignmentId={activeAssignmentId}
+          members={members}
+          submitting={deadlineMutation.isPending}
+          onClose={() => setDeadlineOpen(false)}
+          onSubmit={(assignmentId, memberIds, deadline) =>
+            deadlineMutation.mutate({ assignmentId, payload: { memberIds, deadline } })
+          }
+        />
+      )}
+
+      <ToastWrapper>
+        <Toast
+          variant={toastVariant}
+          width={WIDE_TOAST_WIDTH}
+          text={toastMessage}
+          show={!!toastMessage}
+          onHidden={() => setToastMessage('')}
+        />
+      </ToastWrapper>
+
+      {rejectTarget != null && <AssignmentRejectModal onClose={() => setRejectTarget(null)} onSubmit={confirmReject} />}
+    </Page>
+  );
+};
+
+MyPageAssignmentDetail.getLayout = function getLayout(page: ReactElement) {
+  return <LayoutFullWidth>{page}</LayoutFullWidth>;
+};
+
+export default MyPageAssignmentDetail;
+
+const Page = styled.div`
+  display: flex;
+  flex-direction: column;
+  ${containerCss}
+  padding-bottom: 80px;
+`;
+
+const ToastWrapper = styled.div`
+  position: fixed;
+  top: 110px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10001;
+  pointer-events: none;
+`;
+
+const WeekRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 42px;
+`;
+
+const WeekTitle = styled.p`
+  margin: 0;
+  color: #121212;
+  ${typographyCss(Typography.display3.bold)}
+`;
+
+const TabRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  width: 100%;
+  margin-bottom: 42px;
+`;
+
+const InfoCardSlot = styled.div`
+  width: 100%;
+  margin-bottom: 83px;
+`;

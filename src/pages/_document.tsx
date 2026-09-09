@@ -29,21 +29,22 @@ export default class MyDocument extends Document {
     return (
       <Html>
         <Head>
-          <link
-            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;900;500;600;700;800&display=swap"
-            rel="stylesheet"
-          />
-          <link
-            href="https://cdn.jsdelivr.net/gh/leetaewook/gmarket-sans-dynamic-subset/GmarketSans.css"
-            rel="stylesheet"
-          />
+          <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+
+          <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="anonymous" />
           <link
             rel="stylesheet"
             type="text/css"
             href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css"
           />
-          <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap" rel="stylesheet" />
-          <script src="https://apis.google.com/js/platform.js?onload=init" async defer></script>
+
+          <link rel="manifest" href="/manifest.json" />
+          <meta name="theme-color" content="#FFFFFF" />
+          <meta name="mobile-web-app-capable" content="yes" />
+          <meta name="apple-mobile-web-app-capable" content="yes" />
+          <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+          <meta name="apple-mobile-web-app-title" content="중앙대 멋사" />
+          <link rel="apple-touch-icon" href="/apple-icon-180x180.png" />
         </Head>
         <body>
           <Main />

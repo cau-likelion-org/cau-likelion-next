@@ -1,57 +1,55 @@
-import React from 'react';
-import { AiOutlinePoweroff } from 'react-icons/ai';
-import styled from 'styled-components';
-import { BackgroundColor } from '@utils/constant/color';
-import LocalStorage from '@utils/localStorage';
-import { useRecoilState } from 'recoil';
-import { token } from '@utils/state';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
+
+import Button from '@common/button/Button';
+import { IcLogout } from '@assets/svg';
+import useTokenStore from 'src/store/useTokenStore';
+import { LOGOUT_SUCCESS_FLAG_KEY, deleteFcmToken, logout } from 'src/apis/account';
+import { clearCachedFcmToken, getCachedFcmToken } from 'src/lib/pushNotification';
 
 const LogoutButton = () => {
   const router = useRouter();
-  const [_, setToken] = useRecoilState(token);
-  const handleLogout = () => {
-    LocalStorage.removeItem('access');
-    LocalStorage.removeItem('refresh');
-    setToken({
-      access: null,
-      refresh: null,
-    });
-  };
+  const tokenState = useTokenStore((state) => state.token);
+  const setToken = useTokenStore((state) => state.setToken);
+  const queryClient = useQueryClient();
+
+  const logoutMutation = useMutation({
+    mutationFn: async () => {
+      // 이 기기 토큰만 지운다. 실패해도 로그아웃 자체는 진행되어야 한다.
+      const fcmToken = getCachedFcmToken();
+      if (fcmToken) {
+        try {
+          await deleteFcmToken(tokenState, fcmToken);
+        } catch (error) {
+          console.error('[push] FCM 토큰 삭제 실패', error);
+        }
+        clearCachedFcmToken();
+      }
+      await logout(tokenState.refresh);
+    },
+    onSettled: async () => {
+      try {
+        await router.push('/');
+      } finally {
+        setToken({ access: null, refresh: null });
+        queryClient.clear();
+        sessionStorage.setItem(LOGOUT_SUCCESS_FLAG_KEY, 'true');
+      }
+    },
+  });
 
   return (
-    <Wrapper>
-      <ButtonWrapper onClick={handleLogout}>
-        <Text>로그아웃</Text>
-        <AiOutlinePoweroff size={13} />
-      </ButtonWrapper>
-    </Wrapper>
+    <Button
+      variant="outlined"
+      color="assistive"
+      size="small"
+      onClick={() => logoutMutation.mutate()}
+      loading={logoutMutation.isPending}
+      trailingIcon={<IcLogout width={16} height={16} />}
+    >
+      로그아웃
+    </Button>
   );
 };
 
 export default LogoutButton;
-
-const Wrapper = styled.div`
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  justify-content: flex-start;
-`;
-
-const ButtonWrapper = styled.div`
-  font-family: 'Pretendard';
-  font-style: normal;
-  font-weight: 500;
-  font-size: 1rem;
-  color: ${BackgroundColor};
-  background-color: #333333;
-  border-radius: 50px;
-  padding: 3px 10px;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 3px;
-`;
-
-const Text = styled.div``;

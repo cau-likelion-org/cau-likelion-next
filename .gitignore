@@ -15,6 +15,12 @@
 # production
 /build
 
+# storybook
+/storybook-static
+
+# editor
+.vscode/
+
 # misc
 .DS_Store
 *.pem
@@ -35,3 +41,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local preview pages
+src/pages/_debug-*.tsx
