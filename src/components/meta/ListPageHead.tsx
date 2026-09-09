@@ -1,10 +1,4 @@
-import {
-  DEFAULT_OG_IMAGE,
-  DEFAULT_OG_IMAGE_FALLBACK,
-  META_DESCRIPTION,
-  MetaCategory,
-  META_TITLE,
-} from '@utils/constant';
+import { DEFAULT_OG_IMAGE, META_DESCRIPTION, MetaCategory, META_TITLE } from '@utils/constant';
 import Head from 'next/head';
 import React from 'react';
 
@@ -25,7 +19,6 @@ const ListPageHead = ({ canoUrl, category }: ListPageHeadProps) => {
       <meta property="og:description" content={META_DESCRIPTION[category]} />
       <meta property="og:url" content={canoUrl ?? 'https://cau-likelion.org/'} />
       <meta property="og:type" content="website" />
-      <meta property="og:image" content={DEFAULT_OG_IMAGE_FALLBACK} />
       <meta property="og:image" content={DEFAULT_OG_IMAGE} />
       <meta property="twitter:card" content="summary" />
       <meta property="twitter:title" content={META_TITLE} />
