@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import React from 'react';
-import { DEFAULT_OG_IMAGE, DEFAULT_OG_IMAGE_FALLBACK, MAIN_META_DESCRIPTION, META_TITLE } from '@utils/constant';
+import { DEFAULT_OG_IMAGE, MAIN_META_DESCRIPTION, META_TITLE } from '@utils/constant';
 
 const MainPageHead = ({ canoUrl }: { canoUrl?: string }) => {
   return (
@@ -14,7 +14,6 @@ const MainPageHead = ({ canoUrl }: { canoUrl?: string }) => {
       <meta property="og:description" content={MAIN_META_DESCRIPTION} />
       <meta property="og:url" content={canoUrl ?? 'https://cau-likelion.org'} />
       <meta property="og:type" content="website" />
-      <meta property="og:image" content={DEFAULT_OG_IMAGE_FALLBACK} />
       <meta property="og:image" content={DEFAULT_OG_IMAGE} />
       <meta property="twitter:card" content="summary" />
       <meta property="twitter:title" content={META_TITLE} />
