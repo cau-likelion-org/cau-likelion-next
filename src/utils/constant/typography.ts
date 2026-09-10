@@ -1,6 +1,6 @@
 import { css } from 'styled-components';
 
-export const FontFamily = 'Pretendard';
+export const FontFamily = 'var(--font-pretendard)';
 
 export interface TypographyToken {
   fontFamily: string;

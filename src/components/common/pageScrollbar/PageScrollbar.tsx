@@ -34,16 +34,26 @@ const PageScrollbar = ({ contentRef }: PageScrollbarProps) => {
       setScrollbar(computeScrollbarState(html.scrollTop, html.scrollHeight, html.clientHeight, trackPixelHeight));
     };
 
+    let rafId: number | null = null;
+    const scheduleUpdate = () => {
+      if (rafId !== null) return;
+      rafId = requestAnimationFrame(() => {
+        rafId = null;
+        update();
+      });
+    };
+
     update();
-    window.addEventListener('scroll', update);
-    window.addEventListener('resize', update);
-    const resizeObserver = new ResizeObserver(update);
+    window.addEventListener('scroll', scheduleUpdate, { passive: true });
+    window.addEventListener('resize', scheduleUpdate, { passive: true });
+    const resizeObserver = new ResizeObserver(scheduleUpdate);
     resizeObserver.observe(document.body);
 
     return () => {
-      window.removeEventListener('scroll', update);
-      window.removeEventListener('resize', update);
+      window.removeEventListener('scroll', scheduleUpdate);
+      window.removeEventListener('resize', scheduleUpdate);
       resizeObserver.disconnect();
+      if (rafId !== null) cancelAnimationFrame(rafId);
     };
   }, [contentRef]);
 
