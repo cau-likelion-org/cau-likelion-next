@@ -45,14 +45,18 @@ const BlogListSection = () => {
     return [ALL_OPTION, ...generations.map((generationNumber) => `${generationNumber}기`)];
   }, [blogs]);
 
-  const posts = (blogs ?? []).filter((blog) => {
-    const matchesGeneration = generation === ALL_OPTION || `${blog.generationNumber}기` === generation;
-    const matchesCategory = category === ALL_OPTION || CATEGORY_LABEL[blog.category] === category;
-    const trimmedKeyword = keyword.trim().toLowerCase();
-    const matchesKeyword =
-      blog.title.toLowerCase().includes(trimmedKeyword) || blog.writer.toLowerCase().includes(trimmedKeyword);
-    return matchesGeneration && matchesCategory && matchesKeyword;
-  });
+  const posts = useMemo(
+    () =>
+      (blogs ?? []).filter((blog) => {
+        const matchesGeneration = generation === ALL_OPTION || `${blog.generationNumber}기` === generation;
+        const matchesCategory = category === ALL_OPTION || CATEGORY_LABEL[blog.category] === category;
+        const trimmedKeyword = keyword.trim().toLowerCase();
+        const matchesKeyword =
+          blog.title.toLowerCase().includes(trimmedKeyword) || blog.writer.toLowerCase().includes(trimmedKeyword);
+        return matchesGeneration && matchesCategory && matchesKeyword;
+      }),
+    [blogs, generation, category, keyword],
+  );
   const totalPage = Math.max(1, Math.ceil(posts.length / PAGE_SIZE));
   const pagePosts = posts.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
