@@ -29,6 +29,11 @@ function AppContent({ Component, pageProps }: AppPropsWithLayout) {
   const [queryClient] = useState(
     () =>
       new QueryClient({
+        defaultOptions: {
+          queries: {
+            staleTime: 60 * 1000,
+          },
+        },
         queryCache: new QueryCache({
           onError: (error, query) => {
             if (query.queryKey[0] !== 'userProfile') return;
