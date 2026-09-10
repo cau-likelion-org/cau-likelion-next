@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { useQuery } from '@tanstack/react-query';
 import PageHeader from '@common/pageHeader/PageHeader';
@@ -30,6 +30,7 @@ const CATEGORY_LABEL: Record<BlogCategory, string> = {
 };
 const CATEGORY_OPTIONS = [ALL_OPTION, ...Object.values(CATEGORY_LABEL)];
 const PAGE_SIZE = 10;
+const SEARCH_DEBOUNCE_DELAY = 300;
 
 const BlogListSection = () => {
   const contentRef = useRef<HTMLDivElement>(null);
@@ -37,8 +38,14 @@ const BlogListSection = () => {
   const [generation, setGeneration] = useState(ALL_OPTION);
   const [category, setCategory] = useState(ALL_OPTION);
   const [keyword, setKeyword] = useState('');
+  const [debouncedKeyword, setDebouncedKeyword] = useState('');
   const [openFilter, setOpenFilter] = useState<FilterKey | null>(null);
   const [page, setPage] = useState(1);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedKeyword(keyword), SEARCH_DEBOUNCE_DELAY);
+    return () => clearTimeout(timer);
+  }, [keyword]);
 
   const generationOptions = useMemo(() => {
     const generations = Array.from(new Set((blogs ?? []).map((blog) => blog.generationNumber))).sort((a, b) => b - a);
@@ -50,12 +57,12 @@ const BlogListSection = () => {
       (blogs ?? []).filter((blog) => {
         const matchesGeneration = generation === ALL_OPTION || `${blog.generationNumber}기` === generation;
         const matchesCategory = category === ALL_OPTION || CATEGORY_LABEL[blog.category] === category;
-        const trimmedKeyword = keyword.trim().toLowerCase();
+        const trimmedKeyword = debouncedKeyword.trim().toLowerCase();
         const matchesKeyword =
           blog.title.toLowerCase().includes(trimmedKeyword) || blog.writer.toLowerCase().includes(trimmedKeyword);
         return matchesGeneration && matchesCategory && matchesKeyword;
       }),
-    [blogs, generation, category, keyword],
+    [blogs, generation, category, debouncedKeyword],
   );
   const totalPage = Math.max(1, Math.ceil(posts.length / PAGE_SIZE));
   const pagePosts = posts.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
