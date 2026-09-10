@@ -14,6 +14,7 @@ import NextRouter, { Router } from 'next/router';
 import ErrorBoundary from '@common/errorBoundary/ErrorBoundary';
 import useTokenStore from 'src/store/useTokenStore';
 import { registerMessagingServiceWorker, subscribeForegroundNotification } from 'src/lib/pushNotification';
+import { pretendard } from '@styles/fonts';
 
 type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -28,6 +29,11 @@ function AppContent({ Component, pageProps }: AppPropsWithLayout) {
   const [queryClient] = useState(
     () =>
       new QueryClient({
+        defaultOptions: {
+          queries: {
+            staleTime: 60 * 1000,
+          },
+        },
         queryCache: new QueryCache({
           onError: (error, query) => {
             if (query.queryKey[0] !== 'userProfile') return;
@@ -112,17 +118,19 @@ function AppContent({ Component, pageProps }: AppPropsWithLayout) {
       <Head>
         <title>LikeLionCAU</title>
       </Head>
-      {/* 레이아웃 안쪽을 감싸서, 페이지가 죽어도 네비게이션으로 빠져나갈 수 있게 한다 */}
-      {isRouting ? (
-        <Loading />
-      ) : (
-        getLayout(
-          <ErrorBoundary>
-            <Component {...pageProps} />
-          </ErrorBoundary>,
-        )
-      )}
-      <RecruitModalRoot />
+      <div className={pretendard.variable}>
+        {/* 레이아웃 안쪽을 감싸서, 페이지가 죽어도 네비게이션으로 빠져나갈 수 있게 한다 */}
+        {isRouting ? (
+          <Loading />
+        ) : (
+          getLayout(
+            <ErrorBoundary>
+              <Component {...pageProps} />
+            </ErrorBoundary>,
+          )
+        )}
+        <RecruitModalRoot />
+      </div>
     </QueryClientProvider>
   );
 }

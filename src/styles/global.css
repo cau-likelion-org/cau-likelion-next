@@ -4,7 +4,7 @@ html {
   width: 100%;
   margin: 0;
   font-family:
-    'Pretendard',
+    var(--font-pretendard),
     -apple-system,
     BlinkMacSystemFont,
     system-ui,
