@@ -88,6 +88,8 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 - `console.log` commit 금지 → `console.warn` / `console.error`만 허용
 - `tsconfig.json`의 `paths` alias와 `next.config.js`의 webpack alias 중 한쪽만 수정 금지 → 두 파일 항상 동기화
 - `next.config.js`의 이미지 `remotePatterns` 목록 임의 삭제 금지 (S3/CloudFront 캐시 전략과 연결되어 있음)
+- `release:major` / `release:minor` / `release:patch` / `release:skip` 라벨 없이 `main` PR 머지 금지 (`release-label-check.yml`이 라벨 없으면 CI를 막음)
+- 외부 URL을 `src`로 받는 `next/image`에 `unoptimized` prop 누락 금지 (`check-edge-requests.yml`이 CI에서 차단, edge request 과금과 연결됨)
 
 ---
 
@@ -202,10 +204,34 @@ refactor/설명     ← 리팩토링 브랜치 (예: refactor/token)
 
 ---
 
+## CI 체크 및 릴리즈 절차
+
+### 릴리즈 라벨 (필수, main PR만 해당)
+
+- `main`으로 향하는 PR은 `release:major` / `release:minor` / `release:patch` / `release:skip` 중 **정확히 하나**의 라벨이 있어야 머지 가능 (`release-label-check.yml`)
+- 배포로 이어지지 않는 변경(문서, CI 설정 등)은 `release:skip`
+- 라벨이 없거나 2개 이상이면 CI가 실패하므로, `main` PR을 열 때 가장 먼저 라벨부터 붙인다
+- 머지되면 `release.yml`이 라벨에 따라 semver 태그(`v{major}.{minor}.{patch}`)를 계산하고, 번들 사이즈 diff가 포함된 릴리즈 노트를 자동 생성 (`skip`이면 릴리즈 생성 안 함)
+- `main` merge 직후 **Vercel이 자동 배포**하므로, `main`에 머지하는 순간 곧바로 프로덕션에 반영된다는 것을 전제로 작업
+
+### 번들 예산 (Bundle Budget)
+
+- `main`, `dev`로 가는 모든 PR에서 `bundle-budget.yml`이 프로덕션 빌드 후 `.github/scripts/bundle-budget.js check`로 예산(`.github/bundle-budget.json`) 초과 여부를 검사
+- 초과하면 CI 실패 + PR에 초과 내역 코멘트 자동 등록/갱신
+- 공유 청크나 특정 라우트 번들이 크게 늘어나는 변경(신규 라이브러리 추가, 동적 import 제거 등)을 할 때는 로컬에서 `npm run build` 후 예산 초과 여부를 먼저 확인
+
+### 타입 체크 / Edge Request
+
+- 타입 체크는 `typecheck.yml`에서 `npm run typecheck`로 별도 실행 (`next build`에 포함되지 않음)
+- `check-edge-requests.yml`이 `next/image`에 외부 URL을 `src`로 넘기면서 `unoptimized`가 없는 코드를 grep 기반으로 탐지해 `main` PR을 막음 — 외부 이미지 URL을 다루는 컴포넌트를 추가/수정할 때 반드시 `unoptimized` prop을 확인
+
+---
+
 ## PR 규칙
 
 - PR 작성 시 `.github/PULL_REQUEST_TEMPLATE.md` 형식 준수: 한 줄 요약 → 상세(바꾼거 / 같이 상의할 만한 것) → 작업리스트
 - 새 의존성을 추가하는 PR은 설명에 사유를 반드시 명시
+- `main`으로 향하는 PR은 위 "CI 체크 및 릴리즈 절차"의 `release:*` 라벨을 함께 붙인다
 
 ---
 
