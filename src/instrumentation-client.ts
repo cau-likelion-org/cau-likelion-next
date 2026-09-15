@@ -1,4 +1,5 @@
 import { captureError, isReporterReady, loadReporter } from 'src/lib/errorReporter';
+import { env } from 'src/lib/env';
 
 // SDK가 붙기 전에 터진 에러를 놓치지 않도록, 네이티브 핸들러만 먼저 걸어둔다.
 // 이 파일 자체는 1kB 미만이고 Sentry SDK는 유휴 시점에 별도 청크로 내려받는다.
@@ -12,7 +13,7 @@ const handleRejection = (event: PromiseRejectionEvent) => {
   captureError(event.reason, { buffered_as: 'unhandledrejection' });
 };
 
-if (typeof window !== 'undefined' && process.env.NEXT_PUBLIC_SENTRY_DSN) {
+if (typeof window !== 'undefined' && env.sentryDsn) {
   window.addEventListener('error', handleError);
   window.addEventListener('unhandledrejection', handleRejection);
 

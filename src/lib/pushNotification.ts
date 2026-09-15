@@ -1,20 +1,13 @@
 import type { MessagePayload } from 'firebase/messaging';
 
 import LocalStorage from '@utils/localStorage';
+import { env } from 'src/lib/env';
 
 // FCM 웹 푸시 설정.
 // 서비스 워커는 번들러를 안 거쳐서 환경변수를 직접 못 읽으므로 쿼리스트링으로 넘긴다.
 // (dev/prod Firebase 프로젝트가 달라도 파일 수정 없이 동작)
 
-const FIREBASE_CONFIG = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-};
-
-const VAPID_KEY = process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY;
+const { vapidKey: VAPID_KEY, ...FIREBASE_CONFIG } = env.firebase;
 
 const missingConfigKeys = () =>
   Object.entries(FIREBASE_CONFIG)
