@@ -324,6 +324,7 @@ const ItemName = styled.p`
 const ItemDescription = styled.p`
   margin: 0;
   color: ${Black.b900};
+  white-space: pre-line;
   ${typographyCss(Typography.heading2.medium)}
 `;
 
