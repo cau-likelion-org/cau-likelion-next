@@ -1,8 +1,10 @@
+import { env } from 'src/lib/env';
+
 const GOOGLE_OAUTH_ENDPOINT = 'https://accounts.google.com/o/oauth2/v2/auth';
 const GOOGLE_OAUTH_NONCE_KEY = 'googleOAuthNonce';
 
 export const redirectToGoogleLogin = () => {
-  const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+  const clientId = env.googleClientId;
   if (!clientId) {
     console.error('NEXT_PUBLIC_GOOGLE_CLIENT_ID is not configured.');
     return;
