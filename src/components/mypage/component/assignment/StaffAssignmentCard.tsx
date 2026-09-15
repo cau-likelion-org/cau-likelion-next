@@ -120,10 +120,6 @@ const DetailButton = styled.button`
   ${media.xs} {
     ${typographyCss(Typography.label1Normal.bold)}
   }
-
-  ${media.mobileDevice} {
-    display: none;
-  }
 `;
 
 const ChevronRight = styled.span`
