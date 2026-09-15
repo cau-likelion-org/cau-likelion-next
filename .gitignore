@@ -44,3 +44,7 @@ next-env.d.ts
 
 # local preview pages
 src/pages/_debug-*.tsx
+
+# claude code — 스킬은 공유하고 개인 설정/상태 파일만 제외
+.claude/settings.local.json
+.claude/scheduled_tasks.lock

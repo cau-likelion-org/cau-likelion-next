@@ -1,1 +1,3 @@
-export const url = process.env.NEXT_PUBLIC_API_KEY;
+import { env } from 'src/lib/env';
+
+export const url = env.apiUrl;

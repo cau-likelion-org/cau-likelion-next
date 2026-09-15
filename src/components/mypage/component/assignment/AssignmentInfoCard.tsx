@@ -53,6 +53,7 @@ const Title = styled.p`
 const Detail = styled.p`
   margin: 0;
   color: #121212;
+  white-space: pre-line;
   ${typographyCss(Typography.heading2.medium)}
 `;
 

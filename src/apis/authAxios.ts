@@ -1,6 +1,7 @@
 import { IToken } from 'src/store/useTokenStore';
 import useTokenStore from 'src/store/useTokenStore';
 import axios from 'axios';
+import { env } from 'src/lib/env';
 import { reissueToken } from './account';
 
 const REFRESH_BUFFER_MS = 10_000;
@@ -44,7 +45,7 @@ const refreshTokens = (refreshToken: string) => {
 
 export const getAuthAxios = (token: IToken) => {
   const authAxios = axios.create({
-    baseURL: `${process.env.NEXT_PUBLIC_API_KEY}`,
+    baseURL: `${env.apiUrl}`,
   });
 
   // 만료 임박한 액세스 토큰은 요청 전에 미리 재발급 (401 왕복을 피함)

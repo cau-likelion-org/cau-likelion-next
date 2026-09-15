@@ -1,7 +1,9 @@
+import { env } from 'src/lib/env';
+
 type SentryModule = typeof import('@sentry/nextjs');
 type BufferedError = { value: unknown; tags?: Record<string, string> };
 
-const DSN = process.env.NEXT_PUBLIC_SENTRY_DSN;
+const DSN = env.sentryDsn;
 
 // Sentry SDK는 gzip 28kB로, 정적으로 붙이면 모든 라우트의 첫 렌더를 그만큼 늦춘다.
 // SDK는 유휴 시점에 내려받고, 그 전에 발생한 에러는 버퍼에 쌓았다가 초기화 직후 흘려보낸다.
@@ -19,8 +21,8 @@ export const loadReporter = (): Promise<SentryModule | null> => {
       .then((Sentry) => {
         Sentry.init({
           dsn: DSN,
-          environment: process.env.NEXT_PUBLIC_SENTRY_ENV || 'production',
-          release: process.env.NEXT_PUBLIC_SENTRY_RELEASE,
+          environment: env.sentryEnv || 'production',
+          release: env.sentryRelease,
           // 성능 추적·세션 리플레이는 켜지 않는다.
           // 지금 필요한 건 "에러가 났는지 아는 것"이고, 둘 다 번들만 크게 키운다.
           tracesSampleRate: 0,

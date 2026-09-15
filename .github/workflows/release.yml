@@ -131,7 +131,7 @@ jobs:
             printf -- '- PR: #%s — %s\n' "$PR_NUMBER" "$PR_TITLE"
             printf -- '- 작성자: @%s\n' "$PR_AUTHOR"
             printf -- '- 배포 커밋: %s\n\n' "$MERGE_SHA"
-            printf 'main 병합과 함께 AWS Amplify가 이 커밋을 자동 배포합니다.\n\n'
+            printf 'main 병합과 함께 Vercel이 이 커밋을 자동 배포합니다.\n\n'
           } > notes.md
 
           # 이번 릴리즈의 번들 사이즈와 직전 태그 대비 변화.

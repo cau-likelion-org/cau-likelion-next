@@ -1,15 +1,18 @@
 import * as Sentry from '@sentry/nextjs';
 
+import { env } from 'src/lib/env';
+
 export async function register() {
   if (process.env.NEXT_RUNTIME !== 'nodejs') return;
 
-  const dsn = process.env.SENTRY_DSN || process.env.NEXT_PUBLIC_SENTRY_DSN;
+  // SENTRY_DSN(서버 전용)은 env.ts에 없다 — Node 런타임에서만 직접 읽는다.
+  const dsn = process.env.SENTRY_DSN || env.sentryDsn;
   if (!dsn) return;
 
   Sentry.init({
     dsn,
-    environment: process.env.NEXT_PUBLIC_SENTRY_ENV || 'production',
-    release: process.env.NEXT_PUBLIC_SENTRY_RELEASE,
+    environment: env.sentryEnv || 'production',
+    release: env.sentryRelease,
     tracesSampleRate: 0,
     sendDefaultPii: false,
   });
