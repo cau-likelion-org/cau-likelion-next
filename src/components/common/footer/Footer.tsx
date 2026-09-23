@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import dynamic from 'next/dynamic';
 import styled from 'styled-components';
 
 import { IcKakaotalk, IcInstagram, IcEmail } from '@assets/svg';
@@ -7,7 +8,8 @@ import { ContainerPaddingXl, media } from '@utils/constant/breakpoint';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import LikelionCAULogo from 'src/assets/svg/logo/logo-likelion-chungang.svg';
 
-import EmailCopyModal from './EmailCopyModal';
+// 모든 페이지 footer에 항상 마운트되므로, 이메일 복사 버튼을 눌렀을 때만 받는다
+const EmailCopyModal = dynamic(() => import('./EmailCopyModal'), { ssr: false });
 
 const EMAIL = 'puang@likelion.org';
 

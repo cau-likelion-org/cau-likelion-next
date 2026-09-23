@@ -1,4 +1,5 @@
 import { ReactElement, useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
@@ -12,7 +13,6 @@ import PageLoadingGate from '@common/pageGate/PageLoadingGate';
 import MemberSection, { ALL_FILTER, MemberEditUpdate, MemberSaveError } from '@mypage/admin/members/MemberSection';
 import AllowedMemberSection from '@mypage/admin/members/AllowedMemberSection';
 import PartManageSection from '@mypage/admin/members/PartManageSection';
-import GenerationCreateModal from '@mypage/admin/members/GenerationCreateModal';
 import ConfirmDialog from '@mypage/admin/members/ConfirmDialog';
 import {
   createGeneration,
@@ -30,6 +30,9 @@ import { canManageMemberRoles } from '@utils/index';
 import { ROLE_LABEL, TRACK_OPTIONS } from '@utils/constant';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
+
+// 기수 생성 버튼을 눌렀을 때만 렌더되므로, 첫 로드 번들 대신 여는 시점에 받는다
+const GenerationCreateModal = dynamic(() => import('@mypage/admin/members/GenerationCreateModal'), { ssr: false });
 
 const MyPageAdminMembers = () => {
   const tokenState = useTokenStore((state) => state.token);
