@@ -1,6 +1,7 @@
 import { css } from 'styled-components';
 
-export const FontFamily = 'var(--font-pretendard)';
+export const FontFamily =
+  "'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, 'Apple SD Gothic Neo', sans-serif";
 
 export interface TypographyToken {
   fontFamily: string;

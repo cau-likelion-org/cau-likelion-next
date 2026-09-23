@@ -1,4 +1,5 @@
 import '@styles/global.css';
+import 'pretendard/dist/web/static/pretendard-subset.css';
 import 'swiper/css';
 import Head from 'next/head';
 import { QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -14,7 +15,6 @@ import NextRouter, { Router } from 'next/router';
 import ErrorBoundary from '@common/errorBoundary/ErrorBoundary';
 import useTokenStore from 'src/store/useTokenStore';
 import { registerMessagingServiceWorker, subscribeForegroundNotification } from 'src/lib/pushNotification';
-import { pretendard } from '@styles/fonts';
 
 type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -118,7 +118,7 @@ function AppContent({ Component, pageProps }: AppPropsWithLayout) {
       <Head>
         <title>LikeLionCAU</title>
       </Head>
-      <div className={pretendard.variable}>
+      <div>
         {/* 레이아웃 안쪽을 감싸서, 페이지가 죽어도 네비게이션으로 빠져나갈 수 있게 한다 */}
         {isRouting ? (
           <Loading />

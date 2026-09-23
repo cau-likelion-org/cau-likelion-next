@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Image from 'next/image';
 import styled, { css } from 'styled-components';
 import { useRouter } from 'next/router';
 import { useQuery } from '@tanstack/react-query';
@@ -64,7 +65,11 @@ const ActivitySection = () => {
                     <CardSubtitle>{introduction}</CardSubtitle>
                     <CardDescription>{description}</CardDescription>
                   </TextGroup>
-                  <Thumbnail $imageUrl={imageUrl} />
+                  <Thumbnail>
+                    {imageUrl && (
+                      <Image src={imageUrl} alt="" fill unoptimized sizes="300px" style={{ objectFit: 'cover' }} />
+                    )}
+                  </Thumbnail>
                   <HoverButtonWrapper>
                     <Button
                       size="large"
@@ -152,15 +157,14 @@ const List = styled.div`
   gap: 20px;
 `;
 
-const Thumbnail = styled.div<{ $imageUrl?: string }>`
+const Thumbnail = styled.div`
+  position: relative;
   flex-shrink: 0;
   width: 300px;
   height: 169px;
   border-radius: 12px;
+  overflow: hidden;
   background-color: ${Fill.normal};
-  background-image: ${(props) => (props.$imageUrl ? `url(${props.$imageUrl})` : 'none')};
-  background-size: cover;
-  background-position: center;
 
   @media (max-width: ${CARD_MOBILE}px) {
     width: 100%;

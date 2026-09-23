@@ -1,4 +1,5 @@
 import { ReactElement, useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import styled from 'styled-components';
@@ -9,10 +10,7 @@ import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import Tab from '@common/tab/Tab';
 import Toast from '@common/toast/Toast';
 import { NarrowBreak, WIDE_TOAST_WIDTH } from '@common/toast/toastLayout';
-import AssignmentDeadlineModal from '@mypage/component/assignment/AssignmentDeadlineModal';
 import AssignmentInfoCard from '@mypage/component/assignment/AssignmentInfoCard';
-import AssignmentRejectModal from '@mypage/component/assignment/AssignmentRejectModal';
-import AssignmentSubmissionModal from '@mypage/component/assignment/AssignmentSubmissionModal';
 import AssignmentSubmissionTable from '@mypage/component/assignment/AssignmentSubmissionTable';
 import {
   AssignmentSubmissionHistory,
@@ -30,6 +28,17 @@ import useStaffOnly from 'src/hooks/useStaffOnly';
 import useTokenStore from 'src/store/useTokenStore';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { containerCss } from '@utils/constant/breakpoint';
+
+// 셋 다 특정 상태일 때만 렌더되는 모달이라, 첫 로드 번들 대신 여는 시점에 받는다
+const AssignmentDeadlineModal = dynamic(() => import('@mypage/component/assignment/AssignmentDeadlineModal'), {
+  ssr: false,
+});
+const AssignmentRejectModal = dynamic(() => import('@mypage/component/assignment/AssignmentRejectModal'), {
+  ssr: false,
+});
+const AssignmentSubmissionModal = dynamic(() => import('@mypage/component/assignment/AssignmentSubmissionModal'), {
+  ssr: false,
+});
 
 const MyPageAssignmentDetail = () => {
   const router = useRouter();

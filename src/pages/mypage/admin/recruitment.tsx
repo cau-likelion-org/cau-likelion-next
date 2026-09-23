@@ -1,4 +1,5 @@
 import { ReactElement, useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
@@ -12,9 +13,7 @@ import Button from '@common/button/Button';
 import Toast from '@common/toast/Toast';
 import RecruitmentSubscriberSection, { ALL_PART_FILTER } from '@mypage/admin/recruitment/RecruitmentSubscriberSection';
 import RecruitmentTextSection from '@mypage/admin/recruitment/RecruitmentTextSection';
-import RecruitmentComposeModal, { RecruitmentComposeForm } from '@mypage/admin/recruitment/RecruitmentComposeModal';
-import RecruitmentTextDetailModal from '@mypage/admin/recruitment/RecruitmentTextDetailModal';
-import RecruitmentResendModal from '@mypage/admin/recruitment/RecruitmentResendModal';
+import type { RecruitmentComposeForm } from '@mypage/admin/recruitment/RecruitmentComposeModal';
 import { getUserProfile } from 'src/apis/account';
 import {
   createRecruitmentText,
@@ -31,6 +30,17 @@ import { COMMON_PART_NAME } from '@utils/constant';
 import { isAdminRole } from '@utils/index';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
+
+// 셋 다 특정 상태일 때만 렌더되는 모달이라, 첫 로드 번들 대신 여는 시점에 받는다
+const RecruitmentComposeModal = dynamic(() => import('@mypage/admin/recruitment/RecruitmentComposeModal'), {
+  ssr: false,
+});
+const RecruitmentTextDetailModal = dynamic(() => import('@mypage/admin/recruitment/RecruitmentTextDetailModal'), {
+  ssr: false,
+});
+const RecruitmentResendModal = dynamic(() => import('@mypage/admin/recruitment/RecruitmentResendModal'), {
+  ssr: false,
+});
 
 const MyPageAdminRecruitment = () => {
   const tokenState = useTokenStore((state) => state.token);
