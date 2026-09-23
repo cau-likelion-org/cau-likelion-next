@@ -1,5 +1,6 @@
 import { KeyboardEvent, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import dynamic from 'next/dynamic';
 import styled from 'styled-components';
 
 import {
@@ -8,7 +9,6 @@ import {
   AttendanceStatusUpdate,
   MemberAttendanceResponse,
 } from 'src/apis/attendance';
-import AttendanceReasonModal from './AttendanceReasonModal';
 import EmptyState from '@common/emptyState/EmptyState';
 import PartSelect from '@mypage/component/PartSelect';
 import CircularLoading from '@common/loading/CircularLoading';
@@ -18,6 +18,9 @@ import { IcCaretDown, IcCaretUp } from '@assets/svg';
 import { BackgroundColor, Fill, Inverse, Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { media } from '@utils/constant/breakpoint';
+
+// 결석 사유 입력 버튼을 눌렀을 때만 렌더되므로, 첫 로드 번들 대신 여는 시점에 받는다
+const AttendanceReasonModal = dynamic(() => import('./AttendanceReasonModal'), { ssr: false });
 
 const STATUS_LABEL: Record<AttendanceStatus, string> = {
   BEFORE: '출석 전',

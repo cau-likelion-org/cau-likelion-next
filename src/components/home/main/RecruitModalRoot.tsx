@@ -1,12 +1,14 @@
 import { useRouter } from 'next/router';
+import dynamic from 'next/dynamic';
 import styled from 'styled-components';
 
 import Toast from '@common/toast/Toast';
 import useRecruitModalStore from 'src/store/useRecruitModalStore';
 import { MOBILE } from '@home/common/responsive';
 
-import RecruitClosedAlert from './RecruitClosedAlert';
-import RecruitNotifyModal from './RecruitNotifyModal';
+// _app에서 모든 페이지에 항상 마운트되므로, step이 바뀌었을 때만 받는다
+const RecruitClosedAlert = dynamic(() => import('./RecruitClosedAlert'), { ssr: false });
+const RecruitNotifyModal = dynamic(() => import('./RecruitNotifyModal'), { ssr: false });
 
 // 2단계(notify)로 넘어갈 때만 랜딩 화면으로 이동한다.
 const RecruitModalRoot = () => {

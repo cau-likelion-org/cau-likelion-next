@@ -1,4 +1,5 @@
 import { useMemo, useRef, useState } from 'react';
+import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -25,16 +26,18 @@ import { getSessionList, getSession } from 'src/apis/session';
 import { getHistoryList, getHistory } from 'src/apis/history';
 import { getGalleryProjectList, getGalleryProject, GALLERY_PROJECT_CATEGORY_LABEL } from 'src/apis/gallery';
 
-import HistoryDetailModal from './component/history/HistoryDetailModal';
-import HistoryEditModal from './component/history/HistoryEditModal';
-import HistoryUploadModal from './component/history/HistoryUploadModal';
-import ProjectDetailModal from './component/project/ProjectDetailModal';
-import ProjectEditModal from './component/project/ProjectEditModal';
-import ProjectUploadModal from './component/project/ProjectUploadModal';
-import SessionDetailModal from './component/session/SessionDetailModal';
-import SessionEditModal from './component/session/SessionEditModal';
-import SessionUploadModal from './component/session/SessionUploadModal';
 import { containerCss, media } from '@utils/constant/breakpoint';
+
+// 모달 9종은 열렸을 때만 렌더되므로, 갤러리 페이지 첫 로드 번들에서 빼고 여는 시점에 받는다
+const HistoryDetailModal = dynamic(() => import('./component/history/HistoryDetailModal'), { ssr: false });
+const HistoryEditModal = dynamic(() => import('./component/history/HistoryEditModal'), { ssr: false });
+const HistoryUploadModal = dynamic(() => import('./component/history/HistoryUploadModal'), { ssr: false });
+const ProjectDetailModal = dynamic(() => import('./component/project/ProjectDetailModal'), { ssr: false });
+const ProjectEditModal = dynamic(() => import('./component/project/ProjectEditModal'), { ssr: false });
+const ProjectUploadModal = dynamic(() => import('./component/project/ProjectUploadModal'), { ssr: false });
+const SessionDetailModal = dynamic(() => import('./component/session/SessionDetailModal'), { ssr: false });
+const SessionEditModal = dynamic(() => import('./component/session/SessionEditModal'), { ssr: false });
+const SessionUploadModal = dynamic(() => import('./component/session/SessionUploadModal'), { ssr: false });
 
 type GalleryTabKey = 'session' | 'project' | 'gallery';
 type FilterKey = 'generation' | 'track' | 'category';
