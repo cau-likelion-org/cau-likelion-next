@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import styled from 'styled-components';
 
@@ -6,6 +6,7 @@ import TextField from '@common/textField/TextField';
 import { AttendanceStatusResponse, checkAttendance, getMyAttendances } from 'src/apis/attendance';
 import useTokenStore from 'src/store/useTokenStore';
 import { getServerMessage, toDateString } from '@utils/index';
+import { track, getDeviceType } from 'src/lib/amplitude';
 import { BackgroundWhite, Black, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { media } from '@utils/constant/breakpoint';
@@ -19,6 +20,9 @@ const AttendanceCheckCard = ({ isTarget = true }: { isTarget?: boolean }) => {
   const queryClient = useQueryClient();
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const clickCountRef = useRef(0);
+  const retryCountRef = useRef(0);
+  const lastTriggerRef = useRef<'button_click' | 'enter_key'>('button_click');
 
   const {
     data: records,
@@ -37,12 +41,19 @@ const AttendanceCheckCard = ({ isTarget = true }: { isTarget?: boolean }) => {
   const checkIn = useMutation({
     mutationFn: (password: string) => checkAttendance(tokenState, password),
     onSuccess: () => {
+      track('Attendance Completed', {
+        device_type: getDeviceType(),
+        click_count_since_login: clickCountRef.current,
+        attendance_retry_count: retryCountRef.current,
+        trigger_type: lastTriggerRef.current,
+      });
       setPassword('');
       setErrorMessage('');
       queryClient.invalidateQueries({ queryKey: ['myAttendance'] });
       queryClient.invalidateQueries({ queryKey: ['myScore'] });
     },
     onError: (error) => {
+      retryCountRef.current += 1;
       const serverMessage = getServerMessage(error)?.trim();
       const isWrongPassword = !serverMessage || serverMessage.startsWith(INVALID_INPUT_SERVER_MESSAGE);
       setErrorMessage(isWrongPassword ? WRONG_PASSWORD_MESSAGE : serverMessage);
@@ -71,11 +82,13 @@ const AttendanceCheckCard = ({ isTarget = true }: { isTarget?: boolean }) => {
     if (errorMessage) setErrorMessage('');
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (trigger: 'button_click' | 'enter_key' = 'button_click') => {
     if (!password) {
       setErrorMessage('비밀번호를 입력해 주세요.');
       return;
     }
+    clickCountRef.current += 1;
+    lastTriggerRef.current = trigger;
     checkIn.mutate(password);
   };
 
@@ -94,11 +107,11 @@ const AttendanceCheckCard = ({ isTarget = true }: { isTarget?: boolean }) => {
         status={errorMessage ? 'negative' : isCompleted ? 'positive' : 'normal'}
         description={errorMessage || undefined}
         onKeyDown={(e) => {
-          if (e.key === 'Enter') handleSubmit();
+          if (e.key === 'Enter') handleSubmit('enter_key');
         }}
         trailingButton={{
           label: '출석체크',
-          onClick: handleSubmit,
+          onClick: () => handleSubmit('button_click'),
           disabled: !isAvailable || checkIn.isPending,
         }}
       />
