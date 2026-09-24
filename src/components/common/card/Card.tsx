@@ -26,6 +26,7 @@ export interface CardProps {
   bottomContent?: ReactNode;
   skeleton?: boolean;
   onClick?: () => void;
+  onThumbnailLoad?: () => void;
 }
 
 const CARD_GRID_SIZES =
@@ -88,6 +89,7 @@ const Card = ({
   bottomContent,
   skeleton = false,
   onClick,
+  onThumbnailLoad,
 }: CardProps) => {
   const style = PLATFORM_STYLE[platform];
   const showToggle = !skeleton && !!onToggleSave;
@@ -110,6 +112,7 @@ const Card = ({
               ratio={thumbnailRatio}
               sizes={CARD_GRID_SIZES}
               onError={() => setFailedThumbnail(thumbnailSrc)}
+              onLoad={onThumbnailLoad}
             />
           ) : (
             <ThumbnailPlaceholder ratio={thumbnailRatio} />

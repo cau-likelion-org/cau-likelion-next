@@ -1,16 +1,41 @@
 import { Label } from '@utils/constant/color';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/router';
 import styled from 'styled-components';
+import { track, getDeviceType } from 'src/lib/amplitude';
 
 const TRANSITION_MS = 300;
+// react-hooks/purity가 useRef 초기값으로 넘기는 Date.now() 호출을 막아서, 계측용 타임스탬프는 밖에서 받는다
+const now = () => Date.now();
 
 const ProjectDetailCarousel = ({ images }: { images: string[] }) => {
+  const router = useRouter();
   const isLoopable = images.length > 1;
   const slides = isLoopable ? [...images, images[0]] : images;
   const [slideIndex, setSlideIndex] = useState(0);
   const [isAnimated, setIsAnimated] = useState(true);
   const activeIndex = slideIndex % images.length;
+
+  // 로드된 고유 이미지 수를 세되, 루프용으로 복제한 마지막 슬라이드는 중복 카운트하지 않는다
+  const imageLoadRef = useRef({ loadedCount: 0, startedAt: 0, fired: false });
+  useEffect(() => {
+    imageLoadRef.current = { loadedCount: 0, startedAt: now(), fired: false };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [images.join(',')]);
+
+  const handleImageLoad = () => {
+    const state = imageLoadRef.current;
+    state.loadedCount += 1;
+    if (state.fired || state.loadedCount < images.length) return;
+    state.fired = true;
+    track('Image Load Completed', {
+      page_path: router.asPath,
+      load_duration_ms: now() - state.startedAt,
+      image_count: images.length,
+      device_type: getDeviceType(),
+    });
+  };
 
   useEffect(() => {
     if (!isLoopable) return undefined;
@@ -55,6 +80,7 @@ const ProjectDetailCarousel = ({ images }: { images: string[] }) => {
                 fill
                 style={{ objectFit: 'contain', objectPosition: 'center' }}
                 draggable={false}
+                onLoad={handleImageLoad}
               />
             </ImageSlide>
           ))}
