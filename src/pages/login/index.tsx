@@ -94,6 +94,10 @@ const Login = () => {
   useEffect(() => {
     if (redirectResult && 'idToken' in redirectResult) {
       loginMutation.mutate(redirectResult.idToken);
+    } else if (redirectResult && 'error' in redirectResult) {
+      // 구글이 동의를 거부했거나 nonce 검증에 실패한 경우 — loginMutation을 거치지 않아
+      // onError가 안 불리므로 여기서 따로 Login Failed를 보낸다
+      track('Login Failed', { login_method: 'google' });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
