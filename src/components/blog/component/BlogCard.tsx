@@ -14,15 +14,16 @@ export interface BlogCardProps {
   url: string;
   thumbnailUrl?: string;
   thumbnailAlt?: string;
+  onClick?: () => void;
 }
 
-const BlogCard = ({ title, description, badges, date, url, thumbnailUrl, thumbnailAlt }: BlogCardProps) => {
+const BlogCard = ({ title, description, badges, date, url, thumbnailUrl, thumbnailAlt, onClick }: BlogCardProps) => {
   // 실패한 src를 기억해두면 thumbnailUrl이 바뀔 때 자동으로 다시 시도하게 된다
   const [failedThumbnail, setFailedThumbnail] = useState<string | null>(null);
   const showThumbnail = !!thumbnailUrl && failedThumbnail !== thumbnailUrl;
 
   return (
-    <Wrapper href={url} target="_blank" rel="noopener noreferrer">
+    <Wrapper href={url} target="_blank" rel="noopener noreferrer" onClick={onClick}>
       <Container>
         <TextGroup>
           <Title>{title}</Title>
