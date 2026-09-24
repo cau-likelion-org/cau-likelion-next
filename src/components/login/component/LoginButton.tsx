@@ -1,22 +1,30 @@
 import Button from '@common/button/Button';
 import { IcLogoGoogle } from '@assets/svg';
+import { track } from 'src/lib/amplitude';
 
 interface LoginButtonProps {
   onClick: () => void;
   loading?: boolean;
 }
 
+const BUTTON_LABEL = '구글로 로그인하기';
+
 const LoginButton = ({ onClick, loading }: LoginButtonProps) => {
+  const handleClick = () => {
+    track('Login Started', { button_label: BUTTON_LABEL });
+    onClick();
+  };
+
   return (
     <Button
       variant="solid"
       color="assistive"
       size="large"
       leadingIcon={<IcLogoGoogle width={20} height={20} />}
-      onClick={onClick}
+      onClick={handleClick}
       loading={loading}
     >
-      구글로 로그인하기
+      {BUTTON_LABEL}
     </Button>
   );
 };

@@ -20,6 +20,7 @@ import {
   SIGNUP_UNAPPROVED_EMAIL_FLAG_KEY,
 } from 'src/apis/signUp';
 import { excludeCommonPart, isUnfilled } from '@utils/index';
+import { track } from 'src/lib/amplitude';
 
 type OpenField = 'part' | null;
 
@@ -81,6 +82,7 @@ const SignUpFormSection = () => {
   const signUpFormPost = useMutation({
     mutationFn: signUp,
     onSuccess: (res) => {
+      track('Login Completed', { login_method: 'google', is_new_signup: true });
       setToken({ access: res.accessToken, refresh: res.refreshToken });
       clearPendingSignupToken();
       sessionStorage.setItem(SIGNUP_SUCCESS_FLAG_KEY, 'true');

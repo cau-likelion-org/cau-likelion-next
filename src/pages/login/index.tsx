@@ -13,6 +13,7 @@ import useTokenStore from 'src/store/useTokenStore';
 import { googleLogin } from 'src/apis/account';
 import { SIGNUP_UNAPPROVED_EMAIL_FLAG_KEY, PENDING_SIGNUP_TOKEN_KEY } from 'src/apis/signUp';
 import { consumeGoogleLoginRedirect, redirectToGoogleLogin } from '@utils/googleOAuth';
+import { track } from 'src/lib/amplitude';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { media } from '@utils/constant/breakpoint';
@@ -67,9 +68,11 @@ const Login = () => {
         router.push('/signup');
         return;
       }
+      track('Login Completed', { login_method: 'google', is_new_signup: false });
       setToken({ access: res.tokens.accessToken, refresh: res.tokens.refreshToken });
     },
     onError: (error) => {
+      track('Login Failed', { login_method: 'google' });
       const status = axios.isAxiosError(error) ? error.response?.status : undefined;
       // 4xx(EMAIL_NOT_ALLOWED)만 "미가입 이메일" 업무 오류로 간주. 5xx·네트워크 오류는 조용히 무시
       if (status !== undefined && status >= 400 && status < 500) {
