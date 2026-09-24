@@ -9,6 +9,7 @@ import { useRouter } from 'next/router';
 import useTokenStore from 'src/store/useTokenStore';
 import useRecruitModalStore from 'src/store/useRecruitModalStore';
 import LikelionCAULogo from 'src/assets/svg/logo/logo-likelion-chungang.svg';
+import { track, getDeviceType, markNextAction } from 'src/lib/amplitude';
 
 export interface IMenu {
   title: string;
@@ -34,7 +35,18 @@ const NavBar = () => {
   const openRecruitClosedAlert = useRecruitModalStore((state) => state.openClosedAlert);
   const [isScrolled, setIsScrolled] = useState(false);
 
+  const trackTabClick = (tabName: string, isExternal: boolean) => {
+    track('GNB Tab Clicked', {
+      tab_name: tabName,
+      is_external: isExternal,
+      is_logged_in: isLogin,
+      device_type: getDeviceType(),
+    });
+  };
+
   const handleRecruitClick = () => {
+    trackTabClick(RECRUIT_MENU_TITLE, false);
+    markNextAction();
     openRecruitClosedAlert();
   };
 
@@ -64,12 +76,20 @@ const NavBar = () => {
                   {title}
                 </MenuLink>
               ) : target ? (
-                <MenuLink key={title} href={routing} target={target} rel="noopener noreferrer">
+                <MenuLink
+                  key={title}
+                  href={routing}
+                  target={target}
+                  rel="noopener noreferrer"
+                  onClick={() => trackTabClick(title, true)}
+                >
                   {title}
                 </MenuLink>
               ) : (
                 <Link key={title} href={routing}>
-                  <MenuLink as="span">{title}</MenuLink>
+                  <MenuLink as="span" onClick={() => trackTabClick(title, false)}>
+                    {title}
+                  </MenuLink>
                 </Link>
               ),
             )}

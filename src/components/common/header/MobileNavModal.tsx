@@ -12,6 +12,7 @@ import useTokenStore from 'src/store/useTokenStore';
 import useRecruitModalStore from 'src/store/useRecruitModalStore';
 import useScrollLock from 'src/hooks/useScrollLock';
 import { canManageSitePages } from '@utils/index';
+import { track, getDeviceType, markNextAction } from 'src/lib/amplitude';
 import { BackgroundColor, Black, Line } from '@utils/constant/color';
 import { media } from '@utils/constant/breakpoint';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -56,6 +57,15 @@ const MobileNavModal = ({ isModalOn, onClose }: { isModalOn: boolean; onClose?: 
     router.push(routing);
   };
 
+  const trackTabClick = (tabName: string) => {
+    track('GNB Tab Clicked', {
+      tab_name: tabName,
+      is_external: false,
+      is_logged_in: isLogin,
+      device_type: getDeviceType(),
+    });
+  };
+
   return (
     <Wrapper $open={isModalOn} aria-hidden={!isModalOn}>
       <Inner $isLogin={isLogin}>
@@ -92,11 +102,26 @@ const MobileNavModal = ({ isModalOn, onClose }: { isModalOn: boolean; onClose?: 
         <MenuGroup $gap={40}>
           {SITE_MENU.map((item) =>
             item.routing === '#' ? (
-              <MenuItem key={item.title} type="button" onClick={() => handleNavigate(item.routing)}>
+              <MenuItem
+                key={item.title}
+                type="button"
+                onClick={() => {
+                  trackTabClick(item.title);
+                  markNextAction();
+                  handleNavigate(item.routing);
+                }}
+              >
                 {item.title}
               </MenuItem>
             ) : (
-              <MenuLink key={item.title} href={item.routing} onClick={onClose}>
+              <MenuLink
+                key={item.title}
+                href={item.routing}
+                onClick={() => {
+                  trackTabClick(item.title);
+                  onClose?.();
+                }}
+              >
                 {item.title}
               </MenuLink>
             ),
