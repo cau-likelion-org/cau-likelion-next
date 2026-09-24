@@ -19,6 +19,7 @@ import {
 } from 'src/apis/project';
 import useTokenStore from 'src/store/useTokenStore';
 import { isAdminRole, sortArchivingListDesc } from '@utils/index';
+import usePageEngagementTracking from 'src/hooks/usePageEngagementTracking';
 import styled from 'styled-components';
 import ProjectCard from './ProjectCard';
 import ProjectFilterSelect from './ProjectFilterSelect';
@@ -46,6 +47,9 @@ const ProjectsSection = ({ staticData }: { staticData: ArchivingArrayType<IProje
   });
 
   const router = useRouter();
+  // 목록↔상세는 같은 페이지 컴포넌트(얕은 라우팅)라서, 상세를 열고 닫아도 하나의 체류시간으로 합산된다
+  usePageEngagementTracking({ pagePath: '/project', exitEvent: 'Project Tab Page Exited' });
+
   const tokenState = useTokenStore((state) => state.token);
   const { data: userProfile } = useQuery<UserProfile>({
     queryKey: ['userProfile'],

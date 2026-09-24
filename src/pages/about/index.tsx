@@ -6,8 +6,16 @@ import TalentSection from '@about/talent/TalentSection';
 import CurriculumSection from '@about/curriculum/CurriculumSection';
 import RoadmapSection from '@about/roadmap/RoadmapSection';
 import MainPageHead from 'src/components/meta/MainPageHead';
+import usePageEngagementTracking from 'src/hooks/usePageEngagementTracking';
 
 const About = () => {
+  usePageEngagementTracking({
+    pagePath: '/about',
+    exitEvent: 'About Page Exited',
+    scrollDepthEvent: 'About Scroll Depth Reached',
+    trackExitContext: true,
+  });
+
   // 클라이언트 사이드 전환은 Next가 기본으로 최상단 스크롤을 시도하므로, 해시가 있으면 직접 대상 섹션으로 스크롤한다.
   // 대상 섹션 자체가 데이터를 비동기로 불러온 뒤에야 나타나거나, 위쪽 섹션들의 높이가 늦게 바뀌어
   // 위치가 밀릴 수 있어, 매 DOM 변경마다 대상을 다시 찾아 스크롤 위치를 보정한다.
