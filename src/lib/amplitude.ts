@@ -17,6 +17,7 @@ let hasWarnedDev = false;
 const buffered: BufferedEvent[] = [];
 let sdkPromise: Promise<AmplitudeModule | null> | null = null;
 let ready = false;
+let loadedAmplitude: AmplitudeModule | null = null;
 
 const loadAmplitude = (): Promise<AmplitudeModule | null> => {
   if (typeof window === 'undefined' || !API_KEY) return Promise.resolve(null);
@@ -43,6 +44,7 @@ const loadAmplitude = (): Promise<AmplitudeModule | null> => {
           },
         });
         ready = true;
+        loadedAmplitude = amplitude;
         for (const item of buffered) {
           amplitude.track(item.eventName, item.eventProperties);
         }
@@ -69,22 +71,23 @@ export const track = <E extends AmplitudeEventName>(eventName: E, eventPropertie
 
 // 구글 로그인 버튼처럼 클릭 직후 window.location.href로 즉시 리다이렉트되는 액션 전용.
 // 기본 fetch 전송(keepalive 없음)은 페이지 이동으로 요청이 끊길 수 있어, sendBeacon으로 바꿔서 보낸다.
-// SDK가 아직 로드 전이면(드묾) beacon으로 바꿀 인스턴스가 없어 일반 track과 동일하게 최선만 다한다.
 export const trackBeforeUnload = <E extends AmplitudeEventName>(
   eventName: E,
   eventProperties: AmplitudeEventProperties[E],
 ) => {
   if (typeof window === 'undefined' || !API_KEY || IS_DEV) return;
 
-  if (ready) {
-    void loadAmplitude().then((amplitude) => {
-      if (!amplitude) return;
-      amplitude.setTransport('beacon');
-      amplitude.track(eventName, eventProperties);
-    });
+  // 리다이렉트가 바로 뒤따라오는 호출이라, ready여도 Promise.then() 한 틱조차 위험을 늘린다.
+  // SDK가 이미 로드돼 있으면(로그인 페이지 도달 시점엔 거의 항상 그렇다) 비동기 경유 없이 바로 보낸다.
+  if (ready && loadedAmplitude) {
+    loadedAmplitude.setTransport('beacon');
+    loadedAmplitude.track(eventName, eventProperties);
     return;
   }
 
+  // SDK가 아직 로드 전인 드문 경우 — beacon으로 바꿀 로드된 인스턴스가 없어 일반 track과 동일하게
+  // 버퍼링 후 최선만 다한다. 지연 로드(dynamic import)가 리다이렉트보다 먼저 끝나야 하므로,
+  // 이 경로는 여전히 유실 가능성이 있는 지연 로드 구조의 알려진 한계다.
   track(eventName, eventProperties);
 };
 
