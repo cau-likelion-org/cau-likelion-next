@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import axios from 'axios';
@@ -16,13 +16,19 @@ import {
   signUp,
   clearPendingSignupToken,
   PENDING_SIGNUP_TOKEN_KEY,
+  PENDING_SIGNUP_ATTEMPT_ID_KEY,
   SIGNUP_SUCCESS_FLAG_KEY,
   SIGNUP_UNAPPROVED_EMAIL_FLAG_KEY,
 } from 'src/apis/signUp';
 import { excludeCommonPart, isUnfilled } from '@utils/index';
-import { track } from 'src/lib/amplitude';
+import { track, newAttemptId } from 'src/lib/amplitude';
 
 type OpenField = 'part' | null;
+
+const classifyFailureReason = (error: unknown): 'validation_error' | 'network_error' | 'server_error' => {
+  if (!axios.isAxiosError(error) || !error.response) return 'network_error';
+  return error.response.status >= 500 ? 'server_error' : 'validation_error';
+};
 
 const SignUpFormSection = () => {
   const [name, setName] = useState('');
@@ -31,6 +37,13 @@ const SignUpFormSection = () => {
   const [signupToken] = useState(() =>
     typeof window === 'undefined' ? null : sessionStorage.getItem(PENDING_SIGNUP_TOKEN_KEY),
   );
+  // 로그인 페이지의 Signup Required에서 발급한 id를 그대로 이어받아, 이 방문의 제출·실패·완료를 묶는다.
+  // 못 받아온 경우(세션스토리지 유실 등)를 대비해 여기서라도 새로 발급한다.
+  const [attemptSessionId] = useState(
+    () =>
+      (typeof window === 'undefined' ? '' : sessionStorage.getItem(PENDING_SIGNUP_ATTEMPT_ID_KEY)) || newAttemptId(),
+  );
+  const attemptNumberRef = useRef(0);
 
   const setToken = useTokenStore((state) => state.setToken);
   const router = useRouter();
@@ -82,13 +95,18 @@ const SignUpFormSection = () => {
   const signUpFormPost = useMutation({
     mutationFn: signUp,
     onSuccess: (res) => {
-      track('Login Completed', { login_method: 'google', is_new_signup: true });
+      track('Login Completed', { login_method: 'google', is_new_signup: true, attempt_session_id: attemptSessionId });
       setToken({ access: res.accessToken, refresh: res.refreshToken });
       clearPendingSignupToken();
       sessionStorage.setItem(SIGNUP_SUCCESS_FLAG_KEY, 'true');
       router.push('/signup/success');
     },
     onError: (error) => {
+      track('Signup Failed', {
+        attempt_session_id: attemptSessionId,
+        attempt_number: attemptNumberRef.current,
+        failure_reason: classifyFailureReason(error),
+      });
       const status = axios.isAxiosError(error) ? error.response?.status : undefined;
       // 4xx만 "사전 미등록 이메일" 업무 오류로 간주. 5xx·네트워크 오류는 폼에 남겨 재시도할 수 있게 함
       if (status !== undefined && status >= 400 && status < 500) {
@@ -101,6 +119,8 @@ const SignUpFormSection = () => {
 
   const handleSubmit = () => {
     if (!isFormActivated || !activeGeneration || !selectedPart || typeof signupToken !== 'string') return;
+    attemptNumberRef.current += 1;
+    track('Signup Submitted', { attempt_session_id: attemptSessionId, attempt_number: attemptNumberRef.current });
     signUpFormPost.mutate({
       signupToken,
       name,

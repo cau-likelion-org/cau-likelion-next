@@ -11,9 +11,13 @@ import LoginButton from 'src/components/login/component/LoginButton';
 import useAuthRedirect from 'src/hooks/useAuthRedirect';
 import useTokenStore from 'src/store/useTokenStore';
 import { googleLogin } from 'src/apis/account';
-import { SIGNUP_UNAPPROVED_EMAIL_FLAG_KEY, PENDING_SIGNUP_TOKEN_KEY } from 'src/apis/signUp';
+import {
+  SIGNUP_UNAPPROVED_EMAIL_FLAG_KEY,
+  PENDING_SIGNUP_TOKEN_KEY,
+  PENDING_SIGNUP_ATTEMPT_ID_KEY,
+} from 'src/apis/signUp';
 import { consumeGoogleLoginRedirect, redirectToGoogleLogin } from '@utils/googleOAuth';
-import { track } from 'src/lib/amplitude';
+import { track, newAttemptId } from 'src/lib/amplitude';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { media } from '@utils/constant/breakpoint';
@@ -65,9 +69,12 @@ const Login = () => {
     onSuccess: (res) => {
       if (res.status === 'SIGNUP_REQUIRED') {
         // 구글 인증 자체는 성공했지만 가입이 안 돼있는 경우 — Login Failed(인증 실패)와 구분해서,
-        // "가입 화면까지 도달했는가·가입을 완료했는가"를 별도 퍼널로 볼 수 있게 한다
-        track('Signup Required', { login_method: 'google' });
+        // "가입 화면까지 도달했는가·가입을 완료했는가"를 별도 퍼널로 볼 수 있게 한다.
+        // attempt_session_id를 여기서 발급해 가입 폼까지 들고 가서, 이 시도의 제출·실패·완료를 하나로 묶는다.
+        const attemptSessionId = newAttemptId();
+        track('Signup Required', { login_method: 'google', attempt_session_id: attemptSessionId });
         sessionStorage.setItem(PENDING_SIGNUP_TOKEN_KEY, res.signupToken);
+        sessionStorage.setItem(PENDING_SIGNUP_ATTEMPT_ID_KEY, attemptSessionId);
         router.push('/signup');
         return;
       }

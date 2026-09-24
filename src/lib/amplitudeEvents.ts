@@ -13,12 +13,24 @@ export interface AmplitudeEventProperties {
   'Login Completed': {
     login_method: string;
     is_new_signup: boolean;
+    // 신규가입 완료일 때만, Signup Required부터 이어진 시도를 같은 id로 묶어준다
+    attempt_session_id?: string;
   };
   'Login Failed': {
     login_method: string;
   };
   'Signup Required': {
     login_method: string;
+    attempt_session_id: string;
+  };
+  'Signup Submitted': {
+    attempt_session_id: string;
+    attempt_number: number;
+  };
+  'Signup Failed': {
+    attempt_session_id: string;
+    attempt_number: number;
+    failure_reason: 'validation_error' | 'network_error' | 'server_error';
   };
   'GNB Tab Clicked': {
     tab_name: string;
@@ -29,12 +41,26 @@ export interface AmplitudeEventProperties {
   'Attendance Screen Viewed': {
     is_target: boolean;
     device_type: string;
+    attempt_session_id: string;
+  };
+  'Attendance Submitted': {
+    attempt_session_id: string;
+    attempt_number: number;
+    trigger_type: 'button_click' | 'enter_key';
+    device_type: string;
+  };
+  'Attendance Failed': {
+    attempt_session_id: string;
+    attempt_number: number;
+    failure_reason: 'wrong_password' | 'network_error' | 'server_error';
+    device_type: string;
   };
   'Attendance Completed': {
     device_type: string;
     click_count_since_login: number;
     attendance_retry_count: number;
     trigger_type: 'button_click' | 'enter_key';
+    attempt_session_id: string;
   };
   'Archiving Card Clicked': {
     archiving_type: 'session' | 'project' | 'gallery';

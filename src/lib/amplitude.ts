@@ -90,6 +90,13 @@ export const trackBeforeUnload = <E extends AmplitudeEventName>(
 
 export const getDeviceType = () => (typeof window !== 'undefined' && window.innerWidth < 900 ? 'mobile' : 'desktop');
 
+// 출석체크·회원가입처럼 한 화면에서 여러 번 제출/실패가 오갈 수 있는 흐름에서, 그 시도들을
+// 하나로 묶어 볼 수 있게 방문(마운트)당 하나씩 발급하는 id. react-hooks/purity가 컴포넌트 안에서
+// crypto.randomUUID()를 직접 부르는 것도 막을 수 있어 여기 헬퍼로 뺐다.
+export const newAttemptId = () => crypto.randomUUID();
+
+// "지원하기" 등 전환 행동을 눌렀는지를 usePageEngagementTracking의 이탈 이벤트에서 판단하기 위한 타임스탬프.
+
 // "지원하기" 등 전환 행동을 눌렀는지를 usePageEngagementTracking의 이탈 이벤트에서 판단하기 위한 타임스탬프.
 // 페이지별 상태로 따로 두지 않고 마지막 시각만 기억해서, 각 훅이 자기 진입 시각과 비교해 판단한다.
 let lastNextActionAt = 0;
