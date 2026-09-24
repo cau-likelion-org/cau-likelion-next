@@ -78,9 +78,10 @@ function AppContent({ Component, pageProps }: AppPropsWithLayout) {
     hydrate();
   }, [hydrate]);
 
-  // Amplitude Page Viewed: 첫 로드 + 이후 모든 라우트 이동
+  // Amplitude Page Viewed: 첫 로드 + 이후 모든 라우트 이동.
+  // 첫 로드는 사이트 내부 이전 경로가 없으니, 외부에서 왔다면 그 도메인(document.referrer)을 대신 담는다.
   useEffect(() => {
-    let previousPath = '';
+    let previousPath = document.referrer;
     const trackPageViewed = (path: string) => {
       track('Page Viewed', {
         page_path: path,

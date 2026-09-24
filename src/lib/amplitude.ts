@@ -67,6 +67,27 @@ export const track = <E extends AmplitudeEventName>(eventName: E, eventPropertie
   void loadAmplitude();
 };
 
+// 구글 로그인 버튼처럼 클릭 직후 window.location.href로 즉시 리다이렉트되는 액션 전용.
+// 기본 fetch 전송(keepalive 없음)은 페이지 이동으로 요청이 끊길 수 있어, sendBeacon으로 바꿔서 보낸다.
+// SDK가 아직 로드 전이면(드묾) beacon으로 바꿀 인스턴스가 없어 일반 track과 동일하게 최선만 다한다.
+export const trackBeforeUnload = <E extends AmplitudeEventName>(
+  eventName: E,
+  eventProperties: AmplitudeEventProperties[E],
+) => {
+  if (typeof window === 'undefined' || !API_KEY || IS_DEV) return;
+
+  if (ready) {
+    void loadAmplitude().then((amplitude) => {
+      if (!amplitude) return;
+      amplitude.setTransport('beacon');
+      amplitude.track(eventName, eventProperties);
+    });
+    return;
+  }
+
+  track(eventName, eventProperties);
+};
+
 export const getDeviceType = () => (typeof window !== 'undefined' && window.innerWidth < 900 ? 'mobile' : 'desktop');
 
 // "지원하기" 등 전환 행동을 눌렀는지를 usePageEngagementTracking의 이탈 이벤트에서 판단하기 위한 타임스탬프.

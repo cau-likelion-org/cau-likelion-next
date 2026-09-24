@@ -10,6 +10,8 @@ import ThumbnailPlaceholder from '@common/thumbnail/ThumbnailPlaceholder';
 
 interface ProjectCardProps extends IProjectData {
   generation: string;
+  onClick?: () => void;
+  onThumbnailLoad?: () => void;
 }
 
 const ProjectCard = ({
@@ -21,6 +23,8 @@ const ProjectCard = ({
   description,
   banner,
   generation,
+  onClick,
+  onThumbnailLoad,
 }: ProjectCardProps) => {
   const introText = subtitle || description;
   // 실패한 src를 기억해두면 thumbnail이 바뀔 때 자동으로 다시 시도하게 된다
@@ -28,11 +32,17 @@ const ProjectCard = ({
   const showThumbnail = !!thumbnail && failedThumbnail !== thumbnail;
 
   return (
-    <Link href={`/project/${id}`} prefetch={false} shallow scroll={false}>
+    <Link href={`/project/${id}`} prefetch={false} shallow scroll={false} onClick={onClick}>
       <Wrapper>
         <Thumbnail>
           {showThumbnail ? (
-            <img key={thumbnail} src={thumbnail} alt={title} onError={() => setFailedThumbnail(thumbnail)} />
+            <img
+              key={thumbnail}
+              src={thumbnail}
+              alt={title}
+              onError={() => setFailedThumbnail(thumbnail)}
+              onLoad={onThumbnailLoad}
+            />
           ) : (
             <ThumbnailPlaceholder />
           )}
