@@ -80,7 +80,9 @@ const ProjectDetailCarousel = ({ images }: { images: string[] }) => {
                 fill
                 style={{ objectFit: 'contain', objectPosition: 'center' }}
                 draggable={false}
-                onLoad={handleImageLoad}
+                // 루프용으로 복제한 마지막 슬라이드(index === images.length)는 로드를 세지 않는다
+                // 그 slide가 먼저 끝나면 실제 마지막 원본 이미지가 로드되기 전에 완료로 잡힐 수 있다
+                onLoad={index < images.length ? handleImageLoad : undefined}
               />
             </ImageSlide>
           ))}
