@@ -73,6 +73,10 @@ const LIST_QUERY_KEY_BY_TAB: Record<GalleryTabKey, string> = {
 
 const PROJECT_CATEGORY_FILTER_OPTIONS = ['전체', ...Object.values(GALLERY_PROJECT_CATEGORY_LABEL)];
 const ALL_OPTION = '전체';
+// CardGrid 최대 컬럼 수(xl 5열) 기준 2줄 정도 — 전체 목록 대신 "초기 화면에 보일 만한" 카드 수 근사치.
+// next/image가 기본적으로 화면 밖 썸네일은 지연 로드하므로, 전체 개수를 완료 기준으로 쓰면
+// 스크롤해서 다 보기 전까진 이벤트가 안 찍히거나 아예 안 찍힌다
+const INITIAL_VISIBLE_CARD_COUNT = 10;
 
 const toDisplayDate = (isoDate: string | undefined) => (isoDate ?? '').split('T')[0].replaceAll('-', '/');
 const toPeriodDisplay = (startDate: string, endDate: string | null) =>
@@ -222,10 +226,16 @@ const GalleryListSection = () => {
   const activeCardCount =
     activeTab === 'session' ? sessionCards.length : activeTab === 'project' ? projectCards.length : historyCards.length;
 
-  // 탭 전환·목록 로딩마다 "탭에 보이는 썸네일이 전부 로드되기까지 걸린 시간"을 새로 잰다
+  // 탭 전환·목록 로딩마다 "초기 화면에 보이는 썸네일이 전부 로드되기까지 걸린 시간"을 새로 잰다.
+  // 화면 밖 카드는 지연 로드라 전체 개수를 기준으로 하면 스크롤 전엔 절대 안 찍힌다
   const imageLoadRef = useRef({ loadedCount: 0, totalCount: 0, startedAt: 0, fired: false });
   useEffect(() => {
-    imageLoadRef.current = { loadedCount: 0, totalCount: activeCardCount, startedAt: now(), fired: false };
+    imageLoadRef.current = {
+      loadedCount: 0,
+      totalCount: Math.min(activeCardCount, INITIAL_VISIBLE_CARD_COUNT),
+      startedAt: now(),
+      fired: false,
+    };
   }, [activeTab, activeCardCount]);
 
   const handleThumbnailLoad = () => {
@@ -463,6 +473,7 @@ const GalleryListSection = () => {
                   title={item.title}
                   onClick={() => handleCardClick('session', item.id, item.title, index)}
                   onThumbnailLoad={handleThumbnailLoad}
+                  thumbnailPriority={index < INITIAL_VISIBLE_CARD_COUNT}
                   bottomContent={
                     <BottomContent>
                       <BadgeRow>
@@ -495,6 +506,7 @@ const GalleryListSection = () => {
                   title={item.title}
                   onClick={() => handleCardClick('project', item.id, item.title, index)}
                   onThumbnailLoad={handleThumbnailLoad}
+                  thumbnailPriority={index < INITIAL_VISIBLE_CARD_COUNT}
                   bottomContent={
                     <BottomContent>
                       <BadgeRow>
@@ -528,6 +540,7 @@ const GalleryListSection = () => {
                   title={item.title}
                   onClick={() => handleCardClick('gallery', item.id, item.title, index)}
                   onThumbnailLoad={handleThumbnailLoad}
+                  thumbnailPriority={index < INITIAL_VISIBLE_CARD_COUNT}
                   bottomContent={
                     <BottomContent>
                       <BadgeRow>

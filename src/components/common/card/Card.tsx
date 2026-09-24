@@ -25,6 +25,7 @@ export interface CardProps {
   topContent?: ReactNode;
   bottomContent?: ReactNode;
   skeleton?: boolean;
+  thumbnailPriority?: boolean;
   onClick?: () => void;
   onThumbnailLoad?: () => void;
 }
@@ -88,6 +89,7 @@ const Card = ({
   topContent,
   bottomContent,
   skeleton = false,
+  thumbnailPriority = false,
   onClick,
   onThumbnailLoad,
 }: CardProps) => {
@@ -111,6 +113,7 @@ const Card = ({
               alt={thumbnailAlt}
               ratio={thumbnailRatio}
               sizes={CARD_GRID_SIZES}
+              priority={thumbnailPriority}
               onError={() => setFailedThumbnail(thumbnailSrc)}
               onLoad={onThumbnailLoad}
             />
