@@ -64,6 +64,9 @@ const Login = () => {
     mutationFn: (idToken: string) => googleLogin(idToken),
     onSuccess: (res) => {
       if (res.status === 'SIGNUP_REQUIRED') {
+        // 구글 인증 자체는 성공했지만 가입이 안 돼있는 경우 — Login Failed(인증 실패)와 구분해서,
+        // "가입 화면까지 도달했는가·가입을 완료했는가"를 별도 퍼널로 볼 수 있게 한다
+        track('Signup Required', { login_method: 'google' });
         sessionStorage.setItem(PENDING_SIGNUP_TOKEN_KEY, res.signupToken);
         router.push('/signup');
         return;

@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import styled from 'styled-components';
 
@@ -23,6 +23,13 @@ const AttendanceCheckCard = ({ isTarget = true }: { isTarget?: boolean }) => {
   const clickCountRef = useRef(0);
   const retryCountRef = useRef(0);
   const lastTriggerRef = useRef<'button_click' | 'enter_key'>('button_click');
+
+  // 로그인 완료→출석 화면 진입까지 걸리는 시간을, 화면 진입 이후의 시간(Attendance Completed)과
+  // 분리해서 볼 수 있도록 화면이 뜨는 시점을 따로 잡는다
+  useEffect(() => {
+    track('Attendance Screen Viewed', { is_target: isTarget, device_type: getDeviceType() });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const {
     data: records,

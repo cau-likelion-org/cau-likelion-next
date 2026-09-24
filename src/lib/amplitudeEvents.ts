@@ -17,10 +17,17 @@ export interface AmplitudeEventProperties {
   'Login Failed': {
     login_method: string;
   };
+  'Signup Required': {
+    login_method: string;
+  };
   'GNB Tab Clicked': {
     tab_name: string;
     is_external: boolean;
     is_logged_in: boolean;
+    device_type: string;
+  };
+  'Attendance Screen Viewed': {
+    is_target: boolean;
     device_type: string;
   };
   'Attendance Completed': {
