@@ -121,6 +121,12 @@ export const identifyUser = (userProfile: UserProfile) => {
   });
 };
 
+// _app.tsx는 "토큰이 없다"고 판단될 때마다 이걸 부르는데, 그중엔 로그인한 적 없는 비로그인
+// 방문자의 첫 진입도 포함된다. 그런 경우까지 reset()을 부르면 device_id가 매번 새로 발급돼
+// 비로그인 방문자 연속성(유입경로 등)이 깨지므로, 실제로 식별된 유저가 있을 때만 리셋한다.
 export const resetUser = () => {
-  void loadAmplitude().then((amplitude) => amplitude?.reset());
+  void loadAmplitude().then((amplitude) => {
+    if (!amplitude?.getUserId()) return;
+    amplitude.reset();
+  });
 };
