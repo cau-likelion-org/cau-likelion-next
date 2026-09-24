@@ -2,7 +2,7 @@ import '@styles/global.css';
 import 'pretendard/dist/web/static/pretendard-subset.css';
 import 'swiper/css';
 import Head from 'next/head';
-import { QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryCache, QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import type { AppProps } from 'next/app';
 import React, { ReactElement, ReactNode } from 'react';
@@ -15,6 +15,9 @@ import NextRouter, { Router } from 'next/router';
 import ErrorBoundary from '@common/errorBoundary/ErrorBoundary';
 import useTokenStore from 'src/store/useTokenStore';
 import { registerMessagingServiceWorker, subscribeForegroundNotification } from 'src/lib/pushNotification';
+import { track, identifyUser, resetUser } from 'src/lib/amplitude';
+import { getUserProfile } from 'src/apis/account';
+import { UserProfile } from '@@types/request';
 
 type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -22,6 +25,29 @@ type NextPageWithLayout = NextPage & {
 type AppPropsWithLayout = AppProps & {
   Component: NextPageWithLayout;
 };
+
+// useQuery는 QueryClientProvider의 자손에서만 컨텍스트를 읽을 수 있어, Provider를 직접 렌더링하는
+// AppContent 안이 아니라 그 자식으로 따로 둔다
+function AmplitudeIdentitySync() {
+  const hasHydrated = useTokenStore((state) => state.hasHydrated);
+  const tokenAccess = useTokenStore((state) => state.token.access);
+
+  const { data: userProfile } = useQuery<UserProfile>({
+    queryKey: ['userProfile'],
+    queryFn: () => getUserProfile(useTokenStore.getState().token),
+    enabled: !!tokenAccess,
+  });
+
+  useEffect(() => {
+    if (userProfile) identifyUser(userProfile);
+  }, [userProfile]);
+
+  useEffect(() => {
+    if (hasHydrated && !tokenAccess) resetUser();
+  }, [hasHydrated, tokenAccess]);
+
+  return null;
+}
 
 function AppContent({ Component, pageProps }: AppPropsWithLayout) {
   // 프로필 조회가 인증 문제로 실패하면 화면들이 아무것도 렌더링하지 않으므로(빈 화면),
@@ -51,6 +77,25 @@ function AppContent({ Component, pageProps }: AppPropsWithLayout) {
   useEffect(() => {
     hydrate();
   }, [hydrate]);
+
+  // Amplitude Page Viewed: 첫 로드 + 이후 모든 라우트 이동
+  useEffect(() => {
+    let previousPath = '';
+    const trackPageViewed = (path: string) => {
+      track('Page Viewed', {
+        page_path: path,
+        referrer_path: previousPath,
+        is_logged_in: !!useTokenStore.getState().token.access,
+      });
+      previousPath = path;
+    };
+
+    trackPageViewed(NextRouter.asPath);
+    const handleRouteChangeComplete = (url: string) => trackPageViewed(url);
+
+    Router.events.on('routeChangeComplete', handleRouteChangeComplete);
+    return () => Router.events.off('routeChangeComplete', handleRouteChangeComplete);
+  }, []);
 
   // 서비스 워커만 미리 등록해 둔다 (알림 권한 요청은 사용자가 직접 켤 때)
   useEffect(() => {
@@ -115,6 +160,7 @@ function AppContent({ Component, pageProps }: AppPropsWithLayout) {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <AmplitudeIdentitySync />
       <Head>
         <title>LikeLionCAU</title>
       </Head>
