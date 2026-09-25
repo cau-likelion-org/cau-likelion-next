@@ -15,6 +15,7 @@ export interface ThumbnailProps {
   sizes?: string;
   unoptimized?: boolean;
   onError?: () => void;
+  onLoad?: () => void;
 }
 
 const Thumbnail = ({
@@ -28,6 +29,7 @@ const Thumbnail = ({
   sizes = '100vw',
   unoptimized = false,
   onError,
+  onLoad,
 }: ThumbnailProps) => {
   return (
     <Wrapper className={className} $ratio={ratio} $radius={radius} $border={border}>
@@ -41,6 +43,7 @@ const Thumbnail = ({
         style={{ objectFit: 'cover' }}
         referrerPolicy="no-referrer"
         onError={onError}
+        onLoad={onLoad}
       />
       {overlay && <Overlay>{overlay}</Overlay>}
     </Wrapper>

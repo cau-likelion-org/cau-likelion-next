@@ -6,7 +6,7 @@ import Toast from '@common/toast/Toast';
 import PageScrollbar from '@common/pageScrollbar/PageScrollbar';
 import { IcAdd } from '@assets/svg';
 import { useQuery } from '@tanstack/react-query';
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import { getUserProfile } from 'src/apis/account';
 import useSessionFlagToast from 'src/hooks/useSessionFlagToast';
@@ -19,6 +19,8 @@ import {
 } from 'src/apis/project';
 import useTokenStore from 'src/store/useTokenStore';
 import { isAdminRole, sortArchivingListDesc } from '@utils/index';
+import usePageEngagementTracking from 'src/hooks/usePageEngagementTracking';
+import { track, getDeviceType } from 'src/lib/amplitude';
 import styled from 'styled-components';
 import ProjectCard from './ProjectCard';
 import ProjectFilterSelect from './ProjectFilterSelect';
@@ -33,6 +35,9 @@ const getStartTime = (startDate?: string) => {
   return Number.isNaN(time) ? 0 : time;
 };
 
+// react-hooks/purity가 useEffect/useRef 안의 Date.now() 호출도 막아서, 계측용 타임스탬프는 밖에서 받는다
+const now = () => Date.now();
+
 interface FlatProject extends IProjectData {
   generation: string;
 }
@@ -46,6 +51,9 @@ const ProjectsSection = ({ staticData }: { staticData: ArchivingArrayType<IProje
   });
 
   const router = useRouter();
+  // 목록↔상세는 같은 페이지 컴포넌트(얕은 라우팅)라서, 상세를 열고 닫아도 하나의 체류시간으로 합산된다
+  usePageEngagementTracking({ pagePath: '/project', exitEvent: 'Project Tab Page Exited' });
+
   const tokenState = useTokenStore((state) => state.token);
   const { data: userProfile } = useQuery<UserProfile>({
     queryKey: ['userProfile'],
@@ -87,6 +95,35 @@ const ProjectsSection = ({ staticData }: { staticData: ArchivingArrayType<IProje
   );
 
   const hasLoadedProjects = flatProjects.length > 0;
+
+  // 목록에 보이는 카드 썸네일이 전부 로드되기까지 걸린 시간을 잰다 (필터가 바뀌어 카드 수가 달라지면 다시 잰다)
+  const imageLoadRef = useRef({ loadedCount: 0, totalCount: 0, startedAt: 0, fired: false });
+  useEffect(() => {
+    imageLoadRef.current = { loadedCount: 0, totalCount: sortedProjects.length, startedAt: now(), fired: false };
+  }, [sortedProjects.length]);
+
+  const handleThumbnailLoad = () => {
+    const state = imageLoadRef.current;
+    state.loadedCount += 1;
+    if (state.fired || state.totalCount === 0 || state.loadedCount < state.totalCount) return;
+    state.fired = true;
+    track('Image Load Completed', {
+      page_path: '/project',
+      load_duration_ms: now() - state.startedAt,
+      image_count: state.totalCount,
+      device_type: getDeviceType(),
+    });
+  };
+
+  const handleCardClick = (project: FlatProject, position: number) => {
+    track('Archiving Card Clicked', {
+      archiving_type: 'project',
+      item_id: project.id,
+      item_title: project.title,
+      card_position: position,
+      referrer_path: router.asPath,
+    });
+  };
 
   return (
     <>
@@ -150,8 +187,13 @@ const ProjectsSection = ({ staticData }: { staticData: ArchivingArrayType<IProje
           <EmptyState message="조건에 맞는 프로젝트가 없습니다." />
         ) : (
           <CardGrid>
-            {sortedProjects.map((project) => (
-              <ProjectCard key={project.id} {...project} />
+            {sortedProjects.map((project, index) => (
+              <ProjectCard
+                key={project.id}
+                {...project}
+                onClick={() => handleCardClick(project, index)}
+                onThumbnailLoad={handleThumbnailLoad}
+              />
             ))}
           </CardGrid>
         )}
