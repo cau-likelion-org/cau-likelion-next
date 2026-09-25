@@ -11,8 +11,13 @@ import LoginButton from 'src/components/login/component/LoginButton';
 import useAuthRedirect from 'src/hooks/useAuthRedirect';
 import useTokenStore from 'src/store/useTokenStore';
 import { googleLogin } from 'src/apis/account';
-import { SIGNUP_UNAPPROVED_EMAIL_FLAG_KEY, PENDING_SIGNUP_TOKEN_KEY } from 'src/apis/signUp';
+import {
+  SIGNUP_UNAPPROVED_EMAIL_FLAG_KEY,
+  PENDING_SIGNUP_TOKEN_KEY,
+  PENDING_SIGNUP_ATTEMPT_ID_KEY,
+} from 'src/apis/signUp';
 import { consumeGoogleLoginRedirect, redirectToGoogleLogin } from '@utils/googleOAuth';
+import { track, newAttemptId } from 'src/lib/amplitude';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { media } from '@utils/constant/breakpoint';
@@ -63,13 +68,21 @@ const Login = () => {
     mutationFn: (idToken: string) => googleLogin(idToken),
     onSuccess: (res) => {
       if (res.status === 'SIGNUP_REQUIRED') {
+        // 구글 인증 자체는 성공했지만 가입이 안 돼있는 경우 — Login Failed(인증 실패)와 구분해서,
+        // "가입 화면까지 도달했는가·가입을 완료했는가"를 별도 퍼널로 볼 수 있게 한다.
+        // attempt_session_id를 여기서 발급해 가입 폼까지 들고 가서, 이 시도의 제출·실패·완료를 하나로 묶는다.
+        const attemptSessionId = newAttemptId();
+        track('Signup Required', { login_method: 'google', attempt_session_id: attemptSessionId });
         sessionStorage.setItem(PENDING_SIGNUP_TOKEN_KEY, res.signupToken);
+        sessionStorage.setItem(PENDING_SIGNUP_ATTEMPT_ID_KEY, attemptSessionId);
         router.push('/signup');
         return;
       }
+      track('Login Completed', { login_method: 'google', is_new_signup: false });
       setToken({ access: res.tokens.accessToken, refresh: res.tokens.refreshToken });
     },
     onError: (error) => {
+      track('Login Failed', { login_method: 'google' });
       const status = axios.isAxiosError(error) ? error.response?.status : undefined;
       // 4xx(EMAIL_NOT_ALLOWED)만 "미가입 이메일" 업무 오류로 간주. 5xx·네트워크 오류는 조용히 무시
       if (status !== undefined && status >= 400 && status < 500) {
@@ -81,6 +94,10 @@ const Login = () => {
   useEffect(() => {
     if (redirectResult && 'idToken' in redirectResult) {
       loginMutation.mutate(redirectResult.idToken);
+    } else if (redirectResult && 'error' in redirectResult) {
+      // 구글이 동의를 거부했거나 nonce 검증에 실패한 경우 — loginMutation을 거치지 않아
+      // onError가 안 불리므로 여기서 따로 Login Failed를 보낸다
+      track('Login Failed', { login_method: 'google' });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

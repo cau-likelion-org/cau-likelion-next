@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
@@ -16,6 +16,7 @@ import PageScrollbar from '@common/pageScrollbar/PageScrollbar';
 import { IcAdd } from '@assets/svg';
 import PageHeader from '@common/pageHeader/PageHeader';
 import useListboxSelect from 'src/hooks/useListboxSelect';
+import usePageEngagementTracking from 'src/hooks/usePageEngagementTracking';
 import useTokenStore from 'src/store/useTokenStore';
 import { getUserProfile, getGenerations } from 'src/apis/account';
 import { COMMON_PART_NAME } from '@utils/constant';
@@ -25,6 +26,7 @@ import { isAdminRole } from '@utils/index';
 import { getSessionList, getSession } from 'src/apis/session';
 import { getHistoryList, getHistory } from 'src/apis/history';
 import { getGalleryProjectList, getGalleryProject, GALLERY_PROJECT_CATEGORY_LABEL } from 'src/apis/gallery';
+import { track as trackEvent, getDeviceType } from 'src/lib/amplitude';
 
 import { containerCss, media } from '@utils/constant/breakpoint';
 
@@ -71,10 +73,16 @@ const LIST_QUERY_KEY_BY_TAB: Record<GalleryTabKey, string> = {
 
 const PROJECT_CATEGORY_FILTER_OPTIONS = ['전체', ...Object.values(GALLERY_PROJECT_CATEGORY_LABEL)];
 const ALL_OPTION = '전체';
+// CardGrid 최대 컬럼 수(xl 5열) 기준 2줄 정도 — 전체 목록 대신 "초기 화면에 보일 만한" 카드 수 근사치.
+// next/image가 기본적으로 화면 밖 썸네일은 지연 로드하므로, 전체 개수를 완료 기준으로 쓰면
+// 스크롤해서 다 보기 전까진 이벤트가 안 찍히거나 아예 안 찍힌다
+const INITIAL_VISIBLE_CARD_COUNT = 10;
 
 const toDisplayDate = (isoDate: string | undefined) => (isoDate ?? '').split('T')[0].replaceAll('-', '/');
 const toPeriodDisplay = (startDate: string, endDate: string | null) =>
   `${toDisplayDate(startDate)}${endDate && endDate !== startDate ? `-${toDisplayDate(endDate)}` : ''}`;
+// react-hooks/purity가 컴포넌트 스코프 안의 Date.now() 호출을 useEffect 안이어도 막아서, 계측용 타임스탬프는 밖에서 받는다
+const now = () => Date.now();
 
 const GalleryListSection = () => {
   const router = useRouter();
@@ -214,6 +222,54 @@ const GalleryListSection = () => {
   const historyCards = (histories ?? []).filter(
     (item) => generation === ALL_OPTION || `${item.generationNumber}기` === generation,
   );
+
+  const activeCardCount =
+    activeTab === 'session' ? sessionCards.length : activeTab === 'project' ? projectCards.length : historyCards.length;
+
+  // 탭 전환·목록 로딩마다 "초기 화면에 보이는 썸네일이 전부 로드되기까지 걸린 시간"을 새로 잰다.
+  // 화면 밖 카드는 지연 로드라 전체 개수를 기준으로 하면 스크롤 전엔 절대 안 찍힌다
+  const imageLoadRef = useRef({ loadedCount: 0, totalCount: 0, startedAt: 0, fired: false });
+  useEffect(() => {
+    imageLoadRef.current = {
+      loadedCount: 0,
+      totalCount: Math.min(activeCardCount, INITIAL_VISIBLE_CARD_COUNT),
+      startedAt: now(),
+      fired: false,
+    };
+  }, [activeTab, activeCardCount]);
+
+  const handleThumbnailLoad = () => {
+    const state = imageLoadRef.current;
+    state.loadedCount += 1;
+    if (state.fired || state.totalCount === 0 || state.loadedCount < state.totalCount) return;
+    state.fired = true;
+    trackEvent('Image Load Completed', {
+      page_path: router.asPath,
+      load_duration_ms: now() - state.startedAt,
+      image_count: state.totalCount,
+      device_type: getDeviceType(),
+    });
+  };
+
+  const handleCardClick = (archivingType: GalleryTabKey, id: number, title: string, position: number) => {
+    trackEvent('Archiving Card Clicked', {
+      archiving_type: archivingType,
+      item_id: id,
+      item_title: title,
+      card_position: position,
+      referrer_path: router.asPath,
+    });
+    setSelectedId(id);
+  };
+
+  // 탭(세션/프로젝트/추억)별로 체류시간·스크롤 깊이를 따로 재기 위해 activeTab이 바뀔 때마다 다시 잰다
+  usePageEngagementTracking({
+    pagePath: router.asPath,
+    exitEvent: 'Archiving Page Exited',
+    scrollDepthEvent: 'Archiving Scroll Depth Reached',
+    scopeKey: activeTab,
+    extraProperties: { archiving_type: activeTab },
+  });
 
   const UploadModal = UPLOAD_MODAL_BY_TAB[activeTab];
 
@@ -409,13 +465,15 @@ const GalleryListSection = () => {
             <EmptyState message="조건에 맞는 게시물이 없습니다." />
           ) : (
             <CardGrid>
-              {sessionCards.map((item) => (
+              {sessionCards.map((item, index) => (
                 <Card
                   key={item.id}
                   thumbnailRatio={16 / 9}
                   thumbnailSrc={item.thumbnailUrl}
                   title={item.title}
-                  onClick={() => setSelectedId(item.id)}
+                  onClick={() => handleCardClick('session', item.id, item.title, index)}
+                  onThumbnailLoad={handleThumbnailLoad}
+                  thumbnailPriority={index < INITIAL_VISIBLE_CARD_COUNT}
                   bottomContent={
                     <BottomContent>
                       <BadgeRow>
@@ -440,13 +498,15 @@ const GalleryListSection = () => {
             <EmptyState message="조건에 맞는 게시물이 없습니다." />
           ) : (
             <CardGrid>
-              {projectCards.map((item) => (
+              {projectCards.map((item, index) => (
                 <Card
                   key={item.id}
                   thumbnailRatio={16 / 9}
                   thumbnailSrc={item.thumbnailUrl}
                   title={item.title}
-                  onClick={() => setSelectedId(item.id)}
+                  onClick={() => handleCardClick('project', item.id, item.title, index)}
+                  onThumbnailLoad={handleThumbnailLoad}
+                  thumbnailPriority={index < INITIAL_VISIBLE_CARD_COUNT}
                   bottomContent={
                     <BottomContent>
                       <BadgeRow>
@@ -472,13 +532,15 @@ const GalleryListSection = () => {
             <EmptyState message="조건에 맞는 게시물이 없습니다." />
           ) : (
             <CardGrid>
-              {historyCards.map((item) => (
+              {historyCards.map((item, index) => (
                 <Card
                   key={item.id}
                   thumbnailRatio={16 / 9}
                   thumbnailSrc={item.thumbnailUrl}
                   title={item.title}
-                  onClick={() => setSelectedId(item.id)}
+                  onClick={() => handleCardClick('gallery', item.id, item.title, index)}
+                  onThumbnailLoad={handleThumbnailLoad}
+                  thumbnailPriority={index < INITIAL_VISIBLE_CARD_COUNT}
                   bottomContent={
                     <BottomContent>
                       <BadgeRow>

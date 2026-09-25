@@ -14,6 +14,7 @@ import useListboxSelect from 'src/hooks/useListboxSelect';
 import { getBlogs, BlogCategory } from 'src/apis/blog';
 import { toDateString } from '@utils/index';
 import { Label } from '@utils/constant/color';
+import { track } from 'src/lib/amplitude';
 
 import BlogCard from './component/BlogCard';
 import { containerCss, media } from '@utils/constant/breakpoint';
@@ -32,8 +33,12 @@ const CATEGORY_OPTIONS = [ALL_OPTION, ...Object.values(CATEGORY_LABEL)];
 const PAGE_SIZE = 10;
 const SEARCH_DEBOUNCE_DELAY = 300;
 
+// react-hooks/purity가 useEffect 안의 Date.now() 호출도 막아서, 계측용 타임스탬프는 밖에서 받는다
+const now = () => Date.now();
+
 const BlogListSection = () => {
   const contentRef = useRef<HTMLDivElement>(null);
+  const pendingReturnRef = useRef<{ postId: number; clickedAt: number } | null>(null);
   const { data: blogs, isLoading, isError } = useQuery({ queryKey: ['blogs'], queryFn: getBlogs });
   const [generation, setGeneration] = useState(ALL_OPTION);
   const [category, setCategory] = useState(ALL_OPTION);
@@ -46,6 +51,24 @@ const BlogListSection = () => {
     const timer = setTimeout(() => setDebouncedKeyword(keyword), SEARCH_DEBOUNCE_DELAY);
     return () => clearTimeout(timer);
   }, [keyword]);
+
+  // 블로그는 새 탭으로 열리므로, 원래 탭이 다시 보이는 시점을 "복귀"로 본다
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState !== 'visible') return;
+      const pending = pendingReturnRef.current;
+      if (!pending) return;
+      pendingReturnRef.current = null;
+      track('Blog Return Detected', { post_id: pending.postId, away_duration_ms: now() - pending.clickedAt });
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, []);
+
+  const handleBlogCardClick = (postId: number, title: string, url: string) => {
+    track('Blog Post Clicked', { post_id: postId, post_title: title, url });
+    pendingReturnRef.current = { postId, clickedAt: now() };
+  };
 
   const generationOptions = useMemo(() => {
     const generations = Array.from(new Set((blogs ?? []).map((blog) => blog.generationNumber))).sort((a, b) => b - a);
@@ -133,6 +156,7 @@ const BlogListSection = () => {
                   url={post.url}
                   thumbnailUrl={post.thumbnailUrl}
                   thumbnailAlt={post.title}
+                  onClick={() => handleBlogCardClick(post.id, post.title, post.url)}
                 />
               ))}
             </PostList>
