@@ -14,6 +14,7 @@ export interface ThumbnailProps {
   overlay?: ReactNode;
   sizes?: string;
   unoptimized?: boolean;
+  priority?: boolean;
   onError?: () => void;
   onLoad?: () => void;
 }
@@ -28,6 +29,7 @@ const Thumbnail = ({
   overlay,
   sizes = '100vw',
   unoptimized = false,
+  priority = false,
   onError,
   onLoad,
 }: ThumbnailProps) => {
@@ -40,6 +42,7 @@ const Thumbnail = ({
         fill
         sizes={sizes}
         unoptimized={unoptimized}
+        priority={priority}
         style={{ objectFit: 'cover' }}
         referrerPolicy="no-referrer"
         onError={onError}
