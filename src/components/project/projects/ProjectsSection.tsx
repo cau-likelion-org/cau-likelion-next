@@ -29,6 +29,7 @@ import { containerCss, media } from '@utils/constant/breakpoint';
 const ALL_OPTION = '전체';
 
 const CATEGORY_OPTIONS = [ALL_OPTION, ...Object.values(PROJECT_CATEGORY_LABEL)];
+const INITIAL_VISIBLE_CARD_COUNT = 10;
 
 const getStartTime = (startDate?: string) => {
   const time = new Date(startDate ?? '').getTime();
@@ -96,10 +97,15 @@ const ProjectsSection = ({ staticData }: { staticData: ArchivingArrayType<IProje
 
   const hasLoadedProjects = flatProjects.length > 0;
 
-  // 목록에 보이는 카드 썸네일이 전부 로드되기까지 걸린 시간을 잰다 (필터가 바뀌어 카드 수가 달라지면 다시 잰다)
+  // 초기 화면에 보이는 카드 썸네일이 전부 로드되기까지 걸린 시간을 잰다 (필터가 바뀌어 카드 수가 달라지면 다시 잰다)
   const imageLoadRef = useRef({ loadedCount: 0, totalCount: 0, startedAt: 0, fired: false });
   useEffect(() => {
-    imageLoadRef.current = { loadedCount: 0, totalCount: sortedProjects.length, startedAt: now(), fired: false };
+    imageLoadRef.current = {
+      loadedCount: 0,
+      totalCount: Math.min(sortedProjects.length, INITIAL_VISIBLE_CARD_COUNT),
+      startedAt: now(),
+      fired: false,
+    };
   }, [sortedProjects.length]);
 
   const handleThumbnailLoad = () => {
@@ -191,8 +197,9 @@ const ProjectsSection = ({ staticData }: { staticData: ArchivingArrayType<IProje
               <ProjectCard
                 key={project.id}
                 {...project}
+                thumbnailPriority={index < INITIAL_VISIBLE_CARD_COUNT}
                 onClick={() => handleCardClick(project, index)}
-                onThumbnailLoad={handleThumbnailLoad}
+                onThumbnailLoad={index < INITIAL_VISIBLE_CARD_COUNT ? handleThumbnailLoad : undefined}
               />
             ))}
           </CardGrid>
