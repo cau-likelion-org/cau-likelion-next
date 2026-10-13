@@ -7,6 +7,7 @@
     "build": "next build --webpack",
     "start": "next start",
     "typecheck": "tsc --noEmit",
+    "test": "vitest run",
     "lint": "eslint .",
     "deploy": "cd .production && serverless ",
     "deployDev": "cd .dev && serverless ",
@@ -61,7 +62,8 @@
     "serverless": "2.72.2",
     "storybook": "^10.5.3",
     "tsconfig-paths-webpack-plugin": "^4.2.0",
-    "url-loader": "^4.1.1"
+    "url-loader": "^4.1.1",
+    "vitest": "^3.2.7"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [

@@ -100,7 +100,7 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 - **전역 상태**: Zustand (`src/store/`) — Recoil 마이그레이션 완료
 - **서버 상태**: TanStack Query(react-query) v5 + axios (커스텀 `authAxios` 인터셉터)
 - **에러 모니터링**: Sentry (`@sentry/nextjs`, `src/lib/errorReporter.ts`에서 지연 로드)
-- **테스트**: 미도입 (테스트 프레임워크 없음 — 신규 도입 시 별도 논의 필요)
+- **테스트**: Vitest (유닛 테스트, `npm test`) — 컨벤션은 아래 "테스트" 섹션 참고
 - **배포**: Vercel (Git 기반 CI/CD) — `main` push 시 GitHub Actions로 빌드 검증(`.github/workflows/deploy.yml`)
 
 ---
@@ -223,6 +223,7 @@ refactor/설명     ← 리팩토링 브랜치 (예: refactor/token)
 ### 타입 체크 / Edge Request
 
 - 타입 체크는 `typecheck.yml`에서 `npm run typecheck`로 별도 실행 (`next build`에 포함되지 않음)
+- 유닛 테스트는 `test.yml`에서 `npm test`로 실행 (`main`, `dev`로 가는 모든 PR)
 - `check-edge-requests.yml`이 `next/image`에 외부 URL을 `src`로 넘기면서 `unoptimized`가 없는 코드를 grep 기반으로 탐지해 `main` PR을 막음 — 외부 이미지 URL을 다루는 컴포넌트를 추가/수정할 때 반드시 `unoptimized` prop을 확인
 
 ---
@@ -237,4 +238,9 @@ refactor/설명     ← 리팩토링 브랜치 (예: refactor/token)
 
 ## 테스트
 
-- 현재 테스트 프레임워크가 도입되어 있지 않습니다. 테스트를 추가하게 될 경우 이 문서에 컨벤션(파일 위치, 러너, 커버리지 목표)을 먼저 정의하고 진행합니다.
+- **러너**: Vitest (`npm test` = `vitest run`, 개발 중에는 `npx vitest`로 watch). 설정은 루트 `vitest.config.ts`
+- **파일 위치**: 테스트 대상 옆에 `*.test.ts(x)`로 둔다 (예: `src/apis/authAxios.ts` → `src/apis/authAxios.test.ts`). 단, `src/pages/` 안에는 두지 않는다 (Pages Router가 라우트로 취급)
+- **import alias**: `vitest.config.ts`가 `tsconfig.json`의 `paths`를 읽어 그대로 쓰므로 alias를 따로 등록하지 않는다
+- **환경**: 기본 `node`. 지금은 DOM이 필요 없는 순수 로직(유틸, API 헬퍼, 인터셉터)만 대상으로 한다. 컴포넌트·훅 테스트가 필요해지면 jsdom / Testing Library 도입을 먼저 논의한다
+- **작성 규칙**: `describe`/`it`/`expect`는 `vitest`에서 명시적으로 import하고(globals 미사용), 테스트 이름은 한글로 동작을 서술한다. 네트워크는 실제로 호출하지 않고 axios adapter나 `vi.mock`으로 대체한다
+- **커버리지 목표**: 수치 목표는 두지 않는다. `src/utils`, `src/apis`에 순수 로직을 새로 추가하거나 분기를 바꿀 때 테스트를 함께 추가한다
