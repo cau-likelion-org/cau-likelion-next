@@ -388,7 +388,7 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
       filledIndices.map((index) => {
         const file = imageFiles[index];
         return file
-          ? resizeImageFile(file, 'image/webp').then((converted) => uploadProjectImage(tokenState, converted))
+          ? resizeImageFile(file, 'image/webp', Infinity).then((converted) => uploadProjectImage(tokenState, converted))
           : Promise.resolve(images[index] as string);
       }),
     );
