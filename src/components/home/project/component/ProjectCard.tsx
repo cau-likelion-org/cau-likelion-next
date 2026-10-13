@@ -28,7 +28,13 @@ const ProjectCard = ({ title, generationNumber, category, banner, thumbnail, hre
       <Wrapper>
         <ThumbnailArea>
           {showThumbnail ? (
-            <img key={thumbnail} src={thumbnail} alt={title} onError={() => setFailedThumbnail(thumbnail)} />
+            <img
+              key={thumbnail}
+              src={thumbnail}
+              alt={title}
+              loading="lazy"
+              onError={() => setFailedThumbnail(thumbnail)}
+            />
           ) : (
             <ThumbnailPlaceholder />
           )}
