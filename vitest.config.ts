@@ -19,5 +19,10 @@ export default defineConfig({
   test: {
     environment: 'node',
     include: ['src/**/*.test.{ts,tsx}'],
+    coverage: {
+      provider: 'v8',
+      include: ['src/{apis,hooks,lib,store,utils}/**/*.{ts,tsx}'],
+      exclude: ['**/*.test.{ts,tsx}', 'src/utils/constant/{breakpoint,color,typography}.ts'],
+    },
   },
 });

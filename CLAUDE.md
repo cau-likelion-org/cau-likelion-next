@@ -238,9 +238,10 @@ refactor/설명     ← 리팩토링 브랜치 (예: refactor/token)
 
 ## 테스트
 
-- **러너**: Vitest (`npm test` = `vitest run`, 개발 중에는 `npx vitest`로 watch). 설정은 루트 `vitest.config.ts`
+- **러너**: Vitest (`npm test` = `vitest run`, 개발 중에는 `npx vitest`로 watch, 커버리지는 `npm run test:coverage`). 설정은 루트 `vitest.config.ts`
 - **파일 위치**: 테스트 대상 옆에 `*.test.ts(x)`로 둔다 (예: `src/apis/authAxios.ts` → `src/apis/authAxios.test.ts`). 단, `src/pages/` 안에는 두지 않는다 (Pages Router가 라우트로 취급)
 - **import alias**: `vitest.config.ts`가 `tsconfig.json`의 `paths`를 읽어 그대로 쓰므로 alias를 따로 등록하지 않는다
-- **환경**: 기본 `node`. 지금은 DOM이 필요 없는 순수 로직(유틸, API 헬퍼, 인터셉터)만 대상으로 한다. 컴포넌트·훅 테스트가 필요해지면 jsdom / Testing Library 도입을 먼저 논의한다
+- **환경**: 기본 `node`. DOM이 필요한 테스트(훅, `localStorage`/`sessionStorage`/`window` 사용 코드)는 파일 맨 위에 `// @vitest-environment jsdom`을 적는다
+- **훅 테스트**: `@testing-library/react`의 `renderHook`/`act`를 쓰고, globals를 쓰지 않으므로 `afterEach(cleanup)`을 파일마다 직접 등록한다. 컴포넌트 렌더링 테스트는 아직 대상이 아니다
 - **작성 규칙**: `describe`/`it`/`expect`는 `vitest`에서 명시적으로 import하고(globals 미사용), 테스트 이름은 한글로 동작을 서술한다. 네트워크는 실제로 호출하지 않고 axios adapter나 `vi.mock`으로 대체한다
-- **커버리지 목표**: 수치 목표는 두지 않는다. `src/utils`, `src/apis`에 순수 로직을 새로 추가하거나 분기를 바꿀 때 테스트를 함께 추가한다
+- **커버리지 범위**: `src/{apis,hooks,lib,store,utils}`만 집계한다 (컴포넌트·페이지와 스타일 토큰 상수는 제외). 수치 목표는 두지 않고, 이 범위에 로직을 새로 추가하거나 분기를 바꿀 때 테스트를 함께 추가한다. URL만 넘기는 단순 API 호출 함수는 숫자를 채우기 위한 테스트를 쓰지 않는다
