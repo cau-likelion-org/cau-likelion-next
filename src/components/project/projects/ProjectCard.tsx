@@ -10,6 +10,7 @@ import ThumbnailPlaceholder from '@common/thumbnail/ThumbnailPlaceholder';
 
 interface ProjectCardProps extends IProjectData {
   generation: string;
+  thumbnailPriority?: boolean;
   onClick?: () => void;
   onThumbnailLoad?: () => void;
 }
@@ -23,6 +24,7 @@ const ProjectCard = ({
   description,
   banner,
   generation,
+  thumbnailPriority = false,
   onClick,
   onThumbnailLoad,
 }: ProjectCardProps) => {
@@ -40,6 +42,7 @@ const ProjectCard = ({
               key={thumbnail}
               src={thumbnail}
               alt={title}
+              loading={thumbnailPriority ? 'eager' : 'lazy'}
               onError={() => setFailedThumbnail(thumbnail)}
               onLoad={onThumbnailLoad}
             />

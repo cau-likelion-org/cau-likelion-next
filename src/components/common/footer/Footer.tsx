@@ -14,8 +14,8 @@ const EmailCopyModal = dynamic(() => import('./EmailCopyModal'), { ssr: false })
 const EMAIL = 'puang@likelion.org';
 
 const SOCIAL_LINKS = [
-  { icon: IcKakaotalk, href: 'https://pf.kakao.com/_HMPxfG' },
-  { icon: IcInstagram, href: 'https://www.instagram.com/likelion_cau' },
+  { icon: IcKakaotalk, href: 'https://pf.kakao.com/_HMPxfG', label: '카카오톡 채널' },
+  { icon: IcInstagram, href: 'https://www.instagram.com/likelion_cau', label: '인스타그램' },
 ];
 
 const Footer = ({ isLandingLayout }: { isLandingLayout: boolean }) => {
@@ -42,12 +42,12 @@ const Footer = ({ isLandingLayout }: { isLandingLayout: boolean }) => {
               © 2026 CAU LIKELION<DesktopOnly>. All rights reserved</DesktopOnly>
             </Copyright>
             <Action>
-              {SOCIAL_LINKS.map(({ icon: Icon, href }, index) => (
-                <IconButton key={index} href={href} target="_blank" rel="noopener noreferrer">
+              {SOCIAL_LINKS.map(({ icon: Icon, href, label }, index) => (
+                <IconButton key={index} href={href} target="_blank" rel="noopener noreferrer" aria-label={label}>
                   <Icon width={20} height={20} />
                 </IconButton>
               ))}
-              <IconButton as="button" type="button" onClick={handleClickEmail}>
+              <IconButton as="button" type="button" aria-label="이메일 주소 복사" onClick={handleClickEmail}>
                 <IcEmail width={20} height={20} />
               </IconButton>
             </Action>

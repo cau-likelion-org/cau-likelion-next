@@ -52,6 +52,7 @@ import useScrollToFirstError from 'src/hooks/useScrollToFirstError';
 import { NUMERIC_ONLY_REGEX, PROJECT_CATEGORY_OPTIONS } from '@utils/constant';
 import { AccentTint, BackgroundColor, Black, Fill, Label, Line, Orange, State } from '@utils/constant/color';
 import { isUnfilled } from '@utils/index';
+import { resizeImageFile } from '@utils/resizeImage';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { containerCss } from '@utils/constant/breakpoint';
 
@@ -386,7 +387,9 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
     const imageUrls = await Promise.all(
       filledIndices.map((index) => {
         const file = imageFiles[index];
-        return file ? uploadProjectImage(tokenState, file) : Promise.resolve(images[index] as string);
+        return file
+          ? resizeImageFile(file, 'image/webp', Infinity).then((converted) => uploadProjectImage(tokenState, converted))
+          : Promise.resolve(images[index] as string);
       }),
     );
 
