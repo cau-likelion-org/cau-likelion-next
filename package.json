@@ -7,6 +7,8 @@
     "build": "next build --webpack",
     "start": "next start",
     "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "lint": "eslint .",
     "deploy": "cd .production && serverless ",
     "deployDev": "cd .dev && serverless ",
@@ -52,16 +54,21 @@
     "@storybook/nextjs": "^10.5.3",
     "@storybook/react": "^10.5.3",
     "@svgr/webpack": "^6.5.1",
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/react": "^16.3.3",
     "@types/styled-components": "5.1.26",
     "@types/uuid": "^9.0.0",
+    "@vitest/coverage-v8": "^3.2.7",
     "eslint-plugin-storybook": "^10.5.3",
     "husky": "^9.1.7",
+    "jsdom": "^27.0.1",
     "lint-staged": "^17.2.0",
     "prettier": "^3.9.6",
     "serverless": "2.72.2",
     "storybook": "^10.5.3",
     "tsconfig-paths-webpack-plugin": "^4.2.0",
-    "url-loader": "^4.1.1"
+    "url-loader": "^4.1.1",
+    "vitest": "^3.2.7"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
