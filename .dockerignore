@@ -1,0 +1,9 @@
+.git
+node_modules
+.next
+.env*
+coverage
+playwright-report
+test-results
+storybook-static
+*.tsbuildinfo
