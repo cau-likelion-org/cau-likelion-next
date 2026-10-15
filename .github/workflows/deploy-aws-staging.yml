@@ -1,0 +1,80 @@
+name: AWS Staging Deploy
+
+on:
+  push:
+    branches: [dev]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+permissions: {}
+
+env:
+  IMAGE: ghcr.io/${{ github.repository }}
+
+jobs:
+  deploy:
+    name: 스테이징 배포
+    runs-on: ubuntu-24.04-arm
+    environment:
+      name: aws-staging
+      url: http://${{ vars.EC2_HOST }}
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 빌드용 환경 변수 파일 생성
+        env:
+          ENV_FILE: ${{ secrets.ENV_FILE }}
+        run: printf '%s\n' "$ENV_FILE" > "$RUNNER_TEMP/env.build"
+
+      - name: 이미지 빌드 및 푸시
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/arm64
+          push: true
+          tags: ${{ env.IMAGE }}:staging-${{ github.sha }}
+          secret-files: env=${{ runner.temp }}/env.build
+          cache-from: type=gha,scope=staging
+          cache-to: type=gha,scope=staging,mode=max
+
+      - name: SSH 키 준비
+        env:
+          EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+          EC2_HOST: ${{ vars.EC2_HOST }}
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$EC2_SSH_KEY" > ~/.ssh/deploy.pem
+          chmod 600 ~/.ssh/deploy.pem
+          ssh-keyscan -H "$EC2_HOST" >> ~/.ssh/known_hosts
+
+      - name: EC2 컨테이너 교체
+        env:
+          EC2_HOST: ${{ vars.EC2_HOST }}
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ env.IMAGE }}:staging-${{ github.sha }}
+        run: |
+          SSH="ssh -i $HOME/.ssh/deploy.pem ec2-user@$EC2_HOST"
+          printf '%s' "$GHCR_TOKEN" | $SSH docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+          $SSH bash -s <<EOF
+          set -e
+          trap 'docker logout ghcr.io' EXIT
+          docker pull "$TAG"
+          docker rm -f web || true
+          docker run -d --name web -p 80:3000 --restart unless-stopped "$TAG"
+          docker image prune -af
+          curl -fsS -o /dev/null --retry 10 --retry-delay 3 --retry-all-errors http://localhost/
+          EOF
