@@ -20,6 +20,7 @@ const svgrOptions = {
 };
 
 const nextConfig = {
+  output: 'standalone',
   // `npm run typecheck`로 떼어내 CI에서 빌드와 병렬로 돌림
   typescript: { ignoreBuildErrors: false },
   reactStrictMode: true,
