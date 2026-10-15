@@ -17,6 +17,7 @@ env:
 jobs:
   deploy:
     name: 스테이징 배포
+    if: github.ref == 'refs/heads/dev'
     runs-on: ubuntu-24.04-arm
     environment:
       name: aws-staging
@@ -50,16 +51,17 @@ jobs:
           secret-files: env=${{ runner.temp }}/env.build
           cache-from: type=gha,scope=staging
           cache-to: type=gha,scope=staging,mode=max
+          no-cache-filters: builder
 
       - name: SSH 키 준비
         env:
           EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
-          EC2_HOST: ${{ vars.EC2_HOST }}
+          EC2_KNOWN_HOSTS: ${{ vars.EC2_KNOWN_HOSTS }}
         run: |
           mkdir -p ~/.ssh
           printf '%s\n' "$EC2_SSH_KEY" > ~/.ssh/deploy.pem
           chmod 600 ~/.ssh/deploy.pem
-          ssh-keyscan -H "$EC2_HOST" >> ~/.ssh/known_hosts
+          printf '%s\n' "$EC2_KNOWN_HOSTS" > ~/.ssh/known_hosts
 
       - name: EC2 컨테이너 교체
         env:
