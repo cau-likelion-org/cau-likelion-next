@@ -123,6 +123,7 @@ const nextConfig = {
       '@signup': path.resolve(__dirname, 'src/components/signup'),
       '@login': path.resolve(__dirname, 'src/components/login'),
       '@mypage': path.resolve(__dirname, 'src/components/mypage'),
+      '@recruit': path.resolve(__dirname, 'src/components/recruit'),
       '@pages': path.resolve(__dirname, 'src/pages'),
       '@styles': path.resolve(__dirname, 'src/styles'),
       '@utils': path.resolve(__dirname, 'src/utils'),
