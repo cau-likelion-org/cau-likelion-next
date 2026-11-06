@@ -28,6 +28,7 @@
       "@signup/*": ["src/components/signup/*"],
       "@login/*": ["src/components/login/*"],
       "@mypage/*": ["src/components/mypage/*"],
+      "@recruit/*": ["src/components/recruit/*"],
       "@pages/*": ["src/pages/*"],
       "@styles/*": ["src/styles/*"],
       "@@types/*": ["src/types/*"],
