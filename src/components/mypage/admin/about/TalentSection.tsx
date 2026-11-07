@@ -54,7 +54,7 @@ const TalentSection = ({
               />
             </FieldWrapper>
           </Row>
-          <Textarea
+          <ContentTextarea
             heading="인재상"
             value={item.content}
             placeholder="텍스트 입력"
@@ -118,4 +118,10 @@ const Row = styled.div`
 
 const FieldWrapper = styled.div`
   flex: 0 0 160px;
+`;
+
+const ContentTextarea = styled(Textarea)`
+  textarea {
+    min-height: 78px;
+  }
 `;

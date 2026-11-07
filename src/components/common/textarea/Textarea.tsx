@@ -44,6 +44,7 @@ const Textarea = ({
   disabled = false,
   readOnly = false,
   id,
+  rows = 1,
   ...textareaProps
 }: TextareaProps) => {
   const generatedId = useId();
@@ -75,6 +76,7 @@ const Textarea = ({
           id={textareaId}
           disabled={disabled}
           readOnly={readOnly}
+          rows={rows}
           $resize={resize}
           $hasStatusIcon={hasStatusIcon}
           $readOnly={readOnly}
@@ -148,7 +150,7 @@ const InputWrapper = styled.div<{ $status: TextareaStatus; $disabled: boolean; $
 
 const StyledTextarea = styled.textarea<{ $resize: TextareaResize; $hasStatusIcon: boolean; $readOnly: boolean }>`
   width: 100%;
-  min-height: 78px;
+  min-height: 26px;
   padding: ${(props) => (props.$hasStatusIcon ? '0 36px 0 4px' : '0 4px')};
   border: none;
   outline: none;

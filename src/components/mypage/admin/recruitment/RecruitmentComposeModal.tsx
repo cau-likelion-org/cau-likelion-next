@@ -173,9 +173,8 @@ const RecruitmentComposeModal = ({
               <LargeHeading>
                 내용<LargeRequired>*</LargeRequired>
               </LargeHeading>
-              <Textarea
+              <ContentTextarea
                 value={content}
-                rows={7}
                 placeholder="메세지를 입력해 주세요."
                 onChange={(event) => setContent(event.target.value)}
                 status={showErrors && isUnfilled(content) ? 'negative' : 'normal'}
@@ -468,4 +467,10 @@ const ConfirmTextButton = styled.button<{ $tone?: 'negative' }>`
   color: ${(props) => (props.$tone === 'negative' ? Orange.o500 : Label.alternative)};
   cursor: pointer;
   ${typographyCss(Typography.label1Normal.bold)}
+`;
+
+const ContentTextarea = styled(Textarea)`
+  textarea {
+    min-height: 126px;
+  }
 `;

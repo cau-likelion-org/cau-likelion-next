@@ -232,7 +232,7 @@ const AssignmentCreateForm = ({
                 <FieldHeadingLarge>
                   과제 이름<Required $large>*</Required>
                 </FieldHeadingLarge>
-                <CompactTextarea
+                <Textarea
                   resize="fixed"
                   placeholder={`텍스트 입력(국문 포함 ${TITLE_MAX_KO}자/영문 ${TITLE_MAX_EN}자)`}
                   maxLength={getTitleMax(draft.title)}
@@ -258,7 +258,7 @@ const AssignmentCreateForm = ({
                 <FieldHeadingLarge>
                   과제 설명<Required $large>*</Required>
                 </FieldHeadingLarge>
-                <DetailTextarea
+                <Textarea
                   resize="fixed"
                   placeholder="과제에 대한 설명을 작성해주세요."
                   maxLength={DETAIL_MAX}
@@ -496,25 +496,6 @@ const Field = styled.div`
   flex-direction: column;
   gap: 8px;
   width: 100%;
-`;
-
-// 박스 높이를 고정해 늘어나지 않게 하고, 그만큼(2줄)은 항상 입력 영역으로 보이게 한다.
-// 넘치는 내용은 늘어나는 대신 textarea 자체 스크롤로 확인한다.
-const CompactTextarea = styled(Textarea)`
-  textarea {
-    height: 52px;
-    overflow-y: auto;
-  }
-`;
-
-// 과제 설명은 3줄 높이로 고정, 그 이상은 textarea 내부 스크롤로 확인한다.
-// 줄 높이(26px)의 정배수로 고정하면 다음 줄이 0px만 보여 완전히 가려지므로,
-// 여백을 살짝 더 줘서 넘치는 줄이 잘리더라도 보이게 한다.
-const DetailTextarea = styled(Textarea)`
-  textarea {
-    height: 90px;
-    overflow-y: auto;
-  }
 `;
 
 const FieldHeadingLarge = styled.div`
