@@ -7,7 +7,7 @@ import Select from '@common/select/Select';
 import ListboxOptions from '@common/select/ListboxOptions';
 import { IcLineHorizontal } from '@assets/svg';
 import useListboxSelect from 'src/hooks/useListboxSelect';
-import { BackgroundWhite, Black, Label, Line, Orange } from '@utils/constant/color';
+import { BackgroundWhite, Black, Label, Line, Orange, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 import { RecruitInterviewSetting } from './mock';
@@ -89,7 +89,15 @@ const FirstStepQuestionSection = ({ initialValues, onSave }: FirstStepQuestionSe
   const dateLabels = getDateLabels(values.startDate, values.endDate);
   const timeLabels = getTimeLabels(values.startTime, values.endTime, values.unitMinutes);
 
-  const isFilled = !!values.startDate && !!values.endDate && !!values.startTime && !!values.endTime;
+  const isDateRangeInvalid = !!values.startDate && !!values.endDate && values.endDate < values.startDate;
+  const isTimeRangeInvalid = !!values.startTime && !!values.endTime && values.endTime <= values.startTime;
+  const isFilled =
+    !!values.startDate &&
+    !!values.endDate &&
+    !!values.startTime &&
+    !!values.endTime &&
+    !isDateRangeInvalid &&
+    !isTimeRangeInvalid;
   const isChanged = JSON.stringify(values) !== JSON.stringify(savedValues);
 
   const handleSave = () => {
@@ -129,16 +137,19 @@ const FirstStepQuestionSection = ({ initialValues, onSave }: FirstStepQuestionSe
                 <DateTimeInput
                   aria-label="면접 시작일"
                   value={values.startDate}
+                  status={isDateRangeInvalid ? 'negative' : 'normal'}
                   onChange={(startDate) => update({ startDate })}
                 />
                 <RangeIcon />
                 <DateTimeInput
                   aria-label="면접 종료일"
                   value={values.endDate}
+                  status={isDateRangeInvalid ? 'negative' : 'normal'}
                   min={values.startDate}
                   onChange={(endDate) => update({ endDate })}
                 />
               </RangeRow>
+              {isDateRangeInvalid && <ErrorCaption>종료일은 시작일 이후로 설정해 주세요.</ErrorCaption>}
             </Field>
             <Field>
               <FieldLabel>면접 시각</FieldLabel>
@@ -147,6 +158,7 @@ const FirstStepQuestionSection = ({ initialValues, onSave }: FirstStepQuestionSe
                   type="time"
                   aria-label="면접 시작 시각"
                   value={values.startTime}
+                  status={isTimeRangeInvalid ? 'negative' : 'normal'}
                   onChange={(startTime) => update({ startTime })}
                 />
                 <RangeIcon />
@@ -154,9 +166,11 @@ const FirstStepQuestionSection = ({ initialValues, onSave }: FirstStepQuestionSe
                   type="time"
                   aria-label="면접 종료 시각"
                   value={values.endTime}
+                  status={isTimeRangeInvalid ? 'negative' : 'normal'}
                   onChange={(endTime) => update({ endTime })}
                 />
               </RangeRow>
+              {isTimeRangeInvalid && <ErrorCaption>종료 시각은 시작 시각 이후로 설정해 주세요.</ErrorCaption>}
             </Field>
           </FieldGroup>
           <UnitField ref={wrapperRef} onKeyDownCapture={handleKeyDown} onBlur={handleBlur}>
@@ -334,6 +348,12 @@ const FieldLabel = styled.p`
   margin: 0;
   color: ${Label.neutral};
   ${typographyCss(Typography.label1Normal.bold)}
+`;
+
+const ErrorCaption = styled.p`
+  margin: 0;
+  color: ${State.error};
+  ${typographyCss(Typography.caption1.regular)}
 `;
 
 const RangeRow = styled.div`

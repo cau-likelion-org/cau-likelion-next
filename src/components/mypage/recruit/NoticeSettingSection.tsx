@@ -21,9 +21,22 @@ export interface NoticeSettingSectionProps {
 const isPastField = (field: RecruitScheduleField) =>
   !!field.disallowPast && !!field.date && !!field.time && new Date(`${field.date}T${field.time}`) < new Date();
 
+const toDateTime = (field?: RecruitScheduleField) =>
+  field?.date && field.time ? new Date(`${field.date}T${field.time}`) : null;
+
+// 시작/마감이 짝으로 있는 일정은 마감 일시가 시작 일시보다 뒤여야 한다
+const isEndBeforeStart = (schedule: RecruitScheduleItem, field: RecruitScheduleField) => {
+  if (field.key !== 'end') return false;
+  const start = toDateTime(schedule.fields.find((item) => item.key === 'start'));
+  const end = toDateTime(field);
+  return !!start && !!end && end <= start;
+};
+
 const isScheduleFilled = (schedule: RecruitScheduleItem) =>
   !schedule.isVisible ||
-  schedule.fields.every((field) => field.date !== '' && field.time !== '' && !isPastField(field));
+  schedule.fields.every(
+    (field) => field.date !== '' && field.time !== '' && !isPastField(field) && !isEndBeforeStart(schedule, field),
+  );
 
 const toDateValue = (date: Date) =>
   `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
@@ -77,6 +90,8 @@ const NoticeSettingSection = ({ initialValues, onSave, onDirtyChange }: NoticeSe
             <FieldGroup>
               {schedule.fields.map((field) => {
                 const isPast = isPastField(field);
+                const isBeforeStart = isEndBeforeStart(schedule, field);
+                const startDate = schedule.fields.find((item) => item.key === 'start')?.date;
                 return (
                   <Field key={field.key}>
                     <FieldLabel>{field.label}</FieldLabel>
@@ -84,8 +99,8 @@ const NoticeSettingSection = ({ initialValues, onSave, onDirtyChange }: NoticeSe
                       <DateTimeInput
                         aria-label={`${schedule.title} ${field.label} 날짜`}
                         value={field.date}
-                        min={field.disallowPast ? today : undefined}
-                        status={isPast ? 'negative' : 'normal'}
+                        min={field.disallowPast ? today : field.key === 'end' ? startDate || undefined : undefined}
+                        status={isPast || isBeforeStart ? 'negative' : 'normal'}
                         onChange={(date) => updateField(schedule, field.key, { date })}
                       />
                       <DateTimeInput
@@ -94,11 +109,12 @@ const NoticeSettingSection = ({ initialValues, onSave, onDirtyChange }: NoticeSe
                         aria-label={`${schedule.title} ${field.label} 시간`}
                         placeholder="00:00:00"
                         value={field.time}
-                        status={isPast ? 'negative' : 'normal'}
+                        status={isPast || isBeforeStart ? 'negative' : 'normal'}
                         onChange={(time) => updateField(schedule, field.key, { time })}
                       />
                     </InputRow>
                     {isPast && <ErrorCaption>{field.label}는 현재 이후로 설정해 주세요.</ErrorCaption>}
+                    {isBeforeStart && <ErrorCaption>마감 일시는 시작 일시 이후로 설정해 주세요.</ErrorCaption>}
                     {field.caption && <Caption>{field.caption}</Caption>}
                   </Field>
                 );
