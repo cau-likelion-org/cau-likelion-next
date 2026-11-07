@@ -1,23 +1,13 @@
 import { FaqItem } from '@mypage/component/FaqCardList';
 
-export interface RecruitPartQuota {
-  partId: number;
-  partName: string;
-  quota: string;
-}
-
 export interface RecruitGenerationSetting {
   generation: string;
-  partQuotas: RecruitPartQuota[];
+  quotas: Record<number, string>;
 }
 
 export const RECRUIT_GENERATION_SETTING_MOCK: RecruitGenerationSetting = {
   generation: '',
-  partQuotas: [
-    { partId: 1, partName: '기획·디자인', quota: '' },
-    { partId: 2, partName: '프론트엔드', quota: '' },
-    { partId: 3, partName: '백엔드', quota: '' },
-  ],
+  quotas: {},
 };
 
 export interface RecruitScheduleField {
@@ -26,6 +16,7 @@ export interface RecruitScheduleField {
   date: string;
   time: string;
   caption?: string;
+  disallowPast?: boolean;
 }
 
 export interface RecruitScheduleItem {
@@ -54,7 +45,7 @@ export const RECRUIT_NOTICE_SETTING_MOCK: RecruitNoticeSetting = {
       key: 'document',
       title: '서류 접수',
       fields: [
-        emptyField('start', '시작 일시'),
+        { ...emptyField('start', '시작 일시'), disallowPast: true },
         emptyField('end', '마감 일시', '마감 일시는 서류 결과 공개 예약 전까지 연장할 수 있습니다.'),
       ],
       isVisible: true,

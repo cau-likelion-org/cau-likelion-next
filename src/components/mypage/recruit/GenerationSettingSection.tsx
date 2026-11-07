@@ -1,8 +1,11 @@
 import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import styled from 'styled-components';
 
 import TextField from '@common/textField/TextField';
 import Button from '@common/button/Button';
+import { getGenerations } from 'src/apis/account';
+import { excludeCommonPart } from '@utils/index';
 import { BackgroundWhite, Black, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
@@ -15,15 +18,17 @@ export interface GenerationSettingSectionProps {
 
 const toDigits = (value: string) => value.replace(/\D/g, '');
 
-const isFilled = (values: RecruitGenerationSetting) =>
-  values.generation !== '' && values.partQuotas.every((part) => part.quota !== '');
-
 const GenerationSettingSection = ({ initialValues, onSave }: GenerationSettingSectionProps) => {
   const [values, setValues] = useState(initialValues);
   const [savedValues, setSavedValues] = useState(initialValues);
-  const [isEditing, setIsEditing] = useState(!isFilled(initialValues));
+  const [isEditing, setIsEditing] = useState(initialValues.generation === '');
 
-  const hasSaved = isFilled(savedValues);
+  const { data: generations } = useQuery({ queryKey: ['adminGenerations'], queryFn: getGenerations });
+  const generation = generations?.find((item) => String(item.number) === values.generation);
+  const parts = generation ? excludeCommonPart(generation.parts) : [];
+
+  const hasSaved = savedValues.generation !== '';
+  const isFilled = parts.length > 0 && parts.every((part) => !!values.quotas[part.id]);
 
   const handleSave = () => {
     onSave(values, hasSaved);
@@ -37,10 +42,7 @@ const GenerationSettingSection = ({ initialValues, onSave }: GenerationSettingSe
   };
 
   const updateQuota = (partId: number, quota: string) => {
-    setValues((prev) => ({
-      ...prev,
-      partQuotas: prev.partQuotas.map((part) => (part.partId === partId ? { ...part, quota } : part)),
-    }));
+    setValues((prev) => ({ ...prev, quotas: { ...prev.quotas, [partId]: quota } }));
   };
 
   return (
@@ -60,18 +62,26 @@ const GenerationSettingSection = ({ initialValues, onSave }: GenerationSettingSe
       <QuotaGroup>
         <SectionTitle>파트별 모집 정원</SectionTitle>
         <Card>
-          {values.partQuotas.map((part) => (
-            <TextField
-              key={part.partId}
-              heading={part.partName}
-              inputMode="numeric"
-              placeholder="숫자로 입력해주세요."
-              value={part.quota}
-              readOnly={!isEditing}
-              onChange={(event) => updateQuota(part.partId, toDigits(event.target.value))}
-              trailingContent={<Unit>명</Unit>}
-            />
-          ))}
+          {parts.length > 0 ? (
+            parts.map((part) => (
+              <TextField
+                key={part.id}
+                heading={part.name}
+                inputMode="numeric"
+                placeholder="숫자로 입력해주세요."
+                value={values.quotas[part.id] ?? ''}
+                readOnly={!isEditing}
+                onChange={(event) => updateQuota(part.id, toDigits(event.target.value))}
+                trailingContent={<Unit>명</Unit>}
+              />
+            ))
+          ) : (
+            <EmptyMessage>
+              {values.generation === ''
+                ? '모집 기수를 입력하면 해당 기수의 파트가 표시됩니다.'
+                : `${values.generation}기가 없습니다. 전체회원/파트관리 페이지에서 기수를 먼저 생성해 주세요.`}
+            </EmptyMessage>
+          )}
           <Caption>전체회원/파트관리 페이지에서 설정한 파트만 불러와집니다.</Caption>
         </Card>
       </QuotaGroup>
@@ -83,7 +93,7 @@ const GenerationSettingSection = ({ initialValues, onSave }: GenerationSettingSe
                 취소
               </Button>
             )}
-            <Button disabled={!isFilled(values)} onClick={handleSave}>
+            <Button disabled={!isFilled} onClick={handleSave}>
               저장
             </Button>
           </>
@@ -142,6 +152,12 @@ const Unit = styled.span`
   flex-shrink: 0;
   padding: 0 4px;
   color: ${Label.assistive};
+  ${typographyCss(Typography.body1Normal.medium)}
+`;
+
+const EmptyMessage = styled.p`
+  margin: 0;
+  color: ${Label.alternative};
   ${typographyCss(Typography.body1Normal.medium)}
 `;
 

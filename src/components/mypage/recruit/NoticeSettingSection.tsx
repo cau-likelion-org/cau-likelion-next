@@ -6,7 +6,7 @@ import ContentBadge from '@common/badge/ContentBadge';
 import DateTimeInput from '@common/dateTimeInput/DateTimeInput';
 import Switch from '@common/switch/Switch';
 import FaqCardList, { isFaqItemInvalid } from '@mypage/component/FaqCardList';
-import { BackgroundWhite, Black, Label, Line } from '@utils/constant/color';
+import { BackgroundWhite, Black, Label, Line, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 import { RecruitNoticeSetting, RecruitScheduleField, RecruitScheduleItem } from './mock';
@@ -17,11 +17,19 @@ export interface NoticeSettingSectionProps {
   onSave: (values: RecruitNoticeSetting) => void;
 }
 
+const isPastField = (field: RecruitScheduleField) =>
+  !!field.disallowPast && !!field.date && !!field.time && new Date(`${field.date}T${field.time}`) < new Date();
+
 const isScheduleFilled = (schedule: RecruitScheduleItem) =>
-  !schedule.isVisible || schedule.fields.every((field) => field.date !== '' && field.time !== '');
+  !schedule.isVisible ||
+  schedule.fields.every((field) => field.date !== '' && field.time !== '' && !isPastField(field));
+
+const toDateValue = (date: Date) =>
+  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 
 const NoticeSettingSection = ({ initialValues, onSave }: NoticeSettingSectionProps) => {
   const [values, setValues] = useState(initialValues);
+  const today = toDateValue(new Date());
 
   const isFilled = values.schedules.every(isScheduleFilled) && !values.faqs.some(isFaqItemInvalid);
 
@@ -51,27 +59,34 @@ const NoticeSettingSection = ({ initialValues, onSave }: NoticeSettingSectionPro
           <Card key={schedule.key}>
             <CardTitle>{schedule.title}</CardTitle>
             <FieldGroup>
-              {schedule.fields.map((field) => (
-                <Field key={field.key}>
-                  <FieldLabel>{field.label}</FieldLabel>
-                  <InputRow>
-                    <DateTimeInput
-                      aria-label={`${schedule.title} ${field.label} 날짜`}
-                      value={field.date}
-                      onChange={(date) => updateField(schedule, field.key, { date })}
-                    />
-                    <DateTimeInput
-                      type="time"
-                      step={1}
-                      aria-label={`${schedule.title} ${field.label} 시간`}
-                      placeholder="00:00:00"
-                      value={field.time}
-                      onChange={(time) => updateField(schedule, field.key, { time })}
-                    />
-                  </InputRow>
-                  {field.caption && <Caption>{field.caption}</Caption>}
-                </Field>
-              ))}
+              {schedule.fields.map((field) => {
+                const isPast = isPastField(field);
+                return (
+                  <Field key={field.key}>
+                    <FieldLabel>{field.label}</FieldLabel>
+                    <InputRow>
+                      <DateTimeInput
+                        aria-label={`${schedule.title} ${field.label} 날짜`}
+                        value={field.date}
+                        min={field.disallowPast ? today : undefined}
+                        status={isPast ? 'negative' : 'normal'}
+                        onChange={(date) => updateField(schedule, field.key, { date })}
+                      />
+                      <DateTimeInput
+                        type="time"
+                        step={1}
+                        aria-label={`${schedule.title} ${field.label} 시간`}
+                        placeholder="00:00:00"
+                        value={field.time}
+                        status={isPast ? 'negative' : 'normal'}
+                        onChange={(time) => updateField(schedule, field.key, { time })}
+                      />
+                    </InputRow>
+                    {isPast && <ErrorCaption>{field.label}는 현재 이후로 설정해 주세요.</ErrorCaption>}
+                    {field.caption && <Caption>{field.caption}</Caption>}
+                  </Field>
+                );
+              })}
             </FieldGroup>
             <VisibilityRow>
               <FieldLabel>항목 노출 여부</FieldLabel>
@@ -171,6 +186,12 @@ const InputRow = styled.div`
   display: flex;
   gap: 12px;
   width: 100%;
+`;
+
+const ErrorCaption = styled.p`
+  margin: 0;
+  color: ${State.error};
+  ${typographyCss(Typography.caption1.regular)}
 `;
 
 const Caption = styled.p`
