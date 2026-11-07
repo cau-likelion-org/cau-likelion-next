@@ -21,8 +21,13 @@ import {
   submitAssignment,
   uploadAssignmentFile,
 } from 'src/apis/assignment';
+import {
+  AssignmentBatchItem,
+  resolveUnknownSubmissions,
+  submissionFingerprint,
+  submitAssignmentBatch,
+} from 'src/apis/assignmentSubmit';
 import useTokenStore from 'src/store/useTokenStore';
-import { getServerMessage } from '@utils/index';
 import { Black, Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { containerCss, media } from '@utils/constant/breakpoint';
@@ -41,6 +46,9 @@ const AssignmentSubmit = () => {
   // 입력값은 렌더에 쓰지 않고 제출 시점에만 읽으므로 ref에 모은다 (매 타이핑마다 리렌더 방지)
   const valueMapRef = useRef<Record<string, AssignmentSubmitValue>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const submittingRef = useRef(false);
+  // 재시도 때 이미 올라간 파일을 다시 올리지 않도록 파일별 업로드 URL을 기억한다
+  const uploadCacheRef = useRef(new Map<File, string>());
   // 제출 실패 사유는 과제별로 해당 카드의 첨부 영역 아래에 표시한다
   const [submitErrors, setSubmitErrors] = useState<Record<string, string>>({});
   const [retryIds, setRetryIds] = useState<string[] | null>(null);
@@ -109,37 +117,54 @@ const AssignmentSubmit = () => {
     submittableEntries.every((entry) => validityMap[entry.item.id]) &&
     submittableEntries.some((entry) => dirtyMap[entry.item.id]);
 
+  const fetchLatestFingerprints = async () => {
+    try {
+      const groups = await queryClient.fetchQuery({
+        queryKey: ['myAssignmentHistory', week],
+        queryFn: () => getMyAssignmentHistory(tokenState, week),
+        staleTime: 0,
+      });
+      const assignments = groups.find((group) => group.week === week)?.assignments ?? [];
+      return Object.fromEntries(
+        assignments.map((assignment) => [
+          String(assignment.assignmentId),
+          submissionFingerprint(assignment.submissions[0]),
+        ]),
+      );
+    } catch {
+      return null;
+    }
+  };
+
   const handleSubmit = async () => {
+    // isSubmitting은 다음 렌더에야 버튼을 막으므로, 같은 틱의 연타는 ref로 막는다
+    if (submittingRef.current) return;
+    submittingRef.current = true;
     setIsSubmitting(true);
     setSubmitErrors({});
 
-    const failed: Record<string, string> = {};
-    for (const { item } of submittableEntries) {
+    const items: AssignmentBatchItem[] = submittableEntries.flatMap(({ item }) => {
       const value = valueMapRef.current[item.id];
-      if (!value) continue;
-      try {
-        const files =
-          item.format === 'file'
-            ? [
-                ...value.keptFiles,
-                ...(await Promise.all(
-                  value.files.map(async (file) => ({
-                    fileUrl: await uploadAssignmentFile(tokenState, file),
-                    originalFilename: file.name,
-                  })),
-                )),
-              ]
-            : undefined;
-        await submitAssignment(tokenState, Number(item.id), {
-          content: value.description.trim() || undefined,
-          url: item.format === 'link' ? value.link.trim() : undefined,
-          files,
-        });
-      } catch (error) {
-        failed[item.id] = getServerMessage(error) ?? '제출에 실패했습니다. 다시 시도해 주세요.';
-      }
+      return value ? [{ id: item.id, format: item.format, value }] : [];
+    });
+    const before = Object.fromEntries(
+      submittableEntries.map((entry) => [entry.item.id, submissionFingerprint(entry.submission)]),
+    );
+
+    const result = await submitAssignmentBatch(items, {
+      upload: (file) => uploadAssignmentFile(tokenState, file),
+      submit: (assignmentId, payload) => submitAssignment(tokenState, assignmentId, payload),
+      uploadCache: uploadCacheRef.current,
+    });
+
+    // 응답 없이 끊긴 건은 다시 보내기 전에 서버 이력으로 반영 여부를 확인한다
+    const failed = { ...result.failed };
+    if (result.unknownIds.length > 0) {
+      const latest = await fetchLatestFingerprints();
+      Object.assign(failed, resolveUnknownSubmissions(result.unknownIds, before, latest).failed);
     }
 
+    submittingRef.current = false;
     setIsSubmitting(false);
     queryClient.invalidateQueries({ queryKey: ['myAssignments'] });
     queryClient.invalidateQueries({ queryKey: ['myAssignmentHistory'] });
