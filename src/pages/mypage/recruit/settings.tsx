@@ -12,7 +12,8 @@ import Tab from '@common/tab/Tab';
 import Toast from '@common/toast/Toast';
 import EmptyState from '@common/emptyState/EmptyState';
 import GenerationSettingSection from '@mypage/recruit/GenerationSettingSection';
-import { RECRUIT_GENERATION_SETTING_MOCK } from '@mypage/recruit/mock';
+import NoticeSettingSection from '@mypage/recruit/NoticeSettingSection';
+import { RECRUIT_GENERATION_SETTING_MOCK, RECRUIT_NOTICE_SETTING_MOCK } from '@mypage/recruit/mock';
 import { getUserProfile } from 'src/apis/account';
 import useTokenStore from 'src/store/useTokenStore';
 import { isAdminRole } from '@utils/index';
@@ -65,6 +66,11 @@ const MyPageRecruitSettings = () => {
               onSave={(_, isUpdate) =>
                 setToastMessage(isUpdate ? '변경사항이 저장되었습니다.' : '회차 설정이 저장되었습니다.')
               }
+            />
+          ) : activeTab === 'notice' ? (
+            <NoticeSettingSection
+              initialValues={RECRUIT_NOTICE_SETTING_MOCK}
+              onSave={() => setToastMessage('변경사항이 저장되었습니다.')}
             />
           ) : (
             <EmptyState message="준비 중인 화면입니다." />
