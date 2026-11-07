@@ -15,7 +15,8 @@ export type SidebarActive =
   | 'admin-about'
   | 'admin-blog'
   | 'admin-members'
-  | 'admin-recruit';
+  | 'admin-recruit'
+  | 'recruit-settings';
 
 // 라우팅 시작 시점(routeChangeStart)에 목적지 url만으로 활성 탭을 미리 계산하기 위한 매핑
 export const PATHNAME_TO_ACTIVE: Record<string, SidebarActive> = {
@@ -27,26 +28,71 @@ export const PATHNAME_TO_ACTIVE: Record<string, SidebarActive> = {
   '/mypage/admin/blog': 'admin-blog',
   '/mypage/admin/members': 'admin-members',
   '/mypage/admin/recruitment': 'admin-recruit',
+  '/mypage/recruit/settings': 'recruit-settings',
 };
 
-const Sidebar = ({ active, isAdmin = false }: { active: SidebarActive; isAdmin?: boolean }) => {
+interface MenuGroupItem {
+  key: SidebarActive;
+  href: string;
+  label: string;
+}
+
+const ADMIN_MENU_ITEMS: MenuGroupItem[] = [
+  { key: 'admin-landing', href: '/mypage/admin/landing', label: '랜딩페이지 관리' },
+  { key: 'admin-about', href: '/mypage/admin/about', label: '소개 페이지 관리' },
+  { key: 'admin-blog', href: '/mypage/admin/blog', label: '블로그 페이지 관리' },
+  { key: 'admin-members', href: '/mypage/admin/members', label: '전체 회원/파트 관리' },
+  { key: 'admin-recruit', href: '/mypage/admin/recruitment', label: '리크루팅 사전 알림 발송' },
+];
+
+const RECRUIT_MENU_ITEMS: MenuGroupItem[] = [
+  { key: 'recruit-settings', href: '/mypage/recruit/settings', label: '기수/문항 관리' },
+];
+
+const MenuGroup = ({ title, items, active }: { title: string; items: MenuGroupItem[]; active: SidebarActive }) => {
   const router = useRouter();
-  const isAdminSection = active.startsWith('admin-');
+  const isInSection = items.some((item) => item.key === active);
 
-  const [isAdminOpen, setIsAdminOpen] = useState(isAdminSection);
+  const [isOpen, setIsOpen] = useState(isInSection);
 
-  const [wasAdminSection, setWasAdminSection] = useState(isAdminSection);
-  if (wasAdminSection !== isAdminSection) {
-    setWasAdminSection(isAdminSection);
-    setIsAdminOpen(isAdminSection);
+  const [wasInSection, setWasInSection] = useState(isInSection);
+  if (wasInSection !== isInSection) {
+    setWasInSection(isInSection);
+    setIsOpen(isInSection);
   }
 
-  const handleAdminToggle = () => {
-    const willOpen = !isAdminOpen;
-    setIsAdminOpen(willOpen);
-    if (willOpen && !isAdminSection) router.push('/mypage/admin/landing');
+  const handleToggle = () => {
+    const willOpen = !isOpen;
+    setIsOpen(willOpen);
+    if (willOpen && !isInSection) router.push(items[0].href);
   };
 
+  return (
+    <Group>
+      <GroupToggle type="button" aria-expanded={isOpen} $active={isInSection} onClick={handleToggle}>
+        {title}
+      </GroupToggle>
+      {isOpen &&
+        items.map((item) => (
+          <StyledLink key={item.key} href={item.href}>
+            <SubItem $active={active === item.key} $inSection={isInSection}>
+              {item.label}
+            </SubItem>
+          </StyledLink>
+        ))}
+    </Group>
+  );
+};
+
+const Sidebar = ({
+  active,
+  isAdmin = false,
+  canManageRecruit = false,
+}: {
+  active: SidebarActive;
+  isAdmin?: boolean;
+  canManageRecruit?: boolean;
+}) => {
   return (
     <Wrapper>
       <StyledLink href="/mypage">
@@ -59,42 +105,8 @@ const Sidebar = ({ active, isAdmin = false }: { active: SidebarActive; isAdmin?:
         <Item $active={active === 'assignment'}>과제관리</Item>
       </StyledLink>
       <NotificationSetting />
-      {isAdmin && (
-        <AdminGroup>
-          <GroupToggle type="button" aria-expanded={isAdminOpen} $active={isAdminSection} onClick={handleAdminToggle}>
-            관리자
-          </GroupToggle>
-          {isAdminOpen && (
-            <>
-              <StyledLink href="/mypage/admin/landing">
-                <SubItem $active={active === 'admin-landing'} $inSection={isAdminSection}>
-                  랜딩페이지 관리
-                </SubItem>
-              </StyledLink>
-              <StyledLink href="/mypage/admin/about">
-                <SubItem $active={active === 'admin-about'} $inSection={isAdminSection}>
-                  소개 페이지 관리
-                </SubItem>
-              </StyledLink>
-              <StyledLink href="/mypage/admin/blog">
-                <SubItem $active={active === 'admin-blog'} $inSection={isAdminSection}>
-                  블로그 페이지 관리
-                </SubItem>
-              </StyledLink>
-              <StyledLink href="/mypage/admin/members">
-                <SubItem $active={active === 'admin-members'} $inSection={isAdminSection}>
-                  전체 회원/파트 관리
-                </SubItem>
-              </StyledLink>
-              <StyledLink href="/mypage/admin/recruitment">
-                <SubItem $active={active === 'admin-recruit'} $inSection={isAdminSection}>
-                  리크루팅 사전 알림 발송
-                </SubItem>
-              </StyledLink>
-            </>
-          )}
-        </AdminGroup>
-      )}
+      {isAdmin && <MenuGroup title="관리자" items={ADMIN_MENU_ITEMS} active={active} />}
+      {canManageRecruit && <MenuGroup title="리크루팅" items={RECRUIT_MENU_ITEMS} active={active} />}
     </Wrapper>
   );
 };
@@ -111,7 +123,7 @@ const Wrapper = styled.div`
   padding: 0 6px;
 `;
 
-const AdminGroup = styled.div`
+const Group = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -119,7 +131,7 @@ const AdminGroup = styled.div`
   width: 100%;
 `;
 
-// 관리자 하위 메뉴에 들어와 있으면 상위 항목들과 동일하게 선택된 색으로 표시한다
+// 그룹 하위 메뉴에 들어와 있으면 상위 항목들과 동일하게 선택된 색으로 표시한다
 const GroupToggle = styled.button<{ $active?: boolean }>`
   width: 100%;
   padding: 8px 0;
@@ -146,14 +158,26 @@ const Item = styled.p<{ $active?: boolean }>`
   ${typographyCss(Typography.heading2.bold)}
 `;
 
-// 관리자 화면에 들어와 있을 때만 하위 항목도 선택 색으로 보여주고, 그 전에는 전부 미선택 색
+// 그룹 화면에 들어와 있을 때만 하위 항목도 선택 색으로 보여주고, 그 전에는 전부 미선택 색
 const SubItem = styled.p<{ $active?: boolean; $inSection?: boolean }>`
+  position: relative;
   margin: 0;
   width: 100%;
-  padding: 6px;
-  border-radius: 6px;
+  padding: 8px 0;
   text-align: left;
   color: ${(props) => (props.$inSection ? Label.strong : Label.assistive)};
-  background-color: ${(props) => (props.$active ? 'rgba(0, 0, 0, 0.04)' : 'transparent')};
   ${(props) => typographyCss(props.$active ? Typography.label1Normal.bold : Typography.label1Normal.medium)}
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: -6px;
+    right: -6px;
+    height: 28px;
+    border-radius: 6px;
+    background-color: ${(props) => (props.$active ? 'rgba(0, 0, 0, 0.04)' : 'transparent')};
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
 `;

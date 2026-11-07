@@ -1,11 +1,15 @@
 import { InputHTMLAttributes, ReactNode, useId } from 'react';
 import styled from 'styled-components';
 
-import { IcCircleCheck, IcCircleExclamation } from '@assets/svg';
 import { Fill, Label, Line, Orange, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
-
-type TextFieldStatus = 'normal' | 'positive' | 'negative';
+import {
+  FieldDescription,
+  FieldStatus,
+  FieldStatusIcon,
+  getFieldBackground,
+  getFieldBoxShadow,
+} from '@common/fieldStatus/FieldStatus';
 
 interface TrailingButtonConfig {
   label: string;
@@ -15,7 +19,7 @@ interface TrailingButtonConfig {
 
 export interface TextFieldProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
   className?: string;
-  status?: TextFieldStatus;
+  status?: FieldStatus;
   heading?: string;
   required?: boolean;
   description?: string;
@@ -24,12 +28,6 @@ export interface TextFieldProps extends Omit<InputHTMLAttributes<HTMLInputElemen
   trailingButton?: TrailingButtonConfig;
   trailingContent?: ReactNode;
 }
-
-const getBoxShadow = (status: TextFieldStatus, disabled: boolean) => {
-  if (disabled) return `inset 0 0 0 1px ${Line.subtle}, 0 1px 2px rgba(0, 0, 0, 0.03)`;
-  if (status === 'negative') return 'inset 0 0 0 1px rgba(255, 0, 0, 0.28), 0 1px 2px -1px rgba(23, 23, 23, 0.1)';
-  return `inset 0 0 0 1px ${Line.normal}, 0 1px 2px -1px rgba(23, 23, 23, 0.1)`;
-};
 
 const TextField = ({
   className,
@@ -49,17 +47,6 @@ const TextField = ({
   const generatedId = useId();
   const inputId = id ?? generatedId;
   const descriptionId = description ? `${inputId}-description` : undefined;
-
-  const statusIcon =
-    status === 'negative' ? (
-      <IconSlot $color={State.error}>
-        <IcCircleExclamation width={22} height={22} />
-      </IconSlot>
-    ) : status === 'positive' ? (
-      <IconSlot $color={State.info}>
-        <IcCircleCheck width={22} height={22} />
-      </IconSlot>
-    ) : null;
 
   return (
     <Root className={className}>
@@ -81,8 +68,8 @@ const TextField = ({
             $readOnly={readOnly}
             {...inputProps}
           />
-          {statusIcon}
-          {!trailingButton && !statusIcon && (trailingContent ?? trailingIcon ?? null)}
+          <FieldStatusIcon status={status} />
+          {!trailingButton && status === 'normal' && (trailingContent ?? trailingIcon ?? null)}
         </InputWrapper>
         {trailingButton && (
           <TrailingButton type="button" onClick={trailingButton.onClick} disabled={trailingButton.disabled}>
@@ -91,9 +78,9 @@ const TextField = ({
         )}
       </InputRow>
       {description && (
-        <Description id={descriptionId} $status={status}>
+        <FieldDescription id={descriptionId} $status={status}>
           {description}
-        </Description>
+        </FieldDescription>
       )}
     </Root>
   );
@@ -132,7 +119,7 @@ const InputRow = styled.div`
 `;
 
 const InputWrapper = styled.div<{
-  $status: TextFieldStatus;
+  $status: FieldStatus;
   $disabled: boolean;
   $readOnly: boolean;
   $attached: boolean;
@@ -146,8 +133,8 @@ const InputWrapper = styled.div<{
   min-height: 24px;
   padding: 12px;
   border-radius: ${(props) => (props.$attached ? '12px 0 0 12px' : '12px')};
-  background-color: ${(props) => (props.$disabled ? Fill.subtle : 'rgba(255, 255, 255, 0.08)')};
-  box-shadow: ${(props) => getBoxShadow(props.$status, props.$disabled)};
+  background-color: ${(props) => getFieldBackground(props.$disabled)};
+  box-shadow: ${(props) => getFieldBoxShadow(props.$status, props.$disabled)};
 
   ${(props) =>
     !props.$readOnly &&
@@ -188,13 +175,6 @@ const IconSlot = styled.span<{ $color: string }>`
   display: flex;
   flex-shrink: 0;
   color: ${(props) => props.$color};
-`;
-
-const Description = styled.p<{ $status: TextFieldStatus }>`
-  margin: 0;
-  width: 100%;
-  color: ${(props) => (props.$status === 'negative' ? State.error : Label.alternative)};
-  ${typographyCss(Typography.caption1.regular)}
 `;
 
 const TrailingButton = styled.button`

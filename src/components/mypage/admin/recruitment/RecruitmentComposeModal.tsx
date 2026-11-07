@@ -7,7 +7,8 @@ import Button from '@common/button/Button';
 import Chip from '@common/chip/Chip';
 import ModalOverlay from '@common/modalOverlay/ModalOverlay';
 import ScrollArea from '@common/scrollArea/ScrollArea';
-import { IcCalendar, IcCaretDown, IcCaretUp, IcClock } from '@assets/svg';
+import { IcCaretDown, IcCaretUp } from '@assets/svg';
+import DateTimeInput from '@common/dateTimeInput/DateTimeInput';
 import { isUnfilled } from '@utils/index';
 import { BackgroundColor, Label, Line, Orange, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -37,7 +38,8 @@ interface RecruitmentComposeModalProps {
   cancelSend?: { onConfirm: () => void; isSubmitting?: boolean };
 }
 
-const formatDate = (value: string) => (value ? value.slice(0, 10).replace(/-/g, '/') : '');
+// 날짜와 시각 중 먼저 비어 있는 칸 아래에 한 번만 표시한다
+const SCHEDULE_ERROR_MESSAGE = '발송 날짜와 시각을 선택해 주세요.';
 
 const RecruitmentComposeModal = ({
   recipients,
@@ -174,9 +176,8 @@ const RecruitmentComposeModal = ({
               <LargeHeading>
                 내용<LargeRequired>*</LargeRequired>
               </LargeHeading>
-              <Textarea
+              <ContentTextarea
                 value={content}
-                rows={7}
                 placeholder="메세지를 입력해 주세요."
                 onChange={(event) => setContent(event.target.value)}
                 status={showErrors && isUnfilled(content) ? 'negative' : 'normal'}
@@ -189,38 +190,22 @@ const RecruitmentComposeModal = ({
                 발송 예약<Required>*</Required>
               </Heading>
               <DateRow>
-                <DateBox $status={showErrors && !date ? 'negative' : 'normal'}>
-                  <DateIcon>
-                    <IcCalendar width={22} height={22} />
-                  </DateIcon>
-                  <DateText $filled={!!date}>{date ? formatDate(date) : '캘린더 선택'}</DateText>
-                  <HiddenDateInput
-                    type="date"
-                    aria-label="발송 날짜"
-                    aria-invalid={showErrors && !date}
-                    value={date}
-                    onChange={(event) => setDate(event.target.value)}
-                    onClick={(event) => event.currentTarget.showPicker?.()}
-                  />
-                </DateBox>
-                <DateBox $status={showErrors && !time ? 'negative' : 'normal'}>
-                  <DateIcon>
-                    <IcClock width={22} height={22} />
-                  </DateIcon>
-                  <DateText $filled={!!time}>{time || '시간 선택'}</DateText>
-                  <HiddenDateInput
-                    type="time"
-                    aria-label="발송 시간"
-                    aria-invalid={showErrors && !time}
-                    value={time}
-                    onChange={(event) => setTime(event.target.value)}
-                    onClick={(event) => event.currentTarget.showPicker?.()}
-                  />
-                </DateBox>
+                <DateTimeInput
+                  aria-label="발송 날짜"
+                  value={date}
+                  onChange={setDate}
+                  status={showErrors && !date ? 'negative' : 'normal'}
+                  description={showErrors && !date ? SCHEDULE_ERROR_MESSAGE : undefined}
+                />
+                <DateTimeInput
+                  type="time"
+                  aria-label="발송 시간"
+                  value={time}
+                  onChange={setTime}
+                  status={showErrors && !time ? 'negative' : 'normal'}
+                  description={showErrors && date && !time ? SCHEDULE_ERROR_MESSAGE : undefined}
+                />
               </DateRow>
-              {showErrors && isScheduleInvalid && (
-                <FieldDescription>발송 날짜와 시각을 선택해 주세요.</FieldDescription>
-              )}
             </Field>
           </Information>
         </InformationScroll>
@@ -430,57 +415,9 @@ const RemoveButton = styled.button`
 
 const DateRow = styled.div`
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
   width: 100%;
-`;
-
-const DateBox = styled.div<{ $status: 'normal' | 'negative' }>`
-  position: relative;
-  display: flex;
-  flex: 1 0 0;
-  min-width: 0;
-  align-items: center;
-  gap: 8px;
-  height: 48px;
-  padding: 12px;
-  border-radius: 12px;
-  background-color: rgba(255, 255, 255, 0.08);
-  box-shadow: ${(props) =>
-    props.$status === 'negative'
-      ? 'inset 0 0 0 1px rgba(255, 0, 0, 0.28), 0 1px 2px -1px rgba(23, 23, 23, 0.1)'
-      : `inset 0 0 0 1px ${Line.normal}, 0 1px 2px -1px rgba(23, 23, 23, 0.1)`};
-
-  &:focus-within {
-    box-shadow: inset 0 0 0 2px rgba(71, 172, 255, 0.43);
-  }
-`;
-
-const DateIcon = styled.span`
-  display: flex;
-  flex-shrink: 0;
-  color: ${Label.alternative};
-`;
-
-const DateText = styled.span<{ $filled?: boolean }>`
-  flex: 1 0 0;
-  min-width: 0;
-  padding: 0 4px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  color: ${(props) => (props.$filled ? Label.normal : Label.assistive)};
-  ${typographyCss(Typography.body1Normal.regular)}
-`;
-
-const HiddenDateInput = styled.input`
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  border: none;
-  opacity: 0;
-  cursor: pointer;
 `;
 
 const Actions = styled.div`
@@ -532,4 +469,10 @@ const ConfirmTextButton = styled.button<{ $tone?: 'negative' }>`
   color: ${(props) => (props.$tone === 'negative' ? Orange.o500 : Label.alternative)};
   cursor: pointer;
   ${typographyCss(Typography.label1Normal.bold)}
+`;
+
+const ContentTextarea = styled(Textarea)`
+  textarea {
+    min-height: 126px;
+  }
 `;

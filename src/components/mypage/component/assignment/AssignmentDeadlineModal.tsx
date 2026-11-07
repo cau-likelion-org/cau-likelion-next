@@ -9,11 +9,9 @@ import ListboxOptions from '@common/select/ListboxOptions';
 import useListboxSelect from 'src/hooks/useListboxSelect';
 import useScrollLock from 'src/hooks/useScrollLock';
 import { AssignmentStaffSummary } from 'src/apis/assignment';
-import { IcCalendar } from '@assets/svg';
-import { Fill, Label, Line, State, BackgroundColor } from '@utils/constant/color';
+import DateTimeInput from '@common/dateTimeInput/DateTimeInput';
+import { Label, State, BackgroundColor } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
-
-const formatDate = (value: string) => (value ? value.slice(0, 10).replace(/-/g, '/') : '');
 
 export interface DeadlineTargetMember {
   memberId: number;
@@ -97,31 +95,14 @@ const AssignmentDeadlineModal = ({
           <DateRow>
             <Field>
               <Heading>기존 마감일</Heading>
-              <ReadonlyDateBox>
-                <DateIcon>
-                  <IcCalendar width={22} height={22} />
-                </DateIcon>
-                <DateText>{formatDate(selectedAssignment?.endDate ?? '')}</DateText>
-              </ReadonlyDateBox>
+              <DateTimeInput value={selectedAssignment?.endDate ?? ''} placeholder="" readOnly />
             </Field>
 
             <Field>
               <Heading>
                 변경 마감일<Required>*</Required>
               </Heading>
-              <DateBox>
-                <DateIcon>
-                  <IcCalendar width={22} height={22} />
-                </DateIcon>
-                <DateText $filled={!!deadline}>{deadline ? formatDate(deadline) : '캘린더 선택'}</DateText>
-                <HiddenDateInput
-                  type="date"
-                  aria-label="변경 마감일"
-                  value={deadline}
-                  onChange={(event) => setDeadline(event.target.value)}
-                  onClick={(event) => event.currentTarget.showPicker?.()}
-                />
-              </DateBox>
+              <DateTimeInput aria-label="변경 마감일" value={deadline} onChange={setDeadline} />
             </Field>
           </DateRow>
 
@@ -217,62 +198,6 @@ const DateRow = styled.div`
   display: flex;
   align-items: flex-start;
   gap: 20px;
-`;
-
-const dateBoxCss = `
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-  height: 48px;
-  padding: 12px;
-  border-radius: 12px;
-`;
-
-const DateBox = styled.div`
-  ${dateBoxCss}
-  box-shadow: inset 0 0 0 1px ${Line.normal}, 0 1px 2px -1px rgba(23, 23, 23, 0.1);
-
-  &:focus-within {
-    box-shadow: inset 0 0 0 2px rgba(71, 172, 255, 0.43);
-  }
-`;
-
-// 기존 마감일: 읽기 전용 (Figma Fill/Alternative 배경 + Line/Normal/Alternative 테두리)
-const ReadonlyDateBox = styled.div`
-  ${dateBoxCss}
-  background-color: ${Fill.subtle};
-  box-shadow:
-    inset 0 0 0 1px ${Line.subtle},
-    0 1px 2px 0 rgba(0, 0, 0, 0.03);
-`;
-
-const DateIcon = styled.span`
-  display: flex;
-  flex-shrink: 0;
-  color: ${Label.alternative};
-`;
-
-const DateText = styled.span<{ $filled?: boolean }>`
-  flex: 1 0 0;
-  min-width: 0;
-  padding: 0 4px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  color: ${(props) => (props.$filled ? Label.normal : Label.assistive)};
-  ${typographyCss(Typography.body1Normal.regular)}
-`;
-
-const HiddenDateInput = styled.input`
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  border: none;
-  opacity: 0;
-  cursor: pointer;
 `;
 
 const MemberGrid = styled.div`

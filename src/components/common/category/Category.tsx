@@ -122,6 +122,7 @@ const Chip = styled.button<{
   align-items: center;
   justify-content: center;
   white-space: nowrap;
+  border: none;
   cursor: pointer;
   font-family: inherit;
   font-weight: 500;
@@ -134,20 +135,19 @@ const Chip = styled.button<{
   ${(props) => {
     if (props.selected && props.variant === 'alternative') {
       return `
-        border: 1px solid ${CategoryTint.border};
+        box-shadow: inset 0 0 0 1px ${CategoryTint.border};
         background-color: ${CategoryTint.background};
         color: ${System.blue};
       `;
     }
     if (props.selected) {
       return `
-        border: 1px solid transparent;
         background-color: ${Label.strong};
         color: ${Inverse.label};
       `;
     }
     return `
-      border: 1px solid ${Line.normal};
+      box-shadow: inset 0 0 0 1px ${Line.normal};
       background-color: transparent;
       color: ${Label.alternative};
     `;

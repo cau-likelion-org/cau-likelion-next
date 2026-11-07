@@ -1,12 +1,17 @@
 import { ReactNode, forwardRef, useId } from 'react';
 import styled from 'styled-components';
 
-import { IcChevronDown, IcCircleCheck, IcCircleExclamation } from '@assets/svg';
-import { Label, Line, State } from '@utils/constant/color';
+import { IcChevronDown } from '@assets/svg';
+import { Label, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import Chip from '../chip/Chip';
-
-type SelectStatus = 'normal' | 'positive' | 'negative';
+import {
+  FieldDescription,
+  FieldStatus,
+  FieldStatusIcon,
+  getFieldBackground,
+  getFieldBoxShadow,
+} from '@common/fieldStatus/FieldStatus';
 
 export interface SelectChipItem {
   label: string;
@@ -15,7 +20,7 @@ export interface SelectChipItem {
 
 export interface SelectProps {
   className?: string;
-  status?: SelectStatus;
+  status?: FieldStatus;
   placeholder?: string;
   value?: string;
   chips?: SelectChipItem[];
@@ -33,12 +38,6 @@ export interface SelectProps {
   'aria-activedescendant'?: string;
   'aria-controls'?: string;
 }
-
-const getBoxShadow = (status: SelectStatus, disabled: boolean) => {
-  if (disabled) return `inset 0 0 0 1px ${Line.alternative}, 0 1px 2px rgba(0, 0, 0, 0.03)`;
-  if (status === 'negative') return 'inset 0 0 0 1px rgba(255, 0, 0, 0.28), 0 1px 2px -1px rgba(23, 23, 23, 0.1)';
-  return `inset 0 0 0 1px ${Line.normal}, 0 1px 2px -1px rgba(23, 23, 23, 0.1)`;
-};
 
 const Select = forwardRef<HTMLDivElement, SelectProps & { id?: string }>(function Select(
   {
@@ -66,17 +65,6 @@ const Select = forwardRef<HTMLDivElement, SelectProps & { id?: string }>(functio
   const selectId = id ?? generatedId;
   const descriptionId = description ? `${selectId}-description` : undefined;
   const isInteractive = !disabled && !readOnly;
-
-  const statusIcon =
-    status === 'negative' ? (
-      <IconSlot $color={State.error}>
-        <IcCircleExclamation width={22} height={22} />
-      </IconSlot>
-    ) : status === 'positive' ? (
-      <IconSlot $color={State.info}>
-        <IcCircleCheck width={22} height={22} />
-      </IconSlot>
-    ) : null;
 
   return (
     <Root className={className}>
@@ -126,7 +114,7 @@ const Select = forwardRef<HTMLDivElement, SelectProps & { id?: string }>(functio
         ) : (
           !hideValue && <Text $placeholder={!value}>{value || placeholder}</Text>
         )}
-        {statusIcon}
+        <FieldStatusIcon status={status} />
         {!readOnly && (
           <ChevronIconSlot $color={Label.normal} $open={!!ariaExpanded}>
             <IcChevronDown width={16} height={16} />
@@ -135,9 +123,9 @@ const Select = forwardRef<HTMLDivElement, SelectProps & { id?: string }>(functio
         {children}
       </Trigger>
       {description && (
-        <Description id={descriptionId} $status={status}>
+        <FieldDescription id={descriptionId} $status={status}>
           {description}
-        </Description>
+        </FieldDescription>
       )}
     </Root>
   );
@@ -169,7 +157,7 @@ const Required = styled.span`
   ${typographyCss(Typography.label1Normal.medium)}
 `;
 
-const Trigger = styled.div<{ $status: SelectStatus; $disabled: boolean; $readOnly: boolean }>`
+const Trigger = styled.div<{ $status: FieldStatus; $disabled: boolean; $readOnly: boolean }>`
   position: relative;
   display: flex;
   align-items: center;
@@ -178,8 +166,8 @@ const Trigger = styled.div<{ $status: SelectStatus; $disabled: boolean; $readOnl
   min-height: 24px;
   padding: 12px;
   border-radius: 12px;
-  background-color: ${(props) => (props.$disabled ? '#F4F4F5' : 'rgba(255, 255, 255, 0.08)')};
-  box-shadow: ${(props) => getBoxShadow(props.$status, props.$disabled)};
+  background-color: ${(props) => getFieldBackground(props.$disabled)};
+  box-shadow: ${(props) => getFieldBoxShadow(props.$status, props.$disabled)};
   cursor: ${(props) => (props.$disabled ? 'not-allowed' : props.$readOnly ? 'default' : 'pointer')};
   pointer-events: ${(props) => (props.$readOnly ? 'none' : 'auto')};
   text-align: left;
@@ -227,11 +215,4 @@ const IconSlot = styled.span<{ $color: string }>`
 const ChevronIconSlot = styled(IconSlot)<{ $open: boolean }>`
   transform: rotate(${(props) => (props.$open ? '180deg' : '0deg')});
   transition: transform 0.2s ease;
-`;
-
-const Description = styled.p<{ $status: SelectStatus }>`
-  margin: 0;
-  width: 100%;
-  color: ${(props) => (props.$status === 'negative' ? State.error : Label.alternative)};
-  ${typographyCss(Typography.caption1.regular)}
 `;

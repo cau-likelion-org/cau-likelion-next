@@ -6,7 +6,7 @@ import { Fill, Label } from '@utils/constant/color';
 const AddCardButton = ({ onClick, ariaLabel }: { onClick: () => void; ariaLabel: string }) => {
   return (
     <Wrapper type="button" onClick={onClick} aria-label={ariaLabel}>
-      <IcPlus width={20} height={20} />
+      <IcPlus width={24} height={24} />
     </Wrapper>
   );
 };

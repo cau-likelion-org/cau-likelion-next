@@ -9,7 +9,7 @@ export interface ModalOverlayProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 // NavBar(9999)·PageScrollbar(9998)보다 항상 위에 오도록 모든 모달이 이 z-index를 공유한다
-const MODAL_Z_INDEX = 10000;
+export const MODAL_Z_INDEX = 10000;
 
 const ModalOverlay = ({ onDimmerClick, children, ...rest }: ModalOverlayProps) => (
   <Overlay {...rest}>

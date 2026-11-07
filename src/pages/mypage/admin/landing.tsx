@@ -25,7 +25,8 @@ import ProjectSection, {
   isProjectSelectionInvalid,
   MIN_EXPOSED_PROJECT_COUNT,
 } from '@mypage/admin/landing/ProjectSection';
-import FAQSection, { FaqItem, isFaqItemInvalid } from '@mypage/admin/landing/FAQSection';
+import FAQSection from '@mypage/admin/landing/FAQSection';
+import { FaqItem, isFaqItemInvalid } from '@mypage/component/FaqCardList';
 import EditButton from '@mypage/admin/component/EditButton';
 import { syncListSection } from '@mypage/admin/utils';
 import useScrollToFirstError from 'src/hooks/useScrollToFirstError';

@@ -85,7 +85,7 @@ const TrackSection = ({
               />
             </EnglishNameFieldWrapper>
           </Row>
-          <Textarea
+          <DescriptionTextarea
             heading="파트소개"
             value={item.description}
             placeholder="리스트 입력"
@@ -222,4 +222,10 @@ const ErrorText = styled.p`
   margin: 0;
   color: ${State.error};
   ${typographyCss(Typography.caption1.regular)}
+`;
+
+const DescriptionTextarea = styled(Textarea)`
+  textarea {
+    min-height: 94px;
+  }
 `;

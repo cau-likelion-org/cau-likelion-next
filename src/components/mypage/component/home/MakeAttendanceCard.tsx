@@ -1,9 +1,10 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import styled from 'styled-components';
 
 import Toast from '@common/toast/Toast';
-import { IcCalendar, IcRefresh } from '@assets/svg';
+import { IcRefresh } from '@assets/svg';
+import DateTimeInput from '@common/dateTimeInput/DateTimeInput';
 import {
   WeeklyAttendanceCreatePayload,
   WeeklyAttendanceResponse,
@@ -23,7 +24,6 @@ const CREATE_LOCK_UNTIL_HOUR = 22;
 const MakeAttendanceCard = () => {
   const tokenState = useTokenStore((state) => state.token);
   const queryClient = useQueryClient();
-  const dateInputRef = useRef<HTMLInputElement>(null);
 
   const today = toDateString(new Date());
   const [date, setDate] = useState('');
@@ -109,20 +109,7 @@ const MakeAttendanceCard = () => {
         <FieldRow>
           <Field $width="158px" $mobileGrow>
             <FieldLabel>출석 일자 설정</FieldLabel>
-            <DateInputWrapper onClick={() => dateInputRef.current?.showPicker?.()}>
-              <IcCalendar width={22} height={22} />
-              <DateValue $placeholder={!displayDate}>
-                {displayDate ? displayDate.replace(/-/g, '/') : '캘린더 선택'}
-              </DateValue>
-              <HiddenDateInput
-                ref={dateInputRef}
-                type="date"
-                value={date}
-                min={today}
-                onChange={(event) => handleDateChange(event.target.value)}
-                aria-label="출석 일자 설정"
-              />
-            </DateInputWrapper>
+            <DateTimeInput aria-label="출석 일자 설정" value={displayDate} min={today} onChange={handleDateChange} />
           </Field>
 
           <Field $width="100px">
@@ -256,38 +243,6 @@ const inputBoxCss = `
   box-shadow:
     inset 0 0 0 1px ${Line.normal},
     0 1px 2px -1px rgba(23, 23, 23, 0.1);
-`;
-
-const DateInputWrapper = styled.div`
-  position: relative;
-  ${inputBoxCss}
-  color: ${Label.normal};
-  cursor: pointer;
-`;
-
-const DateValue = styled.span<{ $placeholder: boolean }>`
-  flex: 1 0 0;
-  min-width: 0;
-  overflow: hidden;
-  white-space: nowrap;
-  color: ${(props) => (props.$placeholder ? Label.assistive : Label.normal)};
-  ${typographyCss(Typography.body1Normal.regular)}
-`;
-
-const HiddenDateInput = styled.input`
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  border: none;
-  opacity: 0;
-  cursor: pointer;
-
-  &:disabled {
-    cursor: not-allowed;
-  }
 `;
 
 const InputBox = styled.div<{ $disabled: boolean }>`
