@@ -1,8 +1,8 @@
-import { InputHTMLAttributes, ReactNode } from 'react';
+import { InputHTMLAttributes, useId } from 'react';
 import styled, { css } from 'styled-components';
 
-import { IcCalendar, IcClock } from '@assets/svg';
-import { Fill, Label, Line } from '@utils/constant/color';
+import { IcCalendar, IcCircleExclamation, IcClock } from '@assets/svg';
+import { Fill, Label, Line, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 type DateTimeInputType = 'date' | 'time';
@@ -16,7 +16,7 @@ export interface DateTimeInputProps extends Omit<
   onChange?: (value: string) => void;
   placeholder?: string;
   status?: 'normal' | 'negative';
-  trailingContent?: ReactNode;
+  description?: string;
 }
 
 const DEFAULT_PLACEHOLDER: Record<DateTimeInputType, string> = {
@@ -34,32 +34,53 @@ const DateTimeInput = ({
   onChange,
   placeholder = DEFAULT_PLACEHOLDER[type],
   status = 'normal',
+  description,
   readOnly = false,
-  trailingContent,
   ...inputProps
 }: DateTimeInputProps) => {
   const Icon = type === 'date' ? IcCalendar : IcClock;
+  const descriptionId = useId();
 
   return (
-    <Box className={className} $status={status} $readOnly={readOnly}>
-      <Icon width={22} height={22} />
-      <Text $filled={!!value}>{value ? formatValue(type, value) : placeholder}</Text>
-      {trailingContent}
-      {!readOnly && (
-        <HiddenInput
-          type={type}
-          value={value}
-          aria-invalid={status === 'negative'}
-          onChange={(event) => onChange?.(event.target.value)}
-          onClick={(event) => event.currentTarget.showPicker?.()}
-          {...inputProps}
-        />
+    <Root className={className}>
+      <Box $status={status} $readOnly={readOnly}>
+        <Icon width={22} height={22} />
+        <Text $filled={!!value}>{value ? formatValue(type, value) : placeholder}</Text>
+        {status === 'negative' && (
+          <ErrorIcon>
+            <IcCircleExclamation width={22} height={22} />
+          </ErrorIcon>
+        )}
+        {!readOnly && (
+          <HiddenInput
+            type={type}
+            value={value}
+            aria-invalid={status === 'negative'}
+            aria-describedby={description ? descriptionId : undefined}
+            onChange={(event) => onChange?.(event.target.value)}
+            onClick={(event) => event.currentTarget.showPicker?.()}
+            {...inputProps}
+          />
+        )}
+      </Box>
+      {description && (
+        <Description id={descriptionId} $status={status}>
+          {description}
+        </Description>
       )}
-    </Box>
+    </Root>
   );
 };
 
 export default DateTimeInput;
+
+const Root = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  width: 100%;
+`;
 
 const Box = styled.div<{ $status: 'normal' | 'negative'; $readOnly: boolean }>`
   position: relative;
@@ -107,6 +128,19 @@ const Text = styled.span<{ $filled: boolean }>`
   white-space: nowrap;
   color: ${(props) => (props.$filled ? Label.normal : Label.assistive)};
   ${typographyCss(Typography.body1Normal.regular)}
+`;
+
+const ErrorIcon = styled.span`
+  display: flex;
+  flex-shrink: 0;
+  color: ${State.error};
+`;
+
+const Description = styled.p<{ $status: 'normal' | 'negative' }>`
+  margin: 0;
+  width: 100%;
+  color: ${(props) => (props.$status === 'negative' ? State.error : Label.alternative)};
+  ${typographyCss(Typography.caption1.regular)}
 `;
 
 const HiddenInput = styled.input`

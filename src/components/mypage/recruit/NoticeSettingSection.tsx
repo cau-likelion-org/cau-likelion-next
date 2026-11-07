@@ -6,7 +6,7 @@ import ContentBadge from '@common/badge/ContentBadge';
 import DateTimeInput from '@common/dateTimeInput/DateTimeInput';
 import Switch from '@common/switch/Switch';
 import FaqCardList, { isFaqItemInvalid } from '@mypage/component/FaqCardList';
-import { BackgroundWhite, Black, Label, Line, State } from '@utils/constant/color';
+import { BackgroundWhite, Black, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 import { RecruitNoticeSetting, RecruitScheduleField, RecruitScheduleItem } from './mock';
@@ -101,6 +101,13 @@ const NoticeSettingSection = ({ initialValues, onSave, onDirtyChange }: NoticeSe
                         value={field.date}
                         min={field.disallowPast ? today : field.key === 'end' ? startDate || undefined : undefined}
                         status={isPast || isBeforeStart ? 'negative' : 'normal'}
+                        description={
+                          isPast
+                            ? `${field.label}는 현재 이후로 설정해 주세요.`
+                            : isBeforeStart
+                              ? '마감 일시는 시작 일시 이후로 설정해 주세요.'
+                              : field.caption
+                        }
                         onChange={(date) => updateField(schedule, field.key, { date })}
                       />
                       <DateTimeInput
@@ -113,9 +120,6 @@ const NoticeSettingSection = ({ initialValues, onSave, onDirtyChange }: NoticeSe
                         onChange={(time) => updateField(schedule, field.key, { time })}
                       />
                     </InputRow>
-                    {isPast && <ErrorCaption>{field.label}는 현재 이후로 설정해 주세요.</ErrorCaption>}
-                    {isBeforeStart && <ErrorCaption>마감 일시는 시작 일시 이후로 설정해 주세요.</ErrorCaption>}
-                    {field.caption && <Caption>{field.caption}</Caption>}
                   </Field>
                 );
               })}
@@ -217,20 +221,9 @@ const FieldLabel = styled.p`
 
 const InputRow = styled.div`
   display: flex;
+  align-items: flex-start;
   gap: 12px;
   width: 100%;
-`;
-
-const ErrorCaption = styled.p`
-  margin: 0;
-  color: ${State.error};
-  ${typographyCss(Typography.caption1.regular)}
-`;
-
-const Caption = styled.p`
-  margin: 0;
-  color: ${Label.alternative};
-  ${typographyCss(Typography.caption1.regular)}
 `;
 
 const VisibilityRow = styled.div`

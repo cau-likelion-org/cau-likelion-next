@@ -38,6 +38,9 @@ interface RecruitmentComposeModalProps {
   cancelSend?: { onConfirm: () => void; isSubmitting?: boolean };
 }
 
+// 날짜와 시각 중 먼저 비어 있는 칸 아래에 한 번만 표시한다
+const SCHEDULE_ERROR_MESSAGE = '발송 날짜와 시각을 선택해 주세요.';
+
 const RecruitmentComposeModal = ({
   recipients,
   onRemoveRecipient,
@@ -192,6 +195,7 @@ const RecruitmentComposeModal = ({
                   value={date}
                   onChange={setDate}
                   status={showErrors && !date ? 'negative' : 'normal'}
+                  description={showErrors && !date ? SCHEDULE_ERROR_MESSAGE : undefined}
                 />
                 <DateTimeInput
                   type="time"
@@ -199,11 +203,9 @@ const RecruitmentComposeModal = ({
                   value={time}
                   onChange={setTime}
                   status={showErrors && !time ? 'negative' : 'normal'}
+                  description={showErrors && date && !time ? SCHEDULE_ERROR_MESSAGE : undefined}
                 />
               </DateRow>
-              {showErrors && isScheduleInvalid && (
-                <FieldDescription>발송 날짜와 시각을 선택해 주세요.</FieldDescription>
-              )}
             </Field>
           </Information>
         </InformationScroll>
@@ -413,7 +415,7 @@ const RemoveButton = styled.button`
 
 const DateRow = styled.div`
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
   width: 100%;
 `;

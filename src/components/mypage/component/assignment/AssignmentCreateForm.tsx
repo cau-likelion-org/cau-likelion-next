@@ -16,7 +16,6 @@ import useScrollLock from 'src/hooks/useScrollLock';
 import useLeaveGuard from 'src/hooks/useLeaveGuard';
 import { AssignmentCreateRequest, AssignmentSubmitType } from 'src/apis/assignment';
 import { isUnfilled } from '@utils/index';
-import { IcCircleExclamation } from '@assets/svg';
 import DateTimeInput from '@common/dateTimeInput/DateTimeInput';
 import { BackgroundWhite, Black, Fill, Label, Line, Material, Orange, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -370,15 +369,8 @@ const DateField = ({
         value={value}
         onChange={onChange}
         status={invalid ? 'negative' : 'normal'}
-        trailingContent={
-          invalid && (
-            <ErrorIcon>
-              <IcCircleExclamation width={22} height={22} />
-            </ErrorIcon>
-          )
-        }
+        description={invalid ? '마감일을 선택해 주세요.' : undefined}
       />
-      {invalid && <DateError>마감일을 선택해 주세요.</DateError>}
     </DateColumn>
   );
 };
@@ -495,7 +487,7 @@ const CardBottom = styled.div`
 
 const BottomLeft = styled.div`
   display: flex;
-  align-items: flex-end;
+  align-items: flex-start;
   gap: 24px;
 
   ${media.xs} {
@@ -518,7 +510,6 @@ const SelectColumn = styled.div`
 `;
 
 const DateColumn = styled.div`
-  position: relative;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -527,23 +518,6 @@ const DateColumn = styled.div`
   ${media.xs} {
     width: 100%;
   }
-`;
-
-// 에러 문구가 컬럼 높이를 늘려 마감일/제출형식 한 줄 정렬이 깨지지 않도록 absolute로 띄움
-const DateError = styled.p`
-  position: absolute;
-  top: 100%;
-  left: 0;
-  margin: 4px 0 0;
-  white-space: nowrap;
-  color: ${State.error};
-  ${typographyCss(Typography.caption1.regular)}
-`;
-
-const ErrorIcon = styled.span`
-  display: flex;
-  flex-shrink: 0;
-  color: ${State.error};
 `;
 
 const SubmitRow = styled.div`

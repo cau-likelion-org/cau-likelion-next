@@ -7,7 +7,7 @@ import Select from '@common/select/Select';
 import ListboxOptions from '@common/select/ListboxOptions';
 import { IcLineHorizontal } from '@assets/svg';
 import useListboxSelect from 'src/hooks/useListboxSelect';
-import { BackgroundWhite, Black, Label, Line, Orange, State } from '@utils/constant/color';
+import { BackgroundWhite, Black, Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 import { RecruitInterviewSetting } from './mock';
@@ -138,6 +138,7 @@ const FirstStepQuestionSection = ({ initialValues, onSave }: FirstStepQuestionSe
                   aria-label="면접 시작일"
                   value={values.startDate}
                   status={isDateRangeInvalid ? 'negative' : 'normal'}
+                  description={isDateRangeInvalid ? '종료일은 시작일 이후로 설정해 주세요.' : undefined}
                   onChange={(startDate) => update({ startDate })}
                 />
                 <RangeIcon />
@@ -149,7 +150,6 @@ const FirstStepQuestionSection = ({ initialValues, onSave }: FirstStepQuestionSe
                   onChange={(endDate) => update({ endDate })}
                 />
               </RangeRow>
-              {isDateRangeInvalid && <ErrorCaption>종료일은 시작일 이후로 설정해 주세요.</ErrorCaption>}
             </Field>
             <Field>
               <FieldLabel>면접 시각</FieldLabel>
@@ -159,6 +159,7 @@ const FirstStepQuestionSection = ({ initialValues, onSave }: FirstStepQuestionSe
                   aria-label="면접 시작 시각"
                   value={values.startTime}
                   status={isTimeRangeInvalid ? 'negative' : 'normal'}
+                  description={isTimeRangeInvalid ? '종료 시각은 시작 시각 이후로 설정해 주세요.' : undefined}
                   onChange={(startTime) => update({ startTime })}
                 />
                 <RangeIcon />
@@ -170,7 +171,6 @@ const FirstStepQuestionSection = ({ initialValues, onSave }: FirstStepQuestionSe
                   onChange={(endTime) => update({ endTime })}
                 />
               </RangeRow>
-              {isTimeRangeInvalid && <ErrorCaption>종료 시각은 시작 시각 이후로 설정해 주세요.</ErrorCaption>}
             </Field>
           </FieldGroup>
           <UnitField ref={wrapperRef} onKeyDownCapture={handleKeyDown} onBlur={handleBlur}>
@@ -350,21 +350,17 @@ const FieldLabel = styled.p`
   ${typographyCss(Typography.label1Normal.bold)}
 `;
 
-const ErrorCaption = styled.p`
-  margin: 0;
-  color: ${State.error};
-  ${typographyCss(Typography.caption1.regular)}
-`;
-
 const RangeRow = styled.div`
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
   width: 100%;
 `;
 
+// 입력 박스(48px) 세로 가운데에 맞춘다
 const RangeIcon = styled(IcLineHorizontal)`
   flex-shrink: 0;
+  margin-top: 12px;
   width: 24px;
   height: 24px;
   color: ${Label.assistive};
