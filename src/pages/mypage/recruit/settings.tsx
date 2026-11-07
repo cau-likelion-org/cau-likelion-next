@@ -11,6 +11,7 @@ import PageLoadingGate from '@common/pageGate/PageLoadingGate';
 import Tab from '@common/tab/Tab';
 import Toast from '@common/toast/Toast';
 import EmptyState from '@common/emptyState/EmptyState';
+import Alert from '@common/alert/Alert';
 import GenerationSettingSection from '@mypage/recruit/GenerationSettingSection';
 import NoticeSettingSection from '@mypage/recruit/NoticeSettingSection';
 import FirstStepQuestionSection from '@mypage/recruit/FirstStepQuestionSection';
@@ -21,6 +22,7 @@ import {
 } from '@mypage/recruit/mock';
 import { getUserProfile } from 'src/apis/account';
 import useTokenStore from 'src/store/useTokenStore';
+import useLeaveGuard from 'src/hooks/useLeaveGuard';
 import { isAdminRole } from '@utils/index';
 
 const TAB_ITEMS = [
@@ -54,6 +56,8 @@ const MyPageRecruitSettings = () => {
 
   const [activeTab, setActiveTab] = useState(TAB_ITEMS[0].key);
   const [toastMessage, setToastMessage] = useState('');
+  const [isNoticeDirty, setIsNoticeDirty] = useState(false);
+  const { isConfirmOpen, requestLeave, confirmLeave, cancelLeave } = useLeaveGuard(isNoticeDirty);
 
   return (
     <>
@@ -64,7 +68,12 @@ const MyPageRecruitSettings = () => {
         <PageLoadingGate isError={isUserProfileError} />
       ) : (
         <Wrapper>
-          <Tab items={TAB_ITEMS} activeKey={activeTab} onChange={setActiveTab} size="large" />
+          <Tab
+            items={TAB_ITEMS}
+            activeKey={activeTab}
+            onChange={(key) => requestLeave(() => setActiveTab(key))}
+            size="large"
+          />
           {activeTab === 'generation' ? (
             <GenerationSettingSection
               initialValues={RECRUIT_GENERATION_SETTING_MOCK}
@@ -76,6 +85,7 @@ const MyPageRecruitSettings = () => {
             <NoticeSettingSection
               initialValues={RECRUIT_NOTICE_SETTING_MOCK}
               onSave={() => setToastMessage('변경사항이 저장되었습니다.')}
+              onDirtyChange={setIsNoticeDirty}
             />
           ) : activeTab === 'first-questions' ? (
             <FirstStepQuestionSection
@@ -86,6 +96,16 @@ const MyPageRecruitSettings = () => {
             <EmptyState message="준비 중인 화면입니다." />
           )}
         </Wrapper>
+      )}
+      {isConfirmOpen && (
+        <Alert
+          heading="저장하지 않고 나가면 작성한 내용이 사라집니다."
+          onDimmerClick={cancelLeave}
+          actions={[
+            { label: '취소', variant: 'assistive', onClick: cancelLeave },
+            { label: '나가기', variant: 'primary', onClick: confirmLeave },
+          ]}
+        />
       )}
     </>
   );

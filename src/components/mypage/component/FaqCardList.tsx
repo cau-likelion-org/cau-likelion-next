@@ -25,9 +25,10 @@ export interface FaqCardListProps {
   onChange: (items: FaqItem[]) => void;
   showErrors: boolean;
   disabled?: boolean;
+  minItems?: number;
 }
 
-const FaqCardList = ({ items, onChange, showErrors, disabled = false }: FaqCardListProps) => {
+const FaqCardList = ({ items, onChange, showErrors, disabled = false, minItems = 0 }: FaqCardListProps) => {
   const { updateItem, removeItem, addItem } = useListItems(items, onChange, createEmptyItem);
 
   return (
@@ -56,7 +57,7 @@ const FaqCardList = ({ items, onChange, showErrors, disabled = false }: FaqCardL
           />
           {!disabled && (
             <ButtonRow>
-              <RemoveCardButton onClick={() => removeItem(item.id)} />
+              <RemoveCardButton onClick={() => removeItem(item.id)} disabled={items.length <= minItems} />
             </ButtonRow>
           )}
         </Card>

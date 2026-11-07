@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import Button from '@common/button/Button';
@@ -15,6 +15,7 @@ import RecruitInfoBox, { InfoText } from './RecruitInfoBox';
 export interface NoticeSettingSectionProps {
   initialValues: RecruitNoticeSetting;
   onSave: (values: RecruitNoticeSetting) => void;
+  onDirtyChange?: (isDirty: boolean) => void;
 }
 
 const isPastField = (field: RecruitScheduleField) =>
@@ -27,11 +28,26 @@ const isScheduleFilled = (schedule: RecruitScheduleItem) =>
 const toDateValue = (date: Date) =>
   `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 
-const NoticeSettingSection = ({ initialValues, onSave }: NoticeSettingSectionProps) => {
+const NoticeSettingSection = ({ initialValues, onSave, onDirtyChange }: NoticeSettingSectionProps) => {
   const [values, setValues] = useState(initialValues);
+  const [savedValues, setSavedValues] = useState(initialValues);
+  const isDirty = JSON.stringify(values) !== JSON.stringify(savedValues);
+
+  useEffect(() => {
+    onDirtyChange?.(isDirty);
+  }, [isDirty, onDirtyChange]);
+
+  // 탭 전환 등으로 화면이 사라지면 저장하지 않은 변경사항도 함께 사라진다
+  useEffect(() => () => onDirtyChange?.(false), [onDirtyChange]);
   const today = toDateValue(new Date());
 
-  const isFilled = values.schedules.every(isScheduleFilled) && !values.faqs.some(isFaqItemInvalid);
+  const isFilled =
+    values.schedules.every(isScheduleFilled) && values.faqs.length > 0 && !values.faqs.some(isFaqItemInvalid);
+
+  const handleSave = () => {
+    onSave(values);
+    setSavedValues(values);
+  };
 
   const updateSchedule = (key: string, patch: Partial<RecruitScheduleItem>) => {
     setValues((prev) => ({
@@ -105,10 +121,11 @@ const NoticeSettingSection = ({ initialValues, onSave }: NoticeSettingSectionPro
           items={values.faqs}
           onChange={(faqs) => setValues((prev) => ({ ...prev, faqs }))}
           showErrors={false}
+          minItems={1}
         />
       </Group>
       <Actions>
-        <Button disabled={!isFilled} onClick={() => onSave(values)}>
+        <Button disabled={!isFilled} onClick={handleSave}>
           저장
         </Button>
       </Actions>
