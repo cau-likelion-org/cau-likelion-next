@@ -10,16 +10,31 @@ import { RecruitGenerationSetting } from './mock';
 
 export interface GenerationSettingSectionProps {
   initialValues: RecruitGenerationSetting;
-  onSave: (values: RecruitGenerationSetting) => void;
+  onSave: (values: RecruitGenerationSetting, isUpdate: boolean) => void;
 }
 
 const toDigits = (value: string) => value.replace(/\D/g, '');
 
+const isFilled = (values: RecruitGenerationSetting) =>
+  values.generation !== '' && values.partQuotas.every((part) => part.quota !== '');
+
 const GenerationSettingSection = ({ initialValues, onSave }: GenerationSettingSectionProps) => {
   const [values, setValues] = useState(initialValues);
+  const [savedValues, setSavedValues] = useState(initialValues);
+  const [isEditing, setIsEditing] = useState(!isFilled(initialValues));
 
-  const isFilled = values.generation !== '' && values.partQuotas.every((part) => part.quota !== '');
-  const isChanged = JSON.stringify(values) !== JSON.stringify(initialValues);
+  const hasSaved = isFilled(savedValues);
+
+  const handleSave = () => {
+    onSave(values, hasSaved);
+    setSavedValues(values);
+    setIsEditing(false);
+  };
+
+  const handleCancel = () => {
+    setValues(savedValues);
+    setIsEditing(false);
+  };
 
   const updateQuota = (partId: number, quota: string) => {
     setValues((prev) => ({
@@ -37,6 +52,7 @@ const GenerationSettingSection = ({ initialValues, onSave }: GenerationSettingSe
           inputMode="numeric"
           placeholder="숫자로 입력해주세요."
           value={values.generation}
+          readOnly={!isEditing}
           onChange={(event) => setValues((prev) => ({ ...prev, generation: toDigits(event.target.value) }))}
           trailingContent={<Unit>기</Unit>}
         />
@@ -51,6 +67,7 @@ const GenerationSettingSection = ({ initialValues, onSave }: GenerationSettingSe
               inputMode="numeric"
               placeholder="숫자로 입력해주세요."
               value={part.quota}
+              readOnly={!isEditing}
               onChange={(event) => updateQuota(part.partId, toDigits(event.target.value))}
               trailingContent={<Unit>명</Unit>}
             />
@@ -59,9 +76,22 @@ const GenerationSettingSection = ({ initialValues, onSave }: GenerationSettingSe
         </Card>
       </QuotaGroup>
       <Actions>
-        <Button disabled={!isFilled || !isChanged} onClick={() => onSave(values)}>
-          저장
-        </Button>
+        {isEditing ? (
+          <>
+            {hasSaved && (
+              <Button color="assistive" onClick={handleCancel}>
+                취소
+              </Button>
+            )}
+            <Button disabled={!isFilled(values)} onClick={handleSave}>
+              저장
+            </Button>
+          </>
+        ) : (
+          <Button variant="outlined" onClick={() => setIsEditing(true)}>
+            수정
+          </Button>
+        )}
       </Actions>
     </Wrapper>
   );
@@ -124,5 +154,6 @@ const Caption = styled.p`
 const Actions = styled.div`
   display: flex;
   justify-content: flex-end;
+  gap: 20px;
   width: 100%;
 `;

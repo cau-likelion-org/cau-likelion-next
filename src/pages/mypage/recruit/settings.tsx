@@ -62,7 +62,9 @@ const MyPageRecruitSettings = () => {
           {activeTab === 'generation' ? (
             <GenerationSettingSection
               initialValues={RECRUIT_GENERATION_SETTING_MOCK}
-              onSave={() => setToastMessage('변경사항이 저장되었습니다.')}
+              onSave={(_, isUpdate) =>
+                setToastMessage(isUpdate ? '변경사항이 저장되었습니다.' : '회차 설정이 저장되었습니다.')
+              }
             />
           ) : (
             <EmptyState message="준비 중인 화면입니다." />
