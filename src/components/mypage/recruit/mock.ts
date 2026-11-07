@@ -85,3 +85,63 @@ export const RECRUIT_INTERVIEW_SETTING_MOCK: RecruitInterviewSetting = {
   endTime: '18:00',
   unitMinutes: 120,
 };
+
+export type RecruitQuestionType = 'LONG_TEXT' | 'LINK' | 'FILE' | 'SINGLE_CHOICE' | 'MULTIPLE_CHOICE';
+
+export interface RecruitQuestionChoice {
+  id: string;
+  text: string;
+}
+
+export interface RecruitQuestion {
+  id: string;
+  type: RecruitQuestionType | null;
+  isRequired: boolean;
+  title: string;
+  description: string;
+  maxLength: string;
+  choices: RecruitQuestionChoice[];
+}
+
+export interface RecruitPartQuestions {
+  partId: number;
+  partName: string;
+  questions: RecruitQuestion[];
+}
+
+export interface RecruitSecondStepSetting {
+  parts: RecruitPartQuestions[];
+  isLocked: boolean;
+}
+
+const question = (id: string, patch: Partial<RecruitQuestion>): RecruitQuestion => ({
+  id,
+  type: null,
+  isRequired: true,
+  title: '',
+  description: '',
+  maxLength: '',
+  choices: [],
+  ...patch,
+});
+
+export const RECRUIT_SECOND_STEP_SETTING_MOCK: RecruitSecondStepSetting = {
+  isLocked: false,
+  parts: [
+    {
+      partId: 1,
+      partName: '기획·디자인',
+      questions: [
+        question('1', { type: 'LONG_TEXT', title: '지원 동기를 작성해 주세요.' }),
+        question('2', {
+          type: 'SINGLE_CHOICE',
+          title: '관심있는 분야를 선택해 주세요.',
+          choices: [{ id: '2-1', text: '' }],
+        }),
+        question('3', {}),
+      ],
+    },
+    { partId: 2, partName: '프론트엔드', questions: [] },
+    { partId: 3, partName: '백엔드', questions: [] },
+  ],
+};

@@ -10,14 +10,15 @@ import MyPageShell from '@mypage/component/MyPageShell';
 import PageLoadingGate from '@common/pageGate/PageLoadingGate';
 import Tab from '@common/tab/Tab';
 import Toast from '@common/toast/Toast';
-import EmptyState from '@common/emptyState/EmptyState';
 import Alert from '@common/alert/Alert';
 import GenerationSettingSection from '@mypage/recruit/GenerationSettingSection';
 import NoticeSettingSection from '@mypage/recruit/NoticeSettingSection';
 import FirstStepQuestionSection from '@mypage/recruit/FirstStepQuestionSection';
+import SecondStepQuestionSection from '@mypage/recruit/SecondStepQuestionSection';
 import {
   RECRUIT_GENERATION_SETTING_MOCK,
   RECRUIT_INTERVIEW_SETTING_MOCK,
+  RECRUIT_SECOND_STEP_SETTING_MOCK,
   RECRUIT_NOTICE_SETTING_MOCK,
 } from '@mypage/recruit/mock';
 import { getUserProfile } from 'src/apis/account';
@@ -93,7 +94,12 @@ const MyPageRecruitSettings = () => {
               onSave={() => setToastMessage('변경사항이 저장되었습니다.')}
             />
           ) : (
-            <EmptyState message="준비 중인 화면입니다." />
+            <SecondStepQuestionSection
+              initialValues={RECRUIT_SECOND_STEP_SETTING_MOCK}
+              onSave={(_, isUpdate) =>
+                setToastMessage(isUpdate ? '변경사항이 저장되었습니다.' : '2단계 문항이 저장되었습니다.')
+              }
+            />
           )}
         </Wrapper>
       )}

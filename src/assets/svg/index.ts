@@ -25,6 +25,7 @@ import IcGithub from './icon/ic-github.svg';
 import IcImage from './icon/ic-image.svg';
 import IcInstagram from './icon/ic-instagram.svg';
 import IcKakaotalk from './icon/ic-kakaotalk.svg';
+import IcHandleDesktop from './icon/ic-handle-desktop.svg';
 import IcLineHorizontal from './icon/ic-line-horizontal.svg';
 import IcLink from './icon/ic-link.svg';
 import IcLogoGoogle from './icon/ic-logo-google.svg';
@@ -65,6 +66,7 @@ export {
   IcImage,
   IcInstagram,
   IcKakaotalk,
+  IcHandleDesktop,
   IcLineHorizontal,
   IcLink,
   IcLogoGoogle,
