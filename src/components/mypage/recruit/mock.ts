@@ -78,3 +78,19 @@ export const RECRUIT_NOTICE_SETTING_MOCK: RecruitNoticeSetting = {
     { id: '2', question: '', answer: '' },
   ],
 };
+
+export interface RecruitInterviewSetting {
+  startDate: string;
+  endDate: string;
+  startTime: string;
+  endTime: string;
+  unitMinutes: number;
+}
+
+export const RECRUIT_INTERVIEW_SETTING_MOCK: RecruitInterviewSetting = {
+  startDate: '2027-03-16',
+  endDate: '2027-03-18',
+  startTime: '10:00',
+  endTime: '18:00',
+  unitMinutes: 120,
+};

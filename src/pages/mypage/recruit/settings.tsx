@@ -13,7 +13,12 @@ import Toast from '@common/toast/Toast';
 import EmptyState from '@common/emptyState/EmptyState';
 import GenerationSettingSection from '@mypage/recruit/GenerationSettingSection';
 import NoticeSettingSection from '@mypage/recruit/NoticeSettingSection';
-import { RECRUIT_GENERATION_SETTING_MOCK, RECRUIT_NOTICE_SETTING_MOCK } from '@mypage/recruit/mock';
+import FirstStepQuestionSection from '@mypage/recruit/FirstStepQuestionSection';
+import {
+  RECRUIT_GENERATION_SETTING_MOCK,
+  RECRUIT_INTERVIEW_SETTING_MOCK,
+  RECRUIT_NOTICE_SETTING_MOCK,
+} from '@mypage/recruit/mock';
 import { getUserProfile } from 'src/apis/account';
 import useTokenStore from 'src/store/useTokenStore';
 import { isAdminRole } from '@utils/index';
@@ -70,6 +75,11 @@ const MyPageRecruitSettings = () => {
           ) : activeTab === 'notice' ? (
             <NoticeSettingSection
               initialValues={RECRUIT_NOTICE_SETTING_MOCK}
+              onSave={() => setToastMessage('변경사항이 저장되었습니다.')}
+            />
+          ) : activeTab === 'first-questions' ? (
+            <FirstStepQuestionSection
+              initialValues={RECRUIT_INTERVIEW_SETTING_MOCK}
               onSave={() => setToastMessage('변경사항이 저장되었습니다.')}
             />
           ) : (

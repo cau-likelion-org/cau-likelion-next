@@ -10,6 +10,7 @@ import { BackgroundWhite, Black, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 import { RecruitNoticeSetting, RecruitScheduleField, RecruitScheduleItem } from './mock';
+import RecruitInfoBox, { InfoText } from './RecruitInfoBox';
 
 export interface NoticeSettingSectionProps {
   initialValues: RecruitNoticeSetting;
@@ -39,14 +40,11 @@ const NoticeSettingSection = ({ initialValues, onSave }: NoticeSettingSectionPro
 
   return (
     <Wrapper>
-      <InfoBox>
-        <InfoTitle>인재상, 커리큘럼, 연간일정 수정</InfoTitle>
-        <InfoRow>
-          <InfoText>인재상, 커리큘럼, 연간일정은</InfoText>
-          <InfoBadge text="관리자 →  랜딩, 소개페이지" color="accent" size="medium" />
-          <InfoText>에서 수정할 수 있습니다.</InfoText>
-        </InfoRow>
-      </InfoBox>
+      <RecruitInfoBox title="인재상, 커리큘럼, 연간일정 수정">
+        <InfoText>인재상, 커리큘럼, 연간일정은</InfoText>
+        <InfoBadge text="관리자 →  랜딩, 소개페이지" color="accent" size="medium" />
+        <InfoText>에서 수정할 수 있습니다.</InfoText>
+      </RecruitInfoBox>
       <Group>
         <SectionTitle>모집 일정</SectionTitle>
         {values.schedules.map((schedule) => (
@@ -111,35 +109,6 @@ const Wrapper = styled.div`
   gap: 42px;
   width: 100%;
   padding: 38px 14px;
-`;
-
-const InfoBox = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  width: 100%;
-  padding: 18px;
-  border: 1px solid #d9d9d9;
-  border-radius: 8px;
-`;
-
-const InfoTitle = styled.p`
-  margin: 0;
-  color: ${Label.strong};
-  ${typographyCss(Typography.headline1.bold)}
-`;
-
-const InfoRow = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 10px;
-`;
-
-const InfoText = styled.p`
-  margin: 0;
-  color: ${Label.alternative};
-  ${typographyCss(Typography.body1Normal.medium)}
 `;
 
 const InfoBadge = styled(ContentBadge)`
