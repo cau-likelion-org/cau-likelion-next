@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
-import { useRouter } from 'next/router';
+import { useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import BackHeader from '@common/header/BackHeader';
+import { MODAL_Z_INDEX } from '@common/modalOverlay/ModalOverlay';
 import Select from '@common/select/Select';
 import ListboxOptions from '@common/select/ListboxOptions';
 import TextField from '@common/textField/TextField';
@@ -13,6 +13,7 @@ import RemoveCardButton from '@mypage/component/RemoveCardButton';
 import useListboxSelect from 'src/hooks/useListboxSelect';
 import useScrollToFirstError from 'src/hooks/useScrollToFirstError';
 import useScrollLock from 'src/hooks/useScrollLock';
+import useLeaveGuard from 'src/hooks/useLeaveGuard';
 import { AssignmentCreateRequest, AssignmentSubmitType } from 'src/apis/assignment';
 import { isUnfilled } from '@utils/index';
 import { IcCircleExclamation } from '@assets/svg';
@@ -64,20 +65,13 @@ const AssignmentCreateForm = ({
   onDeleteAssignment,
 }: AssignmentCreateFormProps) => {
   const isEdit = mode === 'edit';
-  const router = useRouter();
   const [week, setWeek] = useState(initialWeek != null ? String(initialWeek) : '');
   const [drafts, setDrafts] = useState<AssignmentDraft[]>(initialDrafts ?? [emptyDraft()]);
   const [deleteTarget, setDeleteTarget] = useState<number | null>(null);
   // 제출 시도 후에만 필수항목 에러 표시 (프로젝트 추가 admin 페이지와 동일)
   const [showErrors, setShowErrors] = useState(false);
-  // 저장 전 이탈 방지 모달
-  const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
-  const bypassGuardRef = useRef(false); // 제출 성공/이탈 확인 시 가드 우회
   const formRef = useRef<HTMLDivElement>(null);
   const scrollToFirstError = useScrollToFirstError(formRef);
-  const pendingUrlRef = useRef<string | null>(null); // 라우트 변경으로 막힌 목적지
-
-  useScrollLock(showLeaveConfirm || deleteTarget != null);
 
   const updateDraft = (index: number, patch: Partial<AssignmentDraft>) => {
     setDrafts((prev) => prev.map((draft, i) => (i === index ? { ...draft, ...patch } : draft)));
@@ -109,51 +103,18 @@ const AssignmentCreateForm = ({
     ? JSON.stringify(drafts) !== initialSnapshot
     : !isUnfilled(week) || drafts.some((draft) => draft.title || draft.detail || draft.endDate);
 
-  // 사이드바/뒤로가기 등 라우트 변경 가로채기
-  useEffect(() => {
-    const handleRouteChangeStart = (url: string) => {
-      if (bypassGuardRef.current || !isDirty) return;
-      pendingUrlRef.current = url;
-      setShowLeaveConfirm(true);
-      router.events.emit('routeChangeError');
-      throw '과제 생성 이탈 취소 (저장되지 않은 작업)';
-    };
-    router.events.on('routeChangeStart', handleRouteChangeStart);
-    return () => router.events.off('routeChangeStart', handleRouteChangeStart);
-  }, [isDirty, router.events]);
+  // 저장 전 이탈 방지 모달
+  const {
+    isConfirmOpen: showLeaveConfirm,
+    requestLeave,
+    confirmLeave,
+    cancelLeave,
+    allowLeave,
+  } = useLeaveGuard(isDirty);
 
-  // 새로고침/탭 닫기
-  useEffect(() => {
-    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-      if (!isDirty || bypassGuardRef.current) return;
-      event.preventDefault();
-      event.returnValue = '';
-    };
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, [isDirty]);
+  useScrollLock(showLeaveConfirm || deleteTarget != null);
 
-  const handleClose = () => {
-    if (isDirty) {
-      pendingUrlRef.current = null;
-      setShowLeaveConfirm(true);
-    } else {
-      onClose();
-    }
-  };
-
-  const confirmLeave = () => {
-    bypassGuardRef.current = true;
-    setShowLeaveConfirm(false);
-    const url = pendingUrlRef.current;
-    if (url) router.push(url);
-    else onClose();
-  };
-
-  const cancelLeave = () => {
-    pendingUrlRef.current = null;
-    setShowLeaveConfirm(false);
-  };
+  const handleClose = () => requestLeave(onClose);
 
   const handleSubmit = () => {
     if (submitting) return;
@@ -162,7 +123,7 @@ const AssignmentCreateForm = ({
       scrollToFirstError();
       return;
     }
-    bypassGuardRef.current = true;
+    allowLeave();
     onSubmit(
       Number(week),
       drafts.map((draft) => ({ ...draft, title: draft.title.trim(), detail: draft.detail.trim() })),
@@ -617,7 +578,7 @@ const LeaveOverlay = styled.div`
   align-items: center;
   justify-content: center;
   padding: 0 20px;
-  z-index: 1000;
+  z-index: ${MODAL_Z_INDEX};
 `;
 
 const LeaveDimmer = styled.div`
