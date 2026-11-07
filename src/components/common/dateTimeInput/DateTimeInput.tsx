@@ -1,9 +1,16 @@
 import { InputHTMLAttributes, useId } from 'react';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 
-import { IcCalendar, IcCircleExclamation, IcClock } from '@assets/svg';
-import { Fill, Label, Line, State } from '@utils/constant/color';
+import { IcCalendar, IcClock } from '@assets/svg';
+import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
+import {
+  FieldDescription,
+  FieldStatus,
+  FieldStatusIcon,
+  getFieldBackground,
+  getFieldBoxShadow,
+} from '@common/fieldStatus/FieldStatus';
 
 type DateTimeInputType = 'date' | 'time';
 
@@ -15,7 +22,7 @@ export interface DateTimeInputProps extends Omit<
   value: string;
   onChange?: (value: string) => void;
   placeholder?: string;
-  status?: 'normal' | 'negative';
+  status?: FieldStatus;
   description?: string;
 }
 
@@ -36,6 +43,7 @@ const DateTimeInput = ({
   status = 'normal',
   description,
   readOnly = false,
+  disabled = false,
   ...inputProps
 }: DateTimeInputProps) => {
   const Icon = type === 'date' ? IcCalendar : IcClock;
@@ -43,18 +51,17 @@ const DateTimeInput = ({
 
   return (
     <Root className={className}>
-      <Box $status={status} $readOnly={readOnly}>
+      <Box $status={status} $inactive={readOnly || disabled}>
         <Icon width={22} height={22} />
-        <Text $filled={!!value}>{value ? formatValue(type, value) : placeholder}</Text>
-        {status === 'negative' && (
-          <ErrorIcon>
-            <IcCircleExclamation width={22} height={22} />
-          </ErrorIcon>
-        )}
+        <Text $filled={!!value} $disabled={disabled}>
+          {value ? formatValue(type, value) : placeholder}
+        </Text>
+        <FieldStatusIcon status={status} />
         {!readOnly && (
           <HiddenInput
             type={type}
             value={value}
+            disabled={disabled}
             aria-invalid={status === 'negative'}
             aria-describedby={description ? descriptionId : undefined}
             onChange={(event) => onChange?.(event.target.value)}
@@ -64,9 +71,9 @@ const DateTimeInput = ({
         )}
       </Box>
       {description && (
-        <Description id={descriptionId} $status={status}>
+        <FieldDescription id={descriptionId} $status={status}>
           {description}
-        </Description>
+        </FieldDescription>
       )}
     </Root>
   );
@@ -82,7 +89,8 @@ const Root = styled.div`
   width: 100%;
 `;
 
-const Box = styled.div<{ $status: 'normal' | 'negative'; $readOnly: boolean }>`
+// 읽기 전용과 비활성은 같은 비활성 배경·테두리로 보여준다
+const Box = styled.div<{ $status: FieldStatus; $inactive: boolean }>`
   position: relative;
   display: flex;
   align-items: center;
@@ -92,55 +100,31 @@ const Box = styled.div<{ $status: 'normal' | 'negative'; $readOnly: boolean }>`
   height: 48px;
   padding: 12px;
   border-radius: 12px;
+  background-color: ${(props) => getFieldBackground(props.$inactive)};
+  box-shadow: ${(props) => getFieldBoxShadow(props.$status, props.$inactive)};
 
   & > svg {
     flex-shrink: 0;
   }
 
   ${(props) =>
-    props.$readOnly
-      ? css`
-          background-color: ${Fill.subtle};
-          box-shadow:
-            inset 0 0 0 1px ${Line.subtle},
-            0 1px 2px 0 rgba(0, 0, 0, 0.03);
-        `
-      : css`
-          background-color: rgba(255, 255, 255, 0.08);
-          box-shadow: ${
-            props.$status === 'negative'
-              ? 'inset 0 0 0 1px rgba(255, 0, 0, 0.28), 0 1px 2px -1px rgba(23, 23, 23, 0.1)'
-              : `inset 0 0 0 1px ${Line.normal}, 0 1px 2px -1px rgba(23, 23, 23, 0.1)`
-          };
-
-          &:focus-within {
-            box-shadow: inset 0 0 0 2px rgba(71, 172, 255, 0.43);
-          }
-        `}
+    !props.$inactive &&
+    `
+    &:focus-within {
+      box-shadow: inset 0 0 0 2px rgba(71, 172, 255, 0.43);
+    }
+  `}
 `;
 
-const Text = styled.span<{ $filled: boolean }>`
+const Text = styled.span<{ $filled: boolean; $disabled: boolean }>`
   flex: 1 0 0;
   min-width: 0;
   padding: 0 4px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: ${(props) => (props.$filled ? Label.normal : Label.assistive)};
+  color: ${(props) => (props.$disabled ? Label.disable : props.$filled ? Label.normal : Label.assistive)};
   ${typographyCss(Typography.body1Normal.regular)}
-`;
-
-const ErrorIcon = styled.span`
-  display: flex;
-  flex-shrink: 0;
-  color: ${State.error};
-`;
-
-const Description = styled.p<{ $status: 'normal' | 'negative' }>`
-  margin: 0;
-  width: 100%;
-  color: ${(props) => (props.$status === 'negative' ? State.error : Label.alternative)};
-  ${typographyCss(Typography.caption1.regular)}
 `;
 
 const HiddenInput = styled.input`

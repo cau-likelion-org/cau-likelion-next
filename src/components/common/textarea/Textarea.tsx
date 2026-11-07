@@ -1,16 +1,21 @@
 import { ReactNode, TextareaHTMLAttributes, useId } from 'react';
 import styled from 'styled-components';
 
-import { IcCircleCheck, IcCircleExclamation } from '@assets/svg';
-import { Label, Line, State } from '@utils/constant/color';
+import { Label, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
+import {
+  FieldDescription,
+  FieldStatus,
+  FieldStatusIcon,
+  getFieldBackground,
+  getFieldBoxShadow,
+} from '@common/fieldStatus/FieldStatus';
 
-type TextareaStatus = 'normal' | 'positive' | 'negative';
 type TextareaResize = 'normal' | 'limit' | 'fixed';
 
 export interface TextareaProps extends Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, 'className'> {
   className?: string;
-  status?: TextareaStatus;
+  status?: FieldStatus;
   resize?: TextareaResize;
   maxHeight?: number;
   heading?: string;
@@ -19,12 +24,6 @@ export interface TextareaProps extends Omit<TextareaHTMLAttributes<HTMLTextAreaE
   bottomLeadingContent?: ReactNode;
   bottomTrailingContent?: ReactNode;
 }
-
-const getBoxShadow = (status: TextareaStatus, disabled: boolean) => {
-  if (disabled) return `inset 0 0 0 1px ${Line.alternative}, 0 1px 2px rgba(0, 0, 0, 0.03)`;
-  if (status === 'negative') return 'inset 0 0 0 1px rgba(255, 0, 0, 0.28), 0 1px 2px -1px rgba(23, 23, 23, 0.1)';
-  return `inset 0 0 0 1px ${Line.normal}, 0 1px 2px -1px rgba(23, 23, 23, 0.1)`;
-};
 
 const getResizeCss = (resize: TextareaResize) => {
   if (resize === 'fixed') return 'none';
@@ -52,17 +51,6 @@ const Textarea = ({
   const descriptionId = description ? `${textareaId}-description` : undefined;
   const hasStatusIcon = status !== 'normal';
 
-  const statusIcon =
-    status === 'negative' ? (
-      <IconSlot $color={State.error}>
-        <IcCircleExclamation width={22} height={22} />
-      </IconSlot>
-    ) : status === 'positive' ? (
-      <IconSlot $color={State.info}>
-        <IcCircleCheck width={22} height={22} />
-      </IconSlot>
-    ) : null;
-
   return (
     <Root className={className}>
       {heading && (
@@ -85,7 +73,7 @@ const Textarea = ({
           aria-describedby={descriptionId}
           {...textareaProps}
         />
-        {statusIcon}
+        <StatusIcon status={status} />
         {(bottomLeadingContent || bottomTrailingContent) && (
           <Bottom>
             {bottomLeadingContent && <BottomSlot>{bottomLeadingContent}</BottomSlot>}
@@ -94,9 +82,9 @@ const Textarea = ({
         )}
       </InputWrapper>
       {description && (
-        <Description id={descriptionId} $status={status}>
+        <FieldDescription id={descriptionId} $status={status}>
           {description}
-        </Description>
+        </FieldDescription>
       )}
     </Root>
   );
@@ -128,7 +116,7 @@ const Required = styled.span`
   ${typographyCss(Typography.label1Normal.medium)}
 `;
 
-const InputWrapper = styled.div<{ $status: TextareaStatus; $disabled: boolean; $readOnly: boolean }>`
+const InputWrapper = styled.div<{ $status: FieldStatus; $disabled: boolean; $readOnly: boolean }>`
   position: relative;
   display: flex;
   flex-direction: column;
@@ -136,8 +124,8 @@ const InputWrapper = styled.div<{ $status: TextareaStatus; $disabled: boolean; $
   width: 100%;
   padding: 12px;
   border-radius: 12px;
-  background-color: ${(props) => (props.$disabled ? '#F4F4F5' : 'rgba(255, 255, 255, 0.08)')};
-  box-shadow: ${(props) => getBoxShadow(props.$status, props.$disabled)};
+  background-color: ${(props) => getFieldBackground(props.$disabled)};
+  box-shadow: ${(props) => getFieldBoxShadow(props.$status, props.$disabled)};
 
   ${(props) =>
     !props.$readOnly &&
@@ -174,13 +162,10 @@ const StyledTextarea = styled.textarea<{ $resize: TextareaResize; $hasStatusIcon
   }
 `;
 
-const IconSlot = styled.span<{ $color: string }>`
+const StatusIcon = styled(FieldStatusIcon)`
   position: absolute;
   top: 12px;
   right: 12px;
-  display: flex;
-  flex-shrink: 0;
-  color: ${(props) => props.$color};
 `;
 
 const Bottom = styled.div`
@@ -196,11 +181,4 @@ const BottomSlot = styled.div<{ $trailing?: boolean }>`
   align-items: center;
   flex: ${(props) => (props.$trailing ? '0 0 auto' : '1 1 auto')};
   min-width: 0;
-`;
-
-const Description = styled.p<{ $status: TextareaStatus }>`
-  margin: 0;
-  width: 100%;
-  color: ${(props) => (props.$status === 'negative' ? State.error : Label.alternative)};
-  ${typographyCss(Typography.caption1.regular)}
 `;
