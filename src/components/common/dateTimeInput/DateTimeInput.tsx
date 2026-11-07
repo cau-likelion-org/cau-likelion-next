@@ -59,6 +59,7 @@ const DateTimeInput = ({
         <FieldStatusIcon status={status} />
         {!readOnly && (
           <HiddenInput
+            {...inputProps}
             type={type}
             value={value}
             disabled={disabled}
@@ -66,7 +67,6 @@ const DateTimeInput = ({
             aria-describedby={description ? descriptionId : undefined}
             onChange={(event) => onChange?.(event.target.value)}
             onClick={(event) => event.currentTarget.showPicker?.()}
-            {...inputProps}
           />
         )}
       </Box>

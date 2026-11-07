@@ -5,7 +5,12 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import useDragReorder, { moveItem } from './useDragReorder';
 
-const dragEvent = () => ({ preventDefault: vi.fn(), dataTransfer: { effectAllowed: 'none' } }) as unknown as DragEvent;
+const dragEvent = () =>
+  ({
+    preventDefault: vi.fn(),
+    stopPropagation: vi.fn(),
+    dataTransfer: { effectAllowed: 'none' },
+  }) as unknown as DragEvent;
 
 describe('moveItem', () => {
   it('항목을 앞에서 뒤로 옮긴다', () => {
@@ -71,9 +76,31 @@ describe('useDragReorder', () => {
     act(() => result.current.getHandleProps(0).onMouseDown());
     act(() => result.current.getItemProps(0).onDragStart(dragEvent()));
 
-    act(() => result.current.getItemProps(0).onDragEnd());
+    act(() => result.current.getItemProps(0).onDragEnd(dragEvent()));
 
     expect(result.current.dragIndex).toBeNull();
     expect(result.current.getItemProps(0).draggable).toBe(false);
+  });
+
+  it('드래그 시작과 끝 이벤트를 바깥 목록으로 전달하지 않는다', () => {
+    const { result } = renderHook(() => useDragReorder(['a', 'b'], vi.fn()));
+    const start = dragEvent();
+    const end = dragEvent();
+
+    act(() => result.current.getItemProps(0).onDragStart(start));
+    act(() => result.current.getItemProps(0).onDragEnd(end));
+
+    expect(start.stopPropagation).toHaveBeenCalled();
+    expect(end.stopPropagation).toHaveBeenCalled();
+  });
+
+  it('드래그 중이 아닌 목록은 지나가는 드래그를 바깥 목록에 넘긴다', () => {
+    const { result } = renderHook(() => useDragReorder(['a', 'b'], vi.fn()));
+    const over = dragEvent();
+
+    act(() => result.current.getItemProps(1).onDragOver(over));
+
+    expect(over.preventDefault).not.toHaveBeenCalled();
+    expect(over.stopPropagation).not.toHaveBeenCalled();
   });
 });

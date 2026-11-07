@@ -84,7 +84,15 @@ const MenuGroup = ({ title, items, active }: { title: string; items: MenuGroupIt
   );
 };
 
-const Sidebar = ({ active, isAdmin = false }: { active: SidebarActive; isAdmin?: boolean }) => {
+const Sidebar = ({
+  active,
+  isAdmin = false,
+  canManageRecruit = false,
+}: {
+  active: SidebarActive;
+  isAdmin?: boolean;
+  canManageRecruit?: boolean;
+}) => {
   return (
     <Wrapper>
       <StyledLink href="/mypage">
@@ -97,12 +105,8 @@ const Sidebar = ({ active, isAdmin = false }: { active: SidebarActive; isAdmin?:
         <Item $active={active === 'assignment'}>과제관리</Item>
       </StyledLink>
       <NotificationSetting />
-      {isAdmin && (
-        <>
-          <MenuGroup title="관리자" items={ADMIN_MENU_ITEMS} active={active} />
-          <MenuGroup title="리크루팅" items={RECRUIT_MENU_ITEMS} active={active} />
-        </>
-      )}
+      {isAdmin && <MenuGroup title="관리자" items={ADMIN_MENU_ITEMS} active={active} />}
+      {canManageRecruit && <MenuGroup title="리크루팅" items={RECRUIT_MENU_ITEMS} active={active} />}
     </Wrapper>
   );
 };

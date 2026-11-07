@@ -21,7 +21,9 @@ const useDragReorder = <T>(items: T[], onReorder: (items: T[]) => void, disabled
 
   const getItemProps = (index: number) => ({
     draggable: !disabled && armedIndex === index,
+    // 문항 카드 안의 선택지처럼 드래그 목록이 겹칠 때 바깥 목록까지 이벤트가 전달되지 않게 한다
     onDragStart: (event: DragEvent) => {
+      event.stopPropagation();
       event.dataTransfer.effectAllowed = 'move';
       setDragIndex(index);
     },
@@ -33,7 +35,8 @@ const useDragReorder = <T>(items: T[], onReorder: (items: T[]) => void, disabled
       setDragIndex(index);
     },
     onDrop: (event: DragEvent) => event.preventDefault(),
-    onDragEnd: () => {
+    onDragEnd: (event: DragEvent) => {
+      event.stopPropagation();
       setDragIndex(null);
       setArmedIndex(null);
     },

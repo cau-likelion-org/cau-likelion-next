@@ -36,11 +36,17 @@ const DAY_LABELS = ['일', '월', '화', '수', '목', '금', '토'];
 
 const toDateLabel = (date: Date) => `${date.getMonth() + 1}/${date.getDate()}(${DAY_LABELS[date.getDay()]})`;
 
+// 날짜 입력 중 연도가 덜 입력된 값(0002-03-16 등)이 들어와도 격자가 폭주하지 않게 미리보기 기간을 제한한다
+const MAX_PREVIEW_DAYS = 31;
+const DAY_MS = 24 * 60 * 60 * 1000;
+
 const getDateLabels = (startDate: string, endDate: string) => {
   if (!startDate || !endDate) return [];
   const labels: string[] = [];
+  const start = new Date(`${startDate}T00:00`);
   const end = new Date(`${endDate}T00:00`);
-  for (let date = new Date(`${startDate}T00:00`); date <= end; date.setDate(date.getDate() + 1)) {
+  if (Math.round((end.getTime() - start.getTime()) / DAY_MS) + 1 > MAX_PREVIEW_DAYS) return [];
+  for (let date = start; date <= end; date.setDate(date.getDate() + 1)) {
     labels.push(toDateLabel(date));
   }
   return labels;
