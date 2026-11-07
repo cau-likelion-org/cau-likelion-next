@@ -15,7 +15,8 @@ import useScrollToFirstError from 'src/hooks/useScrollToFirstError';
 import useScrollLock from 'src/hooks/useScrollLock';
 import { AssignmentCreateRequest, AssignmentSubmitType } from 'src/apis/assignment';
 import { isUnfilled } from '@utils/index';
-import { IcCalendar, IcCircleExclamation } from '@assets/svg';
+import { IcCircleExclamation } from '@assets/svg';
+import DateTimeInput from '@common/dateTimeInput/DateTimeInput';
 import { BackgroundWhite, Black, Fill, Label, Line, Material, Orange, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { containerCss, media } from '@utils/constant/breakpoint';
@@ -404,24 +405,18 @@ const DateField = ({
       <FieldHeadingSmall>
         마감일<Required>*</Required>
       </FieldHeadingSmall>
-      <DateBox $invalid={!!invalid}>
-        <DateIcon>
-          <IcCalendar width={22} height={22} />
-        </DateIcon>
-        <DateText $filled={!!value}>{value ? value.replace(/-/g, '/') : '캘린더 선택'}</DateText>
-        {invalid && (
-          <ErrorIcon>
-            <IcCircleExclamation width={22} height={22} />
-          </ErrorIcon>
-        )}
-        <HiddenDateInput
-          type="date"
-          value={value}
-          onChange={(event) => onChange(event.target.value)}
-          onClick={(event) => event.currentTarget.showPicker?.()}
-          aria-invalid={!!invalid}
-        />
-      </DateBox>
+      <DateTimeInput
+        value={value}
+        onChange={onChange}
+        status={invalid ? 'negative' : 'normal'}
+        trailingContent={
+          invalid && (
+            <ErrorIcon>
+              <IcCircleExclamation width={22} height={22} />
+            </ErrorIcon>
+          )
+        }
+      />
       {invalid && <DateError>마감일을 선택해 주세요.</DateError>}
     </DateColumn>
   );
@@ -592,26 +587,6 @@ const DateColumn = styled.div`
   }
 `;
 
-const DateBox = styled.div<{ $invalid: boolean }>`
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-  height: 48px;
-  padding: 12px;
-  border-radius: 12px;
-  background-color: rgba(255, 255, 255, 0.08);
-  box-shadow: ${(props) =>
-    props.$invalid
-      ? 'inset 0 0 0 1px rgba(255, 0, 0, 0.28), 0 1px 2px -1px rgba(23, 23, 23, 0.1)'
-      : `inset 0 0 0 1px ${Line.normal}, 0 1px 2px -1px rgba(23, 23, 23, 0.1)`};
-
-  &:focus-within {
-    box-shadow: inset 0 0 0 2px rgba(71, 172, 255, 0.43);
-  }
-`;
-
 // 에러 문구가 컬럼 높이를 늘려 마감일/제출형식 한 줄 정렬이 깨지지 않도록 absolute로 띄움
 const DateError = styled.p`
   position: absolute;
@@ -623,37 +598,10 @@ const DateError = styled.p`
   ${typographyCss(Typography.caption1.regular)}
 `;
 
-const DateIcon = styled.span`
-  display: flex;
-  flex-shrink: 0;
-  color: ${Label.alternative};
-`;
-
 const ErrorIcon = styled.span`
   display: flex;
   flex-shrink: 0;
   color: ${State.error};
-`;
-
-const DateText = styled.span<{ $filled: boolean }>`
-  flex: 1 0 0;
-  min-width: 0;
-  padding: 0 4px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  color: ${(props) => (props.$filled ? Label.normal : Label.assistive)};
-  ${typographyCss(Typography.body1Normal.regular)}
-`;
-
-const HiddenDateInput = styled.input`
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  border: none;
-  opacity: 0;
-  cursor: pointer;
 `;
 
 const SubmitRow = styled.div`

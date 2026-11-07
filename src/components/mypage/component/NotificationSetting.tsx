@@ -12,7 +12,8 @@ import {
   requestFcmToken,
 } from 'src/lib/pushNotification';
 import useTokenStore from 'src/store/useTokenStore';
-import { BackgroundWhite, Black, Label, Line, Orange } from '@utils/constant/color';
+import Switch from '@common/switch/Switch';
+import { BackgroundWhite, Black, Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 export type NotificationPermissionState = NotificationPermission | 'unsupported';
@@ -47,18 +48,7 @@ export const NotificationSettingView = ({
       <SectionLabel>과제 알림 설정</SectionLabel>
       <Row>
         <RowLabel>알림</RowLabel>
-        <Switch
-          type="button"
-          role="switch"
-          aria-checked={enabled}
-          aria-label="과제 알림"
-          disabled={isDisabled}
-          onClick={onToggle}
-        >
-          <Track $on={enabled}>
-            <Thumb />
-          </Track>
-        </Switch>
+        <TouchSwitch checked={enabled} aria-label="과제 알림" disabled={isDisabled} onChange={onToggle} />
       </Row>
       <Guide $align={guideAlign}>{GUIDE_TEXT[permission]}</Guide>
     </Wrapper>
@@ -171,39 +161,9 @@ const RowLabel = styled.span`
 `;
 
 // Figma: 터치 영역 52x32, 트랙 39x24, 썸 18
-const Switch = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
+const TouchSwitch = styled(Switch)`
   width: 52px;
   height: 32px;
-  padding: 0;
-  border: none;
-  background: none;
-  cursor: pointer;
-
-  &:disabled {
-    cursor: not-allowed;
-    opacity: 0.4;
-  }
-`;
-
-const Track = styled.span<{ $on: boolean }>`
-  display: flex;
-  align-items: center;
-  justify-content: ${(props) => (props.$on ? 'flex-end' : 'flex-start')};
-  width: 39px;
-  padding: 3px;
-  border-radius: 75px;
-  background-color: ${(props) => (props.$on ? Orange.o500 : Line.strong)};
-  transition: background-color 0.15s ease;
-`;
-
-const Thumb = styled.span`
-  width: 18px;
-  height: 18px;
-  border-radius: 750px;
-  background-color: ${BackgroundWhite.primary};
 `;
 
 const Guide = styled.p<{ $align: GuideAlign }>`
