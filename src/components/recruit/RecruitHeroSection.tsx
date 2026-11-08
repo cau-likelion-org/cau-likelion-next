@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import styled from 'styled-components';
 
 import Button from '@common/button/Button';
@@ -13,6 +14,8 @@ export interface RecruitHeroSectionProps {
 }
 
 const RecruitHeroSection = ({ recruit }: RecruitHeroSectionProps) => {
+  const router = useRouter();
+
   return (
     <>
       <Banner />
@@ -34,7 +37,9 @@ const RecruitHeroSection = ({ recruit }: RecruitHeroSectionProps) => {
             </TitleGroup>
             {recruit.isApplyOpen ? (
               <ButtonRow>
-                <ApplyButton size="medium">지원하기</ApplyButton>
+                <ApplyButton size="medium" onClick={() => router.push('/recruit/apply')}>
+                  지원하기
+                </ApplyButton>
                 <Button size="medium" variant="outlined">
                   지원 내역 확인하기
                 </Button>
