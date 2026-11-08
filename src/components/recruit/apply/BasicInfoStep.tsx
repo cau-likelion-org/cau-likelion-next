@@ -8,7 +8,7 @@ import { FieldDescription } from '@common/fieldStatus/FieldStatus';
 import Textarea from '@common/textarea/Textarea';
 import TextField from '@common/textField/TextField';
 import InterviewTimeGrid from '@recruit/InterviewTimeGrid';
-import useScrollToFirstError from 'src/hooks/useScrollToFirstError';
+import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import { RECRUIT_INTERVIEW_SETTING_MOCK } from '@mypage/recruit/mock';
 import { isUnfilled } from '@utils/index';
 import { Label } from '@utils/constant/color';
@@ -63,16 +63,14 @@ const BasicInfoStep = ({ applicant, hasPartAnswers, onPartReset, onNext }: Basic
   const [part, setPart] = useState('');
   const [pendingPart, setPendingPart] = useState<string>();
   const [interviewSlots, setInterviewSlots] = useState<string[]>([]);
-  // [다음]을 누른 뒤부터 비어 있는 필수 항목을 오류로 표시한다
-  const [isSubmitted, setIsSubmitted] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
-  const scrollToFirstError = useScrollToFirstError(rootRef);
+  const { showErrors, validate } = useRequiredFieldsSave(rootRef);
 
-  const requiredError = (isEmpty: boolean) => (isSubmitted && isEmpty ? REQUIRED_MESSAGE : undefined);
+  const requiredError = (isEmpty: boolean) => (showErrors && isEmpty ? REQUIRED_MESSAGE : undefined);
 
   const getStudentIdError = () => {
     if (isUnfilled(studentId)) return requiredError(true);
-    if ((isStudentIdTouched || isSubmitted) && studentId.length !== STUDENT_ID_LENGTH) return FORMAT_MESSAGE;
+    if ((isStudentIdTouched || showErrors) && studentId.length !== STUDENT_ID_LENGTH) return FORMAT_MESSAGE;
     if (studentId === duplicateStudentId) return '이미 지원 내역이 있는 학번입니다.';
     return undefined;
   };
@@ -94,7 +92,8 @@ const BasicInfoStep = ({ applicant, hasPartAnswers, onPartReset, onNext }: Basic
     onSuccess: (isDuplicate, checkedStudentId) => {
       if (!isDuplicate) return onNext(part);
       setDuplicateStudentId(checkedStudentId);
-      scrollToFirstError();
+      // 중복 오류는 학번 칸에 표시되므로 그 위치로 스크롤한다
+      validate(true);
     },
   });
 
@@ -131,8 +130,7 @@ const BasicInfoStep = ({ applicant, hasPartAnswers, onPartReset, onNext }: Basic
 
   // 형식 검증을 통과하면 학번 중복을 확인한 뒤 2단계로 넘어간다
   const submit = () => {
-    setIsSubmitted(true);
-    if (!isValid) return scrollToFirstError();
+    if (!validate(!isValid)) return;
     duplicateCheckMutation.mutate(studentId);
   };
 

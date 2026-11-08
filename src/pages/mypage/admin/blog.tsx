@@ -21,7 +21,7 @@ import BlogSection, {
 } from '@mypage/admin/blog/BlogSection';
 import EditButton from '@mypage/admin/component/EditButton';
 import { syncListSection } from '@mypage/admin/utils';
-import useScrollToFirstError from 'src/hooks/useScrollToFirstError';
+import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import { getUserProfile, getGenerations } from 'src/apis/account';
 import { getBlogs, createBlog, updateBlog, deleteBlog, BlogResponse, BlogRequest } from 'src/apis/blog';
 import useTokenStore from 'src/store/useTokenStore';
@@ -82,12 +82,11 @@ const MyPageAdminBlog = () => {
   const [blogItems, setBlogItems] = useState<BlogItem[]>(() => (blogs ?? []).map(blogToLocal));
   const [toastMessage, setToastMessage] = useState<ReactNode>('');
   const [toastVariant, setToastVariant] = useState<'positive' | 'negative'>('positive');
-  const [showErrors, setShowErrors] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
   const contentRef = useRef<HTMLDivElement>(null);
-  const scrollToFirstError = useScrollToFirstError(contentRef);
+  const { showErrors, validate, hideErrors } = useRequiredFieldsSave(contentRef);
 
   // 조회된 데이터가 바뀌면(최초 로드, 저장 후 재조회) 화면 편집 상태를 다시 그 값으로 맞춤
   const [syncedBlogs, setSyncedBlogs] = useState(blogs);
@@ -108,7 +107,7 @@ const MyPageAdminBlog = () => {
 
   const handleCancel = () => {
     setBlogItems((blogs ?? []).map(blogToLocal));
-    setShowErrors(false);
+    hideErrors();
     setIsEditing(false);
   };
 
@@ -116,12 +115,7 @@ const MyPageAdminBlog = () => {
     const hasError =
       blogItems.some(isBlogItemInvalid) || blogItems.some((item) => isBlogGenerationInvalid(item, generations ?? []));
 
-    if (hasError) {
-      setShowErrors(true);
-      scrollToFirstError();
-      return;
-    }
-    setShowErrors(false);
+    if (!validate(hasError)) return;
     setIsSaving(true);
     try {
       await syncListSection({

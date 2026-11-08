@@ -14,7 +14,7 @@ import Toast from '@common/toast/Toast';
 import { ToastWrapper } from '@common/toast/toastLayout';
 import { IcAdd, IcCalendar, IcCircleExclamation, IcCloseCircle, IcLineHorizontal } from '@assets/svg';
 import useFocusTrap from 'src/hooks/useFocusTrap';
-import useScrollToFirstError from 'src/hooks/useScrollToFirstError';
+import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import useInput from 'src/hooks/useInput';
 import useListboxSelect from 'src/hooks/useListboxSelect';
 import useTokenStore from 'src/store/useTokenStore';
@@ -122,7 +122,6 @@ const PostUploadModal = ({
   const [date, setDate] = useState(initialValues?.date ?? '');
   const [dateRange, setDateRange] = useState<[string, string]>(initialValues?.dateRange ?? ['', '']);
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
-  const [showErrors, setShowErrors] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorToast, setErrorToast] = useState('');
   // 같은 문구를 다시 setErrorToast로 넘기면 값이 동일해 리렌더가 스킵되어 토스트가
@@ -188,7 +187,7 @@ const PostUploadModal = ({
 
   const modalRef = useRef<HTMLDivElement>(null);
   useFocusTrap(modalRef, onClose);
-  const scrollToFirstError = useScrollToFirstError(modalRef);
+  const { showErrors, validate } = useRequiredFieldsSave(modalRef);
   const modalAriaLabel = `${POST_TYPE_LABEL[postType]} ${mode === 'edit' ? '수정' : '추가'}`;
 
   const handleFileChange = async (index: number, event: ChangeEvent<HTMLInputElement>) => {
@@ -318,11 +317,7 @@ const PostUploadModal = ({
     isDateInvalid;
 
   const handleSubmit = async () => {
-    if (hasError) {
-      setShowErrors(true);
-      scrollToFirstError();
-      return;
-    }
+    if (!validate(hasError)) return;
     if (!onSubmit) {
       onClose();
       return;

@@ -1,17 +1,17 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import styled from 'styled-components';
 
 import TextField from '@common/textField/TextField';
 import Button from '@common/button/Button';
 import { getGenerations } from 'src/apis/account';
+import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import { excludeCommonPart } from '@utils/index';
 import { REQUIRED_FIELD_MESSAGE } from '@utils/constant';
 import { BackgroundWhite, Black, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 import { RecruitGenerationSetting } from './mock';
-import useRequiredSave from './useRequiredSave';
 
 export interface GenerationSettingSectionProps {
   initialValues: RecruitGenerationSetting;
@@ -32,11 +32,15 @@ const GenerationSettingSection = ({ initialValues, onSave }: GenerationSettingSe
   const hasSaved = savedValues.generation !== '';
   const isFilled = parts.length > 0 && parts.every((part) => !!values.quotas[part.id]);
 
-  const { wrapperRef, showErrors, requestSave, hideErrors } = useRequiredSave(isFilled, () => {
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const { showErrors, validate, hideErrors } = useRequiredFieldsSave(wrapperRef);
+
+  const requestSave = () => {
+    if (!validate(!isFilled)) return;
     onSave(values, hasSaved);
     setSavedValues(values);
     setIsEditing(false);
-  });
+  };
 
   const handleCancel = () => {
     hideErrors();

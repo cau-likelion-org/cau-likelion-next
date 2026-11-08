@@ -30,7 +30,7 @@ import FAQSection from '@mypage/admin/landing/FAQSection';
 import { FaqItem, isFaqItemInvalid } from '@mypage/component/FaqCardList';
 import EditButton from '@mypage/admin/component/EditButton';
 import { syncListSection } from '@mypage/admin/utils';
-import useScrollToFirstError from 'src/hooks/useScrollToFirstError';
+import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import { getUserProfile } from 'src/apis/account';
 import { getTracks, createTrack, updateTrack, deleteTrack, TrackResponse } from 'src/apis/track';
 import { getActivities, createActivity, updateActivity, deleteActivity, ActivityResponse } from 'src/apis/activity';
@@ -167,12 +167,11 @@ const MyPageAdminLanding = () => {
   const [faqItems, setFaqItems] = useState<FaqItem[]>(() => (faqs ?? []).map(faqToLocal));
   const [toastMessage, setToastMessage] = useState<ReactNode>('');
   const [toastVariant, setToastVariant] = useState<'positive' | 'negative'>('positive');
-  const [showErrors, setShowErrors] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
   const contentRef = useRef<HTMLDivElement>(null);
-  const scrollToFirstError = useScrollToFirstError(contentRef);
+  const { showErrors, validate, hideErrors } = useRequiredFieldsSave(contentRef);
 
   // 조회된 데이터가 바뀌면(최초 로드, 저장 후 재조회) 화면 편집 상태를 다시 그 값으로 맞춤
   const [syncedIntroduce, setSyncedIntroduce] = useState(introduce);
@@ -225,7 +224,7 @@ const MyPageAdminLanding = () => {
     setActivityItems((activities ?? []).map(activityToLocal));
     setProjectItems((projects ?? []).map(projectToLocal));
     setFaqItems((faqs ?? []).map(faqToLocal));
-    setShowErrors(false);
+    hideErrors();
     setIsEditing(false);
   };
 
@@ -237,16 +236,13 @@ const MyPageAdminLanding = () => {
       isProjectSelectionInvalid(projectItems) ||
       faqItems.some(isFaqItemInvalid);
 
-    if (hasError) {
-      setShowErrors(true);
+    if (!validate(hasError)) {
       if (isProjectSelectionInvalid(projectItems)) {
         setToastVariant('negative');
         setToastMessage(`노출 프로젝트는 최소 ${MIN_EXPOSED_PROJECT_COUNT}개 이상 선택해 주세요.`);
       }
-      scrollToFirstError();
       return;
     }
-    setShowErrors(false);
     setIsSaving(true);
     try {
       await Promise.all([

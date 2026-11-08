@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import Button from '@common/button/Button';
@@ -6,13 +6,13 @@ import ContentBadge from '@common/badge/ContentBadge';
 import DateTimeInput from '@common/dateTimeInput/DateTimeInput';
 import Switch from '@common/switch/Switch';
 import FaqCardList, { isFaqItemInvalid } from '@mypage/component/FaqCardList';
+import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import { REQUIRED_FIELD_MESSAGE } from '@utils/constant';
 import { BackgroundWhite, Black, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 import { RecruitNoticeSetting, RecruitScheduleField, RecruitScheduleItem } from './mock';
 import RecruitInfoBox, { InfoText } from './RecruitInfoBox';
-import useRequiredSave from './useRequiredSave';
 
 export interface NoticeSettingSectionProps {
   initialValues: RecruitNoticeSetting;
@@ -64,12 +64,16 @@ const NoticeSettingSection = ({ initialValues, onSave, onDirtyChange }: NoticeSe
 
   const isFilled = isNoticeFilled(values);
 
-  const { wrapperRef, showErrors, requestSave, hideErrors } = useRequiredSave(isFilled, () => {
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const { showErrors, validate, hideErrors } = useRequiredFieldsSave(wrapperRef);
+
+  const requestSave = () => {
+    if (!validate(!isFilled)) return;
     onSave(values, hasSaved);
     setSavedValues(values);
     setHasSaved(true);
     setIsEditing(false);
-  });
+  };
 
   const handleCancel = () => {
     hideErrors();

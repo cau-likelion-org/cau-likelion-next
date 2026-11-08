@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import Button from '@common/button/Button';
@@ -8,13 +8,13 @@ import ListboxOptions from '@common/select/ListboxOptions';
 import InterviewTimeGrid from '@recruit/InterviewTimeGrid';
 import { IcLineHorizontal } from '@assets/svg';
 import useListboxSelect from 'src/hooks/useListboxSelect';
+import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import { REQUIRED_FIELD_MESSAGE } from '@utils/constant';
 import { BackgroundWhite, Black, Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 import { RecruitInterviewSetting } from './mock';
 import RecruitInfoBox, { InfoText } from './RecruitInfoBox';
-import useRequiredSave from './useRequiredSave';
 
 const FIXED_QUESTIONS = [
   { label: '이름', inputType: '0단계 입력 (수정불가)' },
@@ -71,17 +71,16 @@ const FirstStepQuestionSection = ({ initialValues, onSave }: FirstStepQuestionSe
     !isDateRangeInvalid &&
     !isTimeRangeInvalid;
 
-  const {
-    wrapperRef: sectionRef,
-    showErrors,
-    requestSave,
-    hideErrors,
-  } = useRequiredSave(isFilled, () => {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const { showErrors, validate, hideErrors } = useRequiredFieldsSave(sectionRef);
+
+  const requestSave = () => {
+    if (!validate(!isFilled)) return;
     onSave(values, hasSaved);
     setSavedValues(values);
     setHasSaved(true);
     setIsEditing(false);
-  });
+  };
 
   // 비어 있는 칸은 [저장]을 누른 뒤부터 표시하고, 범위 오류는 입력하는 즉시 표시한다
   const missing = (value: string) => (showErrors && !value ? REQUIRED_FIELD_MESSAGE : undefined);

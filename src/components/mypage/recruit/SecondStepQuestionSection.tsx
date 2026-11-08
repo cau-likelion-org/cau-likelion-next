@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import Alert from '@common/alert/Alert';
@@ -7,13 +7,13 @@ import Category from '@common/category/Category';
 import { createId } from '@mypage/admin/utils';
 import { IcPlus } from '@assets/svg';
 import useDragReorder from 'src/hooks/useDragReorder';
+import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import { Black, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 import { RecruitQuestion, RecruitSecondStepSetting } from './mock';
 import QuestionCard, { MIN_CHOICES, isChoiceType } from './QuestionCard';
 import RecruitInfoBox, { InfoText } from './RecruitInfoBox';
-import useRequiredSave from './useRequiredSave';
 
 const LOCK_NOTICE = '접수가 시작되면 문항을 변경할 수 없습니다';
 
@@ -65,15 +65,15 @@ const SecondStepQuestionSection = ({ initialValues, onSave }: SecondStepQuestion
 
   const questionDrag = useDragReorder(questions, setQuestions, readOnly);
 
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const { showErrors, validate, hideErrors } = useRequiredFieldsSave(wrapperRef);
+
   // 미완성 문항이 있으면 그 파트 탭으로 옮겨 첫 오류 위치를 보여주고, 없으면 저장 확인을 띄운다
-  const { wrapperRef, showErrors, requestSave, hideErrors } = useRequiredSave(
-    isValid,
-    () => setIsConfirmOpen(true),
-    () => {
-      const invalidPart = values.parts.find((part) => !part.questions.every(isQuestionValid));
-      if (invalidPart) setActivePartId(invalidPart.partId);
-    },
-  );
+  const requestSave = () => {
+    if (validate(!isValid)) return setIsConfirmOpen(true);
+    const invalidPart = values.parts.find((part) => !part.questions.every(isQuestionValid));
+    if (invalidPart) setActivePartId(invalidPart.partId);
+  };
 
   const handleSave = () => {
     setIsConfirmOpen(false);

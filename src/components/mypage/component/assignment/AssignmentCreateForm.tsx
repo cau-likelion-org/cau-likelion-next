@@ -11,7 +11,7 @@ import CharCount from '@common/charCount/CharCount';
 import AddCardButton from '@mypage/component/AddCardButton';
 import RemoveCardButton from '@mypage/component/RemoveCardButton';
 import useListboxSelect from 'src/hooks/useListboxSelect';
-import useScrollToFirstError from 'src/hooks/useScrollToFirstError';
+import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import useLeaveGuard from 'src/hooks/useLeaveGuard';
 import { AssignmentCreateRequest, AssignmentSubmitType } from 'src/apis/assignment';
 import { isUnfilled } from '@utils/index';
@@ -67,9 +67,8 @@ const AssignmentCreateForm = ({
   const [drafts, setDrafts] = useState<AssignmentDraft[]>(initialDrafts ?? [emptyDraft()]);
   const [deleteTarget, setDeleteTarget] = useState<number | null>(null);
   // 제출 시도 후에만 필수항목 에러 표시 (프로젝트 추가 admin 페이지와 동일)
-  const [showErrors, setShowErrors] = useState(false);
   const formRef = useRef<HTMLDivElement>(null);
-  const scrollToFirstError = useScrollToFirstError(formRef);
+  const { showErrors, validate } = useRequiredFieldsSave(formRef);
 
   const updateDraft = (index: number, patch: Partial<AssignmentDraft>) => {
     setDrafts((prev) => prev.map((draft, i) => (i === index ? { ...draft, ...patch } : draft)));
@@ -114,11 +113,7 @@ const AssignmentCreateForm = ({
 
   const handleSubmit = () => {
     if (submitting) return;
-    if (!canSubmit) {
-      setShowErrors(true);
-      scrollToFirstError();
-      return;
-    }
+    if (!validate(!canSubmit)) return;
     allowLeave();
     onSubmit(
       Number(week),

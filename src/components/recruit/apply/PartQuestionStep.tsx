@@ -10,7 +10,7 @@ import Radio from '@common/radio/Radio';
 import Textarea from '@common/textarea/Textarea';
 import Toast from '@common/toast/Toast';
 import { ToastWrapper } from '@common/toast/toastLayout';
-import useScrollToFirstError from 'src/hooks/useScrollToFirstError';
+import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import { RecruitQuestion } from '@mypage/recruit/mock';
 import { isUnfilled } from '@utils/index';
 
@@ -46,14 +46,12 @@ const PartQuestionStep = ({ questions, onPrev, onDirtyChange, onSubmitted }: Par
   const [choices, setChoices] = useState<Record<string, string[]>>({});
   const [files, setFiles] = useState<Record<string, File>>({});
   const [fileErrors, setFileErrors] = useState<Record<string, string | undefined>>({});
-  // [다음]을 누른 뒤부터 비어 있는 필수 문항을 오류로 표시한다
-  const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitConfirmOpen, setIsSubmitConfirmOpen] = useState(false);
   // 폼 진입이 마감 전이었다면 마감 후에도 제출할 수 있지만, 지각 제출임을 한 번 더 알린다
   const [isLateSubmit, setIsLateSubmit] = useState(false);
   const [isSubmitFailed, setIsSubmitFailed] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
-  const scrollToFirstError = useScrollToFirstError(rootRef);
+  const { showErrors, validate } = useRequiredFieldsSave(rootRef);
 
   const isDirty =
     Object.values(texts).some((text) => !isUnfilled(text)) ||
@@ -85,7 +83,7 @@ const PartQuestionStep = ({ questions, onPrev, onDirtyChange, onSubmitted }: Par
     },
   });
 
-  const getError = (question: RecruitQuestion, submitted = isSubmitted) => {
+  const getError = (question: RecruitQuestion, submitted = showErrors) => {
     const text = texts[question.id] ?? '';
     if (question.type === 'FILE' && fileErrors[question.id]) return fileErrors[question.id];
     if (!submitted) return undefined;
@@ -126,12 +124,11 @@ const PartQuestionStep = ({ questions, onPrev, onDirtyChange, onSubmitted }: Par
     });
 
   const submit = () => {
-    setIsSubmitted(true);
     // 거부·실패한 파일은 저장되지 않으므로, 파일 문항은 필수인데 파일이 없을 때만 제출을 막는다
     const hasError = questions.some((question) =>
       question.type === 'FILE' ? question.isRequired && !files[question.id] : getError(question, true),
     );
-    if (hasError) return scrollToFirstError();
+    if (!validate(hasError)) return;
     setIsLateSubmit(isApplyDeadlinePassed());
     setIsSubmitConfirmOpen(true);
   };
