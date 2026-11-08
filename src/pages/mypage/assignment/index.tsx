@@ -7,6 +7,7 @@ import styled from 'styled-components';
 
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import Toast from '@common/toast/Toast';
+import { ToastWrapper } from '@common/toast/toastLayout';
 import CircularLoading from '@common/loading/CircularLoading';
 import EmptyState from '@common/emptyState/EmptyState';
 import PageLoadingGate from '@common/pageGate/PageLoadingGate';
@@ -259,15 +260,6 @@ MyPageAssignment.getLayout = function getLayout(page: ReactElement) {
 };
 
 export default MyPageAssignment;
-
-const ToastWrapper = styled.div`
-  position: fixed;
-  top: 110px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10001;
-  pointer-events: none;
-`;
 
 const Header = styled.div`
   display: flex;

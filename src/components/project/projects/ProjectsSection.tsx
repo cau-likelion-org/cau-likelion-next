@@ -3,6 +3,7 @@ import Button from '@common/button/Button';
 import CircularLoading from '@common/loading/CircularLoading';
 import EmptyState from '@common/emptyState/EmptyState';
 import Toast from '@common/toast/Toast';
+import { ToastWrapper } from '@common/toast/toastLayout';
 import PageScrollbar from '@common/pageScrollbar/PageScrollbar';
 import { IcAdd } from '@assets/svg';
 import { useQuery } from '@tanstack/react-query';
@@ -217,15 +218,6 @@ const Wrapper = styled.div`
   flex-direction: column;
   gap: 46px;
   ${containerCss}
-`;
-
-const ToastWrapper = styled.div`
-  position: fixed;
-  top: 110px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10001;
-  pointer-events: none;
 `;
 
 const FilterRow = styled.div`

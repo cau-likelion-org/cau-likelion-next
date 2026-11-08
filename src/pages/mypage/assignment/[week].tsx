@@ -7,7 +7,7 @@ import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import BackHeader from '@common/header/BackHeader';
 import Button from '@common/button/Button';
 import Toast from '@common/toast/Toast';
-import { WIDE_TOAST_WIDTH } from '@common/toast/toastLayout';
+import { ToastWrapper, WIDE_TOAST_WIDTH } from '@common/toast/toastLayout';
 import AssignmentSubmitCard, {
   AssignmentSubmitItem,
   AssignmentSubmitValue,
@@ -293,13 +293,4 @@ const SubmitButtonWrapper = styled.div`
   ${media.mobileDevice} {
     display: none;
   }
-`;
-
-const ToastWrapper = styled.div`
-  position: fixed;
-  top: 110px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10001;
-  pointer-events: none;
 `;

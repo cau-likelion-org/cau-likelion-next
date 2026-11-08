@@ -14,6 +14,7 @@ import TextButton from '@common/textButton/TextButton';
 import TextField from '@common/textField/TextField';
 import Textarea from '@common/textarea/Textarea';
 import Toast from '@common/toast/Toast';
+import { ToastWrapper } from '@common/toast/toastLayout';
 import ProjectFilterSelect from '@project/projects/ProjectFilterSelect';
 import { Generation } from '@@types/request';
 import {
@@ -1503,13 +1504,4 @@ const ActionDescription = styled.p`
   text-align: center;
   color: ${Label.alternative};
   ${typographyCss(Typography.label2.regular)}
-`;
-
-const ToastWrapper = styled.div`
-  position: fixed;
-  top: 110px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10001;
-  pointer-events: none;
 `;

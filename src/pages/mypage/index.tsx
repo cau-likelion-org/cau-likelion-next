@@ -9,6 +9,7 @@ import { canCreateAttendance, isAdminRole, isAttendanceTarget } from '@utils/ind
 import styled from 'styled-components';
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import Toast from '@common/toast/Toast';
+import { ToastWrapper } from '@common/toast/toastLayout';
 import MyPageShell from '@mypage/component/MyPageShell';
 import PageLoadingGate from '@common/pageGate/PageLoadingGate';
 import ProfileCard from '@mypage/component/home/ProfileCard';
@@ -83,15 +84,6 @@ MyPage.getLayout = function getLayout(page: ReactElement) {
 };
 
 export default MyPage;
-
-const ToastWrapper = styled.div`
-  position: fixed;
-  top: 110px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10001;
-  pointer-events: none;
-`;
 
 const CardRow = styled.div`
   display: flex;

@@ -8,6 +8,7 @@ import { UserProfile } from '@@types/request';
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import Button from '@common/button/Button';
 import Toast from '@common/toast/Toast';
+import { ToastWrapper } from '@common/toast/toastLayout';
 import MyPageShell from '@mypage/component/MyPageShell';
 import LinearLoading from '@common/loading/LinearLoading';
 import EmptyState from '@common/emptyState/EmptyState';
@@ -391,13 +392,4 @@ const ContentWrapper = styled.div`
   ${media.xs} {
     gap: 32px;
   }
-`;
-
-const ToastWrapper = styled.div`
-  position: fixed;
-  top: 110px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10001;
-  pointer-events: none;
 `;

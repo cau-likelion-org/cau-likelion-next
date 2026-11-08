@@ -3,6 +3,7 @@ import dynamic from 'next/dynamic';
 import styled from 'styled-components';
 
 import Toast from '@common/toast/Toast';
+import { ToastWrapper as BaseToastWrapper } from '@common/toast/toastLayout';
 import useRecruitModalStore from 'src/store/useRecruitModalStore';
 import { MOBILE } from '@home/common/responsive';
 
@@ -39,14 +40,8 @@ const RecruitModalRoot = () => {
 
 export default RecruitModalRoot;
 
-const ToastWrapper = styled.div`
-  position: fixed;
-  top: 110px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10001;
-  pointer-events: none;
-
+// 모바일에서는 헤더가 낮아 토스트를 더 위에 띄운다
+const ToastWrapper = styled(BaseToastWrapper)`
   @media (max-width: ${MOBILE}px) {
     top: 36px;
   }

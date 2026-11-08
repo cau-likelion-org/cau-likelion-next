@@ -9,6 +9,7 @@ import { FieldDescription } from '@common/fieldStatus/FieldStatus';
 import Radio from '@common/radio/Radio';
 import Textarea from '@common/textarea/Textarea';
 import Toast from '@common/toast/Toast';
+import { ToastWrapper } from '@common/toast/toastLayout';
 import useScrollToFirstError from 'src/hooks/useScrollToFirstError';
 import { RecruitQuestion } from '@mypage/recruit/mock';
 import { isUnfilled } from '@utils/index';
@@ -255,15 +256,6 @@ const Root = styled.div`
   flex-direction: column;
   gap: 78px;
   width: 100%;
-`;
-
-const ToastWrapper = styled.div`
-  position: fixed;
-  top: 110px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10001;
-  pointer-events: none;
 `;
 
 const Fields = styled.div`

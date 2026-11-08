@@ -10,6 +10,7 @@ import MyPageShell from '@mypage/component/MyPageShell';
 import PageLoadingGate from '@common/pageGate/PageLoadingGate';
 import Tab from '@common/tab/Tab';
 import Toast from '@common/toast/Toast';
+import { ToastWrapper } from '@common/toast/toastLayout';
 import Alert from '@common/alert/Alert';
 import GenerationSettingSection from '@mypage/recruit/GenerationSettingSection';
 import NoticeSettingSection from '@mypage/recruit/NoticeSettingSection';
@@ -126,15 +127,6 @@ MyPageRecruitSettings.getLayout = function getLayout(page: ReactElement) {
 };
 
 export default MyPageRecruitSettings;
-
-const ToastWrapper = styled.div`
-  position: fixed;
-  top: 110px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10001;
-  pointer-events: none;
-`;
 
 const Wrapper = styled.div`
   display: flex;

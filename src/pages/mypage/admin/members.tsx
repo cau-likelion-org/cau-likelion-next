@@ -8,6 +8,7 @@ import styled from 'styled-components';
 import { AllowedUserEmailItem, GenerationCreateRequestDto, UserProfile } from '@@types/request';
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import Toast from '@common/toast/Toast';
+import { ToastWrapper } from '@common/toast/toastLayout';
 import MyPageShell from '@mypage/component/MyPageShell';
 import PageLoadingGate from '@common/pageGate/PageLoadingGate';
 import MemberSection, { ALL_FILTER, MemberEditUpdate, MemberSaveError } from '@mypage/admin/members/MemberSection';
@@ -291,13 +292,4 @@ const PageTitle = styled.p`
   margin: 0;
   color: ${Label.normal};
   ${typographyCss(Typography.heading2.bold)}
-`;
-
-const ToastWrapper = styled.div`
-  position: fixed;
-  top: 110px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10001;
-  pointer-events: none;
 `;

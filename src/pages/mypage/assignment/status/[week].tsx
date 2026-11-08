@@ -9,7 +9,7 @@ import Button from '@common/button/Button';
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import Tab from '@common/tab/Tab';
 import Toast from '@common/toast/Toast';
-import { NarrowBreak, WIDE_TOAST_WIDTH } from '@common/toast/toastLayout';
+import { NarrowBreak, ToastWrapper, WIDE_TOAST_WIDTH } from '@common/toast/toastLayout';
 import AssignmentInfoCard from '@mypage/component/assignment/AssignmentInfoCard';
 import AssignmentSubmissionTable from '@mypage/component/assignment/AssignmentSubmissionTable';
 import {
@@ -264,15 +264,6 @@ const Page = styled.div`
   flex-direction: column;
   ${containerCss}
   padding-bottom: 80px;
-`;
-
-const ToastWrapper = styled.div`
-  position: fixed;
-  top: 110px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10001;
-  pointer-events: none;
 `;
 
 const WeekRow = styled.div`

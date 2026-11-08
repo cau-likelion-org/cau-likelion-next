@@ -11,6 +11,7 @@ import TextField from '@common/textField/TextField';
 import Textarea from '@common/textarea/Textarea';
 import CharCount from '@common/charCount/CharCount';
 import Toast from '@common/toast/Toast';
+import { ToastWrapper } from '@common/toast/toastLayout';
 import { IcAdd, IcCalendar, IcCircleExclamation, IcCloseCircle, IcLineHorizontal } from '@assets/svg';
 import useFocusTrap from 'src/hooks/useFocusTrap';
 import useScrollToFirstError from 'src/hooks/useScrollToFirstError';
@@ -1127,13 +1128,4 @@ const DeleteConfirmActions = styled.div`
   display: flex;
   align-items: center;
   gap: 18px;
-`;
-
-const ToastWrapper = styled.div`
-  position: fixed;
-  top: 110px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10001;
-  pointer-events: none;
 `;
