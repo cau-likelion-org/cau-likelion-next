@@ -6,7 +6,6 @@ import Button from '@common/button/Button';
 import Category from '@common/category/Category';
 import { createId } from '@mypage/admin/utils';
 import { IcPlus } from '@assets/svg';
-import useDragReorder from 'src/hooks/useDragReorder';
 import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import { Black, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -63,8 +62,6 @@ const SecondStepQuestionSection = ({ initialValues, onSave }: SecondStepQuestion
     setQuestions(questions.map((question) => (question.id === id ? { ...question, ...patch } : question)));
   };
 
-  const questionDrag = useDragReorder(questions, setQuestions, readOnly);
-
   const wrapperRef = useRef<HTMLDivElement>(null);
   const { showErrors, validate, hideErrors } = useRequiredFieldsSave(wrapperRef);
 
@@ -112,8 +109,6 @@ const SecondStepQuestionSection = ({ initialValues, onSave }: SecondStepQuestion
                 showErrors={showErrors}
                 onChange={(patch) => updateQuestion(question.id, patch)}
                 onRemove={() => setQuestions(questions.filter((item) => item.id !== question.id))}
-                dragHandleProps={questionDrag.getHandleProps(index)}
-                dragItemProps={questionDrag.getItemProps(index)}
               />
             ))}
           </QuestionList>

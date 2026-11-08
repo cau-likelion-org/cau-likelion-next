@@ -1,4 +1,3 @@
-import { HTMLAttributes } from 'react';
 import styled from 'styled-components';
 
 import Button from '@common/button/Button';
@@ -33,20 +32,9 @@ export interface QuestionCardProps {
   showErrors: boolean;
   onChange: (patch: Partial<RecruitQuestion>) => void;
   onRemove: () => void;
-  dragHandleProps: HTMLAttributes<HTMLElement>;
-  dragItemProps: HTMLAttributes<HTMLElement> & { draggable: boolean };
 }
 
-const QuestionCard = ({
-  index,
-  question,
-  readOnly,
-  showErrors,
-  onChange,
-  onRemove,
-  dragHandleProps,
-  dragItemProps,
-}: QuestionCardProps) => {
+const QuestionCard = ({ index, question, readOnly, showErrors, onChange, onRemove }: QuestionCardProps) => {
   const choiceDrag = useDragReorder(question.choices, (choices) => onChange({ choices }), readOnly);
 
   const changeType = (type: RecruitQuestionType) => {
@@ -65,8 +53,8 @@ const QuestionCard = ({
   };
 
   return (
-    <Card {...dragItemProps}>
-      <Header {...dragHandleProps} $draggable={!readOnly}>
+    <Card>
+      <Header>
         <CardTitle>문항 {index + 1}</CardTitle>
         <RequiredRow>
           <FieldLabel>필수</FieldLabel>
@@ -198,13 +186,11 @@ const Card = styled.div`
   background-color: ${BackgroundWhite.secondary};
 `;
 
-// 문항 카드에는 별도 핸들이 없어 상단 제목 줄을 드래그 핸들로 쓴다
-const Header = styled.div<{ $draggable: boolean }>`
+const Header = styled.div`
   display: flex;
   align-items: center;
   gap: 20px;
   width: 100%;
-  cursor: ${(props) => (props.$draggable ? 'grab' : 'default')};
 `;
 
 const CardTitle = styled.h3`
