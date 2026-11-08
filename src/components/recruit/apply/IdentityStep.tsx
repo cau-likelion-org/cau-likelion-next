@@ -114,8 +114,13 @@ const IdentityStep = ({ onComplete }: IdentityStepProps) => {
       : undefined;
 
   const codeField = (() => {
-    if (isVerified) return { status: 'positive' as const, description: undefined };
-    if (countdown.isExpired) return { status: 'negative' as const, description: '인증번호가 만료되었습니다.' };
+    if (isVerified) return { status: 'positive' as const, description: '인증이 완료되었습니다.' };
+    if (countdown.isExpired) {
+      return {
+        status: 'negative' as const,
+        description: '인증 시간이 만료되었습니다. 인증번호를 다시 요청해 주세요.',
+      };
+    }
     if (isCodeMismatch) return { status: 'negative' as const, description: '인증번호가 일치하지 않습니다.' };
     return { status: 'normal' as const, description: undefined };
   })();
