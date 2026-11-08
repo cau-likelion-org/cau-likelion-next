@@ -86,13 +86,17 @@ const MyPageRecruitSettings = () => {
           ) : activeTab === 'notice' ? (
             <NoticeSettingSection
               initialValues={RECRUIT_NOTICE_SETTING_MOCK}
-              onSave={() => setToastMessage('변경사항이 저장되었습니다.')}
+              onSave={(_, isUpdate) =>
+                setToastMessage(isUpdate ? '변경사항이 저장되었습니다.' : '모집 공고가 저장되었습니다.')
+              }
               onDirtyChange={setIsNoticeDirty}
             />
           ) : activeTab === 'first-questions' ? (
             <FirstStepQuestionSection
               initialValues={RECRUIT_INTERVIEW_SETTING_MOCK}
-              onSave={() => setToastMessage('변경사항이 저장되었습니다.')}
+              onSave={(_, isUpdate) =>
+                setToastMessage(isUpdate ? '변경사항이 저장되었습니다.' : '1단계 문항이 저장되었습니다.')
+              }
             />
           ) : (
             <SecondStepQuestionSection

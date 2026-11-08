@@ -8,11 +8,13 @@ import ListboxOptions from '@common/select/ListboxOptions';
 import InterviewTimeGrid from '@recruit/InterviewTimeGrid';
 import { IcLineHorizontal } from '@assets/svg';
 import useListboxSelect from 'src/hooks/useListboxSelect';
+import { REQUIRED_FIELD_MESSAGE } from '@utils/constant';
 import { BackgroundWhite, Black, Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 import { RecruitInterviewSetting } from './mock';
 import RecruitInfoBox, { InfoText } from './RecruitInfoBox';
+import useRequiredSave from './useRequiredSave';
 
 const FIXED_QUESTIONS = [
   { label: '이름', inputType: '0단계 입력 (수정불가)' },
@@ -35,12 +37,15 @@ const UNIT_OPTIONS = [
 
 export interface FirstStepQuestionSectionProps {
   initialValues: RecruitInterviewSetting;
-  onSave: (values: RecruitInterviewSetting) => void;
+  onSave: (values: RecruitInterviewSetting, isUpdate: boolean) => void;
 }
 
 const FirstStepQuestionSection = ({ initialValues, onSave }: FirstStepQuestionSectionProps) => {
   const [values, setValues] = useState(initialValues);
   const [savedValues, setSavedValues] = useState(initialValues);
+  // 저장된 값이 있으면 읽기 전용으로 시작하고, [수정]을 눌러야 편집할 수 있다
+  const [hasSaved, setHasSaved] = useState(initialValues.startDate !== '');
+  const [isEditing, setIsEditing] = useState(!hasSaved);
   const [isUnitOpen, setIsUnitOpen] = useState(false);
 
   const update = (patch: Partial<RecruitInterviewSetting>) => setValues((prev) => ({ ...prev, ...patch }));
@@ -65,15 +70,34 @@ const FirstStepQuestionSection = ({ initialValues, onSave }: FirstStepQuestionSe
     !!values.endTime &&
     !isDateRangeInvalid &&
     !isTimeRangeInvalid;
-  const isChanged = JSON.stringify(values) !== JSON.stringify(savedValues);
 
-  const handleSave = () => {
-    onSave(values);
+  const {
+    wrapperRef: sectionRef,
+    showErrors,
+    requestSave,
+    hideErrors,
+  } = useRequiredSave(isFilled, () => {
+    onSave(values, hasSaved);
     setSavedValues(values);
+    setHasSaved(true);
+    setIsEditing(false);
+  });
+
+  // 비어 있는 칸은 [저장]을 누른 뒤부터 표시하고, 범위 오류는 입력하는 즉시 표시한다
+  const missing = (value: string) => (showErrors && !value ? REQUIRED_FIELD_MESSAGE : undefined);
+  const startDateError = missing(values.startDate);
+  const endDateError = missing(values.endDate);
+  const startTimeError = missing(values.startTime);
+  const endTimeError = missing(values.endTime);
+
+  const handleCancel = () => {
+    hideErrors();
+    setValues(savedValues);
+    setIsEditing(false);
   };
 
   return (
-    <Wrapper>
+    <Wrapper ref={sectionRef}>
       <RecruitInfoBox title="1단계 문항은 고정 문항입니다">
         <InfoText>
           면접 가능 시간 설정만 변경할 수 있습니다. <Emphasis>접수 시작 일시부터는 수정할 수 없습니다.</Emphasis>
@@ -103,16 +127,19 @@ const FirstStepQuestionSection = ({ initialValues, onSave }: FirstStepQuestionSe
               <RangeRow>
                 <DateTimeInput
                   aria-label="면접 시작일"
+                  readOnly={!isEditing}
                   value={values.startDate}
-                  status={isDateRangeInvalid ? 'negative' : 'normal'}
-                  description={isDateRangeInvalid ? '종료일은 시작일 이후로 설정해 주세요.' : undefined}
+                  status={isDateRangeInvalid || startDateError ? 'negative' : 'normal'}
+                  description={isDateRangeInvalid ? '종료일은 시작일 이후로 설정해 주세요.' : startDateError}
                   onChange={(startDate) => update({ startDate })}
                 />
                 <RangeIcon />
                 <DateTimeInput
                   aria-label="면접 종료일"
+                  readOnly={!isEditing}
                   value={values.endDate}
-                  status={isDateRangeInvalid ? 'negative' : 'normal'}
+                  status={isDateRangeInvalid || endDateError ? 'negative' : 'normal'}
+                  description={isDateRangeInvalid ? undefined : endDateError}
                   min={values.startDate}
                   onChange={(endDate) => update({ endDate })}
                 />
@@ -124,17 +151,20 @@ const FirstStepQuestionSection = ({ initialValues, onSave }: FirstStepQuestionSe
                 <DateTimeInput
                   type="time"
                   aria-label="면접 시작 시각"
+                  readOnly={!isEditing}
                   value={values.startTime}
-                  status={isTimeRangeInvalid ? 'negative' : 'normal'}
-                  description={isTimeRangeInvalid ? '종료 시각은 시작 시각 이후로 설정해 주세요.' : undefined}
+                  status={isTimeRangeInvalid || startTimeError ? 'negative' : 'normal'}
+                  description={isTimeRangeInvalid ? '종료 시각은 시작 시각 이후로 설정해 주세요.' : startTimeError}
                   onChange={(startTime) => update({ startTime })}
                 />
                 <RangeIcon />
                 <DateTimeInput
                   type="time"
                   aria-label="면접 종료 시각"
+                  readOnly={!isEditing}
                   value={values.endTime}
-                  status={isTimeRangeInvalid ? 'negative' : 'normal'}
+                  status={isTimeRangeInvalid || endTimeError ? 'negative' : 'normal'}
+                  description={isTimeRangeInvalid ? undefined : endTimeError}
                   onChange={(endTime) => update({ endTime })}
                 />
               </RangeRow>
@@ -149,6 +179,7 @@ const FirstStepQuestionSection = ({ initialValues, onSave }: FirstStepQuestionSe
               aria-controls={listId}
               aria-activedescendant={isUnitOpen ? `${listId}-${activeIndex}` : undefined}
               value={unitLabel}
+              readOnly={!isEditing}
               onClick={() => setIsUnitOpen((prev) => !prev)}
             >
               {isUnitOpen && (
@@ -169,9 +200,22 @@ const FirstStepQuestionSection = ({ initialValues, onSave }: FirstStepQuestionSe
         </Preview>
       </Group>
       <Actions>
-        <Button disabled={!isFilled || !isChanged} onClick={handleSave}>
-          저장
-        </Button>
+        {isEditing ? (
+          <>
+            {hasSaved && (
+              <Button color="assistive" onClick={handleCancel}>
+                취소
+              </Button>
+            )}
+            <Button disabled={!hasSaved && !isFilled} onClick={requestSave}>
+              저장
+            </Button>
+          </>
+        ) : (
+          <Button variant="outlined" onClick={() => setIsEditing(true)}>
+            수정
+          </Button>
+        )}
       </Actions>
     </Wrapper>
   );
@@ -336,5 +380,6 @@ const PreviewTitle = styled.h3`
 const Actions = styled.div`
   display: flex;
   justify-content: flex-end;
+  gap: 20px;
   width: 100%;
 `;

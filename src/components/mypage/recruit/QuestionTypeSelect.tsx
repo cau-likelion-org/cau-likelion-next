@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import { FieldStatus } from '@common/fieldStatus/FieldStatus';
 import Select from '@common/select/Select';
 import ListboxOptions from '@common/select/ListboxOptions';
 import useListboxSelect from 'src/hooks/useListboxSelect';
@@ -21,9 +22,11 @@ export interface QuestionTypeSelectProps {
   value: RecruitQuestionType | null;
   onChange: (type: RecruitQuestionType) => void;
   readOnly?: boolean;
+  status?: FieldStatus;
+  description?: string;
 }
 
-const QuestionTypeSelect = ({ value, onChange, readOnly = false }: QuestionTypeSelectProps) => {
+const QuestionTypeSelect = ({ value, onChange, readOnly = false, status, description }: QuestionTypeSelectProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const label = value ? QUESTION_TYPE_LABEL[value] : '';
   const { listId, wrapperRef, triggerRef, activeIndex, handleKeyDown, handleBlur, selectOption } = useListboxSelect({
@@ -47,6 +50,8 @@ const QuestionTypeSelect = ({ value, onChange, readOnly = false }: QuestionTypeS
         placeholder="선택해주세요."
         value={label}
         readOnly={readOnly}
+        status={status}
+        description={description}
         onClick={() => setIsOpen((prev) => !prev)}
       >
         {isOpen && (
