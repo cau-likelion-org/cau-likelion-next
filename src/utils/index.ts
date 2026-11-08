@@ -49,6 +49,14 @@ export const getPasswordError = (password: string) => {
   return undefined;
 };
 
+const BYTES_PER_KB = 1024;
+const BYTES_PER_MB = 1024 * 1024;
+// 1MB 미만은 KB, 이상은 MB로 소수점 한 자리까지 표시한다 (2.0MB → 2MB)
+export const formatFileSize = (bytes: number) => {
+  if (bytes < BYTES_PER_MB) return `${Math.max(1, Math.round(bytes / BYTES_PER_KB))}KB`;
+  return `${Number((bytes / BYTES_PER_MB).toFixed(1))}MB`;
+};
+
 // 갤러리 게시물 파트 선택지에만 있는 "공통"은 관리자 화면의 파트 목록·드롭다운에서는 제외한다
 export const excludeCommonPart = <T extends { name: string }>(parts: T[]) =>
   parts.filter((part) => part.name !== COMMON_PART_NAME);

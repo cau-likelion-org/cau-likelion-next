@@ -6,6 +6,7 @@ import {
   canManageMemberRoles,
   canManageSitePages,
   excludeCommonPart,
+  formatFileSize,
   formatPhoneNumber,
   getPasswordError,
   getPaths,
@@ -149,6 +150,19 @@ describe('getPasswordError', () => {
 
   it('비어 있는 값은 오류로 보지 않는다', () => {
     expect(getPasswordError('')).toBeUndefined();
+  });
+});
+
+describe('formatFileSize', () => {
+  it('1MB 미만은 KB로 반올림해 표시하고 0KB로 내려가지 않는다', () => {
+    expect(formatFileSize(500)).toBe('1KB');
+    expect(formatFileSize(512 * 1024)).toBe('512KB');
+  });
+
+  it('1MB 이상은 MB로 소수점 한 자리까지 표시한다', () => {
+    expect(formatFileSize(1024 * 1024)).toBe('1MB');
+    expect(formatFileSize(2.34 * 1024 * 1024)).toBe('2.3MB');
+    expect(formatFileSize(30 * 1024 * 1024)).toBe('30MB');
   });
 });
 
