@@ -16,10 +16,11 @@ import {
   isPhoneFormatInvalid,
   isUnfilled,
 } from '@utils/index';
-import { Black, Label, State } from '@utils/constant/color';
+import { Label, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 import {
+  ApplicantProfile,
   ApplyClosedError,
   VERIFICATION_CODE_LENGTH,
   VERIFICATION_EXPIRE_SECONDS,
@@ -29,6 +30,7 @@ import {
 } from './mock';
 import ApplyConfirmDialog from './ApplyConfirmDialog';
 import ApplyNoticeDialog from './ApplyNoticeDialog';
+import { applyFieldHeadingCss } from './applyFieldStyle';
 
 type FieldKey = 'name' | 'phone' | 'email' | 'password' | 'passwordConfirm';
 type Dialog = 'confirm' | 'inProgress' | 'submitted' | 'closed';
@@ -36,7 +38,7 @@ type Dialog = 'confirm' | 'inProgress' | 'submitted' | 'closed';
 const PASSWORD_CAPTION = '영문 대소문자, 숫자, 특수문자를 사용할 수 있습니다.';
 
 export interface IdentityStepProps {
-  onComplete: () => void;
+  onComplete: (applicant: ApplicantProfile) => void;
 }
 
 const IdentityStep = ({ onComplete }: IdentityStepProps) => {
@@ -85,7 +87,7 @@ const IdentityStep = ({ onComplete }: IdentityStepProps) => {
     mutationFn: createApplicantAccount,
     onSuccess: () => {
       setDialog(null);
-      onComplete();
+      onComplete({ name, phone, email });
     },
     onError: (error) => {
       if (error instanceof ApplyClosedError) setDialog('closed');
@@ -296,12 +298,8 @@ const Fields = styled.div`
   width: 100%;
 `;
 
-// 지원서 입력칸 제목은 공통 TextField보다 큰 Heading 1 크기를 쓴다
 const ApplyTextField = styled(TextField)`
-  label {
-    color: ${Black.b900};
-    ${typographyCss(Typography.heading1.bold)}
-  }
+  ${applyFieldHeadingCss}
 `;
 
 const EmailGroup = styled.div`
