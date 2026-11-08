@@ -234,7 +234,6 @@ const BasicInfoStep = ({ applicant, hasPartAnswers, onPartReset, onNext }: Basic
         </Field>
       </Fields>
       <Actions>
-        <Button color="assistive">이전</Button>
         <Button loading={duplicateCheckMutation.isPending} onClick={submit}>
           다음
         </Button>
@@ -303,6 +302,6 @@ const Field = styled.div`
 const Actions = styled.div`
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   width: 100%;
 `;

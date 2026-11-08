@@ -89,7 +89,12 @@ const Toast = ({
   const status = variant === 'normal' ? null : statusIcon[variant];
 
   return (
-    <Container className={className} $visible={isVisible} $width={width}>
+    <Container
+      className={className}
+      role={variant === 'negative' ? 'alert' : 'status'}
+      $visible={isVisible}
+      $width={width}
+    >
       {status && (
         <IconWrapper color={status.color}>
           <status.Icon />

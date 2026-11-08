@@ -62,7 +62,13 @@ const Footer = ({ isLandingLayout }: { isLandingLayout: boolean }) => {
           </Content>
         </Main>
       </Container>
-      {isEmailModalOpen && <EmailCopyModal email={EMAIL} onClose={() => setIsEmailModalOpen(false)} />}
+      {isEmailModalOpen && (
+        <EmailCopyModal
+          email={EMAIL}
+          onClose={() => setIsEmailModalOpen(false)}
+          onCopyFailed={() => setIsCopyFailed(true)}
+        />
+      )}
       <ToastWrapper>
         <Toast
           variant="negative"

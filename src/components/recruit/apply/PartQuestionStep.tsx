@@ -239,7 +239,9 @@ const PartQuestionStep = ({ questions, onPrev, onDirtyChange, onSubmitted }: Par
         <ApplySubmitModal
           isLate={isLateSubmit}
           loading={submitMutation.isPending}
-          onCancel={() => setIsSubmitConfirmOpen(false)}
+          onCancel={() => {
+            if (!submitMutation.isPending) setIsSubmitConfirmOpen(false);
+          }}
           onConfirm={() => submitMutation.mutate()}
         />
       )}

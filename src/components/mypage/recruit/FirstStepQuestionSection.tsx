@@ -80,6 +80,7 @@ const FirstStepQuestionSection = ({ initialValues, onSave }: FirstStepQuestionSe
     onSave(values, hasSaved);
     setSavedValues(values);
     setHasSaved(true);
+    setIsUnitOpen(false);
     setIsEditing(false);
   };
 
@@ -93,6 +94,7 @@ const FirstStepQuestionSection = ({ initialValues, onSave }: FirstStepQuestionSe
   const handleCancel = () => {
     hideErrors();
     setValues(savedValues);
+    setIsUnitOpen(false);
     setIsEditing(false);
   };
 

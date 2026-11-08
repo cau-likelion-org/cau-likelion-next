@@ -41,7 +41,7 @@ const toTimeLabel = (minutes: number) =>
   `${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`;
 
 const getTimes = (startTime: string, endTime: string, unitMinutes: number) => {
-  if (!startTime || !endTime) return [];
+  if (!startTime || !endTime || unitMinutes <= 0) return [];
   const times: string[] = [];
   for (let minutes = toMinutes(startTime); minutes <= toMinutes(endTime); minutes += unitMinutes) {
     times.push(toTimeLabel(minutes));

@@ -43,6 +43,14 @@ const isScheduleFilled = (schedule: RecruitScheduleItem) =>
 const isNoticeFilled = (notice: RecruitNoticeSetting) =>
   notice.schedules.every(isScheduleFilled) && notice.faqs.length > 0 && !notice.faqs.some(isFaqItemInvalid);
 
+// 저장된 공고인지는 입력 여부로만 본다. 저장 후 시작 일시가 지나 과거가 돼도 저장된 공고로 취급해야 한다
+const isNoticeEntered = (notice: RecruitNoticeSetting) =>
+  notice.schedules.every(
+    (schedule) => !schedule.isVisible || schedule.fields.every((field) => field.date !== '' && field.time !== ''),
+  ) &&
+  notice.faqs.length > 0 &&
+  !notice.faqs.some(isFaqItemInvalid);
+
 const toDateValue = (date: Date) =>
   `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 
@@ -50,7 +58,7 @@ const NoticeSettingSection = ({ initialValues, onSave, onDirtyChange }: NoticeSe
   const [values, setValues] = useState(initialValues);
   const [savedValues, setSavedValues] = useState(initialValues);
   // 저장된 공고가 있으면 읽기 전용으로 시작하고, [수정]을 눌러야 편집할 수 있다
-  const [hasSaved, setHasSaved] = useState(() => isNoticeFilled(initialValues));
+  const [hasSaved, setHasSaved] = useState(() => isNoticeEntered(initialValues));
   const [isEditing, setIsEditing] = useState(!hasSaved);
   const isDirty = JSON.stringify(values) !== JSON.stringify(savedValues);
 
