@@ -6,6 +6,7 @@ import Alert from '@common/alert/Alert';
 import Category from '@common/category/Category';
 import Divider from '@common/divider/Divider';
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
+import ApplyComplete from '@recruit/apply/ApplyComplete';
 import BasicInfoStep from '@recruit/apply/BasicInfoStep';
 import IdentityStep from '@recruit/apply/IdentityStep';
 import { ApplicantProfile, PART_QUESTIONS_MOCK } from '@recruit/apply/mock';
@@ -42,8 +43,9 @@ const RecruitApply = () => {
   const [isPartDirty, setIsPartDirty] = useState(false);
   // 파트를 바꾸면 2단계를 새로 그려 답변을 초기화한다
   const [partResetKey, setPartResetKey] = useState(0);
-  const { isConfirmOpen, requestLeave, confirmLeave, cancelLeave, allowLeave } = useLeaveGuard(
-    step === 'part' && isPartDirty,
+  const [submittedAt, setSubmittedAt] = useState<Date | null>(null);
+  const { isConfirmOpen, requestLeave, confirmLeave, cancelLeave } = useLeaveGuard(
+    step === 'part' && isPartDirty && !submittedAt,
   );
 
   // 지원서 작성은 접수 기간 중 [지원하기]로만 들어올 수 있다
@@ -59,6 +61,14 @@ const RecruitApply = () => {
   if (!RECRUIT_MOCK.isApplyOpen) return null;
 
   const section = getStepSection(step, part);
+
+  if (submittedAt) {
+    return (
+      <CompleteWrapper>
+        <ApplyComplete generation={RECRUIT_MOCK.generation} submittedAt={submittedAt} part={part} />
+      </CompleteWrapper>
+    );
+  }
 
   return (
     <Wrapper>
@@ -103,9 +113,9 @@ const RecruitApply = () => {
               questions={PART_QUESTIONS_MOCK}
               onPrev={() => requestLeave(() => goToStep('basic'))}
               onDirtyChange={setIsPartDirty}
-              onSubmitted={() => {
-                allowLeave();
-                router.replace('/recruit');
+              onSubmitted={(date) => {
+                setSubmittedAt(date);
+                window.scrollTo(0, 0);
               }}
             />
           </div>
@@ -140,6 +150,11 @@ const Wrapper = styled.div`
   ${media.xs} {
     padding-top: 40px;
   }
+`;
+
+// 제출 완료 화면은 버튼과 푸터 사이 여백이 Figma 기준 113px(레이아웃 하단 여백 93px 포함)
+const CompleteWrapper = styled(Wrapper)`
+  padding-bottom: 20px;
 `;
 
 const Content = styled.div`

@@ -8,6 +8,7 @@ import Checkbox from '@common/checkbox/Checkbox';
 import { FieldDescription } from '@common/fieldStatus/FieldStatus';
 import Radio from '@common/radio/Radio';
 import Textarea from '@common/textarea/Textarea';
+import Toast from '@common/toast/Toast';
 import useScrollToFirstError from 'src/hooks/useScrollToFirstError';
 import { RecruitQuestion } from '@mypage/recruit/mock';
 import { isUnfilled } from '@utils/index';
@@ -36,7 +37,7 @@ export interface PartQuestionStepProps {
   questions: RecruitQuestion[];
   onPrev: () => void;
   onDirtyChange: (isDirty: boolean) => void;
-  onSubmitted: () => void;
+  onSubmitted: (submittedAt: Date) => void;
 }
 
 const PartQuestionStep = ({ questions, onPrev, onDirtyChange, onSubmitted }: PartQuestionStepProps) => {
@@ -49,6 +50,7 @@ const PartQuestionStep = ({ questions, onPrev, onDirtyChange, onSubmitted }: Par
   const [isSubmitConfirmOpen, setIsSubmitConfirmOpen] = useState(false);
   // 폼 진입이 마감 전이었다면 마감 후에도 제출할 수 있지만, 지각 제출임을 한 번 더 알린다
   const [isLateSubmit, setIsLateSubmit] = useState(false);
+  const [isSubmitFailed, setIsSubmitFailed] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const scrollToFirstError = useScrollToFirstError(rootRef);
 
@@ -69,9 +71,16 @@ const PartQuestionStep = ({ questions, onPrev, onDirtyChange, onSubmitted }: Par
 
   const submitMutation = useMutation({
     mutationFn: submitApplication,
-    onSuccess: () => {
+    // 오프라인이면 react-query가 요청을 멈춰 두고 아무 안내도 하지 않으므로, 바로 실패시켜 다시 시도하게 한다
+    networkMode: 'always',
+    onSuccess: ({ submittedAt }) => {
       setIsSubmitConfirmOpen(false);
-      onSubmitted();
+      onSubmitted(new Date(submittedAt));
+    },
+    // 입력값은 그대로 두고 실패만 알린다
+    onError: () => {
+      setIsSubmitConfirmOpen(false);
+      setIsSubmitFailed(true);
     },
   });
 
@@ -128,6 +137,14 @@ const PartQuestionStep = ({ questions, onPrev, onDirtyChange, onSubmitted }: Par
 
   return (
     <Root ref={rootRef}>
+      <ToastWrapper>
+        <Toast
+          variant="negative"
+          text="제출에 실패했습니다. 다시 시도해주세요"
+          show={isSubmitFailed}
+          onHidden={() => setIsSubmitFailed(false)}
+        />
+      </ToastWrapper>
       <Fields>
         {questions.map((question, index) => {
           const heading = `${index + 1}. ${question.title}`;
@@ -238,6 +255,15 @@ const Root = styled.div`
   flex-direction: column;
   gap: 78px;
   width: 100%;
+`;
+
+const ToastWrapper = styled.div`
+  position: fixed;
+  top: 110px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10001;
+  pointer-events: none;
 `;
 
 const Fields = styled.div`

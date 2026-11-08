@@ -50,8 +50,11 @@ export const uploadApplyFile = async (file: File) => {
   return { fileName: file.name, size: file.size };
 };
 
+// 제출 실패 확인용: 오프라인이면 실패로 응답한다
 export const submitApplication = async () => {
   await delay();
+  if (!navigator.onLine) throw new Error('network error');
+  return { submittedAt: new Date().toISOString() };
 };
 
 export class ApplyClosedError extends Error {}
