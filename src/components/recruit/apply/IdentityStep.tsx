@@ -28,8 +28,8 @@ import {
   requestVerificationCode,
   verifyCode,
 } from './mock';
-import ApplyConfirmDialog from './ApplyConfirmDialog';
-import ApplyNoticeDialog from './ApplyNoticeDialog';
+import ApplyConfirmModal from './ApplyConfirmModal';
+import ApplyNoticeModal from './ApplyNoticeModal';
 import { applyFieldHeadingCss } from './applyFieldStyle';
 
 type FieldKey = 'name' | 'phone' | 'email' | 'password' | 'passwordConfirm';
@@ -243,7 +243,7 @@ const IdentityStep = ({ onComplete }: IdentityStepProps) => {
         다음
       </Button>
       {dialog === 'confirm' && (
-        <ApplyConfirmDialog
+        <ApplyConfirmModal
           name={name}
           phone={phone}
           email={email}
@@ -261,7 +261,7 @@ const IdentityStep = ({ onComplete }: IdentityStepProps) => {
         />
       )}
       {dialog === 'submitted' && (
-        <ApplyNoticeDialog
+        <ApplyNoticeModal
           title="이미 지원서를 제출하셨어요."
           description="제출한 내용은 지원 내역에서 확인할 수 있어요."
           cancelLabel="닫기"

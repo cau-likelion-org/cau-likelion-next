@@ -16,7 +16,7 @@ import { isUnfilled } from '@utils/index';
 
 import ApplyFieldHeading from './ApplyFieldHeading';
 import ApplyFileField from './ApplyFileField';
-import ApplySubmitDialog from './ApplySubmitDialog';
+import ApplySubmitModal from './ApplySubmitModal';
 import { applyFieldHeadingCss } from './applyFieldStyle';
 import { isApplyDeadlinePassed, submitApplication, uploadApplyFile } from './mock';
 import { REQUIRED_MESSAGE, toFieldStatus } from './validation';
@@ -238,7 +238,7 @@ const PartQuestionStep = ({ questions, onPrev, onDirtyChange, onSubmitted }: Par
         <Button onClick={submit}>다음</Button>
       </Actions>
       {isSubmitConfirmOpen && (
-        <ApplySubmitDialog
+        <ApplySubmitModal
           isLate={isLateSubmit}
           loading={submitMutation.isPending}
           onCancel={() => setIsSubmitConfirmOpen(false)}
