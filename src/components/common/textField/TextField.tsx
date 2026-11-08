@@ -1,4 +1,4 @@
-import { InputHTMLAttributes, ReactNode, useId } from 'react';
+import { InputHTMLAttributes, MouseEvent, ReactNode, useId, useRef } from 'react';
 import styled from 'styled-components';
 
 import { Fill, Label, Line, Orange, State } from '@utils/constant/color';
@@ -47,6 +47,18 @@ const TextField = ({
   const generatedId = useId();
   const inputId = id ?? generatedId;
   const descriptionId = description ? `${inputId}-description` : undefined;
+  const inputRef = useRef<HTMLInputElement>(null);
+  const leadingRef = useRef<HTMLSpanElement>(null);
+
+  // 상자 여백·단위 글자 등을 눌러도 입력이 시작되게 한다 (앞쪽 아이콘은 드래그 핸들 등으로 쓰여 제외)
+  const focusInput = (event: MouseEvent<HTMLDivElement>) => {
+    const input = inputRef.current;
+    const target = event.target as HTMLElement;
+    if (!input || disabled || readOnly) return;
+    if (target.closest('input, textarea, button, a, select') || leadingRef.current?.contains(target)) return;
+    event.preventDefault();
+    input.focus();
+  };
 
   return (
     <Root className={className}>
@@ -57,9 +69,20 @@ const TextField = ({
         </Heading>
       )}
       <InputRow>
-        <InputWrapper $status={status} $disabled={disabled} $readOnly={readOnly} $attached={!!trailingButton}>
-          {leadingIcon && <IconSlot $color={Label.alternative}>{leadingIcon}</IconSlot>}
+        <InputWrapper
+          $status={status}
+          $disabled={disabled}
+          $readOnly={readOnly}
+          $attached={!!trailingButton}
+          onMouseDown={focusInput}
+        >
+          {leadingIcon && (
+            <IconSlot ref={leadingRef} $color={Label.alternative}>
+              {leadingIcon}
+            </IconSlot>
+          )}
           <Input
+            ref={inputRef}
             id={inputId}
             disabled={disabled}
             readOnly={readOnly}
@@ -135,6 +158,13 @@ const InputWrapper = styled.div<{
   border-radius: ${(props) => (props.$attached ? '12px 0 0 12px' : '12px')};
   background-color: ${(props) => getFieldBackground(props.$disabled)};
   box-shadow: ${(props) => getFieldBoxShadow(props.$status, props.$disabled)};
+
+  ${(props) =>
+    !props.$readOnly &&
+    !props.$disabled &&
+    `
+    cursor: text;
+  `}
 
   ${(props) =>
     !props.$readOnly &&

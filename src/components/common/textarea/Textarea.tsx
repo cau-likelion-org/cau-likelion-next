@@ -1,4 +1,4 @@
-import { ReactNode, TextareaHTMLAttributes, useId } from 'react';
+import { MouseEvent, ReactNode, TextareaHTMLAttributes, useId, useRef } from 'react';
 import styled from 'styled-components';
 
 import { Label, State } from '@utils/constant/color';
@@ -50,6 +50,17 @@ const Textarea = ({
   const textareaId = id ?? generatedId;
   const descriptionId = description ? `${textareaId}-description` : undefined;
   const hasStatusIcon = status !== 'normal';
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // 입력 영역은 첫 줄 높이뿐이라, 상자의 여백·하단 글자 수 영역을 눌러도 입력이 시작되도록 끝으로 커서를 옮긴다
+  const focusTextarea = (event: MouseEvent<HTMLDivElement>) => {
+    const textarea = textareaRef.current;
+    if (!textarea || disabled || readOnly) return;
+    if ((event.target as HTMLElement).closest('textarea, input, button, a, select')) return;
+    event.preventDefault();
+    textarea.focus();
+    textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+  };
 
   return (
     <Root className={className}>
@@ -59,8 +70,9 @@ const Textarea = ({
           {required && <Required>*</Required>}
         </Heading>
       )}
-      <InputWrapper $status={status} $disabled={disabled} $readOnly={readOnly}>
+      <InputWrapper $status={status} $disabled={disabled} $readOnly={readOnly} onMouseDown={focusTextarea}>
         <StyledTextarea
+          ref={textareaRef}
           id={textareaId}
           disabled={disabled}
           readOnly={readOnly}
@@ -126,6 +138,13 @@ const InputWrapper = styled.div<{ $status: FieldStatus; $disabled: boolean; $rea
   border-radius: 12px;
   background-color: ${(props) => getFieldBackground(props.$disabled)};
   box-shadow: ${(props) => getFieldBoxShadow(props.$status, props.$disabled)};
+
+  ${(props) =>
+    !props.$readOnly &&
+    !props.$disabled &&
+    `
+    cursor: text;
+  `}
 
   ${(props) =>
     !props.$readOnly &&
