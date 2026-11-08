@@ -12,11 +12,11 @@ import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import { RECRUIT_INTERVIEW_SETTING_MOCK } from '@mypage/recruit/mock';
 import { isUnfilled } from '@utils/index';
 import { Label } from '@utils/constant/color';
-import { Typography, typographyCss } from '@utils/constant/typography';
 
 import ApplyFieldHeading from './ApplyFieldHeading';
 import ApplyFileField from './ApplyFileField';
 import ApplySelect from './ApplySelect';
+import PortalExampleLink from './PortalExampleLink';
 import { applyFieldHeadingCss } from './applyFieldStyle';
 import {
   ApplicantProfile,
@@ -196,7 +196,7 @@ const BasicInfoStep = ({ applicant, hasPartAnswers, onPartReset, onNext }: Basic
         <ApplyFileField
           heading="포탈 내정보수정 캡처"
           required
-          headingTrailing={<LinkButton type="button">예시 이미지 보기</LinkButton>}
+          headingTrailing={<PortalExampleLink />}
           placeholder="파일을 선택해 주세요. (JPG·JPEG·PNG, 5MB 이하)"
           dashed
           accept=".jpg,.jpeg,.png"
@@ -299,17 +299,6 @@ const Field = styled.div`
   gap: 8px;
   width: 100%;
   outline: none;
-`;
-
-const LinkButton = styled.button`
-  flex-shrink: 0;
-  padding: 0;
-  border: none;
-  background: none;
-  color: ${Label.alternative};
-  text-decoration: underline;
-  cursor: pointer;
-  ${typographyCss(Typography.body2Normal.regular)}
 `;
 
 const Actions = styled.div`

@@ -24,6 +24,7 @@ const ApplyFieldHeading = ({ title, required = false, trailing }: ApplyFieldHead
 export default ApplyFieldHeading;
 
 const Row = styled.div`
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
