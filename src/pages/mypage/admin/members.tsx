@@ -14,7 +14,7 @@ import PageLoadingGate from '@common/pageGate/PageLoadingGate';
 import MemberSection, { ALL_FILTER, MemberEditUpdate, MemberSaveError } from '@mypage/admin/members/MemberSection';
 import AllowedMemberSection from '@mypage/admin/members/AllowedMemberSection';
 import PartManageSection from '@mypage/admin/members/PartManageSection';
-import ConfirmDialog from '@mypage/admin/members/ConfirmDialog';
+import Alert from '@common/alert/Alert';
 import {
   createGeneration,
   deleteMember,
@@ -267,11 +267,14 @@ const MyPageAdminMembers = () => {
         />
       )}
       {pendingGenerationId !== null && (
-        <ConfirmDialog
-          title={`${pendingFromGeneration ? `${pendingFromGeneration.number}기 ` : ''}아기사자 ${pendingAffectedMembers.length}명을 어른사자로 전환합니다.`}
-          confirmLabel="전환"
-          onCancel={() => setPendingGenerationId(null)}
-          onConfirm={handleConfirmGenerationSwitch}
+        <Alert
+          size="medium"
+          heading={`${pendingFromGeneration ? `${pendingFromGeneration.number}기 ` : ''}아기사자 ${pendingAffectedMembers.length}명을 어른사자로 전환합니다.`}
+          onDimmerClick={() => setPendingGenerationId(null)}
+          actions={[
+            { label: '취소', variant: 'assistive', onClick: () => setPendingGenerationId(null) },
+            { label: '전환', variant: 'primary', onClick: handleConfirmGenerationSwitch },
+          ]}
         />
       )}
     </>

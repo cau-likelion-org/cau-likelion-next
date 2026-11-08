@@ -1,10 +1,7 @@
-import { useRef } from 'react';
 import styled from 'styled-components';
 
-import ModalOverlay from '@common/modalOverlay/ModalOverlay';
-import ScrollArea from '@common/scrollArea/ScrollArea';
-import useFocusTrap from 'src/hooks/useFocusTrap';
-import { BackgroundColor, Label, Orange, Status } from '@utils/constant/color';
+import Modal, { ModalActions, ModalDescription, ModalInformation, ModalSize, ModalTitle } from '@common/modal/Modal';
+import { Label, Orange, Status } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 export type AlertActionVariant = 'primary' | 'assistive' | 'negative';
@@ -17,6 +14,9 @@ export interface AlertAction {
 
 export interface AlertProps {
   className?: string;
+  // Figma 모달 규격 (small: 여백 20·Headline 1·모서리 12, medium: 여백 28·Heading 2·모서리 16)
+  size?: ModalSize;
+  // 줄을 나눌 때는 \n을 넣는다
   heading?: string;
   body?: string;
   actions: AlertAction[];
@@ -29,76 +29,38 @@ const actionColor: Record<AlertActionVariant, string> = {
   negative: Status.negative,
 };
 
-const Alert = ({ className, heading, body, actions, onDimmerClick }: AlertProps) => {
-  const modalRef = useRef<HTMLDivElement>(null);
-  useFocusTrap(modalRef, onDimmerClick ?? (() => {}));
-
-  return (
-    <ModalOverlay className={className} role="dialog" aria-modal="true" onDimmerClick={onDimmerClick}>
-      <Modal ref={modalRef} tabIndex={-1}>
-        <InformationScroll>
-          <Information>
-            {heading && <Heading>{heading}</Heading>}
-            {body && <Body>{body}</Body>}
-          </Information>
-        </InformationScroll>
-        <Actions>
-          {actions.map((action) => (
-            <ActionButton
-              key={action.label}
-              type="button"
-              color={actionColor[action.variant ?? 'assistive']}
-              onClick={action.onClick}
-            >
-              {action.label}
-            </ActionButton>
-          ))}
-        </Actions>
-      </Modal>
-    </ModalOverlay>
-  );
-};
+const Alert = ({ className, size = 'small', heading, body, actions, onDimmerClick }: AlertProps) => (
+  <Modal className={className} size={size} ariaLabel={heading ?? body ?? ''} onClose={onDimmerClick ?? (() => {})}>
+    <Information $size={size}>
+      {heading && <Heading>{heading}</Heading>}
+      {body && <ModalDescription>{body}</ModalDescription>}
+    </Information>
+    <ModalActions>
+      {actions.map((action) => (
+        <ActionButton
+          key={action.label}
+          type="button"
+          color={actionColor[action.variant ?? 'assistive']}
+          onClick={action.onClick}
+        >
+          {action.label}
+        </ActionButton>
+      ))}
+    </ModalActions>
+  </Modal>
+);
 
 export default Alert;
 
-const Modal = styled.div`
-  position: relative;
-  width: 100%;
-  min-width: 320px;
-  max-width: 400px;
-  background-color: ${BackgroundColor};
-  border-radius: 12px;
-  overflow: hidden;
+// 제목과 본문 사이 간격 (Figma Alert/Resource/Dialog: small 6px, medium 8px)
+const Information = styled(ModalInformation)<{ $size: ModalSize }>`
+  && {
+    gap: ${(props) => (props.$size === 'small' ? 6 : 8)}px;
+  }
 `;
 
-const InformationScroll = styled(ScrollArea)``;
-
-const Information = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 28px;
-  word-break: break-word;
-`;
-
-const Heading = styled.p`
-  margin: 0;
-  color: ${Label.normal};
-  ${typographyCss(Typography.headline1.bold)}
-`;
-
-const Body = styled.p`
-  margin: 0;
-  color: ${Label.alternative};
-  ${typographyCss(Typography.body2Normal.regular)}
-`;
-
-const Actions = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 24px;
-  padding: 0 28px 20px;
+const Heading = styled(ModalTitle)`
+  white-space: pre-line;
 `;
 
 const ActionButton = styled.button<{ color: string }>`
