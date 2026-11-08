@@ -197,6 +197,7 @@ const PartQuestionStep = ({ questions, onPrev, onDirtyChange, onSubmitted }: Par
                 placeholder="파일을 선택해 주세요. (PDF 1개, 30MB 이하)"
                 accept=".pdf"
                 file={files[question.id]}
+                showFileSize
                 loading={uploadMutation.isPending && uploadMutation.variables?.id === question.id}
                 description={question.description || undefined}
                 error={error}

@@ -2,7 +2,7 @@ import { ChangeEvent, ReactNode, useRef } from 'react';
 import styled from 'styled-components';
 
 import Button from '@common/button/Button';
-import { FieldDescription, getFieldBoxShadow } from '@common/fieldStatus/FieldStatus';
+import { FieldDescription } from '@common/fieldStatus/FieldStatus';
 import TextField from '@common/textField/TextField';
 import { IcCircleClose, IcDocument, IcUpload } from '@assets/svg';
 import { formatFileSize } from '@utils/index';
@@ -16,9 +16,9 @@ export interface ApplyFileFieldProps {
   required?: boolean;
   headingTrailing?: ReactNode;
   placeholder: string;
-  dashed?: boolean;
   accept: string;
   file?: File;
+  showFileSize?: boolean;
   loading?: boolean;
   description?: string;
   error?: string;
@@ -31,9 +31,9 @@ const ApplyFileField = ({
   required = false,
   headingTrailing,
   placeholder,
-  dashed = false,
   accept,
   file,
+  showFileSize = false,
   loading = false,
   description,
   error,
@@ -41,8 +41,6 @@ const ApplyFileField = ({
   onRemove,
 }: ApplyFileFieldProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
-
-  const isAttachedRow = dashed && !!file;
   const message = error ?? description;
 
   const changeFile = (event: ChangeEvent<HTMLInputElement>) => {
@@ -53,51 +51,32 @@ const ApplyFileField = ({
   };
 
   return (
-    <Root $dashed={dashed}>
+    <Root>
       <ApplyFieldHeading title={heading} required={required} trailing={headingTrailing} />
       {/* [다음]을 눌렀을 때 첫 오류 위치로 스크롤하기 위한 기준점 (useScrollToFirstError가 aria-invalid로 찾는다) */}
       <ErrorAnchor aria-invalid={!!error} tabIndex={-1}>
-        {file && isAttachedRow ? (
+        {file ? (
           <AttachedRow>
             <AttachedFileName
               aria-label={heading}
               value={file.name}
               readOnly
               leadingIcon={<IcDocument width={22} height={22} />}
+              trailingContent={showFileSize && <FileSize>{formatFileSize(file.size)}</FileSize>}
               status={error ? 'negative' : 'normal'}
               description={message}
             />
             <AttachedRemove>
-              <RemoveButton type="button" aria-label={`${heading} 삭제`} $color={Label.normal} onClick={onRemove}>
+              <RemoveButton type="button" aria-label={`${heading} 삭제`} onClick={onRemove}>
                 <IcCircleClose width={24} height={24} />
               </RemoveButton>
             </AttachedRemove>
           </AttachedRow>
-        ) : file ? (
-          <TextField
-            aria-label={heading}
-            value={file.name}
-            readOnly
-            trailingContent={
-              <>
-                <FileSize>{formatFileSize(file.size)}</FileSize>
-                <RemoveButton
-                  type="button"
-                  aria-label={`${heading} 삭제`}
-                  $color={Label.alternative}
-                  onClick={onRemove}
-                >
-                  <IcCircleClose width={22} height={22} />
-                </RemoveButton>
-              </>
-            }
-          />
         ) : (
           <FileButton
             color="assistive"
             loading={loading}
-            leadingIcon={dashed ? <IcUpload width={20} height={20} /> : undefined}
-            $dashed={dashed}
+            leadingIcon={<IcUpload width={20} height={20} />}
             $invalid={!!error}
             onClick={() => inputRef.current?.click()}
           >
@@ -106,19 +85,17 @@ const ApplyFileField = ({
         )}
       </ErrorAnchor>
       <HiddenFileInput ref={inputRef} type="file" accept={accept} aria-label={heading} onChange={changeFile} />
-      {!isAttachedRow && message && (
-        <FieldDescription $status={error ? 'negative' : 'normal'}>{message}</FieldDescription>
-      )}
+      {!file && message && <FieldDescription $status={error ? 'negative' : 'normal'}>{message}</FieldDescription>}
     </Root>
   );
 };
 
 export default ApplyFileField;
 
-const Root = styled.div<{ $dashed: boolean }>`
+const Root = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${(props) => (props.$dashed ? 16 : 8)}px;
+  gap: 16px;
   width: 100%;
 `;
 
@@ -127,17 +104,11 @@ const ErrorAnchor = styled.div`
   outline: none;
 `;
 
-const FileButton = styled(Button)<{ $dashed: boolean; $invalid: boolean }>`
+// Figma 안쪽 점선 테두리: 버튼 크기가 바뀌지 않도록 outline을 안쪽으로 그린다
+const FileButton = styled(Button)<{ $invalid: boolean }>`
   width: 100%;
-  ${(props) => props.$invalid && !props.$dashed && `box-shadow: ${getFieldBoxShadow('negative', false)};`}
-
-  /* Figma 안쪽 점선 테두리: 버튼 크기가 바뀌지 않도록 outline을 안쪽으로 그린다 */
-  ${(props) =>
-    props.$dashed &&
-    `
-    outline: 1.5px dashed ${props.$invalid ? 'rgba(255, 0, 0, 0.28)' : Label.assistive};
-    outline-offset: -1.5px;
-  `}
+  outline: 1.5px dashed ${(props) => (props.$invalid ? 'rgba(255, 0, 0, 0.28)' : Label.assistive)};
+  outline-offset: -1.5px;
 `;
 
 const FileSize = styled.span`
@@ -147,13 +118,13 @@ const FileSize = styled.span`
   ${typographyCss(Typography.body2Normal.regular)}
 `;
 
-const RemoveButton = styled.button<{ $color: string }>`
+const RemoveButton = styled.button`
   display: flex;
   flex-shrink: 0;
   padding: 0;
   border: none;
   background: none;
-  color: ${(props) => props.$color};
+  color: ${Label.normal};
   cursor: pointer;
 `;
 
