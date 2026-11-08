@@ -28,6 +28,7 @@ const FIXED_QUESTIONS = [
   { label: '포탈 내정보수정 캡쳐', inputType: '이미지 (JPG·JPEG·PNG)(5MB 이하)' },
   { label: '지원 경로', inputType: '드롭다운  (멋사 중앙대 홈페이지 / 인스타그램 / 에브리타임 / 지인 추천 / 기타)' },
   { label: '지원 파트', inputType: '드롭다운 (모집 기수에 연결된 파트)' },
+  { label: '면접 가능 시간', inputType: "클릭 선택(하단 '지원자 화면 미리보기' 참고)" },
 ];
 
 const UNIT_OPTIONS = [
