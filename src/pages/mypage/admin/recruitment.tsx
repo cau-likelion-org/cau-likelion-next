@@ -11,6 +11,7 @@ import MyPageShell from '@mypage/component/MyPageShell';
 import PageLoadingGate from '@common/pageGate/PageLoadingGate';
 import Button from '@common/button/Button';
 import Toast from '@common/toast/Toast';
+import { ToastWrapper } from '@common/toast/toastLayout';
 import RecruitmentSubscriberSection, { ALL_PART_FILTER } from '@mypage/admin/recruitment/RecruitmentSubscriberSection';
 import RecruitmentTextSection from '@mypage/admin/recruitment/RecruitmentTextSection';
 import type { RecruitmentComposeForm } from '@mypage/admin/recruitment/RecruitmentComposeModal';
@@ -305,15 +306,6 @@ MyPageAdminRecruitment.getLayout = function getLayout(page: ReactElement) {
 };
 
 export default MyPageAdminRecruitment;
-
-const ToastWrapper = styled.div`
-  position: fixed;
-  top: 110px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10001;
-  pointer-events: none;
-`;
 
 const TitleRow = styled.div`
   display: flex;

@@ -10,7 +10,7 @@ import Button from '@common/button/Button';
 import Menu from '@common/menu/Menu';
 import ProjectFilterSelect from '@project/projects/ProjectFilterSelect';
 import EditButton from '@mypage/admin/component/EditButton';
-import ConfirmDialog from './ConfirmDialog';
+import Alert from '@common/alert/Alert';
 import { IcCaretDown, IcCaretUp, IcSearch } from '@assets/svg';
 import { NUMERIC_ONLY_REGEX, ROLE_LABEL } from '@utils/constant';
 import { excludeCommonPart, isEmailFormatInvalid } from '@utils/index';
@@ -537,10 +537,14 @@ const MemberSection = ({
         </Body>
       )}
       {deleteTargetId !== null && (
-        <ConfirmDialog
-          title="회원을 삭제하시겠습니까?"
-          onCancel={() => setDeleteTargetId(null)}
-          onConfirm={confirmDelete}
+        <Alert
+          size="medium"
+          heading="회원을 삭제하시겠습니까?"
+          onDimmerClick={() => setDeleteTargetId(null)}
+          actions={[
+            { label: '취소', variant: 'assistive', onClick: () => setDeleteTargetId(null) },
+            { label: '삭제', variant: 'primary', onClick: confirmDelete },
+          ]}
         />
       )}
     </Wrapper>

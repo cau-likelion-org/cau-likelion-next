@@ -7,6 +7,7 @@ import styled from 'styled-components';
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import PageHeader from '@common/pageHeader/PageHeader';
 import Toast from '@common/toast/Toast';
+import { ToastWrapper } from '@common/toast/toastLayout';
 import LoginButton from 'src/components/login/component/LoginButton';
 import useAuthRedirect from 'src/hooks/useAuthRedirect';
 import useTokenStore from 'src/store/useTokenStore';
@@ -161,15 +162,6 @@ const TextGroup = styled(PageHeader)`
     padding-bottom: 42px;
     gap: 22px;
   }
-`;
-
-const ToastWrapper = styled.div`
-  position: fixed;
-  top: 110px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10001;
-  pointer-events: none;
 `;
 
 const GuideText = styled.div`

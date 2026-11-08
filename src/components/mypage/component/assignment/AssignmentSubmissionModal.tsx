@@ -1,9 +1,10 @@
+import { useRef } from 'react';
 import styled from 'styled-components';
 
 import ModalOverlay from '@common/modalOverlay/ModalOverlay';
 import TextButton from '@common/textButton/TextButton';
 import { AssignmentSubmission } from 'src/apis/assignment';
-import useScrollLock from 'src/hooks/useScrollLock';
+import useFocusTrap from 'src/hooks/useFocusTrap';
 import { IcDocument, IcDownload, IcLink } from '@assets/svg';
 import { BackgroundColor, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -14,11 +15,12 @@ interface AssignmentSubmissionModalProps {
 }
 
 const AssignmentSubmissionModal = ({ submission, onClose }: AssignmentSubmissionModalProps) => {
-  useScrollLock();
+  const modalRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(modalRef, onClose);
 
   return (
     <ModalOverlay role="dialog" aria-modal="true" aria-label="제출물 보기" onDimmerClick={onClose}>
-      <Modal>
+      <Modal ref={modalRef} tabIndex={-1}>
         <Information>
           <Field>
             <FieldLabel>과제 설명</FieldLabel>
@@ -74,6 +76,7 @@ const AssignmentSubmissionModal = ({ submission, onClose }: AssignmentSubmission
 export default AssignmentSubmissionModal;
 
 const Modal = styled.div`
+  outline: none;
   position: relative;
   width: 502px;
   max-width: 100%;

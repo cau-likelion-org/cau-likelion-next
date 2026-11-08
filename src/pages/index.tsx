@@ -9,6 +9,7 @@ import FAQSection from '@home/faq/FAQSection';
 import LayoutLanding from '@common/layout/LayoutLanding';
 import MainPageHead from 'src/components/meta/MainPageHead';
 import Toast from '@common/toast/Toast';
+import { ToastWrapper } from '@common/toast/toastLayout';
 import useSessionFlagToast from 'src/hooks/useSessionFlagToast';
 import { LOGOUT_SUCCESS_FLAG_KEY } from 'src/apis/account';
 
@@ -59,13 +60,4 @@ const HeroGroup = styled.div`
   flex-direction: column;
   align-items: center;
   width: 100%;
-`;
-
-const ToastWrapper = styled.div`
-  position: fixed;
-  top: 110px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10001;
-  pointer-events: none;
 `;

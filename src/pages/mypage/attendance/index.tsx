@@ -7,6 +7,7 @@ import { UserProfile } from '@@types/request';
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import MyPageShell from '@mypage/component/MyPageShell';
 import Toast from '@common/toast/Toast';
+import { ToastWrapper } from '@common/toast/toastLayout';
 import PageLoadingGate from '@common/pageGate/PageLoadingGate';
 import CircularLoading from '@common/loading/CircularLoading';
 import EmptyState from '@common/emptyState/EmptyState';
@@ -197,15 +198,6 @@ MyPageAttendance.getLayout = function getLayout(page: ReactElement) {
 };
 
 export default MyPageAttendance;
-
-const ToastWrapper = styled.div`
-  position: fixed;
-  top: 110px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10001;
-  pointer-events: none;
-`;
 
 const TitleRow = styled.div`
   display: flex;

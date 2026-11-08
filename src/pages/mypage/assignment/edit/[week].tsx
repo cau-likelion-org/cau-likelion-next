@@ -1,11 +1,10 @@
 import { ReactElement, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import styled from 'styled-components';
 
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import Toast from '@common/toast/Toast';
-import { NarrowBreak, WIDE_TOAST_WIDTH } from '@common/toast/toastLayout';
+import { NarrowBreak, ToastWrapper, WIDE_TOAST_WIDTH } from '@common/toast/toastLayout';
 import AssignmentCreateForm, { AssignmentDraft } from '@mypage/component/assignment/AssignmentCreateForm';
 import {
   AssignmentDetail,
@@ -152,12 +151,3 @@ AssignmentEditPage.getLayout = function getLayout(page: ReactElement) {
 };
 
 export default AssignmentEditPage;
-
-const ToastWrapper = styled.div`
-  position: fixed;
-  top: 110px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10001;
-  pointer-events: none;
-`;

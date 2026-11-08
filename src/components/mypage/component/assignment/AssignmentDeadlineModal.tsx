@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import Button from '@common/button/Button';
@@ -7,7 +7,7 @@ import Radio from '@common/radio/Radio';
 import Select from '@common/select/Select';
 import ListboxOptions from '@common/select/ListboxOptions';
 import useListboxSelect from 'src/hooks/useListboxSelect';
-import useScrollLock from 'src/hooks/useScrollLock';
+import useFocusTrap from 'src/hooks/useFocusTrap';
 import { AssignmentStaffSummary } from 'src/apis/assignment';
 import DateTimeInput from '@common/dateTimeInput/DateTimeInput';
 import { Label, State, BackgroundColor } from '@utils/constant/color';
@@ -35,7 +35,8 @@ const AssignmentDeadlineModal = ({
   onClose,
   onSubmit,
 }: AssignmentDeadlineModalProps) => {
-  useScrollLock();
+  const modalRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(modalRef, onClose);
 
   const [assignmentId, setAssignmentId] = useState(initialAssignmentId);
   const [deadline, setDeadline] = useState('');
@@ -64,7 +65,7 @@ const AssignmentDeadlineModal = ({
 
   return (
     <ModalOverlay role="dialog" aria-modal="true" aria-label="개별 마감일 변경" onDimmerClick={onClose}>
-      <Modal>
+      <Modal ref={modalRef} tabIndex={-1}>
         <Information>
           <SelectField ref={wrapperRef} onKeyDownCapture={handleKeyDown} onBlur={handleBlur}>
             <LargeHeading>
@@ -140,6 +141,7 @@ const AssignmentDeadlineModal = ({
 export default AssignmentDeadlineModal;
 
 const Modal = styled.div`
+  outline: none;
   position: relative;
   width: 502px;
   max-width: 100%;

@@ -1,12 +1,15 @@
-import { useState } from 'react';
-import styled, { css } from 'styled-components';
+import { useRef, useState } from 'react';
+import styled from 'styled-components';
 
 import Button from '@common/button/Button';
 import DateTimeInput from '@common/dateTimeInput/DateTimeInput';
 import Select from '@common/select/Select';
 import ListboxOptions from '@common/select/ListboxOptions';
+import InterviewTimeGrid from '@recruit/InterviewTimeGrid';
 import { IcLineHorizontal } from '@assets/svg';
 import useListboxSelect from 'src/hooks/useListboxSelect';
+import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
+import { REQUIRED_FIELD_MESSAGE } from '@utils/constant';
 import { BackgroundWhite, Black, Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
@@ -25,6 +28,7 @@ const FIXED_QUESTIONS = [
   { label: '포탈 내정보수정 캡쳐', inputType: '이미지 (JPG·JPEG·PNG)(5MB 이하)' },
   { label: '지원 경로', inputType: '드롭다운  (멋사 중앙대 홈페이지 / 인스타그램 / 에브리타임 / 지인 추천 / 기타)' },
   { label: '지원 파트', inputType: '드롭다운 (모집 기수에 연결된 파트)' },
+  { label: '면접 가능 시간', inputType: "클릭 선택(하단 '지원자 화면 미리보기' 참고)" },
 ];
 
 const UNIT_OPTIONS = [
@@ -32,51 +36,17 @@ const UNIT_OPTIONS = [
   { label: '2시간', minutes: 120 },
 ];
 
-const DAY_LABELS = ['일', '월', '화', '수', '목', '금', '토'];
-
-const toDateLabel = (date: Date) => `${date.getMonth() + 1}/${date.getDate()}(${DAY_LABELS[date.getDay()]})`;
-
-// 날짜 입력 중 연도가 덜 입력된 값(0002-03-16 등)이 들어와도 격자가 폭주하지 않게 미리보기 기간을 제한한다
-const MAX_PREVIEW_DAYS = 31;
-const DAY_MS = 24 * 60 * 60 * 1000;
-
-const getDateLabels = (startDate: string, endDate: string) => {
-  if (!startDate || !endDate) return [];
-  const labels: string[] = [];
-  const start = new Date(`${startDate}T00:00`);
-  const end = new Date(`${endDate}T00:00`);
-  if (Math.round((end.getTime() - start.getTime()) / DAY_MS) + 1 > MAX_PREVIEW_DAYS) return [];
-  for (let date = start; date <= end; date.setDate(date.getDate() + 1)) {
-    labels.push(toDateLabel(date));
-  }
-  return labels;
-};
-
-const toMinutes = (time: string) => {
-  const [hours, minutes] = time.split(':').map(Number);
-  return hours * 60 + minutes;
-};
-
-const toTimeLabel = (minutes: number) =>
-  `${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`;
-
-const getTimeLabels = (startTime: string, endTime: string, unitMinutes: number) => {
-  if (!startTime || !endTime) return [];
-  const labels: string[] = [];
-  for (let minutes = toMinutes(startTime); minutes <= toMinutes(endTime); minutes += unitMinutes) {
-    labels.push(toTimeLabel(minutes));
-  }
-  return labels;
-};
-
 export interface FirstStepQuestionSectionProps {
   initialValues: RecruitInterviewSetting;
-  onSave: (values: RecruitInterviewSetting) => void;
+  onSave: (values: RecruitInterviewSetting, isUpdate: boolean) => void;
 }
 
 const FirstStepQuestionSection = ({ initialValues, onSave }: FirstStepQuestionSectionProps) => {
   const [values, setValues] = useState(initialValues);
   const [savedValues, setSavedValues] = useState(initialValues);
+  // 저장된 값이 있으면 읽기 전용으로 시작하고, [수정]을 눌러야 편집할 수 있다
+  const [hasSaved, setHasSaved] = useState(initialValues.startDate !== '');
+  const [isEditing, setIsEditing] = useState(!hasSaved);
   const [isUnitOpen, setIsUnitOpen] = useState(false);
 
   const update = (patch: Partial<RecruitInterviewSetting>) => setValues((prev) => ({ ...prev, ...patch }));
@@ -92,9 +62,6 @@ const FirstStepQuestionSection = ({ initialValues, onSave }: FirstStepQuestionSe
     onSelect: (label) => update({ unitMinutes: UNIT_OPTIONS.find((option) => option.label === label)!.minutes }),
   });
 
-  const dateLabels = getDateLabels(values.startDate, values.endDate);
-  const timeLabels = getTimeLabels(values.startTime, values.endTime, values.unitMinutes);
-
   const isDateRangeInvalid = !!values.startDate && !!values.endDate && values.endDate < values.startDate;
   const isTimeRangeInvalid = !!values.startTime && !!values.endTime && values.endTime <= values.startTime;
   const isFilled =
@@ -104,15 +71,35 @@ const FirstStepQuestionSection = ({ initialValues, onSave }: FirstStepQuestionSe
     !!values.endTime &&
     !isDateRangeInvalid &&
     !isTimeRangeInvalid;
-  const isChanged = JSON.stringify(values) !== JSON.stringify(savedValues);
 
-  const handleSave = () => {
-    onSave(values);
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const { showErrors, validate, hideErrors } = useRequiredFieldsSave(sectionRef);
+
+  const requestSave = () => {
+    if (!validate(!isFilled)) return;
+    onSave(values, hasSaved);
     setSavedValues(values);
+    setHasSaved(true);
+    setIsUnitOpen(false);
+    setIsEditing(false);
+  };
+
+  // 비어 있는 칸은 [저장]을 누른 뒤부터 표시하고, 범위 오류는 입력하는 즉시 표시한다
+  const missing = (value: string) => (showErrors && !value ? REQUIRED_FIELD_MESSAGE : undefined);
+  const startDateError = missing(values.startDate);
+  const endDateError = missing(values.endDate);
+  const startTimeError = missing(values.startTime);
+  const endTimeError = missing(values.endTime);
+
+  const handleCancel = () => {
+    hideErrors();
+    setValues(savedValues);
+    setIsUnitOpen(false);
+    setIsEditing(false);
   };
 
   return (
-    <Wrapper>
+    <Wrapper ref={sectionRef}>
       <RecruitInfoBox title="1단계 문항은 고정 문항입니다">
         <InfoText>
           면접 가능 시간 설정만 변경할 수 있습니다. <Emphasis>접수 시작 일시부터는 수정할 수 없습니다.</Emphasis>
@@ -142,16 +129,19 @@ const FirstStepQuestionSection = ({ initialValues, onSave }: FirstStepQuestionSe
               <RangeRow>
                 <DateTimeInput
                   aria-label="면접 시작일"
+                  readOnly={!isEditing}
                   value={values.startDate}
-                  status={isDateRangeInvalid ? 'negative' : 'normal'}
-                  description={isDateRangeInvalid ? '종료일은 시작일 이후로 설정해 주세요.' : undefined}
+                  status={isDateRangeInvalid || startDateError ? 'negative' : 'normal'}
+                  description={isDateRangeInvalid ? '종료일은 시작일 이후로 설정해 주세요.' : startDateError}
                   onChange={(startDate) => update({ startDate })}
                 />
                 <RangeIcon />
                 <DateTimeInput
                   aria-label="면접 종료일"
+                  readOnly={!isEditing}
                   value={values.endDate}
-                  status={isDateRangeInvalid ? 'negative' : 'normal'}
+                  status={isDateRangeInvalid || endDateError ? 'negative' : 'normal'}
+                  description={isDateRangeInvalid ? undefined : endDateError}
                   min={values.startDate}
                   onChange={(endDate) => update({ endDate })}
                 />
@@ -163,17 +153,20 @@ const FirstStepQuestionSection = ({ initialValues, onSave }: FirstStepQuestionSe
                 <DateTimeInput
                   type="time"
                   aria-label="면접 시작 시각"
+                  readOnly={!isEditing}
                   value={values.startTime}
-                  status={isTimeRangeInvalid ? 'negative' : 'normal'}
-                  description={isTimeRangeInvalid ? '종료 시각은 시작 시각 이후로 설정해 주세요.' : undefined}
+                  status={isTimeRangeInvalid || startTimeError ? 'negative' : 'normal'}
+                  description={isTimeRangeInvalid ? '종료 시각은 시작 시각 이후로 설정해 주세요.' : startTimeError}
                   onChange={(startTime) => update({ startTime })}
                 />
                 <RangeIcon />
                 <DateTimeInput
                   type="time"
                   aria-label="면접 종료 시각"
+                  readOnly={!isEditing}
                   value={values.endTime}
-                  status={isTimeRangeInvalid ? 'negative' : 'normal'}
+                  status={isTimeRangeInvalid || endTimeError ? 'negative' : 'normal'}
+                  description={isTimeRangeInvalid ? undefined : endTimeError}
                   onChange={(endTime) => update({ endTime })}
                 />
               </RangeRow>
@@ -188,6 +181,7 @@ const FirstStepQuestionSection = ({ initialValues, onSave }: FirstStepQuestionSe
               aria-controls={listId}
               aria-activedescendant={isUnitOpen ? `${listId}-${activeIndex}` : undefined}
               value={unitLabel}
+              readOnly={!isEditing}
               onClick={() => setIsUnitOpen((prev) => !prev)}
             >
               {isUnitOpen && (
@@ -204,30 +198,26 @@ const FirstStepQuestionSection = ({ initialValues, onSave }: FirstStepQuestionSe
         </Card>
         <Preview>
           <PreviewTitle>지원자 화면 미리보기</PreviewTitle>
-          {dateLabels.length > 0 && timeLabels.length > 0 && (
-            <GridScroll>
-              <Grid $columns={dateLabels.length}>
-                <HeaderCellBox />
-                {dateLabels.map((label) => (
-                  <HeaderCellBox key={label}>{label}</HeaderCellBox>
-                ))}
-                {timeLabels.map((time) => (
-                  <GridRow key={time}>
-                    <TimeCellBox>{time}</TimeCellBox>
-                    {dateLabels.map((label) => (
-                      <SlotCellBox key={label} />
-                    ))}
-                  </GridRow>
-                ))}
-              </Grid>
-            </GridScroll>
-          )}
+          <InterviewTimeGrid schedule={values} />
         </Preview>
       </Group>
       <Actions>
-        <Button disabled={!isFilled || !isChanged} onClick={handleSave}>
-          저장
-        </Button>
+        {isEditing ? (
+          <>
+            {hasSaved && (
+              <Button color="assistive" onClick={handleCancel}>
+                취소
+              </Button>
+            )}
+            <Button disabled={!hasSaved && !isFilled} onClick={requestSave}>
+              저장
+            </Button>
+          </>
+        ) : (
+          <Button variant="outlined" onClick={() => setIsEditing(true)}>
+            수정
+          </Button>
+        )}
       </Actions>
     </Wrapper>
   );
@@ -389,50 +379,9 @@ const PreviewTitle = styled.h3`
   ${typographyCss(Typography.heading2.bold)}
 `;
 
-const GridScroll = styled.div`
-  max-width: 100%;
-  overflow-x: auto;
-`;
-
-const Grid = styled.div<{ $columns: number }>`
-  display: grid;
-  grid-template-columns: 100px repeat(${(props) => props.$columns}, 140px);
-  width: max-content;
-  border-radius: 18px;
-  overflow: hidden;
-`;
-
-const GridRow = styled.div`
-  display: contents;
-`;
-
-const cellCss = css`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 44px;
-  box-shadow: inset 0 0 0 1px ${Black.b30};
-  color: ${Label.normal};
-  ${typographyCss(Typography.label1Normal.bold)}
-`;
-
-const HeaderCellBox = styled.div`
-  ${cellCss}
-  background-color: ${Orange.o100};
-`;
-
-const TimeCellBox = styled.div`
-  ${cellCss}
-  background-color: ${Orange.o50};
-`;
-
-const SlotCellBox = styled.div`
-  ${cellCss}
-  background-color: ${Black.b10};
-`;
-
 const Actions = styled.div`
   display: flex;
   justify-content: flex-end;
+  gap: 20px;
   width: 100%;
 `;

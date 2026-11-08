@@ -2,6 +2,8 @@ import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import styled from 'styled-components';
 
+import Toast from '@common/toast/Toast';
+import { ToastWrapper } from '@common/toast/toastLayout';
 import { IcKakaotalk, IcInstagram, IcEmail } from '@assets/svg';
 import { BackgroundLight, Label, Line } from '@utils/constant/color';
 import { ContainerPaddingXl, media } from '@utils/constant/breakpoint';
@@ -20,10 +22,16 @@ const SOCIAL_LINKS = [
 
 const Footer = ({ isLandingLayout }: { isLandingLayout: boolean }) => {
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
+  const [isCopyFailed, setIsCopyFailed] = useState(false);
 
-  const handleClickEmail = () => {
-    navigator.clipboard.writeText(EMAIL);
-    setIsEmailModalOpen(true);
+  // 클립보드 권한이 없거나 막힌 환경에서는 복사 완료 모달 대신 실패를 알린다
+  const handleClickEmail = async () => {
+    try {
+      await navigator.clipboard.writeText(EMAIL);
+      setIsEmailModalOpen(true);
+    } catch {
+      setIsCopyFailed(true);
+    }
   };
 
   return (
@@ -54,7 +62,21 @@ const Footer = ({ isLandingLayout }: { isLandingLayout: boolean }) => {
           </Content>
         </Main>
       </Container>
-      {isEmailModalOpen && <EmailCopyModal email={EMAIL} onClose={() => setIsEmailModalOpen(false)} />}
+      {isEmailModalOpen && (
+        <EmailCopyModal
+          email={EMAIL}
+          onClose={() => setIsEmailModalOpen(false)}
+          onCopyFailed={() => setIsCopyFailed(true)}
+        />
+      )}
+      <ToastWrapper>
+        <Toast
+          variant="negative"
+          text="이메일 복사에 실패했습니다. 다시 시도해주세요"
+          show={isCopyFailed}
+          onHidden={() => setIsCopyFailed(false)}
+        />
+      </ToastWrapper>
     </Wrapper>
   );
 };

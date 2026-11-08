@@ -12,6 +12,7 @@ import Select from '@common/select/Select';
 import ListboxOptions from '@common/select/ListboxOptions';
 import Tab from '@common/tab/Tab';
 import Toast from '@common/toast/Toast';
+import { ToastWrapper } from '@common/toast/toastLayout';
 import PageScrollbar from '@common/pageScrollbar/PageScrollbar';
 import { IcAdd } from '@assets/svg';
 import PageHeader from '@common/pageHeader/PageHeader';
@@ -683,15 +684,6 @@ const AddButtonWrapper = styled.div`
   @media (max-width: 600px) {
     display: none;
   }
-`;
-
-const ToastWrapper = styled.div`
-  position: fixed;
-  top: 110px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10001;
-  pointer-events: none;
 `;
 
 const LoadingWrapper = styled.div`

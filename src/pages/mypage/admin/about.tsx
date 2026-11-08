@@ -8,6 +8,7 @@ import { UserProfile } from '@@types/request';
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import Button from '@common/button/Button';
 import Toast from '@common/toast/Toast';
+import { ToastWrapper } from '@common/toast/toastLayout';
 import MyPageShell from '@mypage/component/MyPageShell';
 import LinearLoading from '@common/loading/LinearLoading';
 import EmptyState from '@common/emptyState/EmptyState';
@@ -22,7 +23,7 @@ import CurriculumSection, {
 import RoadmapSection from '@mypage/admin/about/RoadmapSection';
 import EditButton from '@mypage/admin/component/EditButton';
 import { syncListSection } from '@mypage/admin/utils';
-import useScrollToFirstError from 'src/hooks/useScrollToFirstError';
+import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import { getUserProfile } from 'src/apis/account';
 import { getTracks, TrackResponse } from 'src/apis/track';
 import { getTalents, createTalent, updateTalent, deleteTalent, TalentResponse } from 'src/apis/talent';
@@ -153,13 +154,12 @@ const MyPageAdminAbout = () => {
   const [isUploadingRoadmap, setIsUploadingRoadmap] = useState(false);
   const [toastMessage, setToastMessage] = useState<ReactNode>('');
   const [toastVariant, setToastVariant] = useState<'positive' | 'negative'>('positive');
-  const [showErrors, setShowErrors] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [curriculumActiveKey, setCurriculumActiveKey] = useState('');
 
   const contentRef = useRef<HTMLDivElement>(null);
-  const scrollToFirstError = useScrollToFirstError(contentRef);
+  const { showErrors, validate, hideErrors } = useRequiredFieldsSave(contentRef);
 
   if (!curriculumActiveKey && curriculumTracks.length > 0) {
     setCurriculumActiveKey(curriculumTracks[0].key);
@@ -204,7 +204,7 @@ const MyPageAdminAbout = () => {
     setRoadmapFile(
       roadmap ? { url: roadmap.imageUrl, name: getFileNameFromUrl(roadmap.imageUrl) } : DEFAULT_ROADMAP_FILE,
     );
-    setShowErrors(false);
+    hideErrors();
     setIsEditing(false);
   };
 
@@ -228,14 +228,11 @@ const MyPageAdminAbout = () => {
   const handleSave = async () => {
     const hasError = isTalentItemsInvalid(talentItems) || isCurriculumTracksInvalid(curriculumTracks);
 
-    if (hasError) {
-      setShowErrors(true);
+    if (!validate(hasError)) {
       const firstInvalidTrackKey = getFirstInvalidTrackKey(curriculumTracks);
       if (firstInvalidTrackKey) setCurriculumActiveKey(firstInvalidTrackKey);
-      scrollToFirstError();
       return;
     }
-    setShowErrors(false);
     setIsSaving(true);
     try {
       const savePromises: Promise<unknown>[] = [
@@ -391,13 +388,4 @@ const ContentWrapper = styled.div`
   ${media.xs} {
     gap: 32px;
   }
-`;
-
-const ToastWrapper = styled.div`
-  position: fixed;
-  top: 110px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10001;
-  pointer-events: none;
 `;

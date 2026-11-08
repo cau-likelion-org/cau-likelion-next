@@ -14,6 +14,7 @@ import TextButton from '@common/textButton/TextButton';
 import TextField from '@common/textField/TextField';
 import Textarea from '@common/textarea/Textarea';
 import Toast from '@common/toast/Toast';
+import { ToastWrapper } from '@common/toast/toastLayout';
 import ProjectFilterSelect from '@project/projects/ProjectFilterSelect';
 import { Generation } from '@@types/request';
 import {
@@ -48,7 +49,7 @@ import {
 } from '@assets/svg';
 import useInput from 'src/hooks/useInput';
 import useListboxSelect from 'src/hooks/useListboxSelect';
-import useScrollToFirstError from 'src/hooks/useScrollToFirstError';
+import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import { NUMERIC_ONLY_REGEX, PROJECT_CATEGORY_OPTIONS } from '@utils/constant';
 import { AccentTint, BackgroundColor, Black, Fill, Label, Line, Orange, State } from '@utils/constant/color';
 import { isUnfilled } from '@utils/index';
@@ -146,7 +147,6 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
   };
 
   const formRef = useRef<HTMLDivElement>(null);
-  const scrollToFirstError = useScrollToFirstError(formRef);
 
   const sortedInitialImages = initialData
     ? [...initialData.images].sort((a, b) => a.displayOrder - b.displayOrder)
@@ -308,7 +308,7 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
   const [linkRows, setLinkRows] = useState<LinkRow[]>(
     initialLinkRows.length > 0 ? initialLinkRows : [{ id: nextId(), type: LINK_TYPE_OPTIONS[0], url: '' }],
   );
-  const [showErrors, setShowErrors] = useState(false);
+  const { showErrors, validate } = useRequiredFieldsSave(formRef);
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
   const [submitError, setSubmitError] = useState('');
 
@@ -436,15 +436,10 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
   };
 
   const handleSubmit = async () => {
-    if (hasError || isSubmitting) {
-      setShowErrors(true);
-      scrollToFirstError();
-      return;
-    }
+    if (isSubmitting || !validate(hasError)) return;
     const payload = buildPayload();
     if (!payload) {
-      setShowErrors(true);
-      scrollToFirstError();
+      validate(true);
       return;
     }
     setSubmitError('');
@@ -1503,13 +1498,4 @@ const ActionDescription = styled.p`
   text-align: center;
   color: ${Label.alternative};
   ${typographyCss(Typography.label2.regular)}
-`;
-
-const ToastWrapper = styled.div`
-  position: fixed;
-  top: 110px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10001;
-  pointer-events: none;
 `;

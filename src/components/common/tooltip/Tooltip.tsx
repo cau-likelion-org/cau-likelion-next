@@ -1,4 +1,4 @@
-import { useId } from 'react';
+import { ReactNode, useId } from 'react';
 import styled, { css } from 'styled-components';
 
 import { Inverse, System } from '@utils/constant/color';
@@ -15,6 +15,8 @@ export interface TooltipProps {
   align?: TooltipAlign;
   text: string;
   shortcut?: string;
+  // 문구 아래에 이미지 등 추가 내용을 넣는다
+  children?: ReactNode;
 }
 
 const Tooltip = ({
@@ -24,15 +26,17 @@ const Tooltip = ({
   align = 'start',
   text,
   shortcut,
+  children,
 }: TooltipProps) => {
   const isVertical = position === 'top' || position === 'bottom';
   const arrowFirst = position === 'bottom' || position === 'right';
 
   return (
     <Wrapper className={className} isVertical={isVertical}>
-      <Bubble size={size}>
+      <Bubble size={size} $hasContent={!!children}>
         <Text size={size}>{text}</Text>
         {shortcut && <Shortcut size={size}>{shortcut}</Shortcut>}
+        {children && <Content>{children}</Content>}
       </Bubble>
       <Arrow size={size} position={position} align={align} arrowFirst={arrowFirst} />
     </Wrapper>
@@ -151,12 +155,18 @@ const bubbleSize = {
   `,
 };
 
-const Bubble = styled.div<{ size: TooltipSize }>`
+const Bubble = styled.div<{ size: TooltipSize; $hasContent: boolean }>`
   position: relative;
   display: flex;
   align-items: flex-start;
   overflow: hidden;
   ${(props) => bubbleSize[props.size]}
+  ${(props) =>
+    props.$hasContent &&
+    css`
+      flex-direction: column;
+      padding-bottom: 12px;
+    `}
 
   &::before,
   &::after {
@@ -195,6 +205,11 @@ const Shortcut = styled.span<{ size: TooltipSize }>`
   opacity: 0.61;
 
   ${(props) => typographyCss(props.size === 'medium' ? Typography.label1Normal.medium : Typography.caption2.medium)}
+`;
+
+const Content = styled.div`
+  position: relative;
+  display: flex;
 `;
 
 const flexAlign: Record<TooltipAlign, string> = {

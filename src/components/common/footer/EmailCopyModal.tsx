@@ -1,144 +1,98 @@
-import { useId, useRef } from 'react';
 import styled from 'styled-components';
 
-import ScrollArea from '@common/scrollArea/ScrollArea';
-import useFocusTrap from 'src/hooks/useFocusTrap';
-import { BackgroundColor, Label, Material, Orange } from '@utils/constant/color';
+import Modal, { ModalActions, ModalInformation, ModalTitle } from '@common/modal/Modal';
+import TextButton from '@common/textButton/TextButton';
+import { Label } from '@utils/constant/color';
 import { media } from '@utils/constant/breakpoint';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
-const EmailCopyModal = ({ email, onClose }: { email: string; onClose: () => void }) => {
-  const titleId = useId();
-  const modalRef = useRef<HTMLDivElement>(null);
-  useFocusTrap(modalRef, onClose);
+interface EmailCopyModalProps {
+  email: string;
+  onClose: () => void;
+  onCopyFailed: () => void;
+}
 
+const EmailCopyModal = ({ email, onClose, onCopyFailed }: EmailCopyModalProps) => {
   const handleCopyAgain = () => {
-    navigator.clipboard.writeText(email);
+    navigator.clipboard.writeText(email).catch(onCopyFailed);
   };
 
   return (
-    <Backdrop onClick={onClose}>
-      <Modal
-        ref={modalRef}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={titleId}
-        tabIndex={-1}
-        onClick={(event) => event.stopPropagation()}
-      >
-        <InformationScroll>
-          <Information>
-            <Title id={titleId}>이메일이 복사되었습니다</Title>
-            <EmailButton type="button" onClick={handleCopyAgain}>
-              {email}
-            </EmailButton>
-          </Information>
-        </InformationScroll>
-        <Actions>
-          <CloseButton type="button" onClick={onClose}>
-            닫기
-          </CloseButton>
-        </Actions>
-      </Modal>
-    </Backdrop>
+    <StyledModal ariaLabel="이메일이 복사되었습니다" onClose={onClose}>
+      <Information align="center">
+        <Title>이메일이 복사되었습니다</Title>
+        <EmailButton type="button" onClick={handleCopyAgain}>
+          {email}
+        </EmailButton>
+      </Information>
+      <Actions>
+        <TextButton onClick={onClose}>닫기</TextButton>
+      </Actions>
+    </StyledModal>
   );
 };
 
 export default EmailCopyModal;
 
-const Backdrop = styled.div`
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 20px;
-  background-color: ${Material.dimmer};
-  z-index: 9999;
-`;
-
-const Modal = styled.div`
-  position: relative;
-  width: 100%;
-  max-width: 400px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  overflow: hidden;
-  border-radius: 12px;
-  background-color: ${BackgroundColor};
+// 데스크톱은 small 규격, 모바일은 medium 규격으로 그린다
+const StyledModal = styled(Modal)`
   box-shadow:
     0px 10px 15px -3px rgba(23, 23, 23, 0.07),
     0px 4px 6px -2px rgba(23, 23, 23, 0.07);
-  outline: none;
-  z-index: 10000;
 
   ${media.xs} {
     border-radius: 16px;
   }
 `;
 
-const InformationScroll = styled(ScrollArea)`
-  width: 100%;
-`;
+const Information = styled(ModalInformation)`
+  && {
+    gap: 12px;
 
-const Information = styled.div`
-  width: 100%;
-  padding: 20px 12px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-
-  ${media.xs} {
-    padding: 28px;
-    align-items: flex-start;
-    gap: 8px;
+    ${media.xs} {
+      align-items: flex-start;
+      gap: 8px;
+      padding: 28px;
+      text-align: left;
+    }
   }
 `;
 
-const Title = styled.p`
-  ${typographyCss(Typography.headline1.bold)}
-  color: ${Label.normal};
-  margin: 0;
-
+const Title = styled(ModalTitle)`
   ${media.xs} {
-    ${typographyCss(Typography.heading2.bold)}
-    width: 100%;
+    && {
+      width: 100%;
+      ${typographyCss(Typography.heading2.bold)}
+    }
   }
 `;
 
 const EmailButton = styled.button`
+  position: relative;
   width: 100%;
   padding: 4px 0;
   ${typographyCss(Typography.headline2.medium)}
   color: ${Label.strong};
   text-align: center;
-  background-color: rgba(255, 96, 0, 0.04);
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-`;
-
-const Actions = styled.div`
-  width: 100%;
-  padding: 0 20px 12px;
-  display: flex;
-  justify-content: flex-end;
-
-  ${media.xs} {
-    padding: 0 28px 20px;
-  }
-`;
-
-const CloseButton = styled.button`
-  ${typographyCss(Typography.body1Normal.bold)}
-  color: ${Orange.o500};
   background: none;
   border: none;
   cursor: pointer;
 
+  /* Figma Button/Text의 Interaction 레이어: 버튼보다 좌우 7px 넓게 깔린다 */
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0 -7px;
+    border-radius: 6px;
+    background-color: rgba(255, 96, 0, 0.04);
+    pointer-events: none;
+  }
+`;
+
+const Actions = styled(ModalActions)`
   ${media.xs} {
-    padding: 4px 0;
+    && {
+      padding: 0 28px 20px;
+    }
   }
 `;

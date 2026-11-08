@@ -1,4 +1,5 @@
 import { ReactElement } from 'react';
+import { useRouter } from 'next/router';
 import styled from 'styled-components';
 
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
@@ -12,6 +13,8 @@ import { RECRUIT_MOCK } from '@recruit/mock';
 import MainPageHead from 'src/components/meta/MainPageHead';
 
 const Recruit = () => {
+  const router = useRouter();
+
   return (
     <>
       <MainPageHead canoUrl="https://cau-likelion.org/recruit" />
@@ -21,7 +24,9 @@ const Recruit = () => {
       <RoadmapSection />
       <RecruitFAQSection faqs={RECRUIT_MOCK.faqs} />
       <BottomAction>
-        <ApplyButton>지원하기</ApplyButton>
+        <ApplyButton disabled={!RECRUIT_MOCK.isApplyOpen} onClick={() => router.push('/recruit/apply')}>
+          지원하기
+        </ApplyButton>
       </BottomAction>
     </>
   );

@@ -19,11 +19,51 @@ export const toDateString = (date?: Date, formatter = '-') => {
   return year + formatter + month + formatter + day;
 };
 
+const DAY_LABELS = ['일', '월', '화', '수', '목', '금', '토'];
+const pad2 = (value: number) => String(value).padStart(2, '0');
+
+// 2027.03.08(월) 21:34 형태
+export const toDateTimeLabel = (date: Date) =>
+  `${date.getFullYear()}.${pad2(date.getMonth() + 1)}.${pad2(date.getDate())}(${DAY_LABELS[date.getDay()]}) ` +
+  `${pad2(date.getHours())}:${pad2(date.getMinutes())}`;
+
 export const isUnfilled = (value: string) => value.trim().length === 0;
 
 // 한글 등 이메일에 쓰일 수 없는 문자가 섞여 들어가는 것을 막기 위해 허용 문자를 제한한다
 const EMAIL_REGEX = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
 export const isEmailFormatInvalid = (email: string) => !isUnfilled(email) && !EMAIL_REGEX.test(email);
+
+const NAME_REGEX = /^[가-힣A-Za-z ]{2,20}$/;
+export const isNameFormatInvalid = (name: string) => !isUnfilled(name) && !NAME_REGEX.test(name.trim());
+
+// 숫자만 남겨 010-0000-0000 형태로 하이픈을 채운다
+export const formatPhoneNumber = (value: string) => {
+  const digits = value.replace(/\D/g, '').slice(0, 11);
+  if (digits.length <= 3) return digits;
+  if (digits.length <= 7) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
+  return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`;
+};
+
+const PHONE_REGEX = /^010-\d{4}-\d{4}$/;
+export const isPhoneFormatInvalid = (phone: string) => !isUnfilled(phone) && !PHONE_REGEX.test(phone);
+
+const PASSWORD_MIN_LENGTH = 8;
+// 공백을 제외한 영문 대소문자, 숫자, 특수문자(ASCII)만 허용한다
+const PASSWORD_CHAR_REGEX = /^[\x21-\x7E]*$/;
+export const getPasswordError = (password: string) => {
+  if (isUnfilled(password)) return undefined;
+  if (!PASSWORD_CHAR_REGEX.test(password)) return '영문 대소문자, 숫자, 특수문자만 사용할 수 있습니다.';
+  if (password.length < PASSWORD_MIN_LENGTH) return '8자 이상 입력해 주세요.';
+  return undefined;
+};
+
+const BYTES_PER_KB = 1024;
+const BYTES_PER_MB = 1024 * 1024;
+// 1MB 미만은 KB, 이상은 MB로 소수점 한 자리까지 표시한다 (2.0MB → 2MB)
+export const formatFileSize = (bytes: number) => {
+  if (bytes < BYTES_PER_MB) return `${Math.max(1, Math.round(bytes / BYTES_PER_KB))}KB`;
+  return `${Number((bytes / BYTES_PER_MB).toFixed(1))}MB`;
+};
 
 // 갤러리 게시물 파트 선택지에만 있는 "공통"은 관리자 화면의 파트 목록·드롭다운에서는 제외한다
 export const excludeCommonPart = <T extends { name: string }>(parts: T[]) =>

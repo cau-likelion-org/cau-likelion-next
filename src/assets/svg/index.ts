@@ -36,6 +36,7 @@ import IcSearch from './icon/ic-search.svg';
 import IcTrash from './icon/ic-trash.svg';
 import IcTriangleExclamation from './icon/ic-triangle-exclamation.svg';
 import IcTrophy from './icon/ic-trophy.svg';
+import IcUpload from './icon/ic-upload.svg';
 import IllustSignupComplete from './illustration/illust-signup-complete.svg';
 
 export {
@@ -77,5 +78,6 @@ export {
   IcTrash,
   IcTriangleExclamation,
   IcTrophy,
+  IcUpload,
   IllustSignupComplete,
 };

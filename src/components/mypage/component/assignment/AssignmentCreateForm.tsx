@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import BackHeader from '@common/header/BackHeader';
-import { MODAL_Z_INDEX } from '@common/modalOverlay/ModalOverlay';
+import Alert from '@common/alert/Alert';
 import Select from '@common/select/Select';
 import ListboxOptions from '@common/select/ListboxOptions';
 import TextField from '@common/textField/TextField';
@@ -11,13 +11,12 @@ import CharCount from '@common/charCount/CharCount';
 import AddCardButton from '@mypage/component/AddCardButton';
 import RemoveCardButton from '@mypage/component/RemoveCardButton';
 import useListboxSelect from 'src/hooks/useListboxSelect';
-import useScrollToFirstError from 'src/hooks/useScrollToFirstError';
-import useScrollLock from 'src/hooks/useScrollLock';
+import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import useLeaveGuard from 'src/hooks/useLeaveGuard';
 import { AssignmentCreateRequest, AssignmentSubmitType } from 'src/apis/assignment';
 import { isUnfilled } from '@utils/index';
 import DateTimeInput from '@common/dateTimeInput/DateTimeInput';
-import { BackgroundWhite, Black, Fill, Label, Line, Material, Orange, State } from '@utils/constant/color';
+import { BackgroundWhite, Black, Fill, Label, Line, Orange, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { containerCss, media } from '@utils/constant/breakpoint';
 
@@ -68,9 +67,8 @@ const AssignmentCreateForm = ({
   const [drafts, setDrafts] = useState<AssignmentDraft[]>(initialDrafts ?? [emptyDraft()]);
   const [deleteTarget, setDeleteTarget] = useState<number | null>(null);
   // 제출 시도 후에만 필수항목 에러 표시 (프로젝트 추가 admin 페이지와 동일)
-  const [showErrors, setShowErrors] = useState(false);
   const formRef = useRef<HTMLDivElement>(null);
-  const scrollToFirstError = useScrollToFirstError(formRef);
+  const { showErrors, validate } = useRequiredFieldsSave(formRef);
 
   const updateDraft = (index: number, patch: Partial<AssignmentDraft>) => {
     setDrafts((prev) => prev.map((draft, i) => (i === index ? { ...draft, ...patch } : draft)));
@@ -111,17 +109,11 @@ const AssignmentCreateForm = ({
     allowLeave,
   } = useLeaveGuard(isDirty);
 
-  useScrollLock(showLeaveConfirm || deleteTarget != null);
-
   const handleClose = () => requestLeave(onClose);
 
   const handleSubmit = () => {
     if (submitting) return;
-    if (!canSubmit) {
-      setShowErrors(true);
-      scrollToFirstError();
-      return;
-    }
+    if (!validate(!canSubmit)) return;
     allowLeave();
     onSubmit(
       Number(week),
@@ -259,45 +251,27 @@ const AssignmentCreateForm = ({
       </FormContent>
 
       {showLeaveConfirm && (
-        <LeaveOverlay role="dialog" aria-modal="true">
-          <LeaveDimmer onClick={cancelLeave} />
-          <LeaveModal>
-            <LeaveInfo>
-              <LeaveMessage>
-                {isEdit ? '수정 완료 전 이탈 시' : '과제 생성 전 이탈 시'}
-                <br />
-                작업 내용이 저장되지 않습니다.
-              </LeaveMessage>
-            </LeaveInfo>
-            <LeaveActions>
-              <LeaveButton type="button" onClick={cancelLeave}>
-                취소
-              </LeaveButton>
-              <LeaveButton type="button" $primary onClick={confirmLeave}>
-                확인
-              </LeaveButton>
-            </LeaveActions>
-          </LeaveModal>
-        </LeaveOverlay>
+        <Alert
+          size="medium"
+          heading={`${isEdit ? '수정 완료 전 이탈 시' : '과제 생성 전 이탈 시'}\n작업 내용이 저장되지 않습니다.`}
+          onDimmerClick={cancelLeave}
+          actions={[
+            { label: '취소', variant: 'assistive', onClick: cancelLeave },
+            { label: '확인', variant: 'primary', onClick: confirmLeave },
+          ]}
+        />
       )}
 
       {deleteTarget != null && (
-        <LeaveOverlay role="dialog" aria-modal="true">
-          <LeaveDimmer onClick={() => setDeleteTarget(null)} />
-          <LeaveModal>
-            <LeaveInfo>
-              <LeaveMessage>과제를 정말 삭제하시겠습니까?</LeaveMessage>
-            </LeaveInfo>
-            <LeaveActions>
-              <LeaveButton type="button" onClick={() => setDeleteTarget(null)}>
-                취소
-              </LeaveButton>
-              <LeaveButton type="button" $primary onClick={confirmDelete}>
-                삭제
-              </LeaveButton>
-            </LeaveActions>
-          </LeaveModal>
-        </LeaveOverlay>
+        <Alert
+          size="medium"
+          heading="과제를 정말 삭제하시겠습니까?"
+          onDimmerClick={() => setDeleteTarget(null)}
+          actions={[
+            { label: '취소', variant: 'assistive', onClick: () => setDeleteTarget(null) },
+            { label: '삭제', variant: 'primary', onClick: confirmDelete },
+          ]}
+        />
       )}
     </Page>
   );
@@ -542,65 +516,4 @@ const SubmitButton = styled.button`
     color: ${Label.assistive};
     cursor: not-allowed;
   }
-`;
-
-// 저장 전 이탈 방지 모달 (Figma Alert/Resource/Dialog)
-const LeaveOverlay = styled.div`
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 20px;
-  z-index: ${MODAL_Z_INDEX};
-`;
-
-const LeaveDimmer = styled.div`
-  position: absolute;
-  inset: 0;
-  background-color: ${Material.dimmer};
-  opacity: 0.43;
-`;
-
-const LeaveModal = styled.div`
-  position: relative;
-  width: 100%;
-  min-width: 320px;
-  max-width: 400px;
-  border-radius: 16px;
-  background-color: ${BackgroundWhite.primary};
-  overflow: hidden;
-`;
-
-const LeaveInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 28px;
-`;
-
-const LeaveMessage = styled.p`
-  margin: 0;
-  width: 100%;
-  color: ${Label.normal};
-  ${typographyCss(Typography.heading2.bold)}
-`;
-
-const LeaveActions = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 24px;
-  padding: 0 28px 20px;
-`;
-
-const LeaveButton = styled.button<{ $primary?: boolean }>`
-  width: 60px;
-  padding: 4px 0;
-  border: none;
-  background: none;
-  text-align: center;
-  cursor: pointer;
-  color: ${(props) => (props.$primary ? Orange.o500 : Label.alternative)};
-  ${typographyCss(Typography.body1Normal.bold)}
 `;

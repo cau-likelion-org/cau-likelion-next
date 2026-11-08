@@ -33,6 +33,6 @@ const Overlay = styled.div`
 const Dimmer = styled.div`
   position: absolute;
   inset: 0;
+  /* Material.dimmer(22%)가 이미 Figma의 dimmer(52%) × 레이어 투명도 43%를 반영한 값이라 투명도를 더 곱하지 않는다 */
   background-color: ${Material.dimmer};
-  opacity: 0.43;
 `;

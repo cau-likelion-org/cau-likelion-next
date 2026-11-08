@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import Alert from '@common/alert/Alert';
@@ -6,12 +6,12 @@ import Button from '@common/button/Button';
 import Category from '@common/category/Category';
 import { createId } from '@mypage/admin/utils';
 import { IcPlus } from '@assets/svg';
-import useDragReorder from 'src/hooks/useDragReorder';
+import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import { Black, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 import { RecruitQuestion, RecruitSecondStepSetting } from './mock';
-import QuestionCard, { isChoiceType } from './QuestionCard';
+import QuestionCard, { MIN_CHOICES, isChoiceType } from './QuestionCard';
 import RecruitInfoBox, { InfoText } from './RecruitInfoBox';
 
 const LOCK_NOTICE = '접수가 시작되면 문항을 변경할 수 없습니다';
@@ -19,7 +19,7 @@ const LOCK_NOTICE = '접수가 시작되면 문항을 변경할 수 없습니다
 const isQuestionValid = (question: RecruitQuestion) => {
   if (!question.type || question.title.trim() === '') return false;
   if (isChoiceType(question.type)) {
-    return question.choices.length >= 2 && question.choices.every((choice) => choice.text.trim() !== '');
+    return question.choices.length >= MIN_CHOICES && question.choices.every((choice) => choice.text.trim() !== '');
   }
   return true;
 };
@@ -62,7 +62,15 @@ const SecondStepQuestionSection = ({ initialValues, onSave }: SecondStepQuestion
     setQuestions(questions.map((question) => (question.id === id ? { ...question, ...patch } : question)));
   };
 
-  const questionDrag = useDragReorder(questions, setQuestions, readOnly);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const { showErrors, validate, hideErrors } = useRequiredFieldsSave(wrapperRef);
+
+  // 미완성 문항이 있으면 그 파트 탭으로 옮겨 첫 오류 위치를 보여주고, 없으면 저장 확인을 띄운다
+  const requestSave = () => {
+    if (validate(!isValid)) return setIsConfirmOpen(true);
+    const invalidPart = values.parts.find((part) => !part.questions.every(isQuestionValid));
+    if (invalidPart) setActivePartId(invalidPart.partId);
+  };
 
   const handleSave = () => {
     setIsConfirmOpen(false);
@@ -72,12 +80,13 @@ const SecondStepQuestionSection = ({ initialValues, onSave }: SecondStepQuestion
   };
 
   const handleCancel = () => {
+    hideErrors();
     if (savedValues) setValues(savedValues);
     setIsEditing(false);
   };
 
   return (
-    <Wrapper>
+    <Wrapper ref={wrapperRef}>
       <PartCategory
         items={values.parts.map((part) => ({ key: String(part.partId), label: part.partName }))}
         activeKey={String(activePartId)}
@@ -97,10 +106,9 @@ const SecondStepQuestionSection = ({ initialValues, onSave }: SecondStepQuestion
                 index={index}
                 question={question}
                 readOnly={readOnly}
+                showErrors={showErrors}
                 onChange={(patch) => updateQuestion(question.id, patch)}
                 onRemove={() => setQuestions(questions.filter((item) => item.id !== question.id))}
-                dragHandleProps={questionDrag.getHandleProps(index)}
-                dragItemProps={questionDrag.getItemProps(index)}
               />
             ))}
           </QuestionList>
@@ -123,7 +131,7 @@ const SecondStepQuestionSection = ({ initialValues, onSave }: SecondStepQuestion
                 취소
               </Button>
             )}
-            <Button disabled={!isValid} onClick={() => setIsConfirmOpen(true)}>
+            <Button disabled={!savedValues && !isValid} onClick={requestSave}>
               저장
             </Button>
           </>

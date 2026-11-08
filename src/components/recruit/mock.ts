@@ -11,6 +11,7 @@ export interface RecruitFaq {
 }
 
 export interface RecruitInfo {
+  generation: number;
   stageLabel: string;
   statusLabel: string;
   title: string;
@@ -22,6 +23,7 @@ export interface RecruitInfo {
 }
 
 export const RECRUIT_MOCK: RecruitInfo = {
+  generation: 14,
   stageLabel: '서류 접수',
   statusLabel: '접수 중',
   title: '멋쟁이사자처럼 중앙대학교 14기 아기사자 모집',

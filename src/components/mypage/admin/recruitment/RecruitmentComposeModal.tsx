@@ -13,7 +13,7 @@ import { isUnfilled } from '@utils/index';
 import { BackgroundColor, Label, Line, Orange, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import useFocusTrap from 'src/hooks/useFocusTrap';
-import useScrollToFirstError from 'src/hooks/useScrollToFirstError';
+import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 
 export interface RecruitmentComposeForm {
   title: string;
@@ -56,7 +56,6 @@ const RecruitmentComposeModal = ({
   const [content, setContent] = useState(initialValues?.content ?? '');
   const [date, setDate] = useState(initialValues?.scheduledSendAt ? initialValues.scheduledSendAt.slice(0, 10) : '');
   const [time, setTime] = useState(initialValues?.scheduledSendAt ? initialValues.scheduledSendAt.slice(11, 16) : '');
-  const [showErrors, setShowErrors] = useState(false);
   const [isRecipientListExpanded, setIsRecipientListExpanded] = useState(false);
   const [isRecipientListFaded, setIsRecipientListFaded] = useState(false);
   const [hasOverflow, setHasOverflow] = useState(false);
@@ -64,7 +63,7 @@ const RecruitmentComposeModal = ({
   const recipientChipRowRef = useRef<HTMLDivElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
   useFocusTrap(modalRef, onClose);
-  const scrollToFirstError = useScrollToFirstError(modalRef);
+  const { showErrors, validate } = useRequiredFieldsSave(modalRef);
 
   useEffect(() => {
     const el = recipientChipRowRef.current;
@@ -88,11 +87,7 @@ const RecruitmentComposeModal = ({
   const isInvalid = recipients.length === 0 || isUnfilled(title) || isUnfilled(content) || isScheduleInvalid;
 
   const handleSubmit = () => {
-    if (isInvalid) {
-      setShowErrors(true);
-      scrollToFirstError();
-      return;
-    }
+    if (!validate(isInvalid)) return;
     onSubmit({
       title,
       content,

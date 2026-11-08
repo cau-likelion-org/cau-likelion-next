@@ -1,7 +1,7 @@
-import { HTMLAttributes } from 'react';
 import styled from 'styled-components';
 
 import Button from '@common/button/Button';
+import { FieldDescription } from '@common/fieldStatus/FieldStatus';
 import Switch from '@common/switch/Switch';
 import Textarea from '@common/textarea/Textarea';
 import TextField from '@common/textField/TextField';
@@ -9,6 +9,7 @@ import RemoveCardButton from '@mypage/component/RemoveCardButton';
 import { createId } from '@mypage/admin/utils';
 import { IcCircleClose, IcHandleDesktop, IcPlus } from '@assets/svg';
 import useDragReorder from 'src/hooks/useDragReorder';
+import { REQUIRED_FIELD_MESSAGE } from '@utils/constant';
 import { BackgroundWhite, Black, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
@@ -19,27 +20,21 @@ const CHOICE_TYPES: RecruitQuestionType[] = ['SINGLE_CHOICE', 'MULTIPLE_CHOICE']
 
 export const isChoiceType = (type: RecruitQuestionType | null) => !!type && CHOICE_TYPES.includes(type);
 
+export const MIN_CHOICES = 2;
+
 const toPositiveDigits = (value: string) => value.replace(/\D/g, '').replace(/^0+/, '');
 
 export interface QuestionCardProps {
   index: number;
   question: RecruitQuestion;
   readOnly: boolean;
+  // 수정 모드에서 [저장]을 누른 뒤부터 미완성 항목을 오류로 표시한다
+  showErrors: boolean;
   onChange: (patch: Partial<RecruitQuestion>) => void;
   onRemove: () => void;
-  dragHandleProps: HTMLAttributes<HTMLElement>;
-  dragItemProps: HTMLAttributes<HTMLElement> & { draggable: boolean };
 }
 
-const QuestionCard = ({
-  index,
-  question,
-  readOnly,
-  onChange,
-  onRemove,
-  dragHandleProps,
-  dragItemProps,
-}: QuestionCardProps) => {
+const QuestionCard = ({ index, question, readOnly, showErrors, onChange, onRemove }: QuestionCardProps) => {
   const choiceDrag = useDragReorder(question.choices, (choices) => onChange({ choices }), readOnly);
 
   const changeType = (type: RecruitQuestionType) => {
@@ -49,13 +44,17 @@ const QuestionCard = ({
     });
   };
 
+  const isTypeMissing = showErrors && !question.type;
+  const isTitleMissing = showErrors && question.title.trim() === '';
+  const isChoiceShort = showErrors && isChoiceType(question.type) && question.choices.length < MIN_CHOICES;
+
   const updateChoice = (id: string, text: string) => {
     onChange({ choices: question.choices.map((choice) => (choice.id === id ? { ...choice, text } : choice)) });
   };
 
   return (
-    <Card {...dragItemProps}>
-      <Header {...dragHandleProps} $draggable={!readOnly}>
+    <Card>
+      <Header>
         <CardTitle>문항 {index + 1}</CardTitle>
         <RequiredRow>
           <FieldLabel>필수</FieldLabel>
@@ -67,7 +66,13 @@ const QuestionCard = ({
           />
         </RequiredRow>
       </Header>
-      <QuestionTypeSelect value={question.type} readOnly={readOnly} onChange={changeType} />
+      <QuestionTypeSelect
+        value={question.type}
+        readOnly={readOnly}
+        status={isTypeMissing ? 'negative' : 'normal'}
+        description={isTypeMissing ? REQUIRED_FIELD_MESSAGE : undefined}
+        onChange={changeType}
+      />
       {question.type && (
         <>
           <TextField
@@ -76,6 +81,8 @@ const QuestionCard = ({
             placeholder="질문을 입력해주세요."
             value={question.title}
             readOnly={readOnly}
+            status={isTitleMissing ? 'negative' : 'normal'}
+            description={isTitleMissing ? REQUIRED_FIELD_MESSAGE : undefined}
             onChange={(event) => onChange({ title: event.target.value })}
           />
           <Textarea
@@ -101,37 +108,47 @@ const QuestionCard = ({
             <>
               <ChoiceGroup>
                 <FieldLabel>선택지 문항</FieldLabel>
-                {question.choices.map((choice, choiceIndex) => (
-                  <div key={choice.id} {...choiceDrag.getItemProps(choiceIndex)}>
-                    <TextField
-                      aria-label={`선택지 ${choiceIndex + 1}`}
-                      placeholder="문항 텍스트를 입력해주세요."
-                      value={choice.text}
-                      readOnly={readOnly}
-                      onChange={(event) => updateChoice(choice.id, event.target.value)}
-                      leadingIcon={
-                        !readOnly && (
-                          <Handle {...choiceDrag.getHandleProps(choiceIndex)} aria-hidden>
-                            <IcHandleDesktop width={22} height={22} />
-                          </Handle>
-                        )
-                      }
-                      trailingContent={
-                        !readOnly && (
-                          <ClearButton
-                            type="button"
-                            aria-label={`선택지 ${choiceIndex + 1} 삭제`}
-                            onClick={() =>
-                              onChange({ choices: question.choices.filter((item) => item.id !== choice.id) })
-                            }
-                          >
-                            <IcCircleClose width={22} height={22} />
-                          </ClearButton>
-                        )
-                      }
-                    />
-                  </div>
-                ))}
+                {question.choices.map((choice, choiceIndex) => {
+                  const isChoiceMissing = showErrors && choice.text.trim() === '';
+                  return (
+                    <div key={choice.id} {...choiceDrag.getItemProps(choiceIndex)}>
+                      <TextField
+                        aria-label={`선택지 ${choiceIndex + 1}`}
+                        placeholder="문항 텍스트를 입력해주세요."
+                        value={choice.text}
+                        readOnly={readOnly}
+                        status={isChoiceMissing ? 'negative' : 'normal'}
+                        description={isChoiceMissing ? REQUIRED_FIELD_MESSAGE : undefined}
+                        onChange={(event) => updateChoice(choice.id, event.target.value)}
+                        leadingIcon={
+                          !readOnly && (
+                            <Handle {...choiceDrag.getHandleProps(choiceIndex)} aria-hidden>
+                              <IcHandleDesktop width={22} height={22} />
+                            </Handle>
+                          )
+                        }
+                        trailingContent={
+                          !readOnly && (
+                            <ClearButton
+                              type="button"
+                              aria-label={`선택지 ${choiceIndex + 1} 삭제`}
+                              onClick={() =>
+                                onChange({ choices: question.choices.filter((item) => item.id !== choice.id) })
+                              }
+                            >
+                              <IcCircleClose width={22} height={22} />
+                            </ClearButton>
+                          )
+                        }
+                      />
+                    </div>
+                  );
+                })}
+                {isChoiceShort && (
+                  <ChoiceError $status="negative" aria-invalid tabIndex={-1}>
+                    선택지를 {MIN_CHOICES}개 이상 입력해 주세요.
+                  </ChoiceError>
+                )}
               </ChoiceGroup>
               {!readOnly && (
                 <AddChoiceButton
@@ -169,13 +186,11 @@ const Card = styled.div`
   background-color: ${BackgroundWhite.secondary};
 `;
 
-// 문항 카드에는 별도 핸들이 없어 상단 제목 줄을 드래그 핸들로 쓴다
-const Header = styled.div<{ $draggable: boolean }>`
+const Header = styled.div`
   display: flex;
   align-items: center;
   gap: 20px;
   width: 100%;
-  cursor: ${(props) => (props.$draggable ? 'grab' : 'default')};
 `;
 
 const CardTitle = styled.h3`
@@ -233,6 +248,11 @@ const ClearButton = styled.button`
   background: none;
   color: ${Label.alternative};
   cursor: pointer;
+`;
+
+// [저장] 시 첫 오류로 스크롤할 수 있도록 aria-invalid를 단 안내 문구
+const ChoiceError = styled(FieldDescription)`
+  outline: none;
 `;
 
 const AddChoiceButton = styled(Button)`

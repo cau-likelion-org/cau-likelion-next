@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import styled from 'styled-components';
 
 import Toast from '@common/toast/Toast';
+import { ToastWrapper } from '@common/toast/toastLayout';
 import { IcRefresh } from '@assets/svg';
 import DateTimeInput from '@common/dateTimeInput/DateTimeInput';
 import {
@@ -332,13 +333,4 @@ const ErrorText = styled.p`
   margin: 0;
   color: ${State.error};
   ${typographyCss(Typography.caption1.regular)}
-`;
-
-const ToastWrapper = styled.div`
-  position: fixed;
-  top: 110px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10001;
-  pointer-events: none;
 `;

@@ -1,11 +1,13 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import styled from 'styled-components';
 
 import TextField from '@common/textField/TextField';
 import Button from '@common/button/Button';
 import { getGenerations } from 'src/apis/account';
+import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import { excludeCommonPart } from '@utils/index';
+import { REQUIRED_FIELD_MESSAGE } from '@utils/constant';
 import { BackgroundWhite, Black, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
@@ -30,23 +32,32 @@ const GenerationSettingSection = ({ initialValues, onSave }: GenerationSettingSe
   const hasSaved = savedValues.generation !== '';
   const isFilled = parts.length > 0 && parts.every((part) => !!values.quotas[part.id]);
 
-  const handleSave = () => {
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const { showErrors, validate, hideErrors } = useRequiredFieldsSave(wrapperRef);
+
+  const requestSave = () => {
+    if (!validate(!isFilled)) return;
     onSave(values, hasSaved);
     setSavedValues(values);
     setIsEditing(false);
   };
 
   const handleCancel = () => {
+    hideErrors();
     setValues(savedValues);
     setIsEditing(false);
   };
+
+  const isGenerationMissing = showErrors && values.generation === '';
+  // 없는 기수를 입력한 경우는 아래 안내 문구로 알리고 입력칸만 오류로 표시한다
+  const isGenerationInvalid = isGenerationMissing || (showErrors && parts.length === 0);
 
   const updateQuota = (partId: number, quota: string) => {
     setValues((prev) => ({ ...prev, quotas: { ...prev.quotas, [partId]: quota } }));
   };
 
   return (
-    <Wrapper>
+    <Wrapper ref={wrapperRef}>
       <Field>
         <SectionTitle>모집 기수</SectionTitle>
         <TextField
@@ -55,6 +66,8 @@ const GenerationSettingSection = ({ initialValues, onSave }: GenerationSettingSe
           placeholder="숫자로 입력해주세요."
           value={values.generation}
           readOnly={!isEditing}
+          status={isGenerationInvalid ? 'negative' : 'normal'}
+          description={isGenerationMissing ? REQUIRED_FIELD_MESSAGE : undefined}
           onChange={(event) => setValues((prev) => ({ ...prev, generation: toDigits(event.target.value) }))}
           trailingContent={<Unit>기</Unit>}
         />
@@ -71,6 +84,8 @@ const GenerationSettingSection = ({ initialValues, onSave }: GenerationSettingSe
                 placeholder="숫자로 입력해주세요."
                 value={values.quotas[part.id] ?? ''}
                 readOnly={!isEditing}
+                status={showErrors && !values.quotas[part.id] ? 'negative' : 'normal'}
+                description={showErrors && !values.quotas[part.id] ? REQUIRED_FIELD_MESSAGE : undefined}
                 onChange={(event) => updateQuota(part.id, toDigits(event.target.value))}
                 trailingContent={<Unit>명</Unit>}
               />
@@ -93,7 +108,7 @@ const GenerationSettingSection = ({ initialValues, onSave }: GenerationSettingSe
                 취소
               </Button>
             )}
-            <Button disabled={!isFilled} onClick={handleSave}>
+            <Button disabled={!hasSaved && !isFilled} onClick={requestSave}>
               저장
             </Button>
           </>
