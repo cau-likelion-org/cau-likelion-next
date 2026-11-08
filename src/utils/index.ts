@@ -19,6 +19,14 @@ export const toDateString = (date?: Date, formatter = '-') => {
   return year + formatter + month + formatter + day;
 };
 
+const DAY_LABELS = ['일', '월', '화', '수', '목', '금', '토'];
+const pad2 = (value: number) => String(value).padStart(2, '0');
+
+// 2027.03.08(월) 21:34 형태
+export const toDateTimeLabel = (date: Date) =>
+  `${date.getFullYear()}.${pad2(date.getMonth() + 1)}.${pad2(date.getDate())}(${DAY_LABELS[date.getDay()]}) ` +
+  `${pad2(date.getHours())}:${pad2(date.getMinutes())}`;
+
 export const isUnfilled = (value: string) => value.trim().length === 0;
 
 // 한글 등 이메일에 쓰일 수 없는 문자가 섞여 들어가는 것을 막기 위해 허용 문자를 제한한다

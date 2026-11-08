@@ -20,6 +20,7 @@ import {
   isUnfilled,
   sortArchivingListDesc,
   toDateString,
+  toDateTimeLabel,
 } from './index';
 
 const axiosErrorWith = (data: unknown) =>
@@ -63,6 +64,13 @@ describe('toDateString', () => {
 
   it('날짜가 없으면 빈 문자열을 돌려준다', () => {
     expect(toDateString()).toBe('');
+  });
+});
+
+describe('toDateTimeLabel', () => {
+  it('연.월.일(요일) 시:분 형태로 두 자리씩 맞춰 표시한다', () => {
+    expect(toDateTimeLabel(new Date(2027, 2, 8, 21, 34))).toBe('2027.03.08(월) 21:34');
+    expect(toDateTimeLabel(new Date(2027, 0, 3, 9, 5))).toBe('2027.01.03(일) 09:05');
   });
 });
 
