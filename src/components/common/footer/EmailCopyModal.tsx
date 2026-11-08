@@ -7,8 +7,9 @@ import { media } from '@utils/constant/breakpoint';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 const EmailCopyModal = ({ email, onClose }: { email: string; onClose: () => void }) => {
+  // 처음 복사에 성공해 모달이 열린 상태라 다시 복사가 실패하는 경우는 드물어 별도 안내 없이 무시한다
   const handleCopyAgain = () => {
-    navigator.clipboard.writeText(email);
+    navigator.clipboard.writeText(email).catch(() => {});
   };
 
   return (
