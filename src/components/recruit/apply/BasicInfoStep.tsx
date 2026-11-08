@@ -198,6 +198,7 @@ const BasicInfoStep = ({ applicant, hasPartAnswers, onPartReset, onNext }: Basic
           required
           headingTrailing={<LinkButton type="button">예시 이미지 보기</LinkButton>}
           placeholder="파일을 선택해 주세요. (JPG·JPEG·PNG, 5MB 이하)"
+          dashed
           accept=".jpg,.jpeg,.png"
           file={portalImage ?? undefined}
           description="필요한 영역 외 개인정보는 가려주세요."
