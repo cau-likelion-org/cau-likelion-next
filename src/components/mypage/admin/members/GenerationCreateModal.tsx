@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import { GenerationCreateRequestDto } from '@@types/request';
@@ -7,7 +7,7 @@ import Button from '@common/button/Button';
 import ModalOverlay from '@common/modalOverlay/ModalOverlay';
 import ScrollArea from '@common/scrollArea/ScrollArea';
 import TechStackInput from '@mypage/admin/component/TechStackInput';
-import useScrollLock from 'src/hooks/useScrollLock';
+import useFocusTrap from 'src/hooks/useFocusTrap';
 import { NUMERIC_ONLY_REGEX } from '@utils/constant';
 import { isUnfilled } from '@utils/index';
 import { BackgroundWhite, Label, State, Status } from '@utils/constant/color';
@@ -20,7 +20,8 @@ interface GenerationCreateModalProps {
 }
 
 const GenerationCreateModal = ({ onClose, onSubmit, isSubmitting = false }: GenerationCreateModalProps) => {
-  useScrollLock();
+  const modalRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(modalRef, onClose);
 
   const [number, setNumber] = useState('');
   const [year, setYear] = useState('');
@@ -39,7 +40,7 @@ const GenerationCreateModal = ({ onClose, onSubmit, isSubmitting = false }: Gene
 
   return (
     <ModalOverlay role="dialog" aria-modal="true" aria-label="기수/파트 생성" onDimmerClick={onClose}>
-      <Modal>
+      <Modal ref={modalRef} tabIndex={-1}>
         <InformationScroll>
           <Information>
             <ModalTitle>기수/파트 생성</ModalTitle>
@@ -98,6 +99,7 @@ const GenerationCreateModal = ({ onClose, onSubmit, isSubmitting = false }: Gene
 export default GenerationCreateModal;
 
 const Modal = styled.div`
+  outline: none;
   position: relative;
   display: flex;
   flex-direction: column;
