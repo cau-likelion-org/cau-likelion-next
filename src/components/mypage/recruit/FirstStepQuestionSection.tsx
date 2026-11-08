@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 
 import Button from '@common/button/Button';
 import DateTimeInput from '@common/dateTimeInput/DateTimeInput';
 import Select from '@common/select/Select';
 import ListboxOptions from '@common/select/ListboxOptions';
+import InterviewTimeGrid from '@recruit/InterviewTimeGrid';
 import { IcLineHorizontal } from '@assets/svg';
 import useListboxSelect from 'src/hooks/useListboxSelect';
 import { BackgroundWhite, Black, Label, Line, Orange } from '@utils/constant/color';
@@ -32,43 +33,6 @@ const UNIT_OPTIONS = [
   { label: '2시간', minutes: 120 },
 ];
 
-const DAY_LABELS = ['일', '월', '화', '수', '목', '금', '토'];
-
-const toDateLabel = (date: Date) => `${date.getMonth() + 1}/${date.getDate()}(${DAY_LABELS[date.getDay()]})`;
-
-// 날짜 입력 중 연도가 덜 입력된 값(0002-03-16 등)이 들어와도 격자가 폭주하지 않게 미리보기 기간을 제한한다
-const MAX_PREVIEW_DAYS = 31;
-const DAY_MS = 24 * 60 * 60 * 1000;
-
-const getDateLabels = (startDate: string, endDate: string) => {
-  if (!startDate || !endDate) return [];
-  const labels: string[] = [];
-  const start = new Date(`${startDate}T00:00`);
-  const end = new Date(`${endDate}T00:00`);
-  if (Math.round((end.getTime() - start.getTime()) / DAY_MS) + 1 > MAX_PREVIEW_DAYS) return [];
-  for (let date = start; date <= end; date.setDate(date.getDate() + 1)) {
-    labels.push(toDateLabel(date));
-  }
-  return labels;
-};
-
-const toMinutes = (time: string) => {
-  const [hours, minutes] = time.split(':').map(Number);
-  return hours * 60 + minutes;
-};
-
-const toTimeLabel = (minutes: number) =>
-  `${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`;
-
-const getTimeLabels = (startTime: string, endTime: string, unitMinutes: number) => {
-  if (!startTime || !endTime) return [];
-  const labels: string[] = [];
-  for (let minutes = toMinutes(startTime); minutes <= toMinutes(endTime); minutes += unitMinutes) {
-    labels.push(toTimeLabel(minutes));
-  }
-  return labels;
-};
-
 export interface FirstStepQuestionSectionProps {
   initialValues: RecruitInterviewSetting;
   onSave: (values: RecruitInterviewSetting) => void;
@@ -91,9 +55,6 @@ const FirstStepQuestionSection = ({ initialValues, onSave }: FirstStepQuestionSe
     onClose: () => setIsUnitOpen(false),
     onSelect: (label) => update({ unitMinutes: UNIT_OPTIONS.find((option) => option.label === label)!.minutes }),
   });
-
-  const dateLabels = getDateLabels(values.startDate, values.endDate);
-  const timeLabels = getTimeLabels(values.startTime, values.endTime, values.unitMinutes);
 
   const isDateRangeInvalid = !!values.startDate && !!values.endDate && values.endDate < values.startDate;
   const isTimeRangeInvalid = !!values.startTime && !!values.endTime && values.endTime <= values.startTime;
@@ -204,24 +165,7 @@ const FirstStepQuestionSection = ({ initialValues, onSave }: FirstStepQuestionSe
         </Card>
         <Preview>
           <PreviewTitle>지원자 화면 미리보기</PreviewTitle>
-          {dateLabels.length > 0 && timeLabels.length > 0 && (
-            <GridScroll>
-              <Grid $columns={dateLabels.length}>
-                <HeaderCellBox />
-                {dateLabels.map((label) => (
-                  <HeaderCellBox key={label}>{label}</HeaderCellBox>
-                ))}
-                {timeLabels.map((time) => (
-                  <GridRow key={time}>
-                    <TimeCellBox>{time}</TimeCellBox>
-                    {dateLabels.map((label) => (
-                      <SlotCellBox key={label} />
-                    ))}
-                  </GridRow>
-                ))}
-              </Grid>
-            </GridScroll>
-          )}
+          <InterviewTimeGrid schedule={values} />
         </Preview>
       </Group>
       <Actions>
@@ -387,48 +331,6 @@ const PreviewTitle = styled.h3`
   margin: 0;
   color: ${Black.b900};
   ${typographyCss(Typography.heading2.bold)}
-`;
-
-const GridScroll = styled.div`
-  max-width: 100%;
-  overflow-x: auto;
-`;
-
-const Grid = styled.div<{ $columns: number }>`
-  display: grid;
-  grid-template-columns: 100px repeat(${(props) => props.$columns}, 140px);
-  width: max-content;
-  border-radius: 18px;
-  overflow: hidden;
-`;
-
-const GridRow = styled.div`
-  display: contents;
-`;
-
-const cellCss = css`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 44px;
-  box-shadow: inset 0 0 0 1px ${Black.b30};
-  color: ${Label.normal};
-  ${typographyCss(Typography.label1Normal.bold)}
-`;
-
-const HeaderCellBox = styled.div`
-  ${cellCss}
-  background-color: ${Orange.o100};
-`;
-
-const TimeCellBox = styled.div`
-  ${cellCss}
-  background-color: ${Orange.o50};
-`;
-
-const SlotCellBox = styled.div`
-  ${cellCss}
-  background-color: ${Black.b10};
 `;
 
 const Actions = styled.div`
