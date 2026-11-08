@@ -1,18 +1,21 @@
-import { ChangeEvent, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import styled from 'styled-components';
 
+import Alert from '@common/alert/Alert';
 import Button from '@common/button/Button';
-import { FieldDescription, FieldStatus, getFieldBoxShadow } from '@common/fieldStatus/FieldStatus';
+import { FieldDescription } from '@common/fieldStatus/FieldStatus';
 import Textarea from '@common/textarea/Textarea';
 import TextField from '@common/textField/TextField';
 import InterviewTimeGrid from '@recruit/InterviewTimeGrid';
 import useScrollToFirstError from 'src/hooks/useScrollToFirstError';
 import { RECRUIT_INTERVIEW_SETTING_MOCK } from '@mypage/recruit/mock';
 import { isUnfilled } from '@utils/index';
-import { Black, Label, State } from '@utils/constant/color';
+import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
+import ApplyFieldHeading from './ApplyFieldHeading';
+import ApplyFileField from './ApplyFileField';
 import ApplySelect from './ApplySelect';
 import { applyFieldHeadingCss } from './applyFieldStyle';
 import {
@@ -24,6 +27,7 @@ import {
   REFERRAL_OPTIONS,
   checkStudentIdDuplicate,
 } from './mock';
+import { FORMAT_MESSAGE, REQUIRED_MESSAGE, toFieldStatus } from './validation';
 
 const STUDENT_ID_LENGTH = 8;
 const PORTAL_IMAGE_TYPES = ['image/jpeg', 'image/png'];
@@ -35,19 +39,17 @@ const getPortalImageError = (file: File) => {
   return undefined;
 };
 
-const REQUIRED_MESSAGE = '필수 입력 문항입니다.';
-const FORMAT_MESSAGE = '형식이 맞지 않습니다.';
-
-const toStatus = (error?: string): FieldStatus => (error ? 'negative' : 'normal');
-
 const toDigits = (value: string, maxLength: number) => value.replace(/\D/g, '').slice(0, maxLength);
 
 export interface BasicInfoStepProps {
   applicant: ApplicantProfile;
-  onNext: () => void;
+  // 2단계에 작성한 내용이 있으면 파트를 바꿀 때 초기화 확인을 받는다
+  hasPartAnswers: boolean;
+  onPartReset: () => void;
+  onNext: (part: string) => void;
 }
 
-const BasicInfoStep = ({ applicant, onNext }: BasicInfoStepProps) => {
+const BasicInfoStep = ({ applicant, hasPartAnswers, onPartReset, onNext }: BasicInfoStepProps) => {
   const [studentId, setStudentId] = useState('');
   const [isStudentIdTouched, setIsStudentIdTouched] = useState(false);
   const [duplicateStudentId, setDuplicateStudentId] = useState<string>();
@@ -59,10 +61,10 @@ const BasicInfoStep = ({ applicant, onNext }: BasicInfoStepProps) => {
   const [portalImageError, setPortalImageError] = useState<string>();
   const [referral, setReferral] = useState('');
   const [part, setPart] = useState('');
+  const [pendingPart, setPendingPart] = useState<string>();
   const [interviewSlots, setInterviewSlots] = useState<string[]>([]);
   // [다음]을 누른 뒤부터 비어 있는 필수 항목을 오류로 표시한다
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
   const scrollToFirstError = useScrollToFirstError(rootRef);
 
@@ -90,19 +92,27 @@ const BasicInfoStep = ({ applicant, onNext }: BasicInfoStepProps) => {
   const duplicateCheckMutation = useMutation({
     mutationFn: checkStudentIdDuplicate,
     onSuccess: (isDuplicate, checkedStudentId) => {
-      if (!isDuplicate) return onNext();
+      if (!isDuplicate) return onNext(part);
       setDuplicateStudentId(checkedStudentId);
       scrollToFirstError();
     },
   });
 
-  const changePortalImage = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    event.target.value = '';
-    if (!file) return;
+  const changePortalImage = (file: File) => {
     const error = getPortalImageError(file);
     setPortalImageError(error);
     setPortalImage(error ? null : file);
+  };
+
+  const changePart = (nextPart: string) => {
+    if (hasPartAnswers && nextPart !== part) return setPendingPart(nextPart);
+    setPart(nextPart);
+  };
+
+  const confirmPartChange = () => {
+    if (pendingPart) setPart(pendingPart);
+    setPendingPart(undefined);
+    onPartReset();
   };
 
   const toggleInterviewSlot = (slot: string) =>
@@ -145,7 +155,7 @@ const BasicInfoStep = ({ applicant, onNext }: BasicInfoStepProps) => {
           inputMode="numeric"
           placeholder="숫자 8자리"
           value={studentId}
-          status={toStatus(errors.studentId)}
+          status={toFieldStatus(errors.studentId)}
           description={errors.studentId}
           onChange={(event) => setStudentId(toDigits(event.target.value, STUDENT_ID_LENGTH))}
           onBlur={() => setIsStudentIdTouched(true)}
@@ -155,7 +165,7 @@ const BasicInfoStep = ({ applicant, onNext }: BasicInfoStepProps) => {
           required
           placeholder="ex) 교육학과"
           value={major}
-          status={toStatus(errors.major)}
+          status={toFieldStatus(errors.major)}
           description={errors.major}
           onChange={(event) => setMajor(event.target.value.replace(/\n/g, ''))}
         />
@@ -163,7 +173,7 @@ const BasicInfoStep = ({ applicant, onNext }: BasicInfoStepProps) => {
           heading="학년"
           options={GRADE_OPTIONS}
           value={grade}
-          status={toStatus(errors.grade)}
+          status={toFieldStatus(errors.grade)}
           description={errors.grade ?? '3월 기준으로 선택해주세요'}
           onChange={setGrade}
         />
@@ -173,7 +183,7 @@ const BasicInfoStep = ({ applicant, onNext }: BasicInfoStepProps) => {
           inputMode="numeric"
           placeholder="숫자만 입력해 주세요"
           value={semester}
-          status={toStatus(errors.semester)}
+          status={toFieldStatus(errors.semester)}
           description={errors.semester}
           onChange={(event) => setSemester(toDigits(event.target.value, 2))}
         />
@@ -181,39 +191,27 @@ const BasicInfoStep = ({ applicant, onNext }: BasicInfoStepProps) => {
           heading="학적"
           options={ENROLLMENT_STATUS_OPTIONS}
           value={enrollmentStatus}
-          status={toStatus(errors.enrollmentStatus)}
+          status={toFieldStatus(errors.enrollmentStatus)}
           description={errors.enrollmentStatus ?? '3월 기준으로 선택해주세요'}
           onChange={setEnrollmentStatus}
         />
-        <Field>
-          <HeadingRow>
-            <Heading>
-              <HeadingText>포탈 내정보수정 캡처</HeadingText>
-              <Required>*</Required>
-            </Heading>
-            <LinkButton type="button">예시 이미지 보기</LinkButton>
-          </HeadingRow>
-          <ErrorAnchor aria-invalid={!!errors.portalImage} tabIndex={-1}>
-            <FileButton color="assistive" $invalid={!!errors.portalImage} onClick={() => fileInputRef.current?.click()}>
-              {portalImage?.name ?? '파일을 선택해 주세요. (JPG·JPEG·PNG, 5MB 이하)'}
-            </FileButton>
-          </ErrorAnchor>
-          <HiddenFileInput
-            ref={fileInputRef}
-            type="file"
-            accept=".jpg,.jpeg,.png"
-            aria-label="포탈 내정보수정 캡처"
-            onChange={changePortalImage}
-          />
-          <FieldDescription $status={toStatus(errors.portalImage)}>
-            {errors.portalImage ?? '필요한 영역 외 개인정보는 가려주세요.'}
-          </FieldDescription>
-        </Field>
+        <ApplyFileField
+          heading="포탈 내정보수정 캡처"
+          required
+          headingTrailing={<LinkButton type="button">예시 이미지 보기</LinkButton>}
+          placeholder="파일을 선택해 주세요. (JPG·JPEG·PNG, 5MB 이하)"
+          accept=".jpg,.jpeg,.png"
+          file={portalImage ?? undefined}
+          description="필요한 영역 외 개인정보는 가려주세요."
+          error={errors.portalImage}
+          onSelect={changePortalImage}
+          onRemove={() => setPortalImage(null)}
+        />
         <ApplySelect
           heading="지원 경로"
           options={REFERRAL_OPTIONS}
           value={referral}
-          status={toStatus(errors.referral)}
+          status={toFieldStatus(errors.referral)}
           description={errors.referral}
           onChange={setReferral}
         />
@@ -221,21 +219,18 @@ const BasicInfoStep = ({ applicant, onNext }: BasicInfoStepProps) => {
           heading="지원 파트"
           options={PART_OPTIONS_MOCK}
           value={part}
-          status={toStatus(errors.part)}
+          status={toFieldStatus(errors.part)}
           description={errors.part}
-          onChange={setPart}
+          onChange={changePart}
         />
         <Field aria-invalid={!!errors.interviewSlots} tabIndex={-1}>
-          <Heading>
-            <HeadingText>면접 가능 시간</HeadingText>
-            <Required>*</Required>
-          </Heading>
+          <ApplyFieldHeading title="면접 가능 시간" required />
           <InterviewTimeGrid
             schedule={RECRUIT_INTERVIEW_SETTING_MOCK}
             selectedSlots={interviewSlots}
             onToggleSlot={toggleInterviewSlot}
           />
-          <FieldDescription $status={toStatus(errors.interviewSlots)}>
+          <FieldDescription $status={toFieldStatus(errors.interviewSlots)}>
             {errors.interviewSlots ?? `가능한 시간을 모두 선택해 주세요. (${MIN_INTERVIEW_SLOTS}개 이상)`}
           </FieldDescription>
         </Field>
@@ -246,6 +241,16 @@ const BasicInfoStep = ({ applicant, onNext }: BasicInfoStepProps) => {
           다음
         </Button>
       </Actions>
+      {pendingPart && (
+        <Alert
+          heading="파트를 변경하면 작성한 2단계 내용이 모두 초기화됩니다."
+          onDimmerClick={() => setPendingPart(undefined)}
+          actions={[
+            { label: '취소', variant: 'assistive', onClick: () => setPendingPart(undefined) },
+            { label: '변경', variant: 'primary', onClick: confirmPartChange },
+          ]}
+        />
+      )}
     </Root>
   );
 };
@@ -297,31 +302,6 @@ const Field = styled.div`
   outline: none;
 `;
 
-const HeadingRow = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  width: 100%;
-`;
-
-const Heading = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 4px;
-`;
-
-const HeadingText = styled.p`
-  margin: 0;
-  color: ${Black.b900};
-  ${typographyCss(Typography.heading1.bold)}
-`;
-
-const Required = styled.span`
-  color: ${State.error};
-  ${typographyCss(Typography.label1Normal.medium)}
-`;
-
 const LinkButton = styled.button`
   flex-shrink: 0;
   padding: 0;
@@ -331,21 +311,6 @@ const LinkButton = styled.button`
   text-decoration: underline;
   cursor: pointer;
   ${typographyCss(Typography.body2Normal.regular)}
-`;
-
-// [다음]을 눌렀을 때 첫 오류 위치로 스크롤하기 위한 기준점 (useScrollToFirstError가 aria-invalid로 찾는다)
-const ErrorAnchor = styled.div`
-  width: 100%;
-  outline: none;
-`;
-
-const FileButton = styled(Button)<{ $invalid: boolean }>`
-  width: 100%;
-  ${(props) => props.$invalid && `box-shadow: ${getFieldBoxShadow('negative', false)};`}
-`;
-
-const HiddenFileInput = styled.input`
-  display: none;
 `;
 
 const Actions = styled.div`

@@ -2,13 +2,16 @@ import { ReactElement, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
 
+import Alert from '@common/alert/Alert';
 import Category from '@common/category/Category';
 import Divider from '@common/divider/Divider';
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import BasicInfoStep from '@recruit/apply/BasicInfoStep';
 import IdentityStep from '@recruit/apply/IdentityStep';
-import { ApplicantProfile } from '@recruit/apply/mock';
+import { ApplicantProfile, PART_QUESTIONS_MOCK } from '@recruit/apply/mock';
+import PartQuestionStep from '@recruit/apply/PartQuestionStep';
 import { RECRUIT_MOCK } from '@recruit/mock';
+import useLeaveGuard from 'src/hooks/useLeaveGuard';
 import { Label, Orange } from '@utils/constant/color';
 import { media } from '@utils/constant/breakpoint';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -21,16 +24,27 @@ const STEP_ITEMS: { key: ApplyStep; label: string }[] = [
   { key: 'part', label: '2. 파트별 문항' },
 ];
 
-// 파트별 문항 단계는 아직 구현 전이라 머리말이 없다
-const STEP_SECTION: Record<Exclude<ApplyStep, 'part'>, { title: string; description: string }> = {
-  identity: { title: '본인 확인', description: '지원 내역 확인과 결과 조회에 사용할 계정을 만들어주세요' },
-  basic: { title: '기본 정보', description: '지원자의 기본 정보에 대해 알려주세요' },
+const getStepSection = (step: ApplyStep, part: string) => {
+  if (step === 'identity') {
+    return { title: '본인 확인', description: '지원 내역 확인과 결과 조회에 사용할 계정을 만들어주세요' };
+  }
+  if (step === 'basic') return { title: '기본 정보', description: '지원자의 기본 정보에 대해 알려주세요' };
+  return { title: `${part} 파트 문항`, description: '1단계에서 선택한 파트의 문항이에요' };
 };
 
 const RecruitApply = () => {
   const router = useRouter();
   const [step, setStep] = useState<ApplyStep>('identity');
   const [applicant, setApplicant] = useState<ApplicantProfile | null>(null);
+  const [part, setPart] = useState('');
+  // 1단계로 돌아가도 2단계 답변이 남아 있도록 한 번 들어간 2단계는 화면에서 숨기기만 한다
+  const [hasVisitedPart, setHasVisitedPart] = useState(false);
+  const [isPartDirty, setIsPartDirty] = useState(false);
+  // 파트를 바꾸면 2단계를 새로 그려 답변을 초기화한다
+  const [partResetKey, setPartResetKey] = useState(0);
+  const { isConfirmOpen, requestLeave, confirmLeave, cancelLeave, allowLeave } = useLeaveGuard(
+    step === 'part' && isPartDirty,
+  );
 
   // 지원서 작성은 접수 기간 중 [지원하기]로만 들어올 수 있다
   useEffect(() => {
@@ -44,6 +58,8 @@ const RecruitApply = () => {
 
   if (!RECRUIT_MOCK.isApplyOpen) return null;
 
+  const section = getStepSection(step, part);
+
   return (
     <Wrapper>
       <Content>
@@ -51,15 +67,13 @@ const RecruitApply = () => {
           <PageTitle>지원서 작성</PageTitle>
           <StepCategory items={STEP_ITEMS} activeKey={step} size="xlarge" onChange={() => {}} />
         </Header>
-        {step !== 'part' && (
-          <SectionHeader>
-            <SectionTitleGroup>
-              <SectionTitle>{STEP_SECTION[step].title}</SectionTitle>
-              <SectionDescription>{STEP_SECTION[step].description}</SectionDescription>
-            </SectionTitleGroup>
-            <Divider />
-          </SectionHeader>
-        )}
+        <SectionHeader>
+          <SectionTitleGroup>
+            <SectionTitle>{section.title}</SectionTitle>
+            <SectionDescription>{section.description}</SectionDescription>
+          </SectionTitleGroup>
+          <Divider />
+        </SectionHeader>
         {step === 'identity' && (
           <IdentityStep
             onComplete={(profile) => {
@@ -68,8 +82,45 @@ const RecruitApply = () => {
             }}
           />
         )}
-        {step === 'basic' && applicant && <BasicInfoStep applicant={applicant} onNext={() => goToStep('part')} />}
+        {applicant && (
+          <div hidden={step !== 'basic'}>
+            <BasicInfoStep
+              applicant={applicant}
+              hasPartAnswers={isPartDirty}
+              onPartReset={() => setPartResetKey((prev) => prev + 1)}
+              onNext={(selectedPart) => {
+                setPart(selectedPart);
+                setHasVisitedPart(true);
+                goToStep('part');
+              }}
+            />
+          </div>
+        )}
+        {hasVisitedPart && (
+          <div hidden={step !== 'part'}>
+            <PartQuestionStep
+              key={partResetKey}
+              questions={PART_QUESTIONS_MOCK}
+              onPrev={() => requestLeave(() => goToStep('basic'))}
+              onDirtyChange={setIsPartDirty}
+              onSubmitted={() => {
+                allowLeave();
+                router.replace('/recruit');
+              }}
+            />
+          </div>
+        )}
       </Content>
+      {isConfirmOpen && (
+        <Alert
+          heading="작성 중인 내용은 저장되지 않습니다."
+          onDimmerClick={cancelLeave}
+          actions={[
+            { label: '취소', variant: 'assistive', onClick: cancelLeave },
+            { label: '나가기', variant: 'primary', onClick: confirmLeave },
+          ]}
+        />
+      )}
     </Wrapper>
   );
 };
