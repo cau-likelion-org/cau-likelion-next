@@ -14,11 +14,12 @@ import { ApplicantLoginError, loginApplicant } from '@recruit/apply/mock';
 import { isUnfilled } from '@utils/index';
 
 export interface ApplicantLoginFormProps {
+  title: string;
   isApplyOpen: boolean;
-  onSubmittedHistory: (history: { submittedAt: string; part: string }) => void;
+  onSubmittedHistory: (history: { submittedAt: string; part: string }, email: string) => void;
 }
 
-const ApplicantLoginForm = ({ isApplyOpen, onSubmittedHistory }: ApplicantLoginFormProps) => {
+const ApplicantLoginForm = ({ title, isApplyOpen, onSubmittedHistory }: ApplicantLoginFormProps) => {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -28,7 +29,7 @@ const ApplicantLoginForm = ({ isApplyOpen, onSubmittedHistory }: ApplicantLoginF
   const loginMutation = useMutation({
     mutationFn: loginApplicant,
     onSuccess: (history) => {
-      if (history.status === 'SUBMITTED') return onSubmittedHistory(history);
+      if (history.status === 'SUBMITTED') return onSubmittedHistory(history, email);
       setIsNoHistoryOpen(true);
     },
     onError: (error) => {
@@ -50,7 +51,7 @@ const ApplicantLoginForm = ({ isApplyOpen, onSubmittedHistory }: ApplicantLoginF
     <Root>
       <PageHeader
         align="center"
-        title="지원 내역 확인"
+        title={title}
         subtitle={
           <>
             지원서 작성 시 등록한 이메일과 비밀번호로

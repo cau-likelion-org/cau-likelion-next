@@ -1,7 +1,6 @@
 import styled from 'styled-components';
 
-import Button from '@common/button/Button';
-import PageHeader from '@common/pageHeader/PageHeader';
+import RecruitResultLayout, { RecruitResultLayoutProps } from '@recruit/RecruitResultLayout';
 import { Fill, Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
@@ -10,58 +9,31 @@ export interface RecruitSummaryRow {
   value: string;
 }
 
-export interface RecruitSummaryProps {
-  title: string;
-  subtitle: string;
+export interface RecruitSummaryProps extends Omit<RecruitResultLayoutProps, 'children'> {
   rows: RecruitSummaryRow[];
   notices: string[];
-  actionLabel: string;
-  // 안내 박스와 버튼 사이 간격 (Figma 제출 완료 54px, 지원 내역 74px)
-  actionGap: number;
-  onAction: () => void;
 }
 
-// 제출 완료·지원 내역 화면이 함께 쓰는 제출 요약 화면
-const RecruitSummary = ({ title, subtitle, rows, notices, actionLabel, actionGap, onAction }: RecruitSummaryProps) => (
-  <Root>
-    <PageHeader align="center" title={title} subtitle={subtitle} />
-    <Content $actionGap={actionGap}>
-      <SummaryBox>
-        {rows.map(({ label, value }) => (
-          <SummaryRow key={label}>
-            <SummaryLabel>{label}</SummaryLabel>
-            <SummaryValue>{value}</SummaryValue>
-          </SummaryRow>
-        ))}
-      </SummaryBox>
-      <NoticeBox>
-        <NoticeTitle>결과 발표 안내</NoticeTitle>
-        {notices.map((notice) => (
-          <NoticeText key={notice}>{notice}</NoticeText>
-        ))}
-      </NoticeBox>
-    </Content>
-    <Button onClick={onAction}>{actionLabel}</Button>
-  </Root>
+const RecruitSummary = ({ rows, notices, ...layoutProps }: RecruitSummaryProps) => (
+  <RecruitResultLayout {...layoutProps}>
+    <SummaryBox>
+      {rows.map(({ label, value }) => (
+        <SummaryRow key={label}>
+          <SummaryLabel>{label}</SummaryLabel>
+          <SummaryValue>{value}</SummaryValue>
+        </SummaryRow>
+      ))}
+    </SummaryBox>
+    <NoticeBox>
+      <NoticeTitle>결과 발표 안내</NoticeTitle>
+      {notices.map((notice) => (
+        <NoticeText key={notice}>{notice}</NoticeText>
+      ))}
+    </NoticeBox>
+  </RecruitResultLayout>
 );
 
 export default RecruitSummary;
-
-const Root = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  max-width: 640px;
-`;
-
-const Content = styled.div<{ $actionGap: number }>`
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  width: 100%;
-  margin: 58px 0 ${(props) => props.$actionGap}px;
-`;
 
 const SummaryBox = styled.dl`
   display: flex;

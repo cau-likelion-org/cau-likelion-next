@@ -20,6 +20,10 @@ export const VERIFICATION_EXPIRE_SECONDS = 10 * 60;
 const MOCK_APPLICANT_STATUS: Record<string, ApplicantStatus> = {
   'writing@example.com': 'IN_PROGRESS',
   'submitted@example.com': 'SUBMITTED',
+  // 결과 확인용 (result/mock.ts)
+  'document-fail@example.com': 'SUBMITTED',
+  'final-pass@example.com': 'SUBMITTED',
+  'final-fail@example.com': 'SUBMITTED',
 };
 // 학번 중복 확인용: 이 학번으로 [다음]을 누르면 이미 지원 내역이 있다고 응답한다
 const MOCK_DUPLICATE_STUDENT_ID = '20240000';

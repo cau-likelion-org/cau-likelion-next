@@ -18,13 +18,16 @@ interface SubmittedHistory {
 const RecruitHistory = () => {
   const router = useRouter();
   const [history, setHistory] = useState<SubmittedHistory | null>(null);
-  // 비밀번호 재설정을 마치고 돌아오면 쿼리로 알려준다
   const isPasswordChanged = router.query.passwordChanged === 'true';
 
   if (!history) {
     return (
       <Wrapper>
-        <ApplicantLoginForm isApplyOpen={RECRUIT_MOCK.isApplyOpen} onSubmittedHistory={setHistory} />
+        <ApplicantLoginForm
+          title="지원 내역 확인"
+          isApplyOpen={RECRUIT_MOCK.isApplyOpen}
+          onSubmittedHistory={setHistory}
+        />
         <ToastWrapper>
           <Toast
             variant="positive"
