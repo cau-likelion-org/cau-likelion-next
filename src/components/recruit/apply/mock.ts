@@ -84,16 +84,16 @@ export const loginApplicant = async ({ email, password }: { email: string; passw
   return history;
 };
 
-// 비밀번호 재설정: 가입 여부를 드러내지 않도록 어떤 이메일이든 인증번호를 보낸 것으로 응답하고,
-// 계정이 없는 이메일은 변경 단계에서 실패로 응답한다
+// 비밀번호 재설정: 계정 존재 여부가 드러나지 않도록 어떤 이메일이든 같은 흐름으로 성공 응답한다
 export const requestPasswordResetCode = async (email: string) => {
   await delay();
   return !!email;
 };
 
-export const resetApplicantPassword = async ({ email }: { email: string; password: string }) => {
+// 변경 실패 확인용: 오프라인이면 실패로 응답한다
+export const resetApplicantPassword = async (_account: { email: string; password: string }) => {
   await delay();
-  if (!MOCK_APPLICANT_STATUS[email]) throw new Error('account not found');
+  if (!navigator.onLine) throw new Error('network error');
 };
 
 export const GRADE_OPTIONS = ['1학년', '2학년', '3학년', '4학년', '5학년 이상'];
