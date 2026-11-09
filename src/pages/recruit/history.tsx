@@ -7,7 +7,6 @@ import ApplicantLoginForm from '@recruit/history/ApplicantLoginForm';
 import RecruitSummary from '@recruit/RecruitSummary';
 import { RECRUIT_MOCK } from '@recruit/mock';
 import { toDateTimeLabel } from '@utils/index';
-import { media } from '@utils/constant/breakpoint';
 
 interface SubmittedHistory {
   submittedAt: string;
@@ -55,11 +54,7 @@ const Wrapper = styled.div`
   display: flex;
   justify-content: center;
   width: 100%;
-  padding: 80px 20px 68px;
-
-  ${media.xs} {
-    padding-top: 40px;
-  }
+  padding: 0 20px 68px;
 `;
 
 const HistoryWrapper = styled(Wrapper)`

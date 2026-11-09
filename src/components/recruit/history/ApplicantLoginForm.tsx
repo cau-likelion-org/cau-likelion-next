@@ -7,12 +7,11 @@ import Alert from '@common/alert/Alert';
 import Button from '@common/button/Button';
 import TextButton from '@common/textButton/TextButton';
 import TextField from '@common/textField/TextField';
+import PageHeader from '@common/pageHeader/PageHeader';
 import ApplyNoticeModal from '@recruit/apply/ApplyNoticeModal';
 import { applyFieldHeadingCss } from '@recruit/apply/applyFieldStyle';
 import { ApplicantLoginError, loginApplicant } from '@recruit/apply/mock';
 import { isUnfilled } from '@utils/index';
-import { Orange } from '@utils/constant/color';
-import { Typography, typographyCss } from '@utils/constant/typography';
 
 export interface ApplicantLoginFormProps {
   isApplyOpen: boolean;
@@ -49,14 +48,17 @@ const ApplicantLoginForm = ({ isApplyOpen, onSubmittedHistory }: ApplicantLoginF
 
   return (
     <Root>
-      <TitleGroup>
-        <Title>지원 내역 확인</Title>
-        <Subtitle>
-          지원서 작성 시 등록한 이메일과 비밀번호로
-          <br />
-          로그인해 주세요.
-        </Subtitle>
-      </TitleGroup>
+      <PageHeader
+        align="center"
+        title="지원 내역 확인"
+        subtitle={
+          <>
+            지원서 작성 시 등록한 이메일과 비밀번호로
+            <br />
+            로그인해 주세요.
+          </>
+        }
+      />
       <Form onSubmit={submit}>
         <LoginTextField
           heading="이메일"
@@ -121,26 +123,6 @@ const Root = styled.div`
   gap: 62px;
   width: 100%;
   max-width: 520px;
-`;
-
-const TitleGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 24px;
-  color: ${Orange.o500};
-  text-align: center;
-  word-break: keep-all;
-`;
-
-const Title = styled.h1`
-  margin: 0;
-  ${typographyCss(Typography.display2.bold)}
-`;
-
-const Subtitle = styled.p`
-  margin: 0;
-  ${typographyCss(Typography.heading2.medium)}
 `;
 
 const Form = styled.form`

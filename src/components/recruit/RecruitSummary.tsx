@@ -1,7 +1,8 @@
 import styled from 'styled-components';
 
 import Button from '@common/button/Button';
-import { Fill, Label, Orange } from '@utils/constant/color';
+import PageHeader from '@common/pageHeader/PageHeader';
+import { Fill, Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 export interface RecruitSummaryRow {
@@ -23,10 +24,7 @@ export interface RecruitSummaryProps {
 // 제출 완료·지원 내역 화면이 함께 쓰는 제출 요약 화면
 const RecruitSummary = ({ title, subtitle, rows, notices, actionLabel, actionGap, onAction }: RecruitSummaryProps) => (
   <Root>
-    <TitleGroup>
-      <Title>{title}</Title>
-      <Subtitle>{subtitle}</Subtitle>
-    </TitleGroup>
+    <PageHeader align="center" title={title} subtitle={subtitle} />
     <Content $actionGap={actionGap}>
       <SummaryBox>
         {rows.map(({ label, value }) => (
@@ -55,26 +53,6 @@ const Root = styled.div`
   align-items: center;
   width: 100%;
   max-width: 640px;
-`;
-
-const TitleGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 24px;
-  color: ${Orange.o500};
-  text-align: center;
-  word-break: keep-all;
-`;
-
-const Title = styled.h1`
-  margin: 0;
-  ${typographyCss(Typography.display2.bold)}
-`;
-
-const Subtitle = styled.p`
-  margin: 0;
-  ${typographyCss(Typography.heading2.medium)}
 `;
 
 const Content = styled.div<{ $actionGap: number }>`

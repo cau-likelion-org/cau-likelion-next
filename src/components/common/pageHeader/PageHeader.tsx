@@ -26,6 +26,7 @@ const Wrapper = styled.div<{ $align: 'left' | 'center' }>`
   width: 100%;
   display: flex;
   flex-direction: column;
+  gap: 24px;
   align-items: ${(props) => (props.$align === 'center' ? 'center' : 'flex-start')};
   text-align: ${(props) => (props.$align === 'center' ? 'center' : 'left')};
   padding-top: 80px;
