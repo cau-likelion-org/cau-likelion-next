@@ -260,9 +260,11 @@ const IdentityStep = ({ onComplete }: IdentityStepProps) => {
       {dialog === 'inProgress' && (
         <Alert
           heading="이미 작성 중인 지원서가 있습니다."
-          body="로그인 후 이어서 작성해 주세요."
           onDimmerClick={() => setDialog(null)}
-          actions={[{ label: '확인', variant: 'primary', onClick: () => setDialog(null) }]}
+          actions={[
+            { label: '닫기', variant: 'assistive', onClick: () => setDialog(null) },
+            { label: '로그인하기', variant: 'primary', onClick: () => router.push('/recruit/history') },
+          ]}
         />
       )}
       {dialog === 'submitted' && (
@@ -272,7 +274,7 @@ const IdentityStep = ({ onComplete }: IdentityStepProps) => {
           cancelLabel="닫기"
           confirmLabel="지원 내역 확인하기"
           onCancel={() => setDialog(null)}
-          onConfirm={() => setDialog(null)}
+          onConfirm={() => router.push('/recruit/history')}
         />
       )}
       {dialog === 'closed' && (

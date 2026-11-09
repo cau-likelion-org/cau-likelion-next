@@ -40,7 +40,7 @@ const RecruitHeroSection = ({ recruit }: RecruitHeroSectionProps) => {
                 <ApplyButton size="medium" onClick={() => router.push('/recruit/apply')}>
                   지원하기
                 </ApplyButton>
-                <Button size="medium" variant="outlined">
+                <Button size="medium" variant="outlined" onClick={() => router.push('/recruit/history')}>
                   지원 내역 확인하기
                 </Button>
               </ButtonRow>

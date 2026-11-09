@@ -23,7 +23,7 @@ const ApplyNoticeModal = ({
   <Modal size="medium" ariaLabel={title} onClose={onCancel}>
     <Information align="center">
       <ModalTitle>{title}</ModalTitle>
-      <ModalDescription>{description}</ModalDescription>
+      <Description>{description}</Description>
     </Information>
     <Actions>
       <Button variant="outlined" color="assistive" onClick={onCancel}>
@@ -41,6 +41,11 @@ const Information = styled(ModalInformation)`
     gap: 22px;
     padding-bottom: 20px;
   }
+`;
+
+// 줄을 나눌 때는 \n을 넣는다
+const Description = styled(ModalDescription)`
+  white-space: pre-line;
 `;
 
 // Figma Action Area(Compact)를 쓰는 모달이라 버튼 줄 여백이 글자 버튼 모달과 다르다

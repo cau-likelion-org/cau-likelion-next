@@ -67,6 +67,23 @@ export const createApplicantAccount = async (account: ApplicantAccount) => {
   return { email: account.email };
 };
 
+// 지원 내역 확인용: 위 예외 이메일 계정만 있고, 비밀번호는 모두 이 값이다
+const MOCK_APPLICANT_PASSWORD = 'password1!';
+
+export class ApplicantLoginError extends Error {}
+
+export type ApplicationHistory =
+  { status: 'SUBMITTED'; submittedAt: string; part: string } | { status: Exclude<ApplicantStatus, 'SUBMITTED'> };
+
+export const loginApplicant = async ({ email, password }: { email: string; password: string }) => {
+  await delay();
+  const status = MOCK_APPLICANT_STATUS[email];
+  if (!status || password !== MOCK_APPLICANT_PASSWORD) throw new ApplicantLoginError();
+  const history: ApplicationHistory =
+    status === 'SUBMITTED' ? { status, submittedAt: '2027-03-08T21:34:00+09:00', part: '기획·디자인' } : { status };
+  return history;
+};
+
 export const GRADE_OPTIONS = ['1학년', '2학년', '3학년', '4학년', '5학년 이상'];
 export const ENROLLMENT_STATUS_OPTIONS = ['재학', '휴학', '졸업 유예'];
 export const REFERRAL_OPTIONS = ['멋사 중앙대 홈페이지', '인스타그램', '에브리타임', '지인 추천', '기타'];
