@@ -10,10 +10,12 @@ export interface RecruitFaq {
   answer: string;
 }
 
+export type RecruitPhase =
+  'BEFORE_APPLY' | 'APPLYING' | 'APPLY_CLOSED' | 'DOCUMENT_ANNOUNCED' | 'FINAL_ANNOUNCED' | 'RESULT_CLOSED';
+
 export interface RecruitInfo {
   generation: number;
-  stageLabel: string;
-  statusLabel: string;
+  phase: RecruitPhase;
   title: string;
   applyPeriod: string;
   applyButtonLabel: string;
@@ -22,14 +24,16 @@ export interface RecruitInfo {
   faqs: RecruitFaq[];
 }
 
+// 기간별 화면 확인용: 이 값을 바꾸면 지원하기 페이지의 배지·버튼이 해당 기간으로 바뀐다
+const MOCK_PHASE: RecruitPhase = 'APPLYING';
+
 export const RECRUIT_MOCK: RecruitInfo = {
   generation: 14,
-  stageLabel: '서류 접수',
-  statusLabel: '접수 중',
+  phase: MOCK_PHASE,
   title: '멋쟁이사자처럼 중앙대학교 14기 아기사자 모집',
   applyPeriod: '서류 접수 2027.03.02(화) 10:00 ~ 2027.03.09(화) 23:59',
   applyButtonLabel: '지원하기 (3/2 10:00 오픈)',
-  isApplyOpen: true,
+  isApplyOpen: MOCK_PHASE === 'APPLYING',
   schedules: [
     { label: '서류 접수', period: '2027.03.02(화) 10:00 ~ 2027.03.09(화) 23:59' },
     { label: '서류 결과 발표', period: '2027.03.13(토) 12:00' },
