@@ -160,7 +160,6 @@ const Row = styled.div`
   width: 100%;
 `;
 
-// 인증을 마친 이메일 칸은 Figma에서 비활성 배경에 보조 글자색이다
 const EmailTextField = styled(TextField)`
   ${applyFieldHeadingCss}
 

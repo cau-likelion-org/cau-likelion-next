@@ -153,7 +153,6 @@ const Wrapper = styled.div`
 `;
 
 // 제출 완료 화면은 버튼과 푸터 사이 여백이 Figma 기준 113px(레이아웃 하단 여백 93px 포함)
-// 제목 위 여백은 PageHeader가 갖고 있다
 const CompleteWrapper = styled(Wrapper)`
   padding-top: 0;
   padding-bottom: 20px;

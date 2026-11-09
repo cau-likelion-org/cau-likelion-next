@@ -18,7 +18,6 @@ export interface PasswordFieldsProps {
   onPasswordConfirmChange: (passwordConfirm: string) => void;
 }
 
-// 지원서 작성 0단계와 비밀번호 재설정이 함께 쓰는 비밀번호·비밀번호 확인 입력칸
 const PasswordFields = ({
   heading,
   required = false,
