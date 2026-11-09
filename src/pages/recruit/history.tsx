@@ -3,6 +3,8 @@ import { useRouter } from 'next/router';
 import styled from 'styled-components';
 
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
+import Toast from '@common/toast/Toast';
+import { ToastWrapper } from '@common/toast/toastLayout';
 import ApplicantLoginForm from '@recruit/history/ApplicantLoginForm';
 import RecruitSummary from '@recruit/RecruitSummary';
 import { RECRUIT_MOCK } from '@recruit/mock';
@@ -16,11 +18,21 @@ interface SubmittedHistory {
 const RecruitHistory = () => {
   const router = useRouter();
   const [history, setHistory] = useState<SubmittedHistory | null>(null);
+  // 비밀번호 재설정을 마치고 돌아오면 쿼리로 알려준다
+  const isPasswordChanged = router.query.passwordChanged === 'true';
 
   if (!history) {
     return (
       <Wrapper>
         <ApplicantLoginForm isApplyOpen={RECRUIT_MOCK.isApplyOpen} onSubmittedHistory={setHistory} />
+        <ToastWrapper>
+          <Toast
+            variant="positive"
+            text="비밀번호가 변경되었습니다."
+            show={isPasswordChanged}
+            onHidden={() => router.replace('/recruit/history', undefined, { shallow: true })}
+          />
+        </ToastWrapper>
       </Wrapper>
     );
   }

@@ -84,6 +84,18 @@ export const loginApplicant = async ({ email, password }: { email: string; passw
   return history;
 };
 
+// 비밀번호 재설정: 가입 여부를 드러내지 않도록 어떤 이메일이든 인증번호를 보낸 것으로 응답하고,
+// 계정이 없는 이메일은 변경 단계에서 실패로 응답한다
+export const requestPasswordResetCode = async (email: string) => {
+  await delay();
+  return !!email;
+};
+
+export const resetApplicantPassword = async ({ email }: { email: string; password: string }) => {
+  await delay();
+  if (!MOCK_APPLICANT_STATUS[email]) throw new Error('account not found');
+};
+
 export const GRADE_OPTIONS = ['1학년', '2학년', '3학년', '4학년', '5학년 이상'];
 export const ENROLLMENT_STATUS_OPTIONS = ['재학', '휴학', '졸업 유예'];
 export const REFERRAL_OPTIONS = ['멋사 중앙대 홈페이지', '인스타그램', '에브리타임', '지인 추천', '기타'];

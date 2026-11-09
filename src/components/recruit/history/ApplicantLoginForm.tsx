@@ -89,7 +89,9 @@ const ApplicantLoginForm = ({ isApplyOpen, onSubmittedHistory }: ApplicantLoginF
           <LoginButton type="submit" disabled={!canLogin} loading={loginMutation.isPending}>
             로그인
           </LoginButton>
-          <ResetPasswordButton>비밀번호 재설정</ResetPasswordButton>
+          <ResetPasswordButton onClick={() => router.push('/recruit/reset-password')}>
+            비밀번호 재설정
+          </ResetPasswordButton>
         </Actions>
       </Form>
       {isNoHistoryOpen &&
