@@ -1,29 +1,18 @@
 import styled from 'styled-components';
 
+import InfoList, { InfoListRow } from '@recruit/InfoList';
 import RecruitResultLayout, { RecruitResultLayoutProps } from '@recruit/RecruitResultLayout';
-import { Fill, Label } from '@utils/constant/color';
+import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
-export interface RecruitSummaryRow {
-  label: string;
-  value: string;
-}
-
 export interface RecruitSummaryProps extends Omit<RecruitResultLayoutProps, 'children'> {
-  rows: RecruitSummaryRow[];
+  rows: InfoListRow[];
   notices: string[];
 }
 
 const RecruitSummary = ({ rows, notices, ...layoutProps }: RecruitSummaryProps) => (
   <RecruitResultLayout {...layoutProps}>
-    <SummaryBox>
-      {rows.map(({ label, value }) => (
-        <SummaryRow key={label}>
-          <SummaryLabel>{label}</SummaryLabel>
-          <SummaryValue>{value}</SummaryValue>
-        </SummaryRow>
-      ))}
-    </SummaryBox>
+    <InfoList rows={rows} />
     <NoticeBox>
       <NoticeTitle>결과 발표 안내</NoticeTitle>
       {notices.map((notice) => (
@@ -34,37 +23,6 @@ const RecruitSummary = ({ rows, notices, ...layoutProps }: RecruitSummaryProps) 
 );
 
 export default RecruitSummary;
-
-const SummaryBox = styled.dl`
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  margin: 0;
-  padding: 16px 18px;
-  border-radius: 8px;
-  background-color: ${Fill.subtle};
-`;
-
-const SummaryRow = styled.div`
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-`;
-
-const SummaryLabel = styled.dt`
-  flex-shrink: 0;
-  width: 72px;
-  color: ${Label.alternative};
-  ${typographyCss(Typography.body1Normal.regular)}
-`;
-
-const SummaryValue = styled.dd`
-  flex: 1 0 0;
-  min-width: 0;
-  margin: 0;
-  color: ${Label.strong};
-  ${typographyCss(Typography.body1Normal.medium)}
-`;
 
 const NoticeBox = styled.div`
   display: flex;

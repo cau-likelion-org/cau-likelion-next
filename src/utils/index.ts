@@ -33,6 +33,31 @@ export const toDateTimeLabel = (date: Date) => {
   );
 };
 
+const toMinutesOfDay = (time: string) => {
+  const [hours, minutes] = time.split(':').map(Number);
+  return hours * 60 + minutes;
+};
+
+const toTimeOfDay = (minutes: number) => `${pad2(Math.floor(minutes / 60))}:${pad2(minutes % 60)}`;
+
+export const formatInterviewSlots = (slots: string[], unitMinutes: number) => {
+  const ranges: { date: string; start: number; end: number }[] = [];
+  [...slots].sort().forEach((slot) => {
+    const [date, time] = slot.split('T');
+    const start = toMinutesOfDay(time);
+    const last = ranges[ranges.length - 1];
+    if (last && last.date === date && last.end === start) last.end = start + unitMinutes;
+    else ranges.push({ date, start, end: start + unitMinutes });
+  });
+  return ranges
+    .map(({ date, start, end }) => {
+      const [year, month, day] = date.split('-').map(Number);
+      const weekday = DAY_LABELS[new Date(Date.UTC(year, month - 1, day)).getUTCDay()];
+      return `${month}/${day}(${weekday}) ${toTimeOfDay(start)}-${toTimeOfDay(end)}`;
+    })
+    .join(', ');
+};
+
 export const isUnfilled = (value: string) => value.trim().length === 0;
 
 // 한글 등 이메일에 쓰일 수 없는 문자가 섞여 들어가는 것을 막기 위해 허용 문자를 제한한다

@@ -26,6 +26,7 @@ const BREADCRUMB_LABEL: Record<SidebarActive, string> = {
   'admin-members': '전체 회원/파트 관리',
   'admin-recruit': '리크루팅 사전 알림 발송',
   'recruit-settings': '기수/문항 관리',
+  'recruit-applicants': '지원서 관리',
 };
 
 // 페이지 바깥(getLayout)에서 렌더되어 마이페이지 안에서 이동해도 유지되므로,
