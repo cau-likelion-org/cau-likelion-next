@@ -96,6 +96,12 @@ export const canManageSitePages = (role: MemberRole) => role === 'ADMIN';
 // 전체 구성원 권한 설정은 중하하 관리자 전용 권한
 export const canManageMemberRoles = (role: MemberRole) => role === 'ADMIN';
 
+// 리크루팅 백오피스(회차·문항 설정, 지원서 열람·다운로드, 결과 입력·공개)는 회장단·관리자 권한
+export const canManageRecruit = (role: MemberRole) => FULL_ADMIN_ROLES.includes(role);
+
+// 지원서 삭제는 관리자 전용 권한
+export const canDeleteApplication = (role: MemberRole) => role === 'ADMIN';
+
 export const sortArchivingListDesc = <T extends IGalleryData | IProjectData>(
   data: ArchivingArrayType<T>,
 ): Array<[string, T[]]> => {

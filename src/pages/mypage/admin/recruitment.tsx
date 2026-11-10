@@ -1,11 +1,8 @@
-import { ReactElement, useEffect, useState } from 'react';
+import { ReactElement, useState } from 'react';
 import dynamic from 'next/dynamic';
-import { useRouter } from 'next/router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { AxiosError } from 'axios';
 import styled from 'styled-components';
 
-import { UserProfile } from '@@types/request';
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import MyPageShell from '@mypage/component/MyPageShell';
 import PageLoadingGate from '@common/pageGate/PageLoadingGate';
@@ -15,7 +12,6 @@ import { ToastWrapper } from '@common/toast/toastLayout';
 import RecruitmentSubscriberSection, { ALL_PART_FILTER } from '@mypage/admin/recruitment/RecruitmentSubscriberSection';
 import RecruitmentTextSection from '@mypage/admin/recruitment/RecruitmentTextSection';
 import type { RecruitmentComposeForm } from '@mypage/admin/recruitment/RecruitmentComposeModal';
-import { getUserProfile } from 'src/apis/account';
 import {
   createRecruitmentText,
   getSubscriberInterestParts,
@@ -26,6 +22,7 @@ import {
   cancelRecruitmentText,
   RecruitmentTextResponse,
 } from 'src/apis/recruitment';
+import useRoleGuard from 'src/apis/useRoleGuard';
 import useTokenStore from 'src/store/useTokenStore';
 import { COMMON_PART_NAME } from '@utils/constant';
 import { isAdminRole } from '@utils/index';
@@ -45,26 +42,9 @@ const RecruitmentResendModal = dynamic(() => import('@mypage/admin/recruitment/R
 
 const MyPageAdminRecruitment = () => {
   const tokenState = useTokenStore((state) => state.token);
-  const hasHydrated = useTokenStore((state) => state.hasHydrated);
-  const router = useRouter();
   const queryClient = useQueryClient();
 
-  const { data: userProfile, isError: isUserProfileError } = useQuery<UserProfile, AxiosError>({
-    queryKey: ['userProfile'],
-    queryFn: () => getUserProfile(tokenState),
-    retry: false,
-    enabled: !!tokenState.access,
-  });
-
-  useEffect(() => {
-    if (hasHydrated && !tokenState.access) router.push('/login');
-  }, [hasHydrated, tokenState, router]);
-
-  useEffect(() => {
-    if (userProfile && !isAdminRole(userProfile.role)) router.push('/mypage');
-  }, [userProfile, router]);
-
-  const isAuthorized = !!userProfile && isAdminRole(userProfile.role);
+  const { isAuthorized, isUserProfileError } = useRoleGuard(isAdminRole);
 
   const [interestPartFilter, setInterestPartFilter] = useState(ALL_PART_FILTER);
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());

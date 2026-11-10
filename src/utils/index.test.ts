@@ -3,7 +3,9 @@ import { describe, expect, it } from 'vitest';
 
 import {
   canCreateAttendance,
+  canDeleteApplication,
   canManageMemberRoles,
+  canManageRecruit,
   canManageSitePages,
   excludeCommonPart,
   formatFileSize,
@@ -216,6 +218,14 @@ describe('역할별 권한', () => {
     expect(canManageSitePages('PRESIDENT')).toBe(false);
     expect(canManageMemberRoles('ADMIN')).toBe(true);
     expect(canManageMemberRoles('PRESIDENT')).toBe(false);
+  });
+
+  it('리크루팅 백오피스는 회장단·관리자만, 지원서 삭제는 관리자만 할 수 있다', () => {
+    expect(canManageRecruit('PRESIDENT')).toBe(true);
+    expect(canManageRecruit('ADMIN')).toBe(true);
+    expect(canManageRecruit('STAFF')).toBe(false);
+    expect(canDeleteApplication('ADMIN')).toBe(true);
+    expect(canDeleteApplication('PRESIDENT')).toBe(false);
   });
 });
 

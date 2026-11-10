@@ -1,10 +1,6 @@
-import { ReactElement, useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
-import { useQuery } from '@tanstack/react-query';
-import { AxiosError } from 'axios';
+import { ReactElement, useState } from 'react';
 import styled from 'styled-components';
 
-import { UserProfile } from '@@types/request';
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import MyPageShell from '@mypage/component/MyPageShell';
 import PageLoadingGate from '@common/pageGate/PageLoadingGate';
@@ -22,10 +18,9 @@ import {
   RECRUIT_SECOND_STEP_SETTING_MOCK,
   RECRUIT_NOTICE_SETTING_MOCK,
 } from '@mypage/recruit/mock';
-import { getUserProfile } from 'src/apis/account';
-import useTokenStore from 'src/store/useTokenStore';
+import useRoleGuard from 'src/apis/useRoleGuard';
 import useLeaveGuard from 'src/hooks/useLeaveGuard';
-import { isAdminRole } from '@utils/index';
+import { canManageRecruit } from '@utils/index';
 
 const TAB_ITEMS = [
   { key: 'generation', label: '기수 설정' },
@@ -35,26 +30,7 @@ const TAB_ITEMS = [
 ];
 
 const MyPageRecruitSettings = () => {
-  const tokenState = useTokenStore((state) => state.token);
-  const hasHydrated = useTokenStore((state) => state.hasHydrated);
-  const router = useRouter();
-
-  const { data: userProfile, isError: isUserProfileError } = useQuery<UserProfile, AxiosError>({
-    queryKey: ['userProfile'],
-    queryFn: () => getUserProfile(tokenState),
-    retry: false,
-    enabled: !!tokenState.access,
-  });
-
-  useEffect(() => {
-    if (hasHydrated && !tokenState.access) router.push('/login');
-  }, [hasHydrated, tokenState, router]);
-
-  useEffect(() => {
-    if (userProfile && !isAdminRole(userProfile.role)) router.push('/mypage');
-  }, [userProfile, router]);
-
-  const isAuthorized = !!userProfile && isAdminRole(userProfile.role);
+  const { isAuthorized, isUserProfileError } = useRoleGuard(canManageRecruit);
 
   const [activeTab, setActiveTab] = useState(TAB_ITEMS[0].key);
   const [toastMessage, setToastMessage] = useState('');

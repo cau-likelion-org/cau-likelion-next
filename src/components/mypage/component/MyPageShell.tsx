@@ -11,7 +11,7 @@ import PageScrollbar from '@common/pageScrollbar/PageScrollbar';
 import { IcChevronRight } from '@assets/svg';
 import { getUserProfile } from 'src/apis/account';
 import useTokenStore from 'src/store/useTokenStore';
-import { canManageSitePages, isAdminRole } from '@utils/index';
+import { canManageRecruit, canManageSitePages } from '@utils/index';
 import { Black, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { containerCss, media } from '@utils/constant/breakpoint';
@@ -48,8 +48,8 @@ const MyPageShell = ({
     enabled: !!tokenState.access,
   });
   const showAdminMenu = isAdmin ?? (!!userProfile && canManageSitePages(userProfile.role));
-  // 리크루팅은 운영진·회장도 관리하므로 관리자 메뉴보다 넓은 권한으로 노출한다
-  const showRecruitMenu = isAdmin ?? (!!userProfile && isAdminRole(userProfile.role));
+  // 리크루팅은 회장단도 관리하므로 관리자 메뉴보다 넓은 권한으로 노출한다
+  const showRecruitMenu = isAdmin ?? (!!userProfile && canManageRecruit(userProfile.role));
 
   const [isRouting, setIsRouting] = useState(false);
   // 목적지 페이지 컴포넌트가 완전히 교체되기 전에도, 클릭한 목적지 기준으로 사이드바 활성탭을 바로 반영하기 위한 값
