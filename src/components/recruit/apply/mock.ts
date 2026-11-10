@@ -20,6 +20,10 @@ export const VERIFICATION_EXPIRE_SECONDS = 10 * 60;
 const MOCK_APPLICANT_STATUS: Record<string, ApplicantStatus> = {
   'writing@example.com': 'IN_PROGRESS',
   'submitted@example.com': 'SUBMITTED',
+  // 결과 확인용 (result/mock.ts)
+  'document-fail@example.com': 'SUBMITTED',
+  'final-pass@example.com': 'SUBMITTED',
+  'final-fail@example.com': 'SUBMITTED',
 };
 // 학번 중복 확인용: 이 학번으로 [다음]을 누르면 이미 지원 내역이 있다고 응답한다
 const MOCK_DUPLICATE_STUDENT_ID = '20240000';
@@ -30,6 +34,7 @@ const delay = () => new Promise((resolve) => setTimeout(resolve, 300));
 
 export const requestVerificationCode = async (email: string) => {
   await delay();
+  if (!navigator.onLine) throw new Error('network error');
   return MOCK_APPLICANT_STATUS[email] ?? 'NEW';
 };
 
@@ -65,6 +70,43 @@ export const createApplicantAccount = async (account: ApplicantAccount) => {
   await delay();
   if (isApplyDeadlinePassed()) throw new ApplyClosedError();
   return { email: account.email };
+};
+
+// 지원 내역 확인용: 위 예외 이메일 계정만 있고, 비밀번호는 모두 이 값이다
+const MOCK_APPLICANT_PASSWORD = 'password1!';
+
+export class ApplicantLoginError extends Error {}
+
+export interface SubmittedHistory {
+  submittedAt: string;
+  part: string;
+}
+
+export type ApplicationHistory =
+  ({ status: 'SUBMITTED' } & SubmittedHistory) | { status: Exclude<ApplicantStatus, 'SUBMITTED'> };
+
+// 로그인 요청 실패 확인용: 오프라인이면 실패로 응답한다
+export const loginApplicant = async ({ email, password }: { email: string; password: string }) => {
+  await delay();
+  if (!navigator.onLine) throw new Error('network error');
+  const status = MOCK_APPLICANT_STATUS[email];
+  if (!status || password !== MOCK_APPLICANT_PASSWORD) throw new ApplicantLoginError();
+  const history: ApplicationHistory =
+    status === 'SUBMITTED' ? { status, submittedAt: '2027-03-08T21:34:00+09:00', part: '기획·디자인' } : { status };
+  return history;
+};
+
+// 비밀번호 재설정: 계정 존재 여부가 드러나지 않도록 어떤 이메일이든 같은 흐름으로 성공 응답한다
+export const requestPasswordResetCode = async (email: string) => {
+  await delay();
+  if (!navigator.onLine) throw new Error('network error');
+  return !!email;
+};
+
+// 변경 실패 확인용: 오프라인이면 실패로 응답한다
+export const resetApplicantPassword = async (_account: { email: string; password: string }) => {
+  await delay();
+  if (!navigator.onLine) throw new Error('network error');
 };
 
 export const GRADE_OPTIONS = ['1학년', '2학년', '3학년', '4학년', '5학년 이상'];

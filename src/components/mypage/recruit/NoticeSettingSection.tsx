@@ -177,6 +177,7 @@ const NoticeSettingSection = ({ initialValues, onSave, onDirtyChange }: NoticeSe
           showErrors={showErrors}
           disabled={!isEditing}
           minItems={1}
+          reorderable={hasSaved}
         />
       </Group>
       <Actions>

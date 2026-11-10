@@ -69,8 +69,13 @@ describe('toDateString', () => {
 
 describe('toDateTimeLabel', () => {
   it('연.월.일(요일) 시:분 형태로 두 자리씩 맞춰 표시한다', () => {
-    expect(toDateTimeLabel(new Date(2027, 2, 8, 21, 34))).toBe('2027.03.08(월) 21:34');
-    expect(toDateTimeLabel(new Date(2027, 0, 3, 9, 5))).toBe('2027.01.03(일) 09:05');
+    expect(toDateTimeLabel(new Date('2027-03-08T21:34:00+09:00'))).toBe('2027.03.08(월) 21:34');
+    expect(toDateTimeLabel(new Date('2027-01-03T09:05:00+09:00'))).toBe('2027.01.03(일) 09:05');
+  });
+
+  it('기기 시간대와 관계없이 한국 시간으로 표시한다', () => {
+    expect(toDateTimeLabel(new Date('2027-03-08T12:34:00Z'))).toBe('2027.03.08(월) 21:34');
+    expect(toDateTimeLabel(new Date('2027-03-08T16:00:00Z'))).toBe('2027.03.09(화) 01:00');
   });
 });
 
