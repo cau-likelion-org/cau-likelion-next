@@ -12,7 +12,7 @@ import CircularLoading from '@common/loading/CircularLoading';
 import EmptyState from '@common/emptyState/EmptyState';
 import PageLoadingGate from '@common/pageGate/PageLoadingGate';
 import MyPageShell from '@mypage/component/MyPageShell';
-import PartSelect from '@mypage/component/PartSelect';
+import TextSelect from '@common/select/TextSelect';
 import StaffAssignmentCard from '@mypage/component/assignment/StaffAssignmentCard';
 import WeeklyAssignmentCard, { WeeklyAssignmentGroup } from '@mypage/component/assignment/WeeklyAssignmentCard';
 import { getGenerations, getUserProfile } from 'src/apis/account';
@@ -187,7 +187,12 @@ const MyPageAssignment = () => {
             <TitleRow>
               <SectionTitle>주차별 과제 현황</SectionTitle>
               {isPresident ? (
-                <PartSelect value={currentPartName} options={partOptions} onChange={setSelectedPartName} />
+                <TextSelect
+                  ariaLabel="파트 선택"
+                  value={currentPartName}
+                  options={partOptions}
+                  onChange={setSelectedPartName}
+                />
               ) : (
                 userProfile.partName && <TrackName>{userProfile.partName} 파트</TrackName>
               )}
