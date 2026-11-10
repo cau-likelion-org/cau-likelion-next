@@ -5,6 +5,7 @@ import { BackgroundWhite, Orange } from '@utils/constant/color';
 
 export interface HorizontalScrollAreaProps {
   className?: string;
+  trackGap?: number;
   children: ReactNode;
 }
 
@@ -15,7 +16,7 @@ interface ThumbState {
 
 const THUMB_MIN_WIDTH = 40;
 
-const HorizontalScrollArea = ({ className, children }: HorizontalScrollAreaProps) => {
+const HorizontalScrollArea = ({ className, trackGap = 28, children }: HorizontalScrollAreaProps) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<{ startX: number; startScrollLeft: number } | null>(null);
@@ -57,7 +58,7 @@ const HorizontalScrollArea = ({ className, children }: HorizontalScrollAreaProps
   };
 
   return (
-    <Root className={className}>
+    <Root className={className} $trackGap={trackGap}>
       <Scrollable ref={scrollRef}>
         <Content ref={contentRef}>{children}</Content>
       </Scrollable>
@@ -77,10 +78,10 @@ const HorizontalScrollArea = ({ className, children }: HorizontalScrollAreaProps
 
 export default HorizontalScrollArea;
 
-const Root = styled.div`
+const Root = styled.div<{ $trackGap: number }>`
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: ${(props) => props.$trackGap}px;
   width: 100%;
   min-width: 0;
 `;

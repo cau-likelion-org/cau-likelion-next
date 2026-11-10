@@ -26,6 +26,7 @@ import {
   getApplicants,
 } from './applicantMock';
 import { RECRUIT_INTERVIEW_SETTING_MOCK } from './mock';
+import StatCounts from './StatCounts';
 
 const PAGE_SIZE = 10;
 const ALL = '전체';
@@ -120,18 +121,15 @@ const ApplicantListSection = () => {
               }}
             />
           </SummaryTitle>
-          <Counts>
-            {PART_OPTIONS_MOCK.map((part) => (
-              <Count key={part}>
-                <span>{part}</span>
-                <span>{applicants.filter((applicant) => applicant.part === part).length}명</span>
-              </Count>
-            ))}
-            <TotalCount>
-              <span>총</span>
-              <span>{applicants.length}명</span>
-            </TotalCount>
-          </Counts>
+          <StatCounts
+            items={[
+              ...PART_OPTIONS_MOCK.map((part) => ({
+                label: part,
+                count: applicants.filter((applicant) => applicant.part === part).length,
+              })),
+              { label: '총', count: applicants.length, tone: 'strong' as const },
+            ]}
+          />
         </SummaryRow>
         <Content>
           <Filters>
@@ -201,7 +199,7 @@ const ApplicantListSection = () => {
                   </Rows>
                 </Table>
               </HorizontalScrollArea>
-              <PaginationNavigation currentPage={currentPage} totalPage={totalPage} onPageChange={setPage} />
+              <Pagination currentPage={currentPage} totalPage={totalPage} onPageChange={setPage} />
             </TableArea>
           )}
         </Content>
@@ -261,23 +259,6 @@ const SummaryHeading = styled.h3`
   margin: 0;
   color: ${Black.b900};
   ${typographyCss(Typography.title3.bold)}
-`;
-
-const Counts = styled.div`
-  display: flex;
-  ${typographyCss(Typography.body2Normal.medium)}
-`;
-
-const Count = styled.span`
-  display: flex;
-  gap: 4px;
-  padding: 0 4px;
-  color: ${Label.alternative};
-  opacity: 0.74;
-`;
-
-const TotalCount = styled(Count)`
-  color: ${Label.normal};
 `;
 
 const Content = styled.div`
@@ -373,4 +354,9 @@ const BodyCell = styled.span<{ $width: number; $empty?: boolean }>`
 
 const NameCell = styled(BodyCell)`
   ${typographyCss(Typography.headline1.bold)}
+`;
+
+// Figma 페이지 이동 영역은 높이 50px이라 공통 컴포넌트(32px) 위아래에 여백을 더한다
+const Pagination = styled(PaginationNavigation)`
+  padding: 9px 0;
 `;

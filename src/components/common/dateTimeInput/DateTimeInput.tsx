@@ -2,7 +2,7 @@ import { InputHTMLAttributes, useId } from 'react';
 import styled from 'styled-components';
 
 import { IcCalendar, IcClock } from '@assets/svg';
-import { Label } from '@utils/constant/color';
+import { Label, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import {
   FieldDescription,
@@ -24,6 +24,7 @@ export interface DateTimeInputProps extends Omit<
   placeholder?: string;
   status?: FieldStatus;
   description?: string;
+  highlight?: boolean;
 }
 
 const DEFAULT_PLACEHOLDER: Record<DateTimeInputType, string> = {
@@ -42,6 +43,7 @@ const DateTimeInput = ({
   placeholder = DEFAULT_PLACEHOLDER[type],
   status = 'normal',
   description,
+  highlight = false,
   readOnly = false,
   disabled = false,
   ...inputProps
@@ -53,7 +55,7 @@ const DateTimeInput = ({
     <Root className={className}>
       <Box $status={status} $inactive={readOnly || disabled}>
         <Icon width={22} height={22} />
-        <Text $filled={!!value} $disabled={disabled}>
+        <Text $filled={!!value} $disabled={disabled} $highlight={highlight}>
           {value ? formatValue(type, value) : placeholder}
         </Text>
         <FieldStatusIcon status={status} />
@@ -116,14 +118,29 @@ const Box = styled.div<{ $status: FieldStatus; $inactive: boolean }>`
   `}
 `;
 
-const Text = styled.span<{ $filled: boolean; $disabled: boolean }>`
+const getTextColor = ({
+  $disabled,
+  $filled,
+  $highlight,
+}: {
+  $disabled: boolean;
+  $filled: boolean;
+  $highlight: boolean;
+}) => {
+  if ($disabled) return Label.disable;
+  if (!$filled) return Label.assistive;
+  return $highlight ? Orange.o500 : Label.normal;
+};
+
+const Text = styled.span<{ $filled: boolean; $disabled: boolean; $highlight: boolean }>`
   flex: 1 0 0;
   min-width: 0;
   padding: 0 4px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: ${(props) => (props.$disabled ? Label.disable : props.$filled ? Label.normal : Label.assistive)};
+  color: ${getTextColor};
+  text-decoration: ${(props) => (props.$highlight && props.$filled ? 'underline' : 'none')};
   ${typographyCss(Typography.body1Normal.regular)}
 `;
 

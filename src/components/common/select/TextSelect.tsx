@@ -13,6 +13,7 @@ export interface TextSelectProps {
   options: string[];
   value: string;
   placeholder?: string;
+  disabled?: boolean;
   // 헤더용은 눌러 볼 수 있다는 표시로 평소에도 옅은 배경을 둔다
   tone?: 'header' | 'cell';
   anchorRef?: RefObject<HTMLElement>;
@@ -28,6 +29,7 @@ const TextSelect = ({
   options,
   value,
   placeholder,
+  disabled = false,
   tone = 'header',
   anchorRef,
   onChange,
@@ -80,6 +82,7 @@ const TextSelect = ({
   };
 
   const handleKeyDown = (event: KeyboardEvent) => {
+    if (disabled) return;
     if (!isOpen) {
       if (['ArrowDown', 'ArrowUp', 'Enter', ' '].includes(event.key)) {
         event.preventDefault();
@@ -109,15 +112,17 @@ const TextSelect = ({
       <Trigger
         ref={triggerRef}
         role="combobox"
-        tabIndex={0}
+        tabIndex={disabled ? -1 : 0}
         aria-label={ariaLabel}
+        aria-disabled={disabled}
         aria-expanded={isOpen}
         aria-controls={listId}
         aria-activedescendant={isOpen ? `${listId}-${activeIndex}` : undefined}
         $tone={tone}
         $open={isOpen}
         $placeholder={!value}
-        onClick={() => (isOpen ? close() : open())}
+        $disabled={disabled}
+        onClick={() => !disabled && (isOpen ? close() : open())}
         onKeyDown={handleKeyDown}
       >
         <TriggerText>{value || placeholder}</TriggerText>
@@ -150,14 +155,14 @@ const Root = styled.div`
   display: inline-flex;
 `;
 
-const Trigger = styled.div<{ $tone: 'header' | 'cell'; $open: boolean; $placeholder: boolean }>`
+const Trigger = styled.div<{ $tone: 'header' | 'cell'; $open: boolean; $placeholder: boolean; $disabled: boolean }>`
   position: relative;
   display: inline-flex;
   align-items: center;
   gap: 4px;
   padding: 4px 0;
   color: ${(props) => (props.$placeholder ? Label.assistive : Label.strong)};
-  cursor: pointer;
+  cursor: ${(props) => (props.$disabled ? 'default' : 'pointer')};
   outline: none;
   white-space: nowrap;
   ${typographyCss(Typography.headline2.medium)}
@@ -178,7 +183,7 @@ const Trigger = styled.div<{ $tone: 'header' | 'cell'; $open: boolean; $placehol
   }
 
   &:hover::before {
-    opacity: ${(props) => (props.$open ? 0.06 : 0.04)};
+    opacity: ${(props) => (props.$open ? 0.06 : props.$disabled && props.$tone === 'cell' ? 0 : 0.04)};
   }
 
   &:focus-visible::before {
