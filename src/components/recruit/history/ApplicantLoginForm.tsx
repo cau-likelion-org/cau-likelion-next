@@ -8,15 +8,17 @@ import Button from '@common/button/Button';
 import TextButton from '@common/textButton/TextButton';
 import TextField from '@common/textField/TextField';
 import PageHeader from '@common/pageHeader/PageHeader';
+import Toast from '@common/toast/Toast';
+import { ToastWrapper } from '@common/toast/toastLayout';
 import ApplyNoticeModal from '@recruit/apply/ApplyNoticeModal';
 import { applyFieldHeadingCss } from '@recruit/apply/applyFieldStyle';
-import { ApplicantLoginError, loginApplicant } from '@recruit/apply/mock';
+import { ApplicantLoginError, SubmittedHistory, loginApplicant } from '@recruit/apply/mock';
 import { isUnfilled } from '@utils/index';
 
 export interface ApplicantLoginFormProps {
   title: string;
   isApplyOpen: boolean;
-  onSubmittedHistory: (history: { submittedAt: string; part: string }, email: string) => void;
+  onSubmittedHistory: (history: SubmittedHistory, email: string) => void;
 }
 
 const ApplicantLoginForm = ({ title, isApplyOpen, onSubmittedHistory }: ApplicantLoginFormProps) => {
@@ -28,6 +30,7 @@ const ApplicantLoginForm = ({ title, isApplyOpen, onSubmittedHistory }: Applican
 
   const loginMutation = useMutation({
     mutationFn: loginApplicant,
+    networkMode: 'always',
     onSuccess: (history) => {
       if (history.status === 'SUBMITTED') return onSubmittedHistory(history, email);
       setIsNoHistoryOpen(true);
@@ -38,6 +41,7 @@ const ApplicantLoginForm = ({ title, isApplyOpen, onSubmittedHistory }: Applican
   });
 
   const canLogin = !isUnfilled(email) && !isUnfilled(password);
+  const isRequestFailed = loginMutation.isError && !(loginMutation.error instanceof ApplicantLoginError);
 
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -113,6 +117,14 @@ const ApplicantLoginForm = ({ title, isApplyOpen, onSubmittedHistory }: Applican
             actions={[{ label: '닫기', variant: 'primary', onClick: closeNoHistory }]}
           />
         ))}
+      <ToastWrapper>
+        <Toast
+          variant="negative"
+          text="로그인에 실패했습니다. 다시 시도해주세요"
+          show={isRequestFailed}
+          onHidden={() => loginMutation.reset()}
+        />
+      </ToastWrapper>
     </Root>
   );
 };

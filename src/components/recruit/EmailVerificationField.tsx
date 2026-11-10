@@ -40,6 +40,7 @@ const EmailVerificationField = ({
 
   const sendCodeMutation = useMutation({
     mutationFn: sendCode,
+    networkMode: 'always',
     onSuccess: (isSent) => {
       if (!isSent) return;
       setIsCodeMismatch(false);
@@ -64,9 +65,13 @@ const EmailVerificationField = ({
     setIsCodeMismatch(false);
     setCode('');
     countdown.stop();
+    sendCodeMutation.reset();
   };
 
   const codeField = (() => {
+    if (sendCodeMutation.isError) {
+      return { status: 'negative' as const, description: '인증번호 발송에 실패했습니다. 다시 시도해 주세요.' };
+    }
     if (countdown.isExpired) {
       return {
         status: 'negative' as const,

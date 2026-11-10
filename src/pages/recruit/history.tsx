@@ -7,13 +7,9 @@ import Toast from '@common/toast/Toast';
 import { ToastWrapper } from '@common/toast/toastLayout';
 import ApplicantLoginForm from '@recruit/history/ApplicantLoginForm';
 import RecruitSummary from '@recruit/RecruitSummary';
+import { SubmittedHistory } from '@recruit/apply/mock';
 import { RECRUIT_MOCK } from '@recruit/mock';
 import { toDateTimeLabel } from '@utils/index';
-
-interface SubmittedHistory {
-  submittedAt: string;
-  part: string;
-}
 
 const RecruitHistory = () => {
   const router = useRouter();

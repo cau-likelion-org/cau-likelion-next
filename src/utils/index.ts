@@ -22,10 +22,16 @@ export const toDateString = (date?: Date, formatter = '-') => {
 const DAY_LABELS = ['일', '월', '화', '수', '목', '금', '토'];
 const pad2 = (value: number) => String(value).padStart(2, '0');
 
-// 2027.03.08(월) 21:34 형태
-export const toDateTimeLabel = (date: Date) =>
-  `${date.getFullYear()}.${pad2(date.getMonth() + 1)}.${pad2(date.getDate())}(${DAY_LABELS[date.getDay()]}) ` +
-  `${pad2(date.getHours())}:${pad2(date.getMinutes())}`;
+const KST_OFFSET_MS = 9 * 60 * 60 * 1000;
+
+// 2027.03.08(월) 21:34 형태. 접속한 기기의 시간대와 관계없이 한국 시간으로 표시한다
+export const toDateTimeLabel = (date: Date) => {
+  const kst = new Date(date.getTime() + KST_OFFSET_MS);
+  return (
+    `${kst.getUTCFullYear()}.${pad2(kst.getUTCMonth() + 1)}.${pad2(kst.getUTCDate())}(${DAY_LABELS[kst.getUTCDay()]}) ` +
+    `${pad2(kst.getUTCHours())}:${pad2(kst.getUTCMinutes())}`
+  );
+};
 
 export const isUnfilled = (value: string) => value.trim().length === 0;
 

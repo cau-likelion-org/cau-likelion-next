@@ -34,6 +34,7 @@ const delay = () => new Promise((resolve) => setTimeout(resolve, 300));
 
 export const requestVerificationCode = async (email: string) => {
   await delay();
+  if (!navigator.onLine) throw new Error('network error');
   return MOCK_APPLICANT_STATUS[email] ?? 'NEW';
 };
 
@@ -76,11 +77,18 @@ const MOCK_APPLICANT_PASSWORD = 'password1!';
 
 export class ApplicantLoginError extends Error {}
 
-export type ApplicationHistory =
-  { status: 'SUBMITTED'; submittedAt: string; part: string } | { status: Exclude<ApplicantStatus, 'SUBMITTED'> };
+export interface SubmittedHistory {
+  submittedAt: string;
+  part: string;
+}
 
+export type ApplicationHistory =
+  ({ status: 'SUBMITTED' } & SubmittedHistory) | { status: Exclude<ApplicantStatus, 'SUBMITTED'> };
+
+// 로그인 요청 실패 확인용: 오프라인이면 실패로 응답한다
 export const loginApplicant = async ({ email, password }: { email: string; password: string }) => {
   await delay();
+  if (!navigator.onLine) throw new Error('network error');
   const status = MOCK_APPLICANT_STATUS[email];
   if (!status || password !== MOCK_APPLICANT_PASSWORD) throw new ApplicantLoginError();
   const history: ApplicationHistory =
@@ -91,6 +99,7 @@ export const loginApplicant = async ({ email, password }: { email: string; passw
 // 비밀번호 재설정: 계정 존재 여부가 드러나지 않도록 어떤 이메일이든 같은 흐름으로 성공 응답한다
 export const requestPasswordResetCode = async (email: string) => {
   await delay();
+  if (!navigator.onLine) throw new Error('network error');
   return !!email;
 };
 

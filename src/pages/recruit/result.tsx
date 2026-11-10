@@ -4,6 +4,8 @@ import { useQuery } from '@tanstack/react-query';
 import styled from 'styled-components';
 
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
+import Toast from '@common/toast/Toast';
+import { ToastWrapper } from '@common/toast/toastLayout';
 import ApplicantLoginForm from '@recruit/history/ApplicantLoginForm';
 import { RECRUIT_MOCK } from '@recruit/mock';
 import RecruitResultLayout from '@recruit/RecruitResultLayout';
@@ -18,22 +20,34 @@ const RecruitResultPage = () => {
     queryKey: ['recruitResult', email],
     queryFn: () => getRecruitResult(email ?? ''),
     enabled: !!email,
+    retry: 1,
+    networkMode: 'always',
   });
 
-  if (!email) {
+  const result = resultQuery.data;
+
+  // 결과를 받기 전까지 로그인 화면을 유지해, 조회에 실패해도 입력값 그대로 다시 로그인하면 재조회한다
+  if (!result) {
     return (
       <Wrapper>
         <ApplicantLoginForm
           title="결과 확인"
           isApplyOpen={RECRUIT_MOCK.isApplyOpen}
-          onSubmittedHistory={(_, loggedInEmail) => setEmail(loggedInEmail)}
+          onSubmittedHistory={(_, loggedInEmail) => {
+            if (loggedInEmail === email) resultQuery.refetch();
+            else setEmail(loggedInEmail);
+          }}
         />
+        <ToastWrapper>
+          <Toast
+            variant="negative"
+            text="결과를 불러오지 못했습니다. 다시 시도해주세요"
+            show={resultQuery.isError && !resultQuery.isFetching}
+          />
+        </ToastWrapper>
       </Wrapper>
     );
   }
-
-  const result = resultQuery.data;
-  if (!result) return null;
 
   const isDocumentPassed = result.stage === 'DOCUMENT' && result.isPassed;
 

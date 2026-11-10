@@ -12,8 +12,10 @@ const MOCK_RESULTS: Record<string, RecruitResult> = {
 
 const delay = () => new Promise((resolve) => setTimeout(resolve, 300));
 
+// 조회 실패 확인용: 오프라인이면 실패로 응답한다
 export const getRecruitResult = async (email: string): Promise<RecruitResult> => {
   await delay();
+  if (!navigator.onLine) throw new Error('network error');
   return (
     MOCK_RESULTS[email] ?? {
       stage: 'DOCUMENT',
