@@ -19,7 +19,7 @@ import {
 } from 'src/apis/signUp';
 import { consumeGoogleLoginRedirect, redirectToGoogleLogin } from '@utils/googleOAuth';
 import { track, newAttemptId } from 'src/lib/amplitude';
-import { Label } from '@utils/constant/color';
+import { BackgroundWhite, Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { media } from '@utils/constant/breakpoint';
 
@@ -126,10 +126,19 @@ const Login = () => {
         }
       />
       <LoginButton onClick={redirectToGoogleLogin} loading={loginMutation.isPending} />
-      <GuideText>
-        <p>처음 이용하는 아기사자의 경우</p>
-        <p>‘구글로 로그인하기’를 눌러 회원가입을 진행해 주세요.</p>
-      </GuideText>
+      <GuideBox>
+        <GuideTitle>로그인 유의사항</GuideTitle>
+        <GuideText>
+          처음 이용하는 아기사자의 경우
+          <br />
+          ‘구글로 로그인하기’를 눌러 회원가입을
+          <MobileBreak /> 진행해 주세요.
+        </GuideText>
+        <GuideText>
+          신규모집 지원자의 경우 ‘지원하기’ 페이지를
+          <MobileBreak /> 이용해주세요
+        </GuideText>
+      </GuideBox>
     </Wrapper>
   );
 };
@@ -164,12 +173,37 @@ const TextGroup = styled(PageHeader)`
   }
 `;
 
-const GuideText = styled.div`
-  color: ${Label.assistive};
-  text-align: center;
-  ${typographyCss(Typography.body2Normal.medium)}
+const GuideBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 18px;
+  border-radius: 8px;
+  background-color: ${BackgroundWhite.tertiary};
 
-  p {
-    margin: 0;
+  ${media.xs} {
+    align-self: stretch;
+    margin: 0 28px;
   }
+`;
+
+const MobileBreak = styled.br`
+  display: none;
+
+  ${media.xs} {
+    display: inline;
+  }
+`;
+
+const GuideTitle = styled.p`
+  margin: 0;
+  color: ${Label.strong};
+  ${typographyCss(Typography.label1Normal.bold)}
+`;
+
+const GuideText = styled.p`
+  margin: 0;
+  word-break: keep-all;
+  color: ${Label.alternative};
+  ${typographyCss(Typography.label1Normal.regular)}
 `;
