@@ -30,8 +30,10 @@ export interface ResultInputSectionProps {
   isPublished: boolean;
   interviews: Record<number, InterviewInfo>;
   pending: Record<number, ScreeningResult>;
+  selectedIds: number[];
   saving: boolean;
   onPendingChange: (pending: Record<number, ScreeningResult>) => void;
+  onSelectedIdsChange: (ids: number[]) => void;
   onSave: () => void;
 }
 
@@ -39,7 +41,19 @@ export const getSavedResult = (stage: ScreeningStage, applicant: ApplicantDetail
   stage === 'DOCUMENT' ? applicant.documentResult : applicant.interviewResult;
 
 const ResultInputSection = forwardRef<HTMLElement, ResultInputSectionProps>(function ResultInputSection(
-  { title, stage, applicants, isPublished, interviews, pending, saving, onPendingChange, onSave },
+  {
+    title,
+    stage,
+    applicants,
+    isPublished,
+    interviews,
+    pending,
+    selectedIds,
+    saving,
+    onPendingChange,
+    onSelectedIdsChange,
+    onSave,
+  },
   ref,
 ) {
   const [statusFilter, setStatusFilter] = useState(ALL);
@@ -47,7 +61,6 @@ const ResultInputSection = forwardRef<HTMLElement, ResultInputSectionProps>(func
   const [resultFilter, setResultFilter] = useState(ALL);
   const [keyword, setKeyword] = useState('');
   const [page, setPage] = useState(1);
-  const [selectedIds, setSelectedIds] = useState<number[]>([]);
 
   const currentResult = (applicant: ApplicantDetail) => pending[applicant.id] ?? getSavedResult(stage, applicant);
   // 공개 후에는 합격·불합격을 보류로 되돌릴 수 없다
@@ -84,7 +97,7 @@ const ResultInputSection = forwardRef<HTMLElement, ResultInputSectionProps>(func
   };
 
   const toggleSelected = (id: number, checked: boolean) =>
-    setSelectedIds((prev) => (checked ? [...prev, id] : prev.filter((selectedId) => selectedId !== id)));
+    onSelectedIdsChange(checked ? [...selectedIds, id] : selectedIds.filter((selectedId) => selectedId !== id));
 
   const selectedApplicants = applicants.filter((applicant) => selectedIds.includes(applicant.id));
   const counts = RESULTS.map((result) => ({
@@ -95,7 +108,7 @@ const ResultInputSection = forwardRef<HTMLElement, ResultInputSectionProps>(func
 
   const applyBulk = (result: ScreeningResult) => {
     setResults(selectedIds, result);
-    setSelectedIds([]);
+    onSelectedIdsChange([]);
   };
 
   return (

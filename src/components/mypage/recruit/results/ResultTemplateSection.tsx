@@ -1,4 +1,4 @@
-import { forwardRef, useState } from 'react';
+import { forwardRef, useLayoutEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import Button from '@common/button/Button';
@@ -10,7 +10,6 @@ import { TEMPLATE_VARIABLES, fillResultTemplate } from '@utils/recruitResult';
 import { Inverse, Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
-import { ApplicantDetail } from '../applicantMock';
 import ResultSection, { BorderBox } from './ResultSection';
 import { InterviewInfo, TemplateKey } from './resultMock';
 
@@ -20,6 +19,8 @@ const TEMPLATE_LABEL: Record<TemplateKey, string> = {
   FINAL_PASS: '최종 합격',
   FINAL_FAIL: '최종 불합격',
 };
+
+const PREVIEW_EXAMPLE = { name: '홍길동', interviewAt: '2027.03.16(화) 14:00', interviewPlace: '310관 B101호' };
 
 const VARIABLES = [
   { key: 'name', label: TEMPLATE_VARIABLES.name, interviewOnly: false },
@@ -33,30 +34,20 @@ export interface ResultTemplateSectionProps {
   templates: Record<TemplateKey, string>;
   savedTemplates: TemplateKey[];
   pending: Partial<Record<TemplateKey, string>>;
-  previewApplicant?: ApplicantDetail;
-  previewInterview?: InterviewInfo;
+  previewApplicant?: { name: string; interview?: InterviewInfo };
   saving: boolean;
   onPendingChange: (pending: Partial<Record<TemplateKey, string>>) => void;
   onSave: () => void;
 }
 
 const ResultTemplateSection = forwardRef<HTMLElement, ResultTemplateSectionProps>(function ResultTemplateSection(
-  {
-    title,
-    templateKeys,
-    templates,
-    savedTemplates,
-    pending,
-    previewApplicant,
-    previewInterview,
-    saving,
-    onPendingChange,
-    onSave,
-  },
+  { title, templateKeys, templates, savedTemplates, pending, previewApplicant, saving, onPendingChange, onSave },
   ref,
 ) {
   const [activeKey, setActiveKey] = useState(templateKeys[0]);
   const [cursor, setCursor] = useState<number | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const caretAfterInsertRef = useRef<number | null>(null);
 
   const text = pending[activeKey] ?? templates[activeKey];
   const canUseInterviewVariables = activeKey === 'DOCUMENT_PASS';
@@ -69,17 +60,30 @@ const ResultTemplateSection = forwardRef<HTMLElement, ResultTemplateSectionProps
     const position = cursor ?? text.length;
     changeText(text.slice(0, position) + variable + text.slice(position));
     setCursor(position + variable.length);
+    caretAfterInsertRef.current = position + variable.length;
   };
 
-  const preview = previewApplicant
-    ? fillResultTemplate(text, {
-        name: previewApplicant.name,
-        interviewAt: previewInterview?.date
-          ? toDateTimeLabel(new Date(`${previewInterview.date}T${previewInterview.time || '00:00'}:00+09:00`))
-          : undefined,
-        interviewPlace: previewInterview?.place,
-      })
-    : '';
+  useLayoutEffect(() => {
+    const caret = caretAfterInsertRef.current;
+    if (caret === null || !textareaRef.current) return;
+    caretAfterInsertRef.current = null;
+    textareaRef.current.focus();
+    textareaRef.current.setSelectionRange(caret, caret);
+  }, [text]);
+
+  const previewInterview = previewApplicant?.interview;
+  const preview = fillResultTemplate(
+    text,
+    previewApplicant
+      ? {
+          name: previewApplicant.name,
+          interviewAt: previewInterview?.date
+            ? toDateTimeLabel(new Date(`${previewInterview.date}T${previewInterview.time || '00:00'}:00+09:00`))
+            : undefined,
+          interviewPlace: previewInterview?.place,
+        }
+      : PREVIEW_EXAMPLE,
+  );
 
   return (
     <ResultSection ref={ref} title={title} saveDisabled={!isDirty || hasEmpty} saving={saving} onSave={onSave}>
@@ -117,6 +121,7 @@ const ResultTemplateSection = forwardRef<HTMLElement, ResultTemplateSectionProps
         {!canUseInterviewVariables && <Caption>면접 관련 변수는 서류 합격 안내문에서만 사용할 수 있습니다.</Caption>}
       </BorderBox>
       <TemplateTextarea
+        ref={textareaRef}
         heading="안내문 내용"
         aria-label={`${TEMPLATE_LABEL[activeKey]} 안내문 내용`}
         value={text}

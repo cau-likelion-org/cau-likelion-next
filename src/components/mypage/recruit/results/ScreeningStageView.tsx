@@ -76,6 +76,7 @@ const ScreeningStageView = ({ stage, generation, data, onToast }: ScreeningStage
   const [activeStep, setActiveStep] = useState<StepKey>('result');
   const [resultPending, setResultPending] = useState<Record<number, ScreeningResult>>({});
   const [interviewPending, setInterviewPending] = useState<Record<number, InterviewInfo>>({});
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [templatePending, setTemplatePending] = useState<Partial<Record<TemplateKey, string>>>({});
   const [confirm, setConfirm] = useState<{ heading: string; onConfirm: () => void } | null>(null);
   const [notice, setNotice] = useState('');
@@ -132,7 +133,7 @@ const ScreeningStageView = ({ stage, generation, data, onToast }: ScreeningStage
     (applicant) => (resultPending[applicant.id] ?? applicant.documentResult) === 'PASS',
   );
   const savedDocumentPassed = data.applicants.filter((applicant) => applicant.documentResult === 'PASS');
-  const previewApplicant = (stage === 'DOCUMENT' ? savedDocumentPassed : eligible)[0];
+  const selectedApplicant = eligible.find((applicant) => applicant.id === selectedIds[0]);
 
   const confirmOrRun = (run: () => void, heading = '변경사항을 저장하시겠습니까?') =>
     setConfirm({ heading: isPublished ? PUBLISHED_CONFIRM : heading, onConfirm: run });
@@ -237,8 +238,10 @@ const ScreeningStageView = ({ stage, generation, data, onToast }: ScreeningStage
           isPublished={isPublished}
           interviews={data.interviews}
           pending={resultPending}
+          selectedIds={selectedIds}
           saving={resultMutation.isPending}
           onPendingChange={setResultPending}
+          onSelectedIdsChange={setSelectedIds}
           onSave={saveResults}
         />
         {stage === 'DOCUMENT' && (
@@ -260,8 +263,9 @@ const ScreeningStageView = ({ stage, generation, data, onToast }: ScreeningStage
           templates={data.templates}
           savedTemplates={data.savedTemplates}
           pending={templatePending}
-          previewApplicant={previewApplicant}
-          previewInterview={previewApplicant && data.interviews[previewApplicant.id]}
+          previewApplicant={
+            selectedApplicant && { name: selectedApplicant.name, interview: data.interviews[selectedApplicant.id] }
+          }
           saving={templateMutation.isPending}
           onPendingChange={setTemplatePending}
           onSave={() => templateMutation.mutate({ generation, templates: templatePending })}

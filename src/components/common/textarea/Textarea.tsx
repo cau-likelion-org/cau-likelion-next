@@ -1,4 +1,4 @@
-import { MouseEvent, ReactNode, TextareaHTMLAttributes, useId, useRef } from 'react';
+import { MouseEvent, ReactNode, TextareaHTMLAttributes, forwardRef, useId, useImperativeHandle, useRef } from 'react';
 import styled from 'styled-components';
 
 import { Label, State } from '@utils/constant/color';
@@ -30,27 +30,31 @@ const getResizeCss = (resize: TextareaResize) => {
   return 'vertical';
 };
 
-const Textarea = ({
-  className,
-  status = 'normal',
-  resize = 'fixed',
-  maxHeight,
-  heading,
-  required = false,
-  description,
-  bottomLeadingContent,
-  bottomTrailingContent,
-  disabled = false,
-  readOnly = false,
-  id,
-  rows = 1,
-  ...textareaProps
-}: TextareaProps) => {
+const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function Textarea(
+  {
+    className,
+    status = 'normal',
+    resize = 'fixed',
+    maxHeight,
+    heading,
+    required = false,
+    description,
+    bottomLeadingContent,
+    bottomTrailingContent,
+    disabled = false,
+    readOnly = false,
+    id,
+    rows = 1,
+    ...textareaProps
+  },
+  ref,
+) {
   const generatedId = useId();
   const textareaId = id ?? generatedId;
   const descriptionId = description ? `${textareaId}-description` : undefined;
   const hasStatusIcon = status !== 'normal';
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  useImperativeHandle(ref, () => textareaRef.current as HTMLTextAreaElement);
 
   // 입력 영역은 첫 줄 높이뿐이라, 상자의 여백·하단 글자 수 영역을 눌러도 입력이 시작되도록 끝으로 커서를 옮긴다
   const focusTextarea = (event: MouseEvent<HTMLDivElement>) => {
@@ -100,7 +104,7 @@ const Textarea = ({
       )}
     </Root>
   );
-};
+});
 
 export default Textarea;
 
