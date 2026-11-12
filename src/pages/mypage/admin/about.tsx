@@ -35,7 +35,7 @@ import { getRoadmap, addRoadmap } from 'src/apis/roadmap';
 import { uploadFile } from 'src/apis/upload';
 import useRoleGuard from 'src/apis/useRoleGuard';
 import useTokenStore from 'src/store/useTokenStore';
-import { isAdminRole } from '@utils/index';
+import { canManageSitePages } from '@utils/index';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { media } from '@utils/constant/breakpoint';
@@ -104,7 +104,7 @@ const MyPageAdminAbout = () => {
   const tokenState = useTokenStore((state) => state.token);
   const queryClient = useQueryClient();
 
-  const { isAuthorized, isUserProfileError } = useRoleGuard(isAdminRole);
+  const { isAuthorized, isUserProfileError } = useRoleGuard(canManageSitePages);
 
   // 편집 화면이라 창 포커스 시 백그라운드 재조회로 입력 중인 값이 덮어써지지 않도록 자동 재조회를 끔
   const { data: talents, isError: isTalentsError } = useQuery({

@@ -9,9 +9,11 @@ import PageLoadingGate from '@common/pageGate/PageLoadingGate';
 import Button from '@common/button/Button';
 import Toast from '@common/toast/Toast';
 import { ToastWrapper } from '@common/toast/toastLayout';
-import RecruitmentSubscriberSection, { ALL_PART_FILTER } from '@mypage/admin/recruitment/RecruitmentSubscriberSection';
-import RecruitmentTextSection from '@mypage/admin/recruitment/RecruitmentTextSection';
-import type { RecruitmentComposeForm } from '@mypage/admin/recruitment/RecruitmentComposeModal';
+import RecruitmentSubscriberSection, {
+  ALL_PART_FILTER,
+} from '@mypage/recruit/notification/RecruitmentSubscriberSection';
+import RecruitmentTextSection from '@mypage/recruit/notification/RecruitmentTextSection';
+import type { RecruitmentComposeForm } from '@mypage/recruit/notification/RecruitmentComposeModal';
 import {
   createRecruitmentText,
   getSubscriberInterestParts,
@@ -25,26 +27,26 @@ import {
 import useRoleGuard from 'src/apis/useRoleGuard';
 import useTokenStore from 'src/store/useTokenStore';
 import { COMMON_PART_NAME } from '@utils/constant';
-import { isAdminRole } from '@utils/index';
+import { canManageRecruit } from '@utils/index';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 // 셋 다 특정 상태일 때만 렌더되는 모달이라, 첫 로드 번들 대신 여는 시점에 받는다
-const RecruitmentComposeModal = dynamic(() => import('@mypage/admin/recruitment/RecruitmentComposeModal'), {
+const RecruitmentComposeModal = dynamic(() => import('@mypage/recruit/notification/RecruitmentComposeModal'), {
   ssr: false,
 });
-const RecruitmentTextDetailModal = dynamic(() => import('@mypage/admin/recruitment/RecruitmentTextDetailModal'), {
+const RecruitmentTextDetailModal = dynamic(() => import('@mypage/recruit/notification/RecruitmentTextDetailModal'), {
   ssr: false,
 });
-const RecruitmentResendModal = dynamic(() => import('@mypage/admin/recruitment/RecruitmentResendModal'), {
+const RecruitmentResendModal = dynamic(() => import('@mypage/recruit/notification/RecruitmentResendModal'), {
   ssr: false,
 });
 
-const MyPageAdminRecruitment = () => {
+const MyPageRecruitNotification = () => {
   const tokenState = useTokenStore((state) => state.token);
   const queryClient = useQueryClient();
 
-  const { isAuthorized, isUserProfileError } = useRoleGuard(isAdminRole);
+  const { isAuthorized, isUserProfileError } = useRoleGuard(canManageRecruit);
 
   const [interestPartFilter, setInterestPartFilter] = useState(ALL_PART_FILTER);
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
@@ -277,15 +279,15 @@ const MyPageAdminRecruitment = () => {
   );
 };
 
-MyPageAdminRecruitment.getLayout = function getLayout(page: ReactElement) {
+MyPageRecruitNotification.getLayout = function getLayout(page: ReactElement) {
   return (
     <LayoutFullWidth>
-      <MyPageShell active="admin-recruit">{page}</MyPageShell>
+      <MyPageShell active="recruit-notification">{page}</MyPageShell>
     </LayoutFullWidth>
   );
 };
 
-export default MyPageAdminRecruitment;
+export default MyPageRecruitNotification;
 
 const TitleRow = styled.div`
   display: flex;

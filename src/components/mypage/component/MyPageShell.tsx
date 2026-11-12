@@ -24,7 +24,7 @@ const BREADCRUMB_LABEL: Record<SidebarActive, string> = {
   'admin-about': '소개 페이지 관리',
   'admin-blog': '블로그 페이지 관리',
   'admin-members': '전체 회원/파트 관리',
-  'admin-recruit': '리크루팅 사전 알림 발송',
+  'recruit-notification': '사전 알림 발송',
   'recruit-settings': '기수/문항 관리',
   'recruit-applicants': '지원서 관리',
   'recruit-results': '전형 결과 관리',

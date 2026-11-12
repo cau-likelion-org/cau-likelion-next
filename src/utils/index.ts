@@ -100,7 +100,7 @@ export const formatFileSize = (bytes: number) => {
 export const excludeCommonPart = <T extends { name: string }>(parts: T[]) =>
   parts.filter((part) => part.name !== COMMON_PART_NAME);
 
-// 운영진(STAFF) 이상 — 담당 파트에 한정된 관리 권한까지 포함해 "관리자 화면 접근 가능 여부" 판단에 사용
+// 운영진(STAFF) 이상 — 담당 파트에 한정된 관리 권한까지 포함
 const ADMIN_ROLES: MemberRole[] = ['STAFF', 'PRESIDENT', 'ADMIN'];
 
 // 회장(PRESIDENT)/중하하 관리자(ADMIN) — 전체 파트·전체 회원 데이터에 대한 무제한 권한이 필요한 기능에 사용

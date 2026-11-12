@@ -15,7 +15,7 @@ export type SidebarActive =
   | 'admin-about'
   | 'admin-blog'
   | 'admin-members'
-  | 'admin-recruit'
+  | 'recruit-notification'
   | 'recruit-settings'
   | 'recruit-applicants'
   | 'recruit-results';
@@ -29,7 +29,7 @@ export const PATHNAME_TO_ACTIVE: Record<string, SidebarActive> = {
   '/mypage/admin/about': 'admin-about',
   '/mypage/admin/blog': 'admin-blog',
   '/mypage/admin/members': 'admin-members',
-  '/mypage/admin/recruitment': 'admin-recruit',
+  '/mypage/recruit/notification': 'recruit-notification',
   '/mypage/recruit/settings': 'recruit-settings',
   '/mypage/recruit/applicants': 'recruit-applicants',
   '/mypage/recruit/results': 'recruit-results',
@@ -46,10 +46,10 @@ const ADMIN_MENU_ITEMS: MenuGroupItem[] = [
   { key: 'admin-about', href: '/mypage/admin/about', label: '소개 페이지 관리' },
   { key: 'admin-blog', href: '/mypage/admin/blog', label: '블로그 페이지 관리' },
   { key: 'admin-members', href: '/mypage/admin/members', label: '전체 회원/파트 관리' },
-  { key: 'admin-recruit', href: '/mypage/admin/recruitment', label: '리크루팅 사전 알림 발송' },
 ];
 
 const RECRUIT_MENU_ITEMS: MenuGroupItem[] = [
+  { key: 'recruit-notification', href: '/mypage/recruit/notification', label: '사전 알림 발송' },
   { key: 'recruit-settings', href: '/mypage/recruit/settings', label: '기수/문항 관리' },
   { key: 'recruit-applicants', href: '/mypage/recruit/applicants', label: '지원서 관리' },
   { key: 'recruit-results', href: '/mypage/recruit/results', label: '전형 결과 관리' },
