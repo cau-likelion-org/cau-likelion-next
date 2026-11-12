@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 import Alert from '@common/alert/Alert';
 import Button from '@common/button/Button';
@@ -253,14 +253,18 @@ const ApplicantDetailView = ({ applicant, canDelete }: ApplicantDetailViewProps)
                 }
 
                 if (question.type === 'LINK') {
+                  const link = answer?.text?.trim();
+                  const isOpenable = !!link && /^https?:\/\//.test(link);
+                  const LinkField = isOpenable ? LinkAnswerField : AnswerField;
                   return (
-                    <AnswerField
+                    <LinkField
                       key={question.id}
                       heading={heading}
                       required={question.isRequired}
                       readOnly
-                      value={answer?.text ?? '-'}
+                      value={link || '-'}
                       leadingIcon={<IcLink width={22} height={22} />}
+                      onClick={isOpenable ? () => window.open(link, '_blank', 'noopener,noreferrer') : undefined}
                     />
                   );
                 }
@@ -411,15 +415,18 @@ const PortalRow = styled.div`
   gap: 20px;
 `;
 
-const FileLink = styled(TextField)`
-  flex: 1 0 0;
-  min-width: 0;
-
+const linkInputCss = css`
   input {
     text-decoration: underline;
     cursor: pointer;
     pointer-events: auto;
   }
+`;
+
+const FileLink = styled(TextField)`
+  flex: 1 0 0;
+  min-width: 0;
+  ${linkInputCss}
 `;
 
 const IconButton = styled.button`
@@ -453,6 +460,10 @@ const AnswerTextarea = styled(Textarea)`
 
 const AnswerField = styled(TextField)`
   ${applyFieldHeadingCss}
+`;
+
+const LinkAnswerField = styled(AnswerField)`
+  ${linkInputCss}
 `;
 
 const Count = styled(CharCount)`
