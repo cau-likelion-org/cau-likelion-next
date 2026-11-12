@@ -27,7 +27,7 @@ const useRoleGuard = (canAccess: (role: MemberRole) => boolean) => {
     if (userProfile && !canAccess(userProfile.role)) router.push('/mypage');
   }, [userProfile, canAccess, router]);
 
-  const isAuthorized = !!userProfile && canAccess(userProfile.role);
+  const isAuthorized = !!tokenState.access && !!userProfile && canAccess(userProfile.role);
 
   return { userProfile, isAuthorized, isUserProfileError };
 };

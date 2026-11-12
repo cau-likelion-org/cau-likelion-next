@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import styled from 'styled-components';
 
@@ -57,6 +57,9 @@ const STEP_TITLE: Record<StepKey, string> = {
   reservation: '결과 공개 예약',
 };
 
+const omitSaved = <T extends object>(pending: T, saved: T): T =>
+  Object.fromEntries(Object.entries(pending).filter(([key, value]) => saved[key as keyof T] !== value)) as T;
+
 const PUBLISHED_CONFIRM = '이미 공개된 결과입니다.\n저장하면 지원자에게 즉시 반영됩니다.';
 
 export interface ScreeningStageViewProps {
@@ -64,9 +67,10 @@ export interface ScreeningStageViewProps {
   generation: number;
   data: ScreeningData;
   onToast: (message: string) => void;
+  onDirtyChange: (isDirty: boolean) => void;
 }
 
-const ScreeningStageView = ({ stage, generation, data, onToast }: ScreeningStageViewProps) => {
+const ScreeningStageView = ({ stage, generation, data, onToast, onDirtyChange }: ScreeningStageViewProps) => {
   const queryClient = useQueryClient();
   const config = STAGE_CONFIG[stage];
   const publish = data.publish[stage];
@@ -85,6 +89,23 @@ const ScreeningStageView = ({ stage, generation, data, onToast }: ScreeningStage
   const interviewRef = useRef<HTMLElement>(null);
   const templateRef = useRef<HTMLElement>(null);
   const reservationRef = useRef<HTMLElement>(null);
+  const stepsRef = useRef<HTMLDivElement>(null);
+
+  const isDirty =
+    Object.keys(resultPending).length > 0 ||
+    Object.keys(interviewPending).length > 0 ||
+    Object.entries(templatePending).some(([key, value]) => value !== data.templates[key as TemplateKey]);
+
+  useEffect(() => {
+    onDirtyChange(isDirty);
+  }, [isDirty, onDirtyChange]);
+
+  useEffect(() => () => onDirtyChange(false), [onDirtyChange]);
+
+  // 흐리게 막은 화면도 키보드로는 저장할 수 있어 inert로 초점 이동까지 막는다 (React 18 타입에 inert가 없다)
+  useEffect(() => {
+    stepsRef.current?.toggleAttribute('inert', isLocked);
+  }, [isLocked]);
 
   const refresh = () => queryClient.invalidateQueries({ queryKey: ['recruitScreening', generation] });
   const afterSave = (message: string) => {
@@ -94,22 +115,27 @@ const ScreeningStageView = ({ stage, generation, data, onToast }: ScreeningStage
 
   const resultMutation = useMutation({
     mutationFn: saveScreeningResults,
-    onSuccess: () => {
-      setResultPending({});
+    onSuccess: (_, { results }) => {
+      setResultPending((prev) => omitSaved(prev, results));
+      if (stage === 'DOCUMENT') {
+        setInterviewPending((prev) =>
+          Object.fromEntries(Object.entries(prev).filter(([id]) => (results[Number(id)] ?? 'PASS') === 'PASS')),
+        );
+      }
       afterSave('변경사항이 저장되었습니다.');
     },
   });
   const interviewMutation = useMutation({
     mutationFn: saveInterviewInfos,
-    onSuccess: () => {
-      setInterviewPending({});
+    onSuccess: (_, { infos }) => {
+      setInterviewPending((prev) => omitSaved(prev, infos));
       afterSave('변경사항이 저장되었습니다.');
     },
   });
   const templateMutation = useMutation({
     mutationFn: saveTemplates,
-    onSuccess: () => {
-      setTemplatePending({});
+    onSuccess: (_, { templates }) => {
+      setTemplatePending((prev) => omitSaved(prev, templates));
       afterSave('결과 안내문이 저장되었습니다.');
     },
   });
@@ -139,13 +165,13 @@ const ScreeningStageView = ({ stage, generation, data, onToast }: ScreeningStage
     setConfirm({ heading: isPublished ? PUBLISHED_CONFIRM : heading, onConfirm: run });
 
   const saveResults = () => {
+    if (isLocked) return;
     if (stage === 'DOCUMENT' && isPublished) {
       const missingInterview = Object.entries(resultPending).some(
-        ([id, result]) =>
-          result === 'PASS' && !isInterviewInfoFilled(interviewPending[Number(id)] ?? data.interviews[Number(id)]),
+        ([id, result]) => result === 'PASS' && !isInterviewInfoFilled(data.interviews[Number(id)]),
       );
       if (missingInterview) {
-        setNotice('합격으로 바꾼 지원자의 면접 정보를 먼저 입력해 주세요.');
+        setNotice('합격으로 바꾼 지원자의 면접 정보를 먼저 저장해 주세요.');
         return;
       }
     }
@@ -153,6 +179,7 @@ const ScreeningStageView = ({ stage, generation, data, onToast }: ScreeningStage
   };
 
   const saveInterviews = () => {
+    if (isLocked) return;
     const run = () => interviewMutation.mutate({ generation, infos: interviewPending });
     if (isPublished) confirmOrRun(run);
     else run();
@@ -222,7 +249,7 @@ const ScreeningStageView = ({ stage, generation, data, onToast }: ScreeningStage
           </Button>
         </Banner>
       )}
-      <Steps $locked={isLocked} aria-disabled={isLocked}>
+      <Steps ref={stepsRef} $locked={isLocked} aria-disabled={isLocked}>
         <StepCategory
           variant="accent"
           size="xlarge"
@@ -268,7 +295,7 @@ const ScreeningStageView = ({ stage, generation, data, onToast }: ScreeningStage
           }
           saving={templateMutation.isPending}
           onPendingChange={setTemplatePending}
-          onSave={() => templateMutation.mutate({ generation, templates: templatePending })}
+          onSave={() => !isLocked && templateMutation.mutate({ generation, templates: templatePending })}
         />
         <ResultReservationSection
           ref={reservationRef}

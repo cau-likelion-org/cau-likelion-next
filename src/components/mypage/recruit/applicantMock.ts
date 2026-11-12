@@ -79,6 +79,10 @@ const MOTIVATION =
 const COLLABORATION =
   'UX/UI 프로젝트와 인턴 경험을 통해 기획자, 개발자, 마케터 등 다양한 직무의 사람들과 협업해왔습니다. 의견이 다를 때는 사용자 관점의 근거를 먼저 정리하고, 결정된 내용은 문서로 남겨 모두가 같은 기준으로 일할 수 있도록 했습니다.';
 
+// public에 목업 파일을 둘 수 없어 다운로드 확인용으로 빈 PDF를 data URL로 둔다
+const MOCK_PDF_URL =
+  'data:application/pdf;base64,JVBERi0xLjQKMSAwIG9iaiA8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4gZW5kb2JqCjIgMCBvYmogPDwgL1R5cGUgL1BhZ2VzIC9LaWRzIFszIDAgUl0gL0NvdW50IDEgPj4gZW5kb2JqCjMgMCBvYmogPDwgL1R5cGUgL1BhZ2UgL1BhcmVudCAyIDAgUiAvTWVkaWFCb3ggWzAgMCAyMDAgMTAwXSA+PiBlbmRvYmoKeHJlZgowIDQKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDA5IDAwMDAwIG4gCjAwMDAwMDAwNTggMDAwMDAgbiAKMDAwMDAwMDExNSAwMDAwMCBuIAp0cmFpbGVyIDw8IC9TaXplIDQgL1Jvb3QgMSAwIFIgPj4Kc3RhcnR4cmVmCjE4NgolJUVPRgo=';
+
 const NAMES = ['홍길동', '김멋사', '이사자', '박중앙', '최디자', '정프론', '강백엔', '조기획', '윤개발', '장협업'];
 const MAJORS = ['소프트웨어학부', '경영학부', '디자인학부', '전자전기공학부'];
 const STATUSES: SubmissionStatus[] = ['ON_TIME', 'LATE', 'ON_TIME', 'ON_TIME', 'IN_PROGRESS', 'NOT_SUBMITTED'];
@@ -112,12 +116,12 @@ const createApplicant = (index: number): ApplicantDetail => {
     enrollmentStatus: '재학',
     referral: '인스타그램',
     interviewSlots: ['2027-03-16T12:00', '2027-03-17T14:00', '2027-03-17T16:00', '2027-03-18T16:00'],
-    portalCapture: { name: 'IMG20260715.jpeg', size: 820_000, url: '/mock/portal-capture.jpeg' },
+    portalCapture: { name: 'IMG20260715.jpeg', size: 820_000, url: '/image/og-image.png' },
     answers: [
       { questionId: 'q1', text: MOTIVATION },
       { questionId: 'q2', text: COLLABORATION },
       { questionId: 'q3', text: 'https://example.com' },
-      { questionId: 'q4', file: { name: 'portfolio.pdf', size: 12_900_000, url: '/mock/portfolio.pdf' } },
+      { questionId: 'q4', file: { name: 'portfolio.pdf', size: 12_900_000, url: MOCK_PDF_URL } },
       { questionId: 'q5', choiceIds: ['c2', 'c3'] },
     ],
   };

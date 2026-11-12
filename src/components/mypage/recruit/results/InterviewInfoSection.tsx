@@ -110,7 +110,6 @@ const InterviewInfoSection = forwardRef<HTMLElement, InterviewInfoSectionProps>(
                       (warning) =>
                         warning === INTERVIEW_WARNING.notSelected || warning === INTERVIEW_WARNING.outOfPeriod,
                     );
-                    const timeWarnings = warnings.filter((warning) => !dateWarnings.includes(warning));
                     const anchorProps = (key: string) => ({
                       onMouseEnter: () => setHoveredKey(key),
                       onMouseLeave: () => setHoveredKey(null),
@@ -150,8 +149,8 @@ const InterviewInfoSection = forwardRef<HTMLElement, InterviewInfoSectionProps>(
                               highlight={warnings.length > 0}
                               onChange={(time) => changeInfo(applicant.id, { time })}
                             />
-                            {hoveredKey === `${applicant.id}-time` && timeWarnings.length > 0 && (
-                              <WarningTooltip position="top" align="center" text={timeWarnings.join('\n')} />
+                            {hoveredKey === `${applicant.id}-time` && warnings.length > 0 && (
+                              <WarningTooltip position="top" align="center" text={warnings.join('\n')} />
                             )}
                           </InputAnchor>
                         </DateTimeCell>

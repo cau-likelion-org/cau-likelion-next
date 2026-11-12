@@ -2,6 +2,7 @@ import { ReactElement, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import styled from 'styled-components';
 
+import Alert from '@common/alert/Alert';
 import EmptyState from '@common/emptyState/EmptyState';
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import PageLoadingGate from '@common/pageGate/PageLoadingGate';
@@ -14,6 +15,7 @@ import { APPLICANT_GENERATIONS } from '@mypage/recruit/applicantMock';
 import ScreeningStageView from '@mypage/recruit/results/ScreeningStageView';
 import { ScreeningStage, getScreeningData } from '@mypage/recruit/results/resultMock';
 import useRoleGuard from 'src/apis/useRoleGuard';
+import useLeaveGuard from 'src/hooks/useLeaveGuard';
 import { canManageRecruit } from '@utils/index';
 import { Black } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -30,6 +32,8 @@ const MyPageRecruitResults = () => {
   const [generation, setGeneration] = useState(APPLICANT_GENERATIONS[0]);
   const [stage, setStage] = useState<ScreeningStage>('DOCUMENT');
   const [toastMessage, setToastMessage] = useState('');
+  const [isDirty, setIsDirty] = useState(false);
+  const { isConfirmOpen, requestLeave, confirmLeave, cancelLeave } = useLeaveGuard(isDirty);
 
   const screeningQuery = useQuery({
     queryKey: ['recruitScreening', generation],
@@ -47,10 +51,15 @@ const MyPageRecruitResults = () => {
           ariaLabel="모집 기수"
           options={APPLICANT_GENERATIONS.map(toGenerationLabel)}
           value={toGenerationLabel(generation)}
-          onChange={(label) => setGeneration(Number.parseInt(label, 10))}
+          onChange={(label) => requestLeave(() => setGeneration(Number.parseInt(label, 10)))}
         />
       </TitleRow>
-      <Tab items={STAGE_TABS} activeKey={stage} onChange={(key) => setStage(key as ScreeningStage)} size="large" />
+      <Tab
+        items={STAGE_TABS}
+        activeKey={stage}
+        onChange={(key) => requestLeave(() => setStage(key as ScreeningStage))}
+        size="large"
+      />
       {screeningQuery.data &&
         (screeningQuery.data.applicants.length === 0 ? (
           <Empty message="아직 지원자가 없습니다" />
@@ -61,11 +70,22 @@ const MyPageRecruitResults = () => {
             generation={generation}
             data={screeningQuery.data}
             onToast={setToastMessage}
+            onDirtyChange={setIsDirty}
           />
         ))}
       <ToastWrapper>
         <Toast variant="positive" text={toastMessage} show={!!toastMessage} onHidden={() => setToastMessage('')} />
       </ToastWrapper>
+      {isConfirmOpen && (
+        <Alert
+          heading="저장하지 않고 나가면 작성한 내용이 사라집니다."
+          onDimmerClick={cancelLeave}
+          actions={[
+            { label: '취소', variant: 'assistive', onClick: cancelLeave },
+            { label: '나가기', variant: 'primary', onClick: confirmLeave },
+          ]}
+        />
+      )}
     </Root>
   );
 };

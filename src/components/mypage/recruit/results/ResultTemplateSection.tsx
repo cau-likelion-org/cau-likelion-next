@@ -77,9 +77,10 @@ const ResultTemplateSection = forwardRef<HTMLElement, ResultTemplateSectionProps
     previewApplicant
       ? {
           name: previewApplicant.name,
-          interviewAt: previewInterview?.date
-            ? toDateTimeLabel(new Date(`${previewInterview.date}T${previewInterview.time || '00:00'}:00+09:00`))
-            : undefined,
+          interviewAt:
+            previewInterview?.date && previewInterview.time
+              ? toDateTimeLabel(new Date(`${previewInterview.date}T${previewInterview.time}:00+09:00`))
+              : undefined,
           interviewPlace: previewInterview?.place,
         }
       : PREVIEW_EXAMPLE,

@@ -108,7 +108,10 @@ export const saveScreeningResults = async ({
       applicant.interviewResult = result;
       return;
     }
-    if (applicant.documentResult === 'PASS' && result !== 'PASS') applicant.interviewResult = undefined;
+    if (applicant.documentResult === 'PASS' && result !== 'PASS') {
+      applicant.interviewResult = undefined;
+      delete stores[generation]?.interviews[applicant.id];
+    }
     applicant.documentResult = result;
   });
 };

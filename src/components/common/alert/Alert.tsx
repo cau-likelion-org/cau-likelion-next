@@ -10,6 +10,7 @@ export interface AlertAction {
   label: string;
   onClick: () => void;
   variant?: AlertActionVariant;
+  disabled?: boolean;
 }
 
 export interface AlertProps {
@@ -41,7 +42,8 @@ const Alert = ({ className, size = 'small', align = 'left', heading, body, actio
         <ActionButton
           key={action.label}
           type="button"
-          color={actionColor[action.variant ?? 'assistive']}
+          color={action.disabled ? Label.disable : actionColor[action.variant ?? 'assistive']}
+          disabled={action.disabled}
           onClick={action.onClick}
         >
           {action.label}
@@ -87,7 +89,11 @@ const ActionButton = styled.button<{ color: string }>`
     pointer-events: none;
   }
 
-  &:hover::before {
+  &:disabled {
+    cursor: default;
+  }
+
+  &:not(:disabled):hover::before {
     opacity: 0.08;
   }
 `;

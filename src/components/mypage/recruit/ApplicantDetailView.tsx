@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { KeyboardEvent, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import styled, { css } from 'styled-components';
@@ -41,6 +41,13 @@ import {
 import { RECRUIT_INTERVIEW_SETTING_MOCK } from './mock';
 
 const LIST_PATH = '/mypage/recruit/applicants';
+
+const openInNewTab = (url: string) => window.open(url, '_blank', 'noopener,noreferrer');
+
+const getLinkFieldProps = (url: string) => ({
+  onClick: () => openInNewTab(url),
+  onKeyDown: (event: KeyboardEvent<HTMLInputElement>) => event.key === 'Enter' && openInNewTab(url),
+});
 
 const downloadFile = async (file: ApplicantFile) => {
   const response = await fetch(file.url);
@@ -159,7 +166,13 @@ const ApplicantDetailView = ({ applicant, canDelete }: ApplicantDetailViewProps)
             <SectionActions>
               {isEditing ? (
                 <>
-                  <Button size="small" variant="outlined" color="assistive" onClick={cancelEdit}>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    color="assistive"
+                    disabled={updateMutation.isPending}
+                    onClick={cancelEdit}
+                  >
                     취소
                   </Button>
                   <Button size="small" loading={updateMutation.isPending} onClick={saveContact}>
@@ -208,7 +221,7 @@ const ApplicantDetailView = ({ applicant, canDelete }: ApplicantDetailViewProps)
                         readOnly
                         value={applicant.portalCapture.name}
                         leadingIcon={<IcDocument width={22} height={22} />}
-                        onClick={() => applicant.portalCapture && window.open(applicant.portalCapture.url, '_blank')}
+                        {...getLinkFieldProps(applicant.portalCapture.url)}
                       />
                       <IconButton
                         type="button"
@@ -264,7 +277,7 @@ const ApplicantDetailView = ({ applicant, canDelete }: ApplicantDetailViewProps)
                       readOnly
                       value={link || '-'}
                       leadingIcon={<IcLink width={22} height={22} />}
-                      onClick={isOpenable ? () => window.open(link, '_blank', 'noopener,noreferrer') : undefined}
+                      {...(isOpenable && getLinkFieldProps(link))}
                     />
                   );
                 }
@@ -321,8 +334,18 @@ const ApplicantDetailView = ({ applicant, canDelete }: ApplicantDetailViewProps)
           heading={'삭제 후에는 복구가 어렵습니다.\n지원서를 삭제하시겠습니까?'}
           onDimmerClick={() => !deleteMutation.isPending && setIsDeleteOpen(false)}
           actions={[
-            { label: '취소', variant: 'assistive', onClick: () => setIsDeleteOpen(false) },
-            { label: '삭제하기', variant: 'primary', onClick: () => deleteMutation.mutate(applicant.id) },
+            {
+              label: '취소',
+              variant: 'assistive',
+              disabled: deleteMutation.isPending,
+              onClick: () => setIsDeleteOpen(false),
+            },
+            {
+              label: '삭제하기',
+              variant: 'primary',
+              disabled: deleteMutation.isPending,
+              onClick: () => deleteMutation.mutate(applicant.id),
+            },
           ]}
         />
       )}

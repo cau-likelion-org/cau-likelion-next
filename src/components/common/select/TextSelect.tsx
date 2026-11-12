@@ -49,6 +49,7 @@ const TextSelect = ({
   };
 
   const open = () => {
+    if (options.length === 0) return;
     const rect = (anchorRef?.current ?? wrapperRef.current)?.getBoundingClientRect();
     if (rect) setPosition({ top: rect.bottom + MENU_GAP, left: rect.left });
     setActiveIndex(Math.max(options.indexOf(value), 0));
@@ -75,6 +76,7 @@ const TextSelect = ({
   }, [isOpen]);
 
   const select = (index: number) => {
+    if (index >= options.length) return;
     setActiveIndex(index);
     onChange(options[index]);
     close();
@@ -187,7 +189,7 @@ const Trigger = styled.div<{ $tone: 'header' | 'cell'; $open: boolean; $placehol
   }
 
   &:focus-visible::before {
-    opacity: 0.06;
+    opacity: 0.16;
   }
 `;
 

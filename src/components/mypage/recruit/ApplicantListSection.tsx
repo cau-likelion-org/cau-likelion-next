@@ -176,9 +176,9 @@ const ApplicantListSection = () => {
                   </HeaderRow>
                   <Rows>
                     {pageItems.map((applicant) => (
-                      <BodyRow key={applicant.id} role="row" href={`/mypage/recruit/applicants/${applicant.id}`}>
+                      <BodyRow key={applicant.id} role="row">
                         <NameCell role="cell" $width={COLUMNS[0].width}>
-                          {applicant.name}
+                          <RowLink href={`/mypage/recruit/applicants/${applicant.id}`}>{applicant.name}</RowLink>
                         </NameCell>
                         <Cell value={applicant.studentId} width={COLUMNS[1].width} />
                         <Cell value={applicant.major} width={COLUMNS[2].width} />
@@ -317,12 +317,12 @@ const Rows = styled.div`
   flex-direction: column;
 `;
 
-const BodyRow = styled(Link)`
+const BodyRow = styled.div`
+  position: relative;
   display: flex;
   gap: 20px;
   padding: 20px 0;
   border-radius: 6px;
-  text-decoration: none;
 
   &:first-child {
     padding-top: 0;
@@ -334,10 +334,6 @@ const BodyRow = styled(Link)`
 
   & + & {
     box-shadow: inset 0 1px 0 ${Line.normal};
-  }
-
-  &:hover > span {
-    opacity: 0.8;
   }
 `;
 
@@ -354,6 +350,24 @@ const BodyCell = styled.span<{ $width: number; $empty?: boolean }>`
 
 const NameCell = styled(BodyCell)`
   ${typographyCss(Typography.headline1.bold)}
+`;
+
+// 이름만 링크로 두고 누르는 영역을 행 전체로 넓혀, 행 어디를 눌러도 상세로 이동한다
+const RowLink = styled(Link)`
+  color: inherit;
+  text-decoration: none;
+  outline: none;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 6px;
+  }
+
+  &:focus-visible::after {
+    outline: auto;
+  }
 `;
 
 // Figma 페이지 이동 영역은 높이 50px이라 공통 컴포넌트(32px) 위아래에 여백을 더한다
