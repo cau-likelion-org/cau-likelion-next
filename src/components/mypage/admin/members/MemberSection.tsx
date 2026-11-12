@@ -1,5 +1,4 @@
-import { KeyboardEvent, useEffect, useId, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
+import { useState } from 'react';
 import styled, { css } from 'styled-components';
 
 import { Generation, MemberResponse, MemberRole, MemberUpdateRequest } from '@@types/request';
@@ -7,11 +6,11 @@ import TextField from '@common/textField/TextField';
 import CircularLoading from '@common/loading/CircularLoading';
 import EmptyState from '@common/emptyState/EmptyState';
 import Button from '@common/button/Button';
-import Menu from '@common/menu/Menu';
+import TextSelect from '@common/select/TextSelect';
 import ProjectFilterSelect from '@project/projects/ProjectFilterSelect';
 import EditButton from '@mypage/admin/component/EditButton';
 import Alert from '@common/alert/Alert';
-import { IcCaretDown, IcCaretUp, IcSearch } from '@assets/svg';
+import { IcSearch } from '@assets/svg';
 import { NUMERIC_ONLY_REGEX, ROLE_LABEL } from '@utils/constant';
 import { excludeCommonPart, isEmailFormatInvalid } from '@utils/index';
 import { Black, Label, Line, State } from '@utils/constant/color';
@@ -65,128 +64,6 @@ const isEditEmpty = (edit: EditValue) =>
   edit.role === undefined &&
   edit.partId === undefined &&
   edit.generationNumber === undefined;
-
-// 수정 모드 파트·권한 셀 드롭다운 (Figma: Menu/Menu). 표가 overflow: hidden으로 잘려서 팝업은 portal로 body에 띄운다.
-const EditSelect = ({
-  value,
-  options,
-  onChange,
-  ariaLabel,
-}: {
-  value: string;
-  options: string[];
-  onChange: (value: string) => void;
-  ariaLabel: string;
-}) => {
-  const listId = useId();
-  const wrapperRef = useRef<HTMLDivElement>(null);
-  const triggerRef = useRef<HTMLDivElement>(null);
-  const menuRef = useRef<HTMLDivElement>(null);
-  const [isOpen, setIsOpen] = useState(false);
-  const [position, setPosition] = useState<{ top: number; left: number } | null>(null);
-  const [activeIndex, setActiveIndex] = useState(0);
-
-  const open = () => {
-    const rect = wrapperRef.current?.getBoundingClientRect();
-    if (rect) setPosition({ top: rect.bottom + 4, left: rect.left });
-    setActiveIndex(Math.max(options.indexOf(value), 0));
-    setIsOpen(true);
-  };
-  const close = () => setIsOpen(false);
-
-  useEffect(() => {
-    if (!isOpen) return;
-    const handlePointer = (event: MouseEvent) => {
-      const target = event.target as Node;
-      if (wrapperRef.current?.contains(target) || menuRef.current?.contains(target)) return;
-      close();
-    };
-    const handleReflow = () => close();
-    document.addEventListener('mousedown', handlePointer);
-    window.addEventListener('scroll', handleReflow, true);
-    window.addEventListener('resize', handleReflow);
-    return () => {
-      document.removeEventListener('mousedown', handlePointer);
-      window.removeEventListener('scroll', handleReflow, true);
-      window.removeEventListener('resize', handleReflow);
-    };
-  }, [isOpen]);
-
-  const select = (option: string, index: number) => {
-    setActiveIndex(index);
-    onChange(option);
-    close();
-    triggerRef.current?.focus();
-  };
-
-  const handleKeyDown = (event: KeyboardEvent) => {
-    if (!isOpen) {
-      if (['ArrowDown', 'ArrowUp', 'Enter', ' '].includes(event.key)) {
-        event.preventDefault();
-        open();
-      }
-      return;
-    }
-    switch (event.key) {
-      case 'ArrowDown':
-        event.preventDefault();
-        setActiveIndex((prev) => Math.min(prev + 1, options.length - 1));
-        break;
-      case 'ArrowUp':
-        event.preventDefault();
-        setActiveIndex((prev) => Math.max(prev - 1, 0));
-        break;
-      case 'Enter':
-      case ' ':
-        event.preventDefault();
-        select(options[activeIndex], activeIndex);
-        break;
-      case 'Escape':
-        event.preventDefault();
-        close();
-        break;
-      default:
-        break;
-    }
-  };
-
-  return (
-    <EditSelectWrapper ref={wrapperRef}>
-      <EditSelectTrigger
-        ref={triggerRef}
-        role="combobox"
-        tabIndex={0}
-        $open={isOpen}
-        aria-label={ariaLabel}
-        aria-expanded={isOpen}
-        aria-controls={listId}
-        aria-activedescendant={isOpen ? `${listId}-${activeIndex}` : undefined}
-        onClick={() => (isOpen ? close() : open())}
-        onKeyDown={handleKeyDown}
-      >
-        <span>{value}</span>
-        <EditSelectCaret>
-          {isOpen ? <IcCaretUp width={16} height={16} /> : <IcCaretDown width={16} height={16} />}
-        </EditSelectCaret>
-      </EditSelectTrigger>
-      {isOpen &&
-        position &&
-        createPortal(
-          <MenuPositioner ref={menuRef} id={listId} style={{ top: position.top, left: position.left }}>
-            <Menu
-              items={options.map((option, index) => ({
-                id: `${listId}-${index}`,
-                label: option,
-                active: index === activeIndex,
-                onClick: () => select(option, index),
-              }))}
-            />
-          </MenuPositioner>,
-          document.body,
-        )}
-    </EditSelectWrapper>
-  );
-};
 
 interface MemberSectionProps {
   members: MemberResponse[];
@@ -488,7 +365,8 @@ const MemberSection = ({
                   <Cell>{member.generationNumber ?? '-'}</Cell>
                 )}
                 {isEditing ? (
-                  <EditSelect
+                  <TextSelect
+                    tone="cell"
                     value={partValue}
                     options={[NO_PART_LABEL, ...generationParts.map((part) => part.name)]}
                     onChange={(label) => changePart(member, label, generationParts)}
@@ -512,7 +390,8 @@ const MemberSection = ({
                   <Cell>{member.email}</Cell>
                 )}
                 {isEditing ? (
-                  <EditSelect
+                  <TextSelect
+                    tone="cell"
                     value={roleValue}
                     options={ROLE_OPTIONS.map((role) => ROLE_LABEL[role])}
                     onChange={(label) => changeRole(member, label)}
@@ -699,52 +578,4 @@ const StateWrapper = styled.div`
 
 const TableEmptyState = styled(EmptyState)`
   min-height: 240px;
-`;
-
-const EditSelectWrapper = styled.div`
-  position: relative;
-  width: fit-content;
-`;
-
-const EditSelectTrigger = styled.div<{ $open: boolean }>`
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px 0;
-  color: ${Label.strong};
-  cursor: pointer;
-  outline: none;
-  white-space: nowrap;
-  ${typographyCss(Typography.headline2.medium)}
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: -7px;
-    right: -7px;
-    height: 32px;
-    transform: translateY(-50%);
-    border-radius: 6px;
-    background-color: ${Label.strong};
-    opacity: ${(props) => (props.$open ? 0.08 : 0)};
-    pointer-events: none;
-    transition: opacity 0.15s ease;
-  }
-
-  &:hover::before {
-    opacity: 0.08;
-  }
-`;
-
-const EditSelectCaret = styled.span`
-  position: relative;
-  display: inline-flex;
-  color: ${Label.alternative};
-`;
-
-const MenuPositioner = styled.div`
-  position: fixed;
-  z-index: 1000;
 `;

@@ -1,4 +1,4 @@
-import { KeyboardEvent, useEffect, useId, useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import dynamic from 'next/dynamic';
 import styled from 'styled-components';
@@ -10,12 +10,9 @@ import {
   MemberAttendanceResponse,
 } from 'src/apis/attendance';
 import EmptyState from '@common/emptyState/EmptyState';
-import PartSelect from '@mypage/component/PartSelect';
+import TextSelect from '@common/select/TextSelect';
 import CircularLoading from '@common/loading/CircularLoading';
-import ListboxOptions from '@common/select/ListboxOptions';
-import useListboxSelect from 'src/hooks/useListboxSelect';
-import { IcCaretDown, IcCaretUp } from '@assets/svg';
-import { BackgroundColor, Fill, Inverse, Label, Line, Orange } from '@utils/constant/color';
+import { Inverse, Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { media } from '@utils/constant/breakpoint';
 
@@ -33,7 +30,6 @@ const STATUS_LABEL: Record<AttendanceStatus, string> = {
 // 수정 시 선택 가능한 상태 (Figma 순서). '출석 전'(BEFORE)은 되돌릴 수 없어 제외.
 const EDIT_STATUS_OPTIONS: AttendanceStatus[] = ['PRESENT', 'LATE', 'ABSENT', 'EXCUSED', 'UNAUTHORIZED_ABSENT'];
 
-// 수정 모드 출결 셀 드롭다운. 표가 가로 스크롤로 클리핑되므로 메뉴는 portal로 body에 띄운다.
 const StatusDropdown = ({
   value,
   ariaLabel,
@@ -43,119 +39,23 @@ const StatusDropdown = ({
   ariaLabel: string;
   onChange: (status: AttendanceStatus) => void;
 }) => {
-  const listId = useId();
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const triggerRef = useRef<HTMLDivElement>(null);
-  const menuRef = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
-  const [position, setPosition] = useState<{ top: number; left: number; width: number } | null>(null);
-  const [activeIndex, setActiveIndex] = useState(0);
-
-  const open = () => {
-    // 메뉴는 셀 박스(오렌지 테두리) 왼쪽에 정렬 (Figma)
-    const rect = wrapperRef.current?.getBoundingClientRect();
-    if (rect) setPosition({ top: rect.bottom + 4, left: rect.left, width: rect.width });
-    setActiveIndex(Math.max(EDIT_STATUS_OPTIONS.indexOf(value), 0));
-    setIsOpen(true);
-  };
-  const close = () => setIsOpen(false);
-
-  useEffect(() => {
-    if (!isOpen) return;
-    const handlePointer = (event: MouseEvent) => {
-      const target = event.target as Node;
-      if (wrapperRef.current?.contains(target) || menuRef.current?.contains(target)) return;
-      close();
-    };
-    const handleReflow = () => close();
-    document.addEventListener('mousedown', handlePointer);
-    window.addEventListener('scroll', handleReflow, true);
-    window.addEventListener('resize', handleReflow);
-    return () => {
-      document.removeEventListener('mousedown', handlePointer);
-      window.removeEventListener('scroll', handleReflow, true);
-      window.removeEventListener('resize', handleReflow);
-    };
-  }, [isOpen]);
-
-  const select = (status: AttendanceStatus) => {
-    onChange(status);
-    close();
-    triggerRef.current?.focus();
-  };
-
-  const handleKeyDown = (event: KeyboardEvent) => {
-    if (!isOpen) {
-      if (['ArrowDown', 'ArrowUp', 'Enter', ' '].includes(event.key)) {
-        event.preventDefault();
-        open();
-      }
-      return;
-    }
-    switch (event.key) {
-      case 'ArrowDown':
-        event.preventDefault();
-        setActiveIndex((prev) => Math.min(prev + 1, EDIT_STATUS_OPTIONS.length - 1));
-        break;
-      case 'ArrowUp':
-        event.preventDefault();
-        setActiveIndex((prev) => Math.max(prev - 1, 0));
-        break;
-      case 'Enter':
-      case ' ':
-        event.preventDefault();
-        select(EDIT_STATUS_OPTIONS[activeIndex]);
-        break;
-      case 'Escape':
-        event.preventDefault();
-        close();
-        break;
-      default:
-        break;
-    }
-  };
 
   return (
     <StatusWrapper ref={wrapperRef} $open={isOpen}>
-      <StatusTrigger
-        ref={triggerRef}
-        role="combobox"
-        tabIndex={0}
-        aria-label={ariaLabel}
-        aria-expanded={isOpen}
-        aria-controls={listId}
-        $open={isOpen}
-        onClick={() => (isOpen ? close() : open())}
-        onKeyDown={handleKeyDown}
-      >
-        <span>{STATUS_LABEL[value]}</span>
-        {isOpen ? <IcCaretUp width={16} height={16} /> : <IcCaretDown width={16} height={16} />}
-      </StatusTrigger>
-      {isOpen &&
-        position &&
-        createPortal(
-          <StatusMenu
-            ref={menuRef}
-            id={listId}
-            role="listbox"
-            style={{ top: position.top, left: position.left, minWidth: Math.max(position.width, 96) }}
-          >
-            {EDIT_STATUS_OPTIONS.map((status, index) => (
-              <StatusOption
-                key={status}
-                type="button"
-                role="option"
-                aria-selected={status === value}
-                $active={index === activeIndex}
-                onMouseEnter={() => setActiveIndex(index)}
-                onClick={() => select(status)}
-              >
-                {STATUS_LABEL[status]}
-              </StatusOption>
-            ))}
-          </StatusMenu>,
-          document.body,
-        )}
+      <TextSelect
+        tone="cell"
+        ariaLabel={ariaLabel}
+        anchorRef={wrapperRef}
+        options={EDIT_STATUS_OPTIONS.map((status) => STATUS_LABEL[status])}
+        value={STATUS_LABEL[value]}
+        onChange={(label) => {
+          const status = EDIT_STATUS_OPTIONS.find((option) => STATUS_LABEL[option] === label);
+          if (status) onChange(status);
+        }}
+        onOpenChange={setIsOpen}
+      />
     </StatusWrapper>
   );
 };
@@ -296,7 +196,12 @@ const PartAttendanceTable = ({
         <TitleRow>
           <Title>주차별 출결 현황</Title>
           {partFilter ? (
-            <PartSelect value={partFilter.value} options={partFilter.options} onChange={partFilter.onChange} />
+            <TextSelect
+              ariaLabel="파트 선택"
+              value={partFilter.value}
+              options={partFilter.options}
+              onChange={partFilter.onChange}
+            />
           ) : (
             partName && <PartName>{partName} 파트</PartName>
           )}
@@ -514,51 +419,6 @@ const StatusWrapper = styled.div<{ $open: boolean }>`
   height: calc(100% - 14px);
   border: 1.5px solid ${(props) => (props.$open ? Orange.o500 : 'transparent')};
   border-radius: 8px;
-`;
-
-const StatusTrigger = styled.div<{ $open: boolean }>`
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px 8px;
-  border-radius: 8px;
-  /* 클릭한 셀만 회색 pill로 강조 (Figma) */
-  background-color: ${(props) => (props.$open ? Fill.normal : 'transparent')};
-  color: ${Label.normal};
-  cursor: pointer;
-  outline: none;
-  ${typographyCss(Typography.headline2.medium)}
-
-  svg {
-    color: ${Label.alternative};
-  }
-`;
-
-const StatusMenu = styled.div`
-  position: fixed;
-  z-index: 1000;
-  display: flex;
-  flex-direction: column;
-  padding: 8px;
-  border: 1px solid ${Line.neutral};
-  border-radius: 16px;
-  background-color: ${BackgroundColor};
-  box-shadow:
-    0px 2px 4px -2px rgba(23, 23, 23, 0.06),
-    0px 4px 6px -1px rgba(23, 23, 23, 0.06);
-`;
-
-const StatusOption = styled.button<{ $active: boolean }>`
-  width: 100%;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 12px;
-  background-color: ${(props) => (props.$active ? 'rgba(23, 23, 23, 0.04)' : 'transparent')};
-  text-align: left;
-  white-space: nowrap;
-  color: ${Label.normal};
-  cursor: pointer;
-  ${typographyCss(Typography.body1Normal.regular)}
 `;
 
 // Inverse/Background(#1B1C1E) 88% — Figma 툴팁 배경

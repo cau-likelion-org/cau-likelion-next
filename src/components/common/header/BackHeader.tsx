@@ -28,7 +28,7 @@ const Wrapper = styled.div`
   padding: 32px 0;
 
   ${media.sm} {
-    padding: 80px 0 52px;
+    padding: 90px 0 52px;
   }
 `;
 
@@ -36,6 +36,7 @@ const ClickableRow = styled.button`
   display: flex;
   align-items: center;
   gap: 8px;
+  padding: 0;
   border: none;
   background: none;
   cursor: pointer;
@@ -46,6 +47,8 @@ const IconSlot = styled.span`
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  padding: 10px;
+  border-radius: 10px;
   color: ${Orange.o500};
 `;
 

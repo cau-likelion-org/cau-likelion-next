@@ -7,7 +7,7 @@ import Checkbox from '@common/checkbox/Checkbox';
 import CircularLoading from '@common/loading/CircularLoading';
 import EmptyState from '@common/emptyState/EmptyState';
 import PaginationNavigation from '@common/pagination/PaginationNavigation';
-import PartSelect from '@mypage/component/PartSelect';
+import TextSelect from '@common/select/TextSelect';
 import { Black, Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
@@ -48,7 +48,7 @@ const RecruitmentSubscriberSection = ({
     <Wrapper>
       <TitleRow>
         <Title>사전 알림 신청자 명단</Title>
-        <PartSelect
+        <TextSelect
           value={interestPartFilter}
           options={[ALL_PART_FILTER, ...interestPartOptions]}
           onChange={(value) => {

@@ -1,10 +1,12 @@
+import { ReactNode } from 'react';
 import styled from 'styled-components';
 
-import { CategoryTint, Inverse, Label, Line, System } from '@utils/constant/color';
+import { CategoryTint, Inverse, Label, Line, Orange, System } from '@utils/constant/color';
 
 export interface CategoryItem {
   key: string;
   label: string;
+  trailingIcon?: ReactNode;
 }
 
 export interface CategoryProps {
@@ -12,7 +14,7 @@ export interface CategoryProps {
   items: CategoryItem[];
   activeKey: string;
   onChange: (key: string) => void;
-  variant?: 'normal' | 'alternative';
+  variant?: 'normal' | 'alternative' | 'accent';
   size?: 'small' | 'medium' | 'large' | 'xlarge';
   horizontalPadding?: boolean;
   verticalPadding?: boolean;
@@ -95,6 +97,7 @@ const Category = ({
             onClick={() => onChange(item.key)}
           >
             {item.label}
+            {item.trailingIcon}
           </Chip>
         );
       })}
@@ -121,6 +124,7 @@ const Chip = styled.button<{
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 3px;
   white-space: nowrap;
   border: none;
   cursor: pointer;
@@ -138,6 +142,13 @@ const Chip = styled.button<{
         box-shadow: inset 0 0 0 1px ${CategoryTint.border};
         background-color: ${CategoryTint.background};
         color: ${System.blue};
+      `;
+    }
+    if (props.selected && props.variant === 'accent') {
+      return `
+        background-color: ${Orange.o500};
+        color: ${Inverse.label};
+        font-weight: 600;
       `;
     }
     if (props.selected) {

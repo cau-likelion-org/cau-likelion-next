@@ -1,11 +1,10 @@
-import { ReactElement, useEffect, useState } from 'react';
+import { ReactElement, useState } from 'react';
 import dynamic from 'next/dynamic';
-import { useRouter } from 'next/router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import styled from 'styled-components';
 
-import { AllowedUserEmailItem, GenerationCreateRequestDto, UserProfile } from '@@types/request';
+import { AllowedUserEmailItem, GenerationCreateRequestDto } from '@@types/request';
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import Toast from '@common/toast/Toast';
 import { ToastWrapper } from '@common/toast/toastLayout';
@@ -21,11 +20,11 @@ import {
   getAllowedEmails,
   getGenerations,
   getMembers,
-  getUserProfile,
   putAllowedEmails,
   putUserProfile,
   setCurrentGeneration,
 } from 'src/apis/account';
+import useRoleGuard from 'src/apis/useRoleGuard';
 import useTokenStore from 'src/store/useTokenStore';
 import { canManageMemberRoles } from '@utils/index';
 import { ROLE_LABEL, TRACK_OPTIONS } from '@utils/constant';
@@ -37,26 +36,9 @@ const GenerationCreateModal = dynamic(() => import('@mypage/admin/members/Genera
 
 const MyPageAdminMembers = () => {
   const tokenState = useTokenStore((state) => state.token);
-  const hasHydrated = useTokenStore((state) => state.hasHydrated);
-  const router = useRouter();
   const queryClient = useQueryClient();
 
-  const { data: userProfile, isError: isUserProfileError } = useQuery<UserProfile, AxiosError>({
-    queryKey: ['userProfile'],
-    queryFn: () => getUserProfile(tokenState),
-    retry: false,
-    enabled: !!tokenState.access,
-  });
-
-  useEffect(() => {
-    if (hasHydrated && !tokenState.access) router.push('/login');
-  }, [hasHydrated, tokenState, router]);
-
-  useEffect(() => {
-    if (userProfile && !canManageMemberRoles(userProfile.role)) router.push('/mypage');
-  }, [userProfile, router]);
-
-  const isAuthorized = !!userProfile && canManageMemberRoles(userProfile.role);
+  const { isAuthorized, isUserProfileError } = useRoleGuard(canManageMemberRoles);
 
   const { data: generations } = useQuery({
     queryKey: ['adminGenerations'],

@@ -1,10 +1,8 @@
-import { ReactElement, ReactNode, useEffect, useRef, useState } from 'react';
-import { useRouter } from 'next/router';
+import { ReactElement, ReactNode, useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { AxiosError } from 'axios';
 import styled from 'styled-components';
 
-import { Generation, UserProfile } from '@@types/request';
+import { Generation } from '@@types/request';
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import Button from '@common/button/Button';
 import Toast from '@common/toast/Toast';
@@ -22,10 +20,11 @@ import BlogSection, {
 import EditButton from '@mypage/admin/component/EditButton';
 import { syncListSection } from '@mypage/admin/utils';
 import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
-import { getUserProfile, getGenerations } from 'src/apis/account';
+import { getGenerations } from 'src/apis/account';
 import { getBlogs, createBlog, updateBlog, deleteBlog, BlogResponse, BlogRequest } from 'src/apis/blog';
+import useRoleGuard from 'src/apis/useRoleGuard';
 import useTokenStore from 'src/store/useTokenStore';
-import { getServerMessage, isAdminRole } from '@utils/index';
+import { canManageSitePages, getServerMessage } from '@utils/index';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
@@ -54,16 +53,9 @@ const isBlogGenerationInvalid = (item: BlogItem, generations: Generation[]) =>
 
 const MyPageAdminBlog = () => {
   const tokenState = useTokenStore((state) => state.token);
-  const hasHydrated = useTokenStore((state) => state.hasHydrated);
-  const router = useRouter();
   const queryClient = useQueryClient();
 
-  const { data: userProfile, isError: isUserProfileError } = useQuery<UserProfile, AxiosError>({
-    queryKey: ['userProfile'],
-    queryFn: () => getUserProfile(tokenState),
-    retry: false,
-    enabled: !!tokenState.access,
-  });
+  const { isAuthorized, isUserProfileError } = useRoleGuard(canManageSitePages);
 
   // 편집 화면이라 창 포커스 시 백그라운드 재조회로 입력 중인 값이 덮어써지지 않도록 자동 재조회를 끔
   const { data: blogs, isError: isBlogsError } = useQuery({
@@ -96,14 +88,6 @@ const MyPageAdminBlog = () => {
       setBlogItems((blogs ?? []).map(blogToLocal));
     }
   }
-
-  useEffect(() => {
-    if (hasHydrated && !tokenState.access) router.push('/login');
-  }, [hasHydrated, tokenState, router]);
-
-  useEffect(() => {
-    if (userProfile && !isAdminRole(userProfile.role)) router.push('/mypage');
-  }, [userProfile, router]);
 
   const handleCancel = () => {
     setBlogItems((blogs ?? []).map(blogToLocal));
@@ -138,8 +122,6 @@ const MyPageAdminBlog = () => {
       setIsSaving(false);
     }
   };
-
-  const isAuthorized = !!userProfile && isAdminRole(userProfile.role);
 
   return (
     <>

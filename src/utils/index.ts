@@ -33,6 +33,31 @@ export const toDateTimeLabel = (date: Date) => {
   );
 };
 
+const toMinutesOfDay = (time: string) => {
+  const [hours, minutes] = time.split(':').map(Number);
+  return hours * 60 + minutes;
+};
+
+const toTimeOfDay = (minutes: number) => `${pad2(Math.floor(minutes / 60))}:${pad2(minutes % 60)}`;
+
+export const formatInterviewSlots = (slots: string[], unitMinutes: number) => {
+  const ranges: { date: string; start: number; end: number }[] = [];
+  [...slots].sort().forEach((slot) => {
+    const [date, time] = slot.split('T');
+    const start = toMinutesOfDay(time);
+    const last = ranges[ranges.length - 1];
+    if (last && last.date === date && last.end === start) last.end = start + unitMinutes;
+    else ranges.push({ date, start, end: start + unitMinutes });
+  });
+  return ranges
+    .map(({ date, start, end }) => {
+      const [year, month, day] = date.split('-').map(Number);
+      const weekday = DAY_LABELS[new Date(Date.UTC(year, month - 1, day)).getUTCDay()];
+      return `${month}/${day}(${weekday}) ${toTimeOfDay(start)}-${toTimeOfDay(end)}`;
+    })
+    .join(', ');
+};
+
 export const isUnfilled = (value: string) => value.trim().length === 0;
 
 // 한글 등 이메일에 쓰일 수 없는 문자가 섞여 들어가는 것을 막기 위해 허용 문자를 제한한다
@@ -75,7 +100,7 @@ export const formatFileSize = (bytes: number) => {
 export const excludeCommonPart = <T extends { name: string }>(parts: T[]) =>
   parts.filter((part) => part.name !== COMMON_PART_NAME);
 
-// 운영진(STAFF) 이상 — 담당 파트에 한정된 관리 권한까지 포함해 "관리자 화면 접근 가능 여부" 판단에 사용
+// 운영진(STAFF) 이상 — 담당 파트에 한정된 관리 권한까지 포함
 const ADMIN_ROLES: MemberRole[] = ['STAFF', 'PRESIDENT', 'ADMIN'];
 
 // 회장(PRESIDENT)/중하하 관리자(ADMIN) — 전체 파트·전체 회원 데이터에 대한 무제한 권한이 필요한 기능에 사용
@@ -95,6 +120,12 @@ export const canManageSitePages = (role: MemberRole) => role === 'ADMIN';
 
 // 전체 구성원 권한 설정은 중하하 관리자 전용 권한
 export const canManageMemberRoles = (role: MemberRole) => role === 'ADMIN';
+
+// 리크루팅 백오피스(회차·문항 설정, 지원서 열람·다운로드, 결과 입력·공개)는 회장단·관리자 권한
+export const canManageRecruit = (role: MemberRole) => FULL_ADMIN_ROLES.includes(role);
+
+// 지원서 삭제는 관리자 전용 권한
+export const canDeleteApplication = (role: MemberRole) => role === 'ADMIN';
 
 export const sortArchivingListDesc = <T extends IGalleryData | IProjectData>(
   data: ArchivingArrayType<T>,

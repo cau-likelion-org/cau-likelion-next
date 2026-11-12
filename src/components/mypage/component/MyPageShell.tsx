@@ -11,7 +11,7 @@ import PageScrollbar from '@common/pageScrollbar/PageScrollbar';
 import { IcChevronRight } from '@assets/svg';
 import { getUserProfile } from 'src/apis/account';
 import useTokenStore from 'src/store/useTokenStore';
-import { canManageSitePages, isAdminRole } from '@utils/index';
+import { canManageRecruit, canManageSitePages } from '@utils/index';
 import { Black, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { containerCss, media } from '@utils/constant/breakpoint';
@@ -24,8 +24,10 @@ const BREADCRUMB_LABEL: Record<SidebarActive, string> = {
   'admin-about': '소개 페이지 관리',
   'admin-blog': '블로그 페이지 관리',
   'admin-members': '전체 회원/파트 관리',
-  'admin-recruit': '리크루팅 사전 알림 발송',
+  'recruit-notification': '사전 알림 발송',
   'recruit-settings': '기수/문항 관리',
+  'recruit-applicants': '지원서 관리',
+  'recruit-results': '전형 결과 관리',
 };
 
 // 페이지 바깥(getLayout)에서 렌더되어 마이페이지 안에서 이동해도 유지되므로,
@@ -48,8 +50,8 @@ const MyPageShell = ({
     enabled: !!tokenState.access,
   });
   const showAdminMenu = isAdmin ?? (!!userProfile && canManageSitePages(userProfile.role));
-  // 리크루팅은 운영진·회장도 관리하므로 관리자 메뉴보다 넓은 권한으로 노출한다
-  const showRecruitMenu = isAdmin ?? (!!userProfile && isAdminRole(userProfile.role));
+  // 리크루팅은 회장단도 관리하므로 관리자 메뉴보다 넓은 권한으로 노출한다
+  const showRecruitMenu = isAdmin ?? (!!userProfile && canManageRecruit(userProfile.role));
 
   const [isRouting, setIsRouting] = useState(false);
   // 목적지 페이지 컴포넌트가 완전히 교체되기 전에도, 클릭한 목적지 기준으로 사이드바 활성탭을 바로 반영하기 위한 값

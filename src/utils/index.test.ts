@@ -3,7 +3,9 @@ import { describe, expect, it } from 'vitest';
 
 import {
   canCreateAttendance,
+  canDeleteApplication,
   canManageMemberRoles,
+  canManageRecruit,
   canManageSitePages,
   excludeCommonPart,
   formatFileSize,
@@ -21,6 +23,7 @@ import {
   sortArchivingListDesc,
   toDateString,
   toDateTimeLabel,
+  formatInterviewSlots,
 } from './index';
 
 const axiosErrorWith = (data: unknown) =>
@@ -76,6 +79,24 @@ describe('toDateTimeLabel', () => {
   it('기기 시간대와 관계없이 한국 시간으로 표시한다', () => {
     expect(toDateTimeLabel(new Date('2027-03-08T12:34:00Z'))).toBe('2027.03.08(월) 21:34');
     expect(toDateTimeLabel(new Date('2027-03-08T16:00:00Z'))).toBe('2027.03.09(화) 01:00');
+  });
+});
+
+describe('formatInterviewSlots', () => {
+  it('같은 날 이어진 칸은 하나의 구간으로 묶고 날짜순으로 쉼표로 잇는다', () => {
+    expect(
+      formatInterviewSlots(['2027-03-17T16:00', '2027-03-16T12:00', '2027-03-17T14:00', '2027-03-18T16:00'], 120),
+    ).toBe('3/16(화) 12:00-14:00, 3/17(수) 14:00-18:00, 3/18(목) 16:00-18:00');
+  });
+
+  it('같은 날이어도 떨어진 칸은 따로 표시한다', () => {
+    expect(formatInterviewSlots(['2027-03-16T10:00', '2027-03-16T14:00'], 60)).toBe(
+      '3/16(화) 10:00-11:00, 3/16(화) 14:00-15:00',
+    );
+  });
+
+  it('선택한 칸이 없으면 빈 문자열', () => {
+    expect(formatInterviewSlots([], 60)).toBe('');
   });
 });
 
@@ -216,6 +237,14 @@ describe('역할별 권한', () => {
     expect(canManageSitePages('PRESIDENT')).toBe(false);
     expect(canManageMemberRoles('ADMIN')).toBe(true);
     expect(canManageMemberRoles('PRESIDENT')).toBe(false);
+  });
+
+  it('리크루팅 백오피스는 회장단·관리자만, 지원서 삭제는 관리자만 할 수 있다', () => {
+    expect(canManageRecruit('PRESIDENT')).toBe(true);
+    expect(canManageRecruit('ADMIN')).toBe(true);
+    expect(canManageRecruit('STAFF')).toBe(false);
+    expect(canDeleteApplication('ADMIN')).toBe(true);
+    expect(canDeleteApplication('PRESIDENT')).toBe(false);
   });
 });
 

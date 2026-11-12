@@ -1,10 +1,7 @@
-import { ReactElement, ReactNode, useEffect, useRef, useState } from 'react';
-import { useRouter } from 'next/router';
+import { ReactElement, ReactNode, useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { AxiosError } from 'axios';
 import styled from 'styled-components';
 
-import { UserProfile } from '@@types/request';
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import Button from '@common/button/Button';
 import Toast from '@common/toast/Toast';
@@ -31,7 +28,6 @@ import { FaqItem, isFaqItemInvalid } from '@mypage/component/FaqCardList';
 import EditButton from '@mypage/admin/component/EditButton';
 import { syncListSection } from '@mypage/admin/utils';
 import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
-import { getUserProfile } from 'src/apis/account';
 import { getTracks, createTrack, updateTrack, deleteTrack, TrackResponse } from 'src/apis/track';
 import { getActivities, createActivity, updateActivity, deleteActivity, ActivityResponse } from 'src/apis/activity';
 import { getFaqs, createFaq, updateFaq, deleteFaq, FaqResponse } from 'src/apis/faq';
@@ -43,8 +39,9 @@ import {
   PROJECT_CATEGORY_LABEL,
 } from 'src/apis/project';
 import { uploadFile } from 'src/apis/upload';
+import useRoleGuard from 'src/apis/useRoleGuard';
 import useTokenStore from 'src/store/useTokenStore';
-import { isAdminRole } from '@utils/index';
+import { canManageSitePages } from '@utils/index';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { media } from '@utils/constant/breakpoint';
@@ -108,16 +105,9 @@ const projectToLocal = (project: AdminProjectListItem): FeaturedProject => ({
 
 const MyPageAdminLanding = () => {
   const tokenState = useTokenStore((state) => state.token);
-  const hasHydrated = useTokenStore((state) => state.hasHydrated);
-  const router = useRouter();
   const queryClient = useQueryClient();
 
-  const { data: userProfile, isError: isUserProfileError } = useQuery<UserProfile, AxiosError>({
-    queryKey: ['userProfile'],
-    queryFn: () => getUserProfile(tokenState),
-    retry: false,
-    enabled: !!tokenState.access,
-  });
+  const { isAuthorized, isUserProfileError } = useRoleGuard(canManageSitePages);
 
   // 편집 화면이라 창 포커스 시 백그라운드 재조회로 입력 중인 값이 덮어써지지 않도록 자동 재조회를 끔
   const { data: introduce, isError: isIntroduceError } = useQuery({
@@ -209,14 +199,6 @@ const MyPageAdminLanding = () => {
       setFaqItems((faqs ?? []).map(faqToLocal));
     }
   }
-
-  useEffect(() => {
-    if (hasHydrated && !tokenState.access) router.push('/login');
-  }, [hasHydrated, tokenState, router]);
-
-  useEffect(() => {
-    if (userProfile && !isAdminRole(userProfile.role)) router.push('/mypage');
-  }, [userProfile, router]);
 
   const handleCancel = () => {
     setIntroduceMetrics(introduce ? introduceToLocal(introduce) : DEFAULT_INTRODUCE_METRICS);
@@ -311,8 +293,6 @@ const MyPageAdminLanding = () => {
       setUploadingActivityIds((prev) => prev.filter((itemId) => itemId !== id));
     }
   };
-
-  const isAuthorized = !!userProfile && isAdminRole(userProfile.role);
 
   return (
     <>

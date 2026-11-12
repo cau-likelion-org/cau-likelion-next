@@ -10,12 +10,14 @@ export interface AlertAction {
   label: string;
   onClick: () => void;
   variant?: AlertActionVariant;
+  disabled?: boolean;
 }
 
 export interface AlertProps {
   className?: string;
   // Figma 모달 규격 (small: 여백 20·Headline 1·모서리 12, medium: 여백 28·Heading 2·모서리 16)
   size?: ModalSize;
+  align?: 'left' | 'center';
   // 줄을 나눌 때는 \n을 넣는다
   heading?: string;
   body?: string;
@@ -29,9 +31,9 @@ const actionColor: Record<AlertActionVariant, string> = {
   negative: Status.negative,
 };
 
-const Alert = ({ className, size = 'small', heading, body, actions, onDimmerClick }: AlertProps) => (
+const Alert = ({ className, size = 'small', align = 'left', heading, body, actions, onDimmerClick }: AlertProps) => (
   <Modal className={className} size={size} ariaLabel={heading ?? body ?? ''} onClose={onDimmerClick ?? (() => {})}>
-    <Information $size={size}>
+    <Information align={align} $size={size}>
       {heading && <Heading>{heading}</Heading>}
       {body && <ModalDescription>{body}</ModalDescription>}
     </Information>
@@ -40,7 +42,8 @@ const Alert = ({ className, size = 'small', heading, body, actions, onDimmerClic
         <ActionButton
           key={action.label}
           type="button"
-          color={actionColor[action.variant ?? 'assistive']}
+          color={action.disabled ? Label.disable : actionColor[action.variant ?? 'assistive']}
+          disabled={action.disabled}
           onClick={action.onClick}
         >
           {action.label}
@@ -86,7 +89,11 @@ const ActionButton = styled.button<{ color: string }>`
     pointer-events: none;
   }
 
-  &:hover::before {
+  &:disabled {
+    cursor: default;
+  }
+
+  &:not(:disabled):hover::before {
     opacity: 0.08;
   }
 `;
