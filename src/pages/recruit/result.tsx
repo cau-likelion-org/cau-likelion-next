@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import { useQuery } from '@tanstack/react-query';
 import styled from 'styled-components';
 
+import Alert from '@common/alert/Alert';
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import Toast from '@common/toast/Toast';
 import { ToastWrapper } from '@common/toast/toastLayout';
@@ -25,9 +26,11 @@ const RecruitResultPage = () => {
   });
 
   const result = resultQuery.data;
+  const isFinalTargetMissing =
+    RECRUIT_MOCK.phase === 'FINAL_ANNOUNCED' && result?.stage === 'DOCUMENT' && !result.isPassed;
 
   // 결과를 받기 전까지 로그인 화면을 유지해, 조회에 실패해도 입력값 그대로 다시 로그인하면 재조회한다
-  if (!result) {
+  if (!result || isFinalTargetMissing) {
     return (
       <Wrapper>
         <ApplicantLoginForm
@@ -45,6 +48,14 @@ const RecruitResultPage = () => {
             show={resultQuery.isError && !resultQuery.isFetching}
           />
         </ToastWrapper>
+        {isFinalTargetMissing && (
+          <Alert
+            heading="최종 결과 확인 대상자가 아닙니다."
+            body="최종 결과는 서류전형 합격자에 한해 확인하실 수 있습니다."
+            onDimmerClick={() => setEmail(null)}
+            actions={[{ label: '닫기', variant: 'primary', onClick: () => setEmail(null) }]}
+          />
+        )}
       </Wrapper>
     );
   }
