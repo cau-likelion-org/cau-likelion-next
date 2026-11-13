@@ -29,13 +29,15 @@ const LINK_REGEX = /^https?:\/\/\S+\.\S+$/;
 const LINK_ERROR_MESSAGE = '올바른 URL을 입력해주세요';
 const UPLOAD_ERROR_MESSAGE = '업로드에 실패했습니다. 다시 시도해주세요';
 
-// 저장 후 문항·선택지가 바뀌었을 수 있어, 지금 문항에 맞는 답변만 남긴다
+// 저장 후 문항·선택지·글자 수 제한이 바뀌었을 수 있어, 지금 문항에 맞는 답변만 남긴다
 const pickAnswers = (questions: RecruitQuestion[], answers?: ApplyAnswersDraft): ApplyAnswersDraft => {
   const texts: Record<string, string> = {};
   const choices: Record<string, string[]> = {};
   questions.forEach((question) => {
     const text = answers?.texts[question.id];
-    if (text !== undefined && (question.type === 'LONG_TEXT' || question.type === 'LINK')) texts[question.id] = text;
+    if (text !== undefined && (question.type === 'LONG_TEXT' || question.type === 'LINK')) {
+      texts[question.id] = question.maxLength ? text.slice(0, Number(question.maxLength)) : text;
+    }
     const selected = answers?.choices[question.id]?.filter((id) => question.choices.some((choice) => choice.id === id));
     if (selected?.length) choices[question.id] = selected;
   });

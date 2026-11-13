@@ -35,11 +35,14 @@ const ApplicantLoginForm = ({ title, isApplyOpen, onSubmittedHistory }: Applican
   const loginMutation = useMutation({
     mutationFn: loginApplicant,
     networkMode: 'always',
-    onSuccess: async (history) => {
+    onSuccess: async (history, variables) => {
       if (history.status === 'SUBMITTED') return onSubmittedHistory(history, email);
       if (!isApplyOpen) return setIsNoHistoryOpen(true);
       // 작성 중인 계정은 지원서 1단계로 보내고, 이 브라우저에 저장된 내용이 있으면 이어 쓴다
-      setSession({ profile: history.profile, draftKey: await deriveDraftKey(history.profile.email, password) });
+      setSession({
+        profile: history.profile,
+        draftKey: await deriveDraftKey(history.profile.email, variables.password),
+      });
       router.push('/recruit/apply');
     },
     onError: (error) => {

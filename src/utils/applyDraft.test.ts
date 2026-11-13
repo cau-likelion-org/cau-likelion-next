@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { ApplyDraft, clearApplyDraft, deriveDraftKey, loadApplyDraft, saveApplyDraft } from './applyDraft';
 
@@ -62,5 +62,23 @@ describe('applyDraft', () => {
     await clearApplyDraft(EMAIL);
 
     expect(await loadApplyDraft(EMAIL, key, BEFORE_EXPIRY)).toBeNull();
+  });
+
+  it('긴 답변도 저장하고 불러올 수 있다', async () => {
+    const key = await deriveDraftKey(EMAIL, 'password1!');
+    const longDraft = { ...DRAFT, answers: { texts: { q1: '가'.repeat(100_000) }, choices: {} } };
+
+    expect(await saveApplyDraft(EMAIL, key, longDraft, EXPIRES_AT)).toBe(true);
+    expect(await loadApplyDraft(EMAIL, key, BEFORE_EXPIRY)).toEqual(longDraft);
+  });
+
+  it('저장소에 쓸 수 없으면 false를 돌려준다', async () => {
+    const key = await deriveDraftKey(EMAIL, 'password1!');
+    const setItem = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new Error('QuotaExceededError');
+    });
+
+    expect(await saveApplyDraft(EMAIL, key, DRAFT, EXPIRES_AT)).toBe(false);
+    setItem.mockRestore();
   });
 });

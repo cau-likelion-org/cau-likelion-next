@@ -51,6 +51,11 @@ const getTimes = (startTime: string, endTime: string, unitMinutes: number) => {
 
 export const toSlotKey = (date: string, time: string) => `${date}T${time}`;
 
+export const getInterviewSlotKeys = (schedule: InterviewSchedule) => {
+  const times = getTimes(schedule.startTime, schedule.endTime, schedule.unitMinutes);
+  return getDates(schedule.startDate, schedule.endDate).flatMap(({ key }) => times.map((time) => toSlotKey(key, time)));
+};
+
 export interface InterviewTimeGridProps {
   className?: string;
   schedule: InterviewSchedule;

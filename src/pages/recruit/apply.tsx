@@ -1,4 +1,4 @@
-import { ReactElement, useCallback, useEffect, useState } from 'react';
+import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useQuery } from '@tanstack/react-query';
 import styled from 'styled-components';
@@ -75,6 +75,8 @@ const RecruitApply = () => {
     queryKey: ['applyDraft', session?.profile.email],
     queryFn: async () => (session ? loadApplyDraft(session.profile.email, session.draftKey) : null),
     enabled: !!session,
+    // 브라우저 저장소만 읽으므로 오프라인이어도 멈추지 않게 한다
+    networkMode: 'always',
     staleTime: Infinity,
     gcTime: 0,
   });
@@ -95,9 +97,27 @@ const RecruitApply = () => {
     [],
   );
 
+  // 저장은 차례대로 이어 붙여, 제출할 때 진행 중인 저장이 끝난 뒤 지울 수 있게 한다
+  const pendingSaveRef = useRef<(() => Promise<boolean>) | null>(null);
+  const savingRef = useRef<Promise<unknown>>(Promise.resolve());
+  const isSubmittedRef = useRef(false);
+  const lastSaveOkRef = useRef(true);
+  const [isSaveFailedNoticeOpen, setIsSaveFailedNoticeOpen] = useState(false);
+
+  const runPendingSave = useCallback(() => {
+    const save = pendingSaveRef.current;
+    pendingSaveRef.current = null;
+    if (!save || isSubmittedRef.current) return;
+    savingRef.current = savingRef.current.then(save).then((isSaved) => {
+      // 실패할 때마다가 아니라 저장되다가 처음 실패했을 때만 알린다
+      if (!isSaved && lastSaveOkRef.current) setIsSaveFailedNoticeOpen(true);
+      lastSaveOkRef.current = isSaved;
+    });
+  }, []);
+
   useEffect(() => {
     if (!session || !basicDraft || submittedAt) return;
-    const timer = setTimeout(() => {
+    pendingSaveRef.current = () =>
       saveApplyDraft(
         session.profile.email,
         session.draftKey,
@@ -108,9 +128,12 @@ const RecruitApply = () => {
         },
         MOCK_APPLY_END_AT,
       );
-    }, DRAFT_SAVE_DELAY_MS);
+    const timer = setTimeout(runPendingSave, DRAFT_SAVE_DELAY_MS);
     return () => clearTimeout(timer);
-  }, [session, basicDraft, answersDraft, restoredAnswers, submittedAt]);
+  }, [session, basicDraft, answersDraft, restoredAnswers, submittedAt, runPendingSave]);
+
+  // 입력 직후 다른 페이지로 이동해도 예약된 저장을 버리지 않는다
+  useEffect(() => () => runPendingSave(), [runPendingSave]);
 
   // 지원서 작성은 접수 기간 중 [지원하기]로만 들어올 수 있다
   useEffect(() => {
@@ -187,7 +210,9 @@ const RecruitApply = () => {
               onDirtyChange={setIsPartDirty}
               onAnswersChange={changeAnswersDraft}
               onSubmitted={(date) => {
-                if (applicant) clearApplyDraft(applicant.email);
+                isSubmittedRef.current = true;
+                pendingSaveRef.current = null;
+                if (applicant) savingRef.current.then(() => clearApplyDraft(applicant.email));
                 clearSession();
                 setSubmittedAt(date);
                 window.scrollTo(0, 0);
@@ -202,6 +227,12 @@ const RecruitApply = () => {
           text="이전에 작성하던 지원서를 불러왔습니다. 첨부 파일은 다시 업로드 해주세요."
           show={!!restoredDraft?.hasFiles && !isFileNoticeDismissed}
           onHidden={() => setIsFileNoticeDismissed(true)}
+        />
+        <Toast
+          variant="negative"
+          text="브라우저에 임시 저장하지 못했습니다. 저장 공간을 확인해 주세요."
+          show={isSaveFailedNoticeOpen}
+          onHidden={() => setIsSaveFailedNoticeOpen(false)}
         />
       </ToastWrapper>
       {isConfirmOpen && (

@@ -33,7 +33,16 @@ interface StoredDraft {
 const KEY_PREFIX = 'applyDraft:';
 const PBKDF2_ITERATIONS = 200_000;
 
-const toBase64 = (bytes: Uint8Array) => btoa(String.fromCharCode(...bytes));
+const BASE64_CHUNK_SIZE = 0x8000;
+
+// 긴 답변은 바이트 수가 함수 인자 수 제한을 넘을 수 있어 나눠서 문자열로 바꾼다
+const toBase64 = (bytes: Uint8Array) => {
+  let binary = '';
+  for (let index = 0; index < bytes.length; index += BASE64_CHUNK_SIZE) {
+    binary += String.fromCharCode(...bytes.subarray(index, index + BASE64_CHUNK_SIZE));
+  }
+  return btoa(binary);
+};
 const fromBase64 = (value: string) => Uint8Array.from(atob(value), (char) => char.charCodeAt(0));
 
 // 저장소 키에 이메일이 그대로 드러나지 않게 해시로 만든다
@@ -78,14 +87,14 @@ export const deriveDraftKey = async (email: string, password: string) => {
 
 // 저장소가 꽉 찼거나 막혀 있으면 false를 돌려준다
 export const saveApplyDraft = async (email: string, key: CryptoKey, draft: ApplyDraft, expiresAt: string) => {
-  const iv = crypto.getRandomValues(new Uint8Array(12));
-  const encrypted = await crypto.subtle.encrypt(
-    { name: 'AES-GCM', iv },
-    key,
-    new TextEncoder().encode(JSON.stringify(draft)),
-  );
-  const stored: StoredDraft = { expiresAt, iv: toBase64(iv), data: toBase64(new Uint8Array(encrypted)) };
   try {
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const encrypted = await crypto.subtle.encrypt(
+      { name: 'AES-GCM', iv },
+      key,
+      new TextEncoder().encode(JSON.stringify(draft)),
+    );
+    const stored: StoredDraft = { expiresAt, iv: toBase64(iv), data: toBase64(new Uint8Array(encrypted)) };
     localStorage.setItem(await getStorageKey(email), JSON.stringify(stored));
     return true;
   } catch {

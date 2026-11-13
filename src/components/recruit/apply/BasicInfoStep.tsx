@@ -7,7 +7,7 @@ import Button from '@common/button/Button';
 import { FieldDescription } from '@common/fieldStatus/FieldStatus';
 import Textarea from '@common/textarea/Textarea';
 import TextField from '@common/textField/TextField';
-import InterviewTimeGrid from '@recruit/InterviewTimeGrid';
+import InterviewTimeGrid, { getInterviewSlotKeys } from '@recruit/InterviewTimeGrid';
 import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import { RECRUIT_INTERVIEW_SETTING_MOCK } from '@mypage/recruit/mock';
 import { ApplyBasicDraft } from '@utils/applyDraft';
@@ -77,7 +77,10 @@ const BasicInfoStep = ({
   const [referral, setReferral] = useState(() => pickOption(initialValues?.referral, REFERRAL_OPTIONS));
   const [part, setPart] = useState(() => pickOption(initialValues?.part, PART_OPTIONS_MOCK));
   const [pendingPart, setPendingPart] = useState<string>();
-  const [interviewSlots, setInterviewSlots] = useState<string[]>(initialValues?.interviewSlots ?? []);
+  const [interviewSlots, setInterviewSlots] = useState<string[]>(() => {
+    const availableSlots = getInterviewSlotKeys(RECRUIT_INTERVIEW_SETTING_MOCK);
+    return (initialValues?.interviewSlots ?? []).filter((slot) => availableSlots.includes(slot));
+  });
 
   useEffect(() => {
     onValuesChange(

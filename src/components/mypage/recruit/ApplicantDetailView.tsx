@@ -42,8 +42,6 @@ import { RECRUIT_INTERVIEW_SETTING_MOCK } from './mock';
 
 const LIST_PATH = '/mypage/recruit/applicants';
 
-const FILE_URL_LIFETIME_MS = 60_000;
-
 const openInNewTab = (url: string) => window.open(url, '_blank', 'noopener,noreferrer');
 
 const getLinkFieldProps = (open: () => void) => ({
@@ -66,12 +64,12 @@ const downloadFile = async (file: ApplicantFile) => {
   URL.revokeObjectURL(url);
 };
 
-// 파일을 받은 뒤에 새 탭을 열면 팝업 차단에 걸리므로, 누른 순간 빈 탭을 열어 두고 받은 파일을 띄운다
+// 파일을 받은 뒤에 새 탭을 열면 팝업 차단에 걸리므로, 누른 순간 빈 탭을 열어 두고 열 수 있는지 확인한 뒤 원본 주소로 보낸다
+// (받은 파일을 Blob URL로 띄우면 관리자 페이지 origin에서 열려, 파일 속 스크립트가 실행될 수 있다)
 const viewFile = async ({ file, tab }: { file: ApplicantFile; tab: Window | null }) => {
-  const url = URL.createObjectURL(await fetchFileBlob(file));
-  if (tab) tab.location.href = url;
-  else openInNewTab(url);
-  setTimeout(() => URL.revokeObjectURL(url), FILE_URL_LIFETIME_MS);
+  await fetchFileBlob(file);
+  if (tab) tab.location.href = file.url;
+  else openInNewTab(file.url);
 };
 
 export interface ApplicantDetailViewProps {
