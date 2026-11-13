@@ -1,6 +1,7 @@
 import { useRouter } from 'next/router';
 
 import RecruitSummary from '@recruit/RecruitSummary';
+import { IllustApplyComplete } from '@assets/svg';
 import { toDateTimeLabel } from '@utils/index';
 
 export interface ApplyCompleteProps {
@@ -16,6 +17,7 @@ const ApplyComplete = ({ generation, submittedAt, part }: ApplyCompleteProps) =>
     <RecruitSummary
       title="지원서 제출이 완료되었어요!"
       subtitle={`멋쟁이사자처럼 중앙대학교 ${generation}기에 지원해 주셔서 감사합니다.`}
+      graphic={<IllustApplyComplete aria-hidden />}
       rows={[
         { label: '제출 일시', value: toDateTimeLabel(submittedAt) },
         { label: '지원 파트', value: part },
