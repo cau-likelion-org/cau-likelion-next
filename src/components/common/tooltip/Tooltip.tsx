@@ -134,8 +134,6 @@ const Wrapper = styled.div<{ isVertical: boolean }>`
   display: inline-flex;
   flex-direction: ${(props) => (props.isVertical ? 'column' : 'row')};
   align-items: stretch;
-  backdrop-filter: blur(32px);
-  -webkit-backdrop-filter: blur(32px);
 `;
 
 const bubbleSize = {
@@ -155,11 +153,15 @@ const bubbleSize = {
   `,
 };
 
+// 흐림 효과를 툴팁 전체에 걸면 화살표 양옆의 빈 칸까지 뒤쪽 배경이 흐려져 사각형으로 비치므로 말풍선에만 건다
 const Bubble = styled.div<{ size: TooltipSize; $hasContent: boolean }>`
   position: relative;
   display: flex;
   align-items: flex-start;
+  justify-content: center;
   overflow: hidden;
+  backdrop-filter: blur(32px);
+  -webkit-backdrop-filter: blur(32px);
   ${(props) => bubbleSize[props.size]}
   ${(props) =>
     props.$hasContent &&
@@ -189,7 +191,8 @@ const Bubble = styled.div<{ size: TooltipSize; $hasContent: boolean }>`
 const Text = styled.p<{ size: TooltipSize }>`
   position: relative;
   margin: 0;
-  flex: 1 0 0;
+  /* 짧은 글자는 최소 너비 안에서 가운데에 두고, 긴 글자는 말풍선 너비만큼 줄바꿈한다 */
+  flex: 0 1 auto;
   min-width: 0;
   word-break: break-word;
   color: ${Inverse.label};
@@ -200,6 +203,7 @@ const Text = styled.p<{ size: TooltipSize }>`
 const Shortcut = styled.span<{ size: TooltipSize }>`
   position: relative;
   flex-shrink: 0;
+  margin-left: auto;
   white-space: nowrap;
   color: ${Inverse.label};
   opacity: 0.61;
