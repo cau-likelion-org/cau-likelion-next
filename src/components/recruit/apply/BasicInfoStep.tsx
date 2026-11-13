@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import styled from 'styled-components';
 
@@ -7,9 +7,10 @@ import Button from '@common/button/Button';
 import { FieldDescription } from '@common/fieldStatus/FieldStatus';
 import Textarea from '@common/textarea/Textarea';
 import TextField from '@common/textField/TextField';
-import InterviewTimeGrid from '@recruit/InterviewTimeGrid';
+import InterviewTimeGrid, { getInterviewSlotKeys } from '@recruit/InterviewTimeGrid';
 import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import { RECRUIT_INTERVIEW_SETTING_MOCK } from '@mypage/recruit/mock';
+import { ApplyBasicDraft } from '@utils/applyDraft';
 import { isUnfilled } from '@utils/index';
 import { Label } from '@utils/constant/color';
 
@@ -41,28 +42,63 @@ const getPortalImageError = (file: File) => {
 
 const toDigits = (value: string, maxLength: number) => value.replace(/\D/g, '').slice(0, maxLength);
 
+// 저장 후 선택지가 바뀌었을 수 있어, 지금 선택지에 없는 값은 버린다
+const pickOption = (value: string | undefined, options: string[]) => (value && options.includes(value) ? value : '');
+
 export interface BasicInfoStepProps {
   applicant: ApplicantProfile;
   // 2단계에 작성한 내용이 있으면 파트를 바꿀 때 초기화 확인을 받는다
   hasPartAnswers: boolean;
+  initialValues?: ApplyBasicDraft;
   onPartReset: () => void;
+  onValuesChange: (values: ApplyBasicDraft, hasPortalImage: boolean) => void;
   onNext: (part: string) => void;
 }
 
-const BasicInfoStep = ({ applicant, hasPartAnswers, onPartReset, onNext }: BasicInfoStepProps) => {
-  const [studentId, setStudentId] = useState('');
+const BasicInfoStep = ({
+  applicant,
+  hasPartAnswers,
+  initialValues,
+  onPartReset,
+  onValuesChange,
+  onNext,
+}: BasicInfoStepProps) => {
+  const [studentId, setStudentId] = useState(initialValues?.studentId ?? '');
   const [isStudentIdTouched, setIsStudentIdTouched] = useState(false);
   const [duplicateStudentId, setDuplicateStudentId] = useState<string>();
-  const [major, setMajor] = useState('');
-  const [grade, setGrade] = useState('');
-  const [semester, setSemester] = useState('');
-  const [enrollmentStatus, setEnrollmentStatus] = useState('');
+  const [major, setMajor] = useState(initialValues?.major ?? '');
+  const [grade, setGrade] = useState(() => pickOption(initialValues?.grade, GRADE_OPTIONS));
+  const [semester, setSemester] = useState(initialValues?.semester ?? '');
+  const [enrollmentStatus, setEnrollmentStatus] = useState(() =>
+    pickOption(initialValues?.enrollmentStatus, ENROLLMENT_STATUS_OPTIONS),
+  );
   const [portalImage, setPortalImage] = useState<File | null>(null);
   const [portalImageError, setPortalImageError] = useState<string>();
-  const [referral, setReferral] = useState('');
-  const [part, setPart] = useState('');
+  const [referral, setReferral] = useState(() => pickOption(initialValues?.referral, REFERRAL_OPTIONS));
+  const [part, setPart] = useState(() => pickOption(initialValues?.part, PART_OPTIONS_MOCK));
   const [pendingPart, setPendingPart] = useState<string>();
-  const [interviewSlots, setInterviewSlots] = useState<string[]>([]);
+  const [interviewSlots, setInterviewSlots] = useState<string[]>(() => {
+    const availableSlots = getInterviewSlotKeys(RECRUIT_INTERVIEW_SETTING_MOCK);
+    return (initialValues?.interviewSlots ?? []).filter((slot) => availableSlots.includes(slot));
+  });
+
+  useEffect(() => {
+    onValuesChange(
+      { studentId, major, grade, semester, enrollmentStatus, referral, part, interviewSlots },
+      !!portalImage,
+    );
+  }, [
+    studentId,
+    major,
+    grade,
+    semester,
+    enrollmentStatus,
+    referral,
+    part,
+    interviewSlots,
+    portalImage,
+    onValuesChange,
+  ]);
   const rootRef = useRef<HTMLDivElement>(null);
   const { showErrors, validate } = useRequiredFieldsSave(rootRef);
 

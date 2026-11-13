@@ -29,7 +29,8 @@ type FieldKey = 'name' | 'phone' | 'email';
 type Dialog = 'confirm' | 'inProgress' | 'submitted' | 'closed';
 
 export interface IdentityStepProps {
-  onComplete: (applicant: ApplicantProfile) => void;
+  // 비밀번호는 작성 중인 지원서를 브라우저에 암호화해 저장할 키를 만드는 데 쓴다
+  onComplete: (applicant: ApplicantProfile, password: string) => void;
 }
 
 const IdentityStep = ({ onComplete }: IdentityStepProps) => {
@@ -59,7 +60,7 @@ const IdentityStep = ({ onComplete }: IdentityStepProps) => {
     mutationFn: createApplicantAccount,
     onSuccess: () => {
       setDialog(null);
-      onComplete({ name, phone, email });
+      onComplete({ name, phone, email }, password);
     },
     onError: (error) => {
       if (error instanceof ApplyClosedError) setDialog('closed');
@@ -147,7 +148,8 @@ const IdentityStep = ({ onComplete }: IdentityStepProps) => {
       )}
       {dialog === 'inProgress' && (
         <Alert
-          heading="이미 작성 중인 지원서가 있습니다."
+          heading="이미 저장된 지원자 정보가 있습니다."
+          body="최초 입력한 이메일로 로그인해주세요."
           onDimmerClick={() => setDialog(null)}
           actions={[
             { label: '닫기', variant: 'assistive', onClick: () => setDialog(null) },
