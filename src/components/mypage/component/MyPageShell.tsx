@@ -28,6 +28,7 @@ const BREADCRUMB_LABEL: Record<SidebarActive, string> = {
   'recruit-settings': '기수/문항 관리',
   'recruit-applicants': '지원서 관리',
   'recruit-results': '전형 결과 관리',
+  'recruit-dashboard': '리크루팅 대시보드',
 };
 
 // 페이지 바깥(getLayout)에서 렌더되어 마이페이지 안에서 이동해도 유지되므로,
