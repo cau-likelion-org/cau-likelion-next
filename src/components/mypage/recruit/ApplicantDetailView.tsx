@@ -42,22 +42,36 @@ import { RECRUIT_INTERVIEW_SETTING_MOCK } from './mock';
 
 const LIST_PATH = '/mypage/recruit/applicants';
 
+const FILE_URL_LIFETIME_MS = 60_000;
+
 const openInNewTab = (url: string) => window.open(url, '_blank', 'noopener,noreferrer');
 
-const getLinkFieldProps = (url: string) => ({
-  onClick: () => openInNewTab(url),
-  onKeyDown: (event: KeyboardEvent<HTMLInputElement>) => event.key === 'Enter' && openInNewTab(url),
+const getLinkFieldProps = (open: () => void) => ({
+  onClick: open,
+  onKeyDown: (event: KeyboardEvent<HTMLInputElement>) => event.key === 'Enter' && open(),
 });
 
-const downloadFile = async (file: ApplicantFile) => {
+const fetchFileBlob = async (file: ApplicantFile) => {
   const response = await fetch(file.url);
   if (!response.ok) throw new Error('file not found');
-  const url = URL.createObjectURL(await response.blob());
+  return response.blob();
+};
+
+const downloadFile = async (file: ApplicantFile) => {
+  const url = URL.createObjectURL(await fetchFileBlob(file));
   const link = document.createElement('a');
   link.href = url;
   link.download = file.name;
   link.click();
   URL.revokeObjectURL(url);
+};
+
+// 파일을 받은 뒤에 새 탭을 열면 팝업 차단에 걸리므로, 누른 순간 빈 탭을 열어 두고 받은 파일을 띄운다
+const viewFile = async ({ file, tab }: { file: ApplicantFile; tab: Window | null }) => {
+  const url = URL.createObjectURL(await fetchFileBlob(file));
+  if (tab) tab.location.href = url;
+  else openInNewTab(url);
+  setTimeout(() => URL.revokeObjectURL(url), FILE_URL_LIFETIME_MS);
 };
 
 export interface ApplicantDetailViewProps {
@@ -100,6 +114,21 @@ const ApplicantDetailView = ({ applicant, canDelete }: ApplicantDetailViewProps)
     networkMode: 'always',
     onError: () => setToast({ variant: 'negative', message: '파일을 불러올 수 없습니다' }),
   });
+
+  const viewMutation = useMutation({
+    mutationFn: viewFile,
+    networkMode: 'always',
+    onError: (_, { tab }) => {
+      tab?.close();
+      setToast({ variant: 'negative', message: '파일을 불러올 수 없습니다' });
+    },
+  });
+
+  const openFile = (file: ApplicantFile) => {
+    const tab = window.open('', '_blank');
+    if (tab) tab.opener = null;
+    viewMutation.mutate({ file, tab });
+  };
 
   const contactErrors = {
     name:
@@ -221,7 +250,7 @@ const ApplicantDetailView = ({ applicant, canDelete }: ApplicantDetailViewProps)
                         readOnly
                         value={applicant.portalCapture.name}
                         leadingIcon={<IcDocument width={22} height={22} />}
-                        {...getLinkFieldProps(applicant.portalCapture.url)}
+                        {...getLinkFieldProps(() => applicant.portalCapture && openFile(applicant.portalCapture))}
                       />
                       <IconButton
                         type="button"
@@ -277,7 +306,7 @@ const ApplicantDetailView = ({ applicant, canDelete }: ApplicantDetailViewProps)
                       readOnly
                       value={link || '-'}
                       leadingIcon={<IcLink width={22} height={22} />}
-                      {...(isOpenable && getLinkFieldProps(link))}
+                      {...(isOpenable && getLinkFieldProps(() => openInNewTab(link)))}
                     />
                   );
                 }
