@@ -28,14 +28,17 @@ const MOCK_APPLICANT_STATUS: Record<string, ApplicantStatus> = {
 // 학번 중복 확인용: 이 학번으로 [다음]을 누르면 이미 지원 내역이 있다고 응답한다
 const MOCK_DUPLICATE_STUDENT_ID = '20240000';
 const MOCK_VERIFICATION_CODE = '123456';
-const MOCK_APPLY_END_AT = '2027-03-09T23:59:59+09:00';
+export const MOCK_APPLY_END_AT = '2027-03-09T23:59:59+09:00';
 
 const delay = () => new Promise((resolve) => setTimeout(resolve, 300));
 
-export const requestVerificationCode = async (email: string) => {
+// 0단계에서 만든 계정을 기억해 같은 이메일로 다시 오면 작성 중으로 응답한다 (새로고침하면 사라진다)
+const createdAccounts: Record<string, ApplicantAccount> = {};
+
+export const requestVerificationCode = async (email: string): Promise<ApplicantStatus> => {
   await delay();
   if (!navigator.onLine) throw new Error('network error');
-  return MOCK_APPLICANT_STATUS[email] ?? 'NEW';
+  return MOCK_APPLICANT_STATUS[email] ?? (createdAccounts[email] ? 'IN_PROGRESS' : 'NEW');
 };
 
 export const verifyCode = async (code: string) => {
@@ -69,6 +72,7 @@ export const isApplyDeadlinePassed = () => Date.now() > new Date(MOCK_APPLY_END_
 export const createApplicantAccount = async (account: ApplicantAccount) => {
   await delay();
   if (isApplyDeadlinePassed()) throw new ApplyClosedError();
+  createdAccounts[account.email] = account;
   return { email: account.email };
 };
 
@@ -77,22 +81,33 @@ const MOCK_APPLICANT_PASSWORD = 'password1!';
 
 export class ApplicantLoginError extends Error {}
 
+export class ApplicantNotFoundError extends Error {}
+
 export interface SubmittedHistory {
   submittedAt: string;
   part: string;
 }
 
 export type ApplicationHistory =
-  ({ status: 'SUBMITTED' } & SubmittedHistory) | { status: Exclude<ApplicantStatus, 'SUBMITTED'> };
+  ({ status: 'SUBMITTED' } & SubmittedHistory) | { status: 'IN_PROGRESS'; profile: ApplicantProfile };
 
 // 로그인 요청 실패 확인용: 오프라인이면 실패로 응답한다
 export const loginApplicant = async ({ email, password }: { email: string; password: string }) => {
   await delay();
   if (!navigator.onLine) throw new Error('network error');
-  const status = MOCK_APPLICANT_STATUS[email];
-  if (!status || password !== MOCK_APPLICANT_PASSWORD) throw new ApplicantLoginError();
+  const account = createdAccounts[email];
+  const status = account ? 'IN_PROGRESS' : MOCK_APPLICANT_STATUS[email];
+  if (!status) throw new ApplicantNotFoundError();
+  if (password !== (account?.password ?? MOCK_APPLICANT_PASSWORD)) throw new ApplicantLoginError();
   const history: ApplicationHistory =
-    status === 'SUBMITTED' ? { status, submittedAt: '2027-03-08T21:34:00+09:00', part: '기획·디자인' } : { status };
+    status === 'SUBMITTED'
+      ? { status, submittedAt: '2027-03-08T21:34:00+09:00', part: '기획·디자인' }
+      : {
+          status: 'IN_PROGRESS',
+          profile: account
+            ? { name: account.name, phone: account.phone, email }
+            : { name: '홍길동', phone: '010-1234-5678', email },
+        };
   return history;
 };
 

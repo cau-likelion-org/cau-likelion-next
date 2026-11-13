@@ -12,6 +12,7 @@ import Toast from '@common/toast/Toast';
 import { ToastWrapper } from '@common/toast/toastLayout';
 import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import { RecruitQuestion } from '@mypage/recruit/mock';
+import { ApplyAnswersDraft } from '@utils/applyDraft';
 import { isUnfilled } from '@utils/index';
 
 import ApplyFieldHeading from './ApplyFieldHeading';
@@ -28,6 +29,19 @@ const LINK_REGEX = /^https?:\/\/\S+\.\S+$/;
 const LINK_ERROR_MESSAGE = '올바른 URL을 입력해주세요';
 const UPLOAD_ERROR_MESSAGE = '업로드에 실패했습니다. 다시 시도해주세요';
 
+// 저장 후 문항·선택지가 바뀌었을 수 있어, 지금 문항에 맞는 답변만 남긴다
+const pickAnswers = (questions: RecruitQuestion[], answers?: ApplyAnswersDraft): ApplyAnswersDraft => {
+  const texts: Record<string, string> = {};
+  const choices: Record<string, string[]> = {};
+  questions.forEach((question) => {
+    const text = answers?.texts[question.id];
+    if (text !== undefined && (question.type === 'LONG_TEXT' || question.type === 'LINK')) texts[question.id] = text;
+    const selected = answers?.choices[question.id]?.filter((id) => question.choices.some((choice) => choice.id === id));
+    if (selected?.length) choices[question.id] = selected;
+  });
+  return { texts, choices };
+};
+
 const getPortfolioFileError = (file: File) => {
   if (file.type !== PORTFOLIO_FILE_TYPE) return 'PDF 파일만 업로드 가능합니다.';
   if (file.size > PORTFOLIO_FILE_MAX_BYTES) return '파일 용량이 초과되었습니다.';
@@ -37,13 +51,23 @@ const getPortfolioFileError = (file: File) => {
 export interface PartQuestionStepProps {
   questions: RecruitQuestion[];
   onPrev: () => void;
+  initialAnswers?: ApplyAnswersDraft;
   onDirtyChange: (isDirty: boolean) => void;
+  onAnswersChange: (answers: ApplyAnswersDraft, hasFiles: boolean) => void;
   onSubmitted: (submittedAt: Date) => void;
 }
 
-const PartQuestionStep = ({ questions, onPrev, onDirtyChange, onSubmitted }: PartQuestionStepProps) => {
-  const [texts, setTexts] = useState<Record<string, string>>({});
-  const [choices, setChoices] = useState<Record<string, string[]>>({});
+const PartQuestionStep = ({
+  questions,
+  onPrev,
+  initialAnswers,
+  onDirtyChange,
+  onAnswersChange,
+  onSubmitted,
+}: PartQuestionStepProps) => {
+  const [initial] = useState(() => pickAnswers(questions, initialAnswers));
+  const [texts, setTexts] = useState<Record<string, string>>(initial.texts);
+  const [choices, setChoices] = useState<Record<string, string[]>>(initial.choices);
   const [files, setFiles] = useState<Record<string, File>>({});
   const [fileErrors, setFileErrors] = useState<Record<string, string | undefined>>({});
   const [isSubmitConfirmOpen, setIsSubmitConfirmOpen] = useState(false);
@@ -61,6 +85,10 @@ const PartQuestionStep = ({ questions, onPrev, onDirtyChange, onSubmitted }: Par
   useEffect(() => {
     onDirtyChange(isDirty);
   }, [isDirty, onDirtyChange]);
+
+  useEffect(() => {
+    onAnswersChange({ texts, choices }, Object.keys(files).length > 0);
+  }, [texts, choices, files, onAnswersChange]);
 
   const uploadMutation = useMutation({
     mutationFn: ({ file }: { id: string; file: File }) => uploadApplyFile(file),

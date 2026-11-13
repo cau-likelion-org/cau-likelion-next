@@ -12,7 +12,9 @@ import Toast from '@common/toast/Toast';
 import { ToastWrapper } from '@common/toast/toastLayout';
 import ApplyNoticeModal from '@recruit/apply/ApplyNoticeModal';
 import { applyFieldHeadingCss } from '@recruit/apply/applyFieldStyle';
-import { ApplicantLoginError, SubmittedHistory, loginApplicant } from '@recruit/apply/mock';
+import { ApplicantLoginError, ApplicantNotFoundError, SubmittedHistory, loginApplicant } from '@recruit/apply/mock';
+import useApplicantSessionStore from 'src/store/useApplicantSessionStore';
+import { deriveDraftKey } from '@utils/applyDraft';
 import { isUnfilled } from '@utils/index';
 
 export interface ApplicantLoginFormProps {
@@ -27,21 +29,30 @@ const ApplicantLoginForm = ({ title, isApplyOpen, onSubmittedHistory }: Applican
   const [password, setPassword] = useState('');
   const [isLoginFailed, setIsLoginFailed] = useState(false);
   const [isNoHistoryOpen, setIsNoHistoryOpen] = useState(false);
+  const [isNoAccountOpen, setIsNoAccountOpen] = useState(false);
+  const setSession = useApplicantSessionStore((state) => state.setSession);
 
   const loginMutation = useMutation({
     mutationFn: loginApplicant,
     networkMode: 'always',
-    onSuccess: (history) => {
+    onSuccess: async (history) => {
       if (history.status === 'SUBMITTED') return onSubmittedHistory(history, email);
-      setIsNoHistoryOpen(true);
+      if (!isApplyOpen) return setIsNoHistoryOpen(true);
+      // 작성 중인 계정은 지원서 1단계로 보내고, 이 브라우저에 저장된 내용이 있으면 이어 쓴다
+      setSession({ profile: history.profile, draftKey: await deriveDraftKey(history.profile.email, password) });
+      router.push('/recruit/apply');
     },
     onError: (error) => {
       if (error instanceof ApplicantLoginError) setIsLoginFailed(true);
+      if (error instanceof ApplicantNotFoundError) setIsNoAccountOpen(true);
     },
   });
 
   const canLogin = !isUnfilled(email) && !isUnfilled(password);
-  const isRequestFailed = loginMutation.isError && !(loginMutation.error instanceof ApplicantLoginError);
+  const isRequestFailed =
+    loginMutation.isError &&
+    !(loginMutation.error instanceof ApplicantLoginError) &&
+    !(loginMutation.error instanceof ApplicantNotFoundError);
 
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -99,22 +110,30 @@ const ApplicantLoginForm = ({ title, isApplyOpen, onSubmittedHistory }: Applican
           </ResetPasswordButton>
         </Actions>
       </Form>
-      {isNoHistoryOpen &&
+      {isNoHistoryOpen && (
+        <Alert
+          heading="제출한 지원서가 없습니다."
+          body="서류 접수 기간이 종료되었습니다."
+          onDimmerClick={closeNoHistory}
+          actions={[{ label: '닫기', variant: 'primary', onClick: closeNoHistory }]}
+        />
+      )}
+      {isNoAccountOpen &&
         (isApplyOpen ? (
           <ApplyNoticeModal
-            title="제출한 지원서가 없습니다."
-            description={'이전에 작성하던 내용은 저장되지 않아\n처음부터 다시 작성해야 합니다.'}
+            title="해당 이메일로 가입된 계정이 없습니다."
+            description="처음 지원하시는 경우 지원서를 작성해 주세요."
             cancelLabel="닫기"
             confirmLabel="지원서 작성하기"
-            onCancel={closeNoHistory}
+            onCancel={() => setIsNoAccountOpen(false)}
             onConfirm={() => router.push('/recruit/apply')}
           />
         ) : (
           <Alert
-            heading="제출한 지원서가 없습니다."
+            heading="해당 이메일로 가입된 계정이 없습니다."
             body="서류 접수 기간이 종료되었습니다."
-            onDimmerClick={closeNoHistory}
-            actions={[{ label: '닫기', variant: 'primary', onClick: closeNoHistory }]}
+            onDimmerClick={() => setIsNoAccountOpen(false)}
+            actions={[{ label: '닫기', variant: 'primary', onClick: () => setIsNoAccountOpen(false) }]}
           />
         ))}
       <ToastWrapper>
