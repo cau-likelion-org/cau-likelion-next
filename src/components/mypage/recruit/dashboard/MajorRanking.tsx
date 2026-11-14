@@ -166,10 +166,13 @@ const ModalHeader = styled.div`
   }
 `;
 
+// Figma 10줄 높이까지만 보여 주고, 학과가 더 많으면 목록 안에서 스크롤한다
 const ModalRows = styled.ol`
   display: flex;
   flex-direction: column;
   gap: 8px;
+  max-height: 432px;
+  overflow-y: auto;
   margin: 0;
   padding: 0;
   list-style: none;

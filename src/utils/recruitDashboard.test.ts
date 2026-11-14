@@ -103,6 +103,15 @@ describe('buildRecruitDashboard', () => {
 
     expect(dashboard.applicantCount).toBe(2);
   });
+
+  it('마감 시각은 시간대 표기가 달라도 같은 시각 기준으로 비교한다', () => {
+    const dashboard = buildRecruitDashboard(
+      [submitted({ submittedAt: '2027-03-04T14:00:00Z' }), submitted({ submittedAt: '2027-03-04T20:00:00Z' })],
+      { ...OPTIONS, cutoffAt: '2027-03-04T23:59:59+09:00' },
+    );
+
+    expect(dashboard.applicantCount).toBe(1);
+  });
 });
 
 describe('countBy', () => {

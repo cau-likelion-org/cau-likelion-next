@@ -70,7 +70,7 @@ export const countBy = (values: (string | undefined)[], labels: string[] = []): 
 
 const isSubmitted = (applicant: DashboardApplicant, cutoffAt?: string) =>
   (applicant.submissionStatus === 'ON_TIME' || applicant.submissionStatus === 'LATE') &&
-  (!cutoffAt || (!!applicant.submittedAt && applicant.submittedAt <= cutoffAt));
+  (!cutoffAt || (!!applicant.submittedAt && Date.parse(applicant.submittedAt) <= Date.parse(cutoffAt)));
 
 export const buildRecruitDashboard = (
   applicants: DashboardApplicant[],
