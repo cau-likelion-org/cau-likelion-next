@@ -18,7 +18,8 @@ export type SidebarActive =
   | 'recruit-notification'
   | 'recruit-settings'
   | 'recruit-applicants'
-  | 'recruit-results';
+  | 'recruit-results'
+  | 'recruit-dashboard';
 
 // 라우팅 시작 시점(routeChangeStart)에 목적지 url만으로 활성 탭을 미리 계산하기 위한 매핑
 export const PATHNAME_TO_ACTIVE: Record<string, SidebarActive> = {
@@ -33,6 +34,7 @@ export const PATHNAME_TO_ACTIVE: Record<string, SidebarActive> = {
   '/mypage/recruit/settings': 'recruit-settings',
   '/mypage/recruit/applicants': 'recruit-applicants',
   '/mypage/recruit/results': 'recruit-results',
+  '/mypage/recruit/dashboard': 'recruit-dashboard',
 };
 
 interface MenuGroupItem {
@@ -53,6 +55,7 @@ const RECRUIT_MENU_ITEMS: MenuGroupItem[] = [
   { key: 'recruit-settings', href: '/mypage/recruit/settings', label: '기수/문항 관리' },
   { key: 'recruit-applicants', href: '/mypage/recruit/applicants', label: '지원서 관리' },
   { key: 'recruit-results', href: '/mypage/recruit/results', label: '전형 결과 관리' },
+  { key: 'recruit-dashboard', href: '/mypage/recruit/dashboard', label: '리크루팅 대시보드' },
 ];
 
 const MenuGroup = ({ title, items, active }: { title: string; items: MenuGroupItem[]; active: SidebarActive }) => {

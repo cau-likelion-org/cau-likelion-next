@@ -1,5 +1,11 @@
 // 지원서 관리 API 연동 전까지 사용하는 목업
-import { PART_OPTIONS_MOCK, PART_QUESTIONS_MOCK } from '@recruit/apply/mock';
+import {
+  ENROLLMENT_STATUS_OPTIONS,
+  GRADE_OPTIONS,
+  PART_OPTIONS_MOCK,
+  PART_QUESTIONS_MOCK,
+  REFERRAL_OPTIONS,
+} from '@recruit/apply/mock';
 
 import { RecruitQuestion } from './mock';
 
@@ -86,6 +92,12 @@ const MOCK_PDF_URL =
 const NAMES = ['홍길동', '김멋사', '이사자', '박중앙', '최디자', '정프론', '강백엔', '조기획', '윤개발', '장협업'];
 const MAJORS = ['소프트웨어학부', '경영학부', '디자인학부', '전자전기공학부'];
 const STATUSES: SubmissionStatus[] = ['ON_TIME', 'LATE', 'ON_TIME', 'ON_TIME', 'IN_PROGRESS', 'NOT_SUBMITTED'];
+// 대시보드 분포 확인용으로 값이 고르지 않게 섞는다
+const SUBMIT_DAYS = [2, 3, 3, 5, 6, 6, 6, 7, 8, 8, 9, 9, 9, 4, 9, 7, 8];
+const MAJOR_ORDER = [0, 0, 1, 0, 2, 1, 3, 0, 1, 2];
+const GRADE_ORDER = [2, 1, 2, 3, 0, 2, 1, 2, 3];
+const ENROLLMENT_ORDER = [0, 0, 0, 0, 1, 1, 2];
+const REFERRAL_ORDER = [1, 1, 0, 1, 2, 0, 1, 3, 4, 0, 1];
 const DOCUMENT_RESULTS: (ScreeningResult | undefined)[] = ['PASS', 'PASS', 'HOLD', 'FAIL', undefined];
 
 const createApplicant = (index: number): ApplicantDetail => {
@@ -106,15 +118,15 @@ const createApplicant = (index: number): ApplicantDetail => {
   return {
     ...base,
     studentId: String(20231234 + index),
-    major: MAJORS[index % MAJORS.length],
+    major: MAJORS[MAJOR_ORDER[index % MAJOR_ORDER.length]],
     part,
     documentResult,
     interviewResult: documentResult === 'PASS' && index % 3 === 0 ? 'PASS' : undefined,
-    submittedAt: `2027-03-0${(index % 8) + 2}T21:34:00+09:00`,
-    grade: '3학년',
+    submittedAt: `2027-03-0${SUBMIT_DAYS[index % SUBMIT_DAYS.length]}T21:34:00+09:00`,
+    grade: GRADE_OPTIONS[GRADE_ORDER[index % GRADE_ORDER.length]],
     semester: '4',
-    enrollmentStatus: '재학',
-    referral: '인스타그램',
+    enrollmentStatus: ENROLLMENT_STATUS_OPTIONS[ENROLLMENT_ORDER[index % ENROLLMENT_ORDER.length]],
+    referral: REFERRAL_OPTIONS[REFERRAL_ORDER[index % REFERRAL_ORDER.length]],
     interviewSlots: ['2027-03-16T12:00', '2027-03-17T14:00', '2027-03-17T16:00', '2027-03-18T16:00'],
     portalCapture: { name: 'IMG20260715.jpeg', size: 820_000, url: '/image/og-image.png' },
     answers: [
