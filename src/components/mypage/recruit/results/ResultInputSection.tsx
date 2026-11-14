@@ -64,7 +64,10 @@ const ResultInputSection = forwardRef<HTMLElement, ResultInputSectionProps>(func
 
   const currentResult = (applicant: ApplicantDetail) => pending[applicant.id] ?? getSavedResult(stage, applicant);
   // 공개 후에는 합격·불합격을 보류로 되돌릴 수 없다
-  const canHold = (applicant: ApplicantDetail) => !isPublished || !getSavedResult(stage, applicant);
+  const canHold = (applicant: ApplicantDetail) => {
+    const savedResult = getSavedResult(stage, applicant);
+    return !isPublished || (savedResult !== 'PASS' && savedResult !== 'FAIL');
+  };
 
   const trimmedKeyword = keyword.trim();
   const filtered = applicants.filter((applicant) => {
