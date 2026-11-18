@@ -10,6 +10,7 @@ import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import Toast from '@common/toast/Toast';
 import { ToastWrapper } from '@common/toast/toastLayout';
 import ApplyComplete from '@recruit/apply/ApplyComplete';
+import ApplyNoticeModal from '@recruit/apply/ApplyNoticeModal';
 import BasicInfoStep from '@recruit/apply/BasicInfoStep';
 import IdentityStep from '@recruit/apply/IdentityStep';
 import { ApplicantProfile, MOCK_APPLY_END_AT, PART_QUESTIONS_MOCK } from '@recruit/apply/mock';
@@ -22,6 +23,7 @@ import {
   ApplyBasicDraft,
   clearApplyDraft,
   deriveDraftKey,
+  isEmptyApplyDraft,
   loadApplyDraft,
   saveApplyDraft,
 } from '@utils/applyDraft';
@@ -80,7 +82,9 @@ const RecruitApply = () => {
     staleTime: Infinity,
     gcTime: 0,
   });
-  const restoredDraft = draftQuery.data;
+  const [draftChoice, setDraftChoice] = useState<'load' | 'new' | null>(null);
+  const isDraftChoicePending = !!draftQuery.data && !draftChoice;
+  const restoredDraft = draftChoice === 'load' ? draftQuery.data : null;
 
   const [syncedDraft, setSyncedDraft] = useState(restoredDraft);
   if (restoredDraft !== syncedDraft) {
@@ -116,21 +120,18 @@ const RecruitApply = () => {
   }, []);
 
   useEffect(() => {
-    if (!session || !basicDraft || submittedAt) return;
-    pendingSaveRef.current = () =>
-      saveApplyDraft(
-        session.profile.email,
-        session.draftKey,
-        {
-          basic: basicDraft.values,
-          answers: answersDraft?.answers ?? restoredAnswers ?? { texts: {}, choices: {} },
-          hasFiles: basicDraft.hasPortalImage || !!answersDraft?.hasFiles,
-        },
-        MOCK_APPLY_END_AT,
-      );
+    if (!session || !basicDraft || submittedAt || isDraftChoicePending) return;
+    const draft = {
+      basic: basicDraft.values,
+      answers: answersDraft?.answers ?? restoredAnswers ?? { texts: {}, choices: {} },
+      hasFiles: basicDraft.hasPortalImage || !!answersDraft?.hasFiles,
+    };
+    pendingSaveRef.current = isEmptyApplyDraft(draft)
+      ? () => clearApplyDraft(session.profile.email).then(() => true)
+      : () => saveApplyDraft(session.profile.email, session.draftKey, draft, MOCK_APPLY_END_AT);
     const timer = setTimeout(runPendingSave, DRAFT_SAVE_DELAY_MS);
     return () => clearTimeout(timer);
-  }, [session, basicDraft, answersDraft, restoredAnswers, submittedAt, runPendingSave]);
+  }, [session, basicDraft, answersDraft, restoredAnswers, submittedAt, isDraftChoicePending, runPendingSave]);
 
   // 입력 직후 다른 페이지로 이동해도 예약된 저장을 버리지 않는다
   useEffect(() => () => runPendingSave(), [runPendingSave]);
@@ -184,6 +185,7 @@ const RecruitApply = () => {
         {applicant && (
           <div hidden={step !== 'basic'}>
             <BasicInfoStep
+              key={restoredDraft ? 'restored' : 'empty'}
               applicant={applicant}
               hasPartAnswers={isPartDirty || !!restoredAnswers}
               initialValues={restoredDraft?.basic}
@@ -235,6 +237,20 @@ const RecruitApply = () => {
           onHidden={() => setIsSaveFailedNoticeOpen(false)}
         />
       </ToastWrapper>
+      {isDraftChoicePending && session && (
+        <ApplyNoticeModal
+          title="작성 중인 지원서가 있습니다."
+          description={'이전에 작성하던 지원서가 있습니다.\n이어서 작성하시겠습니까?'}
+          cancelLabel="새로 작성하기"
+          confirmLabel="불러오기"
+          onCancel={async () => {
+            await clearApplyDraft(session.profile.email);
+            setDraftChoice('new');
+          }}
+          onConfirm={() => setDraftChoice('load')}
+          onClose={() => {}}
+        />
+      )}
       {isConfirmOpen && (
         <Alert
           heading="페이지를 나가시겠어요?"

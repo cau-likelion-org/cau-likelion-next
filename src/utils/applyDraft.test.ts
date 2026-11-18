@@ -1,7 +1,14 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { ApplyDraft, clearApplyDraft, deriveDraftKey, loadApplyDraft, saveApplyDraft } from './applyDraft';
+import {
+  ApplyDraft,
+  clearApplyDraft,
+  deriveDraftKey,
+  isEmptyApplyDraft,
+  loadApplyDraft,
+  saveApplyDraft,
+} from './applyDraft';
 
 const EMAIL = 'lion@example.com';
 const EXPIRES_AT = '2027-03-09T23:59:59+09:00';
@@ -80,5 +87,32 @@ describe('applyDraft', () => {
 
     expect(await saveApplyDraft(EMAIL, key, DRAFT, EXPIRES_AT)).toBe(false);
     setItem.mockRestore();
+  });
+});
+
+describe('isEmptyApplyDraft', () => {
+  const EMPTY: ApplyDraft = {
+    basic: {
+      studentId: '',
+      major: '',
+      grade: '',
+      semester: '',
+      enrollmentStatus: '',
+      referral: '',
+      part: '',
+      interviewSlots: [],
+    },
+    answers: { texts: { q1: '  ' }, choices: { q2: [] } },
+    hasFiles: true,
+  };
+
+  it('입력한 내용 없이 첨부 파일만 있으면 빈 지원서로 본다', () => {
+    expect(isEmptyApplyDraft(EMPTY)).toBe(true);
+  });
+
+  it('한 항목이라도 입력했으면 빈 지원서가 아니다', () => {
+    expect(isEmptyApplyDraft({ ...EMPTY, basic: { ...EMPTY.basic, studentId: '2024' } })).toBe(false);
+    expect(isEmptyApplyDraft({ ...EMPTY, answers: { ...EMPTY.answers, texts: { q1: '동기' } } })).toBe(false);
+    expect(isEmptyApplyDraft({ ...EMPTY, answers: { ...EMPTY.answers, choices: { q2: ['A'] } } })).toBe(false);
   });
 });
