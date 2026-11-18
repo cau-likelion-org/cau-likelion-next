@@ -60,6 +60,43 @@ const STEP_TITLE: Record<StepKey, string> = {
 const omitSaved = <T extends object>(pending: T, saved: T): T =>
   Object.fromEntries(Object.entries(pending).filter(([key, value]) => saved[key as keyof T] !== value)) as T;
 
+const toPublishTime = (publishAt: string) => new Date(`${publishAt}:00+09:00`).getTime();
+
+// setTimeout은 약 24.8일보다 긴 대기를 바로 실행하므로, 그보다 먼 예약은 나눠서 다시 확인한다
+const MAX_TIMEOUT_MS = 2 ** 31 - 1;
+
+// 공개 시각이 지나면 이미 공개 처리 중이므로 취소할 수 없다. 화면을 켜 둔 채 그 시각이 되어도 바로 막는다
+const CancelReservationButton = ({
+  publishAt,
+  loading,
+  onCancel,
+}: {
+  publishAt: string;
+  loading: boolean;
+  onCancel: () => void;
+}) => {
+  const [isPublishTimePassed, setIsPublishTimePassed] = useState(() => toPublishTime(publishAt) <= Date.now());
+  const [recheckCount, setRecheckCount] = useState(0);
+
+  useEffect(() => {
+    if (isPublishTimePassed) return;
+    const timer = setTimeout(
+      () => {
+        if (toPublishTime(publishAt) <= Date.now()) setIsPublishTimePassed(true);
+        else setRecheckCount((count) => count + 1);
+      },
+      Math.min(toPublishTime(publishAt) - Date.now(), MAX_TIMEOUT_MS),
+    );
+    return () => clearTimeout(timer);
+  }, [publishAt, isPublishTimePassed, recheckCount]);
+
+  return (
+    <Button size="small" disabled={isPublishTimePassed} loading={loading} onClick={onCancel}>
+      예약 취소
+    </Button>
+  );
+};
+
 const PUBLISHED_CONFIRM = '이미 공개된 결과입니다.\n저장하면 지원자에게 즉시 반영됩니다.';
 
 export interface ScreeningStageViewProps {
@@ -240,13 +277,12 @@ const ScreeningStageView = ({ stage, generation, data, onToast, onDirtyChange }:
               {config.lockedTarget}이 잠겨 있으며 예약을 취소하면 수정할 수 있습니다.
             </BannerDescription>
           </BannerText>
-          <Button
-            size="small"
+          <CancelReservationButton
+            key={publish.publishAt}
+            publishAt={publish.publishAt}
             loading={cancelMutation.isPending}
-            onClick={() => cancelMutation.mutate({ generation, stage })}
-          >
-            예약 취소
-          </Button>
+            onCancel={() => cancelMutation.mutate({ generation, stage })}
+          />
         </Banner>
       )}
       <Steps ref={stepsRef} $locked={isLocked} aria-disabled={isLocked}>
