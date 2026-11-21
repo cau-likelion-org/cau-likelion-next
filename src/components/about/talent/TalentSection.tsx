@@ -64,7 +64,7 @@ const Wrapper = styled.div`
   }
 
   @media (max-width: 700px) {
-    padding: 48px 20px 60px;
+    padding: 60px 29px 80px;
   }
 `;
 
@@ -84,6 +84,10 @@ const SectionTitle = styled.p`
   word-break: keep-all;
   color: #ffffff;
   ${typographyCss(Typography.display2.bold)}
+
+  @media (max-width: 700px) {
+    ${typographyCss(Typography.title1.bold)}
+  }
 `;
 
 const Card = styled.div`

@@ -5,6 +5,7 @@ import { getRoadmap } from 'src/apis/roadmap';
 import LinearLoading from '@common/loading/LinearLoading';
 import EmptyState from '@common/emptyState/EmptyState';
 import { BackgroundWhite, Black, Label } from '@utils/constant/color';
+import { media } from '@utils/constant/breakpoint';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 const RoadmapSection = () => {
@@ -43,6 +44,10 @@ const Wrapper = styled.div`
   width: 100%;
   padding: 80px 20px;
   background-color: ${BackgroundWhite.tertiary};
+
+  ${media.xs} {
+    padding: 60px 20px 80px;
+  }
 `;
 
 const Content = styled.div`
@@ -60,6 +65,10 @@ const SectionTitle = styled.p`
   text-align: center;
   color: ${Black.b900};
   ${typographyCss(Typography.display2.bold)}
+
+  ${media.xs} {
+    ${typographyCss(Typography.title1.bold)}
+  }
 `;
 
 const ChartImageWrapper = styled.div`

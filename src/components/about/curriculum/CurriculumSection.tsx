@@ -84,6 +84,11 @@ const Wrapper = styled.div`
   max-width: 1060px;
   margin: 0 auto;
   padding: 80px 20px;
+
+  ${media.xs} {
+    gap: 32px;
+    padding: 60px 20px 80px;
+  }
 `;
 
 const SectionTitle = styled.p`
@@ -92,6 +97,10 @@ const SectionTitle = styled.p`
   text-align: center;
   color: ${Label.normal};
   ${typographyCss(Typography.display2.bold)}
+
+  ${media.xs} {
+    ${typographyCss(Typography.title1.bold)}
+  }
 `;
 
 const Content = styled.div`
