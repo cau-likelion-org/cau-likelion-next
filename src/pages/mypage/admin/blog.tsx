@@ -4,6 +4,7 @@ import styled from 'styled-components';
 
 import { Generation } from '@@types/request';
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
+import LeaveConfirmAlert from '@common/alert/LeaveConfirmAlert';
 import Button from '@common/button/Button';
 import Toast from '@common/toast/Toast';
 import { ToastWrapper } from '@common/toast/toastLayout';
@@ -19,6 +20,7 @@ import BlogSection, {
 } from '@mypage/admin/blog/BlogSection';
 import EditButton from '@mypage/admin/component/EditButton';
 import { syncListSection } from '@mypage/admin/utils';
+import useLeaveGuard from 'src/hooks/useLeaveGuard';
 import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import { getGenerations } from 'src/apis/account';
 import { getBlogs, createBlog, updateBlog, deleteBlog, BlogResponse, BlogRequest } from 'src/apis/blog';
@@ -88,6 +90,10 @@ const MyPageAdminBlog = () => {
       setBlogItems((blogs ?? []).map(blogToLocal));
     }
   }
+
+  const { isConfirmOpen, confirmLeave, cancelLeave } = useLeaveGuard(
+    isEditing && JSON.stringify(blogItems) !== JSON.stringify((blogs ?? []).map(blogToLocal)),
+  );
 
   const handleCancel = () => {
     setBlogItems((blogs ?? []).map(blogToLocal));
@@ -159,6 +165,7 @@ const MyPageAdminBlog = () => {
           )}
         </>
       )}
+      {isConfirmOpen && <LeaveConfirmAlert onCancel={cancelLeave} onConfirm={confirmLeave} />}
       <ToastWrapper>
         <Toast variant={toastVariant} text={toastMessage} show={!!toastMessage} onHidden={() => setToastMessage('')} />
       </ToastWrapper>

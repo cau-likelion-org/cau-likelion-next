@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import TextField from '@common/textField/TextField';
 import Button from '@common/button/Button';
 import { getGenerations } from 'src/apis/account';
+import useNotifyDirtyChange from 'src/hooks/useNotifyDirtyChange';
 import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import { excludeCommonPart } from '@utils/index';
 import { REQUIRED_FIELD_MESSAGE } from '@utils/constant';
@@ -16,14 +17,16 @@ import { RecruitGenerationSetting } from './mock';
 export interface GenerationSettingSectionProps {
   initialValues: RecruitGenerationSetting;
   onSave: (values: RecruitGenerationSetting, isUpdate: boolean) => void;
+  onDirtyChange?: (isDirty: boolean) => void;
 }
 
 const toDigits = (value: string) => value.replace(/\D/g, '');
 
-const GenerationSettingSection = ({ initialValues, onSave }: GenerationSettingSectionProps) => {
+const GenerationSettingSection = ({ initialValues, onSave, onDirtyChange }: GenerationSettingSectionProps) => {
   const [values, setValues] = useState(initialValues);
   const [savedValues, setSavedValues] = useState(initialValues);
   const [isEditing, setIsEditing] = useState(initialValues.generation === '');
+  useNotifyDirtyChange(JSON.stringify(values) !== JSON.stringify(savedValues), onDirtyChange);
 
   const { data: generations } = useQuery({ queryKey: ['adminGenerations'], queryFn: getGenerations });
   const generation = generations?.find((item) => String(item.number) === values.generation);

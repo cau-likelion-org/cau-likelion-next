@@ -7,7 +7,7 @@ import PageLoadingGate from '@common/pageGate/PageLoadingGate';
 import Tab from '@common/tab/Tab';
 import Toast from '@common/toast/Toast';
 import { ToastWrapper } from '@common/toast/toastLayout';
-import Alert from '@common/alert/Alert';
+import LeaveConfirmAlert from '@common/alert/LeaveConfirmAlert';
 import GenerationSettingSection from '@mypage/recruit/GenerationSettingSection';
 import NoticeSettingSection from '@mypage/recruit/NoticeSettingSection';
 import FirstStepQuestionSection from '@mypage/recruit/FirstStepQuestionSection';
@@ -34,8 +34,8 @@ const MyPageRecruitSettings = () => {
 
   const [activeTab, setActiveTab] = useState(TAB_ITEMS[0].key);
   const [toastMessage, setToastMessage] = useState('');
-  const [isNoticeDirty, setIsNoticeDirty] = useState(false);
-  const { isConfirmOpen, requestLeave, confirmLeave, cancelLeave } = useLeaveGuard(isNoticeDirty);
+  const [isDirty, setIsDirty] = useState(false);
+  const { isConfirmOpen, requestLeave, confirmLeave, cancelLeave } = useLeaveGuard(isDirty);
 
   return (
     <>
@@ -58,6 +58,7 @@ const MyPageRecruitSettings = () => {
               onSave={(_, isUpdate) =>
                 setToastMessage(isUpdate ? '변경사항이 저장되었습니다.' : '회차 설정이 저장되었습니다.')
               }
+              onDirtyChange={setIsDirty}
             />
           ) : activeTab === 'notice' ? (
             <NoticeSettingSection
@@ -65,7 +66,7 @@ const MyPageRecruitSettings = () => {
               onSave={(_, isUpdate) =>
                 setToastMessage(isUpdate ? '변경사항이 저장되었습니다.' : '모집 공고가 저장되었습니다.')
               }
-              onDirtyChange={setIsNoticeDirty}
+              onDirtyChange={setIsDirty}
             />
           ) : activeTab === 'first-questions' ? (
             <FirstStepQuestionSection
@@ -73,6 +74,7 @@ const MyPageRecruitSettings = () => {
               onSave={(_, isUpdate) =>
                 setToastMessage(isUpdate ? '변경사항이 저장되었습니다.' : '1단계 문항이 저장되었습니다.')
               }
+              onDirtyChange={setIsDirty}
             />
           ) : (
             <SecondStepQuestionSection
@@ -80,20 +82,12 @@ const MyPageRecruitSettings = () => {
               onSave={(_, isUpdate) =>
                 setToastMessage(isUpdate ? '변경사항이 저장되었습니다.' : '2단계 문항이 저장되었습니다.')
               }
+              onDirtyChange={setIsDirty}
             />
           )}
         </Wrapper>
       )}
-      {isConfirmOpen && (
-        <Alert
-          heading="저장하지 않고 나가면 작성한 내용이 사라집니다."
-          onDimmerClick={cancelLeave}
-          actions={[
-            { label: '취소', variant: 'assistive', onClick: cancelLeave },
-            { label: '나가기', variant: 'primary', onClick: confirmLeave },
-          ]}
-        />
-      )}
+      {isConfirmOpen && <LeaveConfirmAlert onCancel={cancelLeave} onConfirm={confirmLeave} />}
     </>
   );
 };

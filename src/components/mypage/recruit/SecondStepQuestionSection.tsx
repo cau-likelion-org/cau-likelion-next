@@ -6,6 +6,7 @@ import Button from '@common/button/Button';
 import Category from '@common/category/Category';
 import { createId } from '@mypage/admin/utils';
 import { IcPlus } from '@assets/svg';
+import useNotifyDirtyChange from 'src/hooks/useNotifyDirtyChange';
 import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import { Black, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -37,14 +38,16 @@ const createEmptyQuestion = (): RecruitQuestion => ({
 export interface SecondStepQuestionSectionProps {
   initialValues: RecruitSecondStepSetting;
   onSave: (values: RecruitSecondStepSetting, isUpdate: boolean) => void;
+  onDirtyChange?: (isDirty: boolean) => void;
 }
 
-const SecondStepQuestionSection = ({ initialValues, onSave }: SecondStepQuestionSectionProps) => {
+const SecondStepQuestionSection = ({ initialValues, onSave, onDirtyChange }: SecondStepQuestionSectionProps) => {
   const [values, setValues] = useState(initialValues);
   const [savedValues, setSavedValues] = useState<RecruitSecondStepSetting | null>(null);
   const [isEditing, setIsEditing] = useState(!initialValues.isLocked);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [activePartId, setActivePartId] = useState(initialValues.parts[0]?.partId);
+  useNotifyDirtyChange(JSON.stringify(values) !== JSON.stringify(savedValues ?? initialValues), onDirtyChange);
 
   const readOnly = !isEditing || values.isLocked;
   const activePart = values.parts.find((part) => part.partId === activePartId);

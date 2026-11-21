@@ -1,15 +1,16 @@
-import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
+import { ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useQuery } from '@tanstack/react-query';
 import styled from 'styled-components';
 
-import Alert from '@common/alert/Alert';
+import LeaveConfirmAlert from '@common/alert/LeaveConfirmAlert';
 import Category from '@common/category/Category';
 import Divider from '@common/divider/Divider';
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import Toast from '@common/toast/Toast';
 import { ToastWrapper } from '@common/toast/toastLayout';
 import ApplyComplete from '@recruit/apply/ApplyComplete';
+import ApplyNoticeModal from '@recruit/apply/ApplyNoticeModal';
 import BasicInfoStep from '@recruit/apply/BasicInfoStep';
 import IdentityStep from '@recruit/apply/IdentityStep';
 import { ApplicantProfile, MOCK_APPLY_END_AT, PART_QUESTIONS_MOCK } from '@recruit/apply/mock';
@@ -19,9 +20,11 @@ import useLeaveGuard from 'src/hooks/useLeaveGuard';
 import useApplicantSessionStore from 'src/store/useApplicantSessionStore';
 import {
   ApplyAnswersDraft,
+  ApplyDraft,
   ApplyBasicDraft,
   clearApplyDraft,
   deriveDraftKey,
+  isEmptyApplyDraft,
   loadApplyDraft,
   saveApplyDraft,
 } from '@utils/applyDraft';
@@ -64,12 +67,10 @@ const RecruitApply = () => {
   // 1단계로 돌아가도 2단계 답변이 남아 있도록 한 번 들어간 2단계는 화면에서 숨기기만 한다
   const [hasVisitedPart, setHasVisitedPart] = useState(false);
   const [isPartDirty, setIsPartDirty] = useState(false);
+  const [isPrevConfirmOpen, setIsPrevConfirmOpen] = useState(false);
   // 파트를 바꾸면 2단계를 새로 그려 답변을 초기화한다
   const [partResetKey, setPartResetKey] = useState(0);
   const [submittedAt, setSubmittedAt] = useState<Date | null>(null);
-  const { isConfirmOpen, requestLeave, confirmLeave, cancelLeave } = useLeaveGuard(
-    step === 'part' && isPartDirty && !submittedAt,
-  );
 
   const draftQuery = useQuery({
     queryKey: ['applyDraft', session?.profile.email],
@@ -80,7 +81,20 @@ const RecruitApply = () => {
     staleTime: Infinity,
     gcTime: 0,
   });
-  const restoredDraft = draftQuery.data;
+  const isDraftChosen = useApplicantSessionStore((state) => state.isDraftChosen);
+  const chooseDraft = useApplicantSessionStore((state) => state.chooseDraft);
+  // 같은 로그인 중에 사이트 안에서 다녀오면 묻지 않고 이어서 보여준다
+  const [draftChoice, setDraftChoice] = useState<'load' | 'new' | null>(isDraftChosen ? 'load' : null);
+  const isDraftChoicePending = !!draftQuery.data && !draftChoice;
+  const restoredDraft = draftChoice === 'load' ? draftQuery.data : null;
+  const selectDraft = (choice: 'load' | 'new') => {
+    chooseDraft();
+    setDraftChoice(choice);
+  };
+
+  useEffect(() => {
+    if (draftQuery.isSuccess && !draftQuery.data) chooseDraft();
+  }, [draftQuery.isSuccess, draftQuery.data, chooseDraft]);
 
   const [syncedDraft, setSyncedDraft] = useState(restoredDraft);
   if (restoredDraft !== syncedDraft) {
@@ -95,6 +109,19 @@ const RecruitApply = () => {
   const changeAnswersDraft = useCallback(
     (answers: ApplyAnswersDraft, hasFiles: boolean) => setAnswersDraft({ answers, hasFiles }),
     [],
+  );
+
+  const currentDraft = useMemo<ApplyDraft | null>(
+    () =>
+      basicDraft && {
+        basic: basicDraft.values,
+        answers: answersDraft?.answers ?? restoredAnswers ?? { texts: {}, choices: {} },
+        hasFiles: basicDraft.hasPortalImage || !!answersDraft?.hasFiles,
+      },
+    [basicDraft, answersDraft, restoredAnswers],
+  );
+  const { isConfirmOpen, confirmLeave, cancelLeave } = useLeaveGuard(
+    !!currentDraft && !submittedAt && (currentDraft.hasFiles || !isEmptyApplyDraft(currentDraft)),
   );
 
   // 저장은 차례대로 이어 붙여, 제출할 때 진행 중인 저장이 끝난 뒤 지울 수 있게 한다
@@ -116,21 +143,13 @@ const RecruitApply = () => {
   }, []);
 
   useEffect(() => {
-    if (!session || !basicDraft || submittedAt) return;
-    pendingSaveRef.current = () =>
-      saveApplyDraft(
-        session.profile.email,
-        session.draftKey,
-        {
-          basic: basicDraft.values,
-          answers: answersDraft?.answers ?? restoredAnswers ?? { texts: {}, choices: {} },
-          hasFiles: basicDraft.hasPortalImage || !!answersDraft?.hasFiles,
-        },
-        MOCK_APPLY_END_AT,
-      );
+    if (!session || !currentDraft || submittedAt || isDraftChoicePending) return;
+    pendingSaveRef.current = isEmptyApplyDraft(currentDraft)
+      ? () => clearApplyDraft(session.profile.email).then(() => true)
+      : () => saveApplyDraft(session.profile.email, session.draftKey, currentDraft, MOCK_APPLY_END_AT);
     const timer = setTimeout(runPendingSave, DRAFT_SAVE_DELAY_MS);
     return () => clearTimeout(timer);
-  }, [session, basicDraft, answersDraft, restoredAnswers, submittedAt, runPendingSave]);
+  }, [session, currentDraft, submittedAt, isDraftChoicePending, runPendingSave]);
 
   // 입력 직후 다른 페이지로 이동해도 예약된 저장을 버리지 않는다
   useEffect(() => () => runPendingSave(), [runPendingSave]);
@@ -184,6 +203,7 @@ const RecruitApply = () => {
         {applicant && (
           <div hidden={step !== 'basic'}>
             <BasicInfoStep
+              key={restoredDraft ? 'restored' : 'empty'}
               applicant={applicant}
               hasPartAnswers={isPartDirty || !!restoredAnswers}
               initialValues={restoredDraft?.basic}
@@ -206,7 +226,7 @@ const RecruitApply = () => {
               key={partResetKey}
               questions={PART_QUESTIONS_MOCK}
               initialAnswers={restoredAnswers ?? undefined}
-              onPrev={() => requestLeave(() => goToStep('basic'))}
+              onPrev={() => (isPartDirty ? setIsPrevConfirmOpen(true) : goToStep('basic'))}
               onDirtyChange={setIsPartDirty}
               onAnswersChange={changeAnswersDraft}
               onSubmitted={(date) => {
@@ -235,15 +255,37 @@ const RecruitApply = () => {
           onHidden={() => setIsSaveFailedNoticeOpen(false)}
         />
       </ToastWrapper>
+      {isDraftChoicePending && session && (
+        <ApplyNoticeModal
+          title="작성 중인 지원서가 있습니다."
+          description={'이전에 작성하던 지원서가 있습니다.\n이어서 작성하시겠습니까?'}
+          cancelLabel="새로 작성하기"
+          confirmLabel="불러오기"
+          onCancel={async () => {
+            await clearApplyDraft(session.profile.email);
+            selectDraft('new');
+          }}
+          onConfirm={() => selectDraft('load')}
+          onClose={() => {}}
+        />
+      )}
       {isConfirmOpen && (
-        <Alert
+        <LeaveConfirmAlert
           heading="페이지를 나가시겠어요?"
-          body="작성 중인 내용은 현재 브라우저에만 임시 저장되며, 모집 마감 후 삭제됩니다."
-          onDimmerClick={cancelLeave}
-          actions={[
-            { label: '취소', variant: 'assistive', onClick: cancelLeave },
-            { label: '나가기', variant: 'primary', onClick: confirmLeave },
-          ]}
+          body="작성한 내용은 저장되지 않을 수 있습니다."
+          onCancel={cancelLeave}
+          onConfirm={confirmLeave}
+        />
+      )}
+      {isPrevConfirmOpen && (
+        <LeaveConfirmAlert
+          heading="페이지를 나가시겠어요?"
+          body="작성한 내용은 저장되지 않을 수 있습니다."
+          onCancel={() => setIsPrevConfirmOpen(false)}
+          onConfirm={() => {
+            setIsPrevConfirmOpen(false);
+            goToStep('basic');
+          }}
         />
       )}
     </Wrapper>

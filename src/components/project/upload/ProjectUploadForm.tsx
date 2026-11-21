@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import styled from 'styled-components';
 
 import Alert from '@common/alert/Alert';
+import LeaveConfirmAlert from '@common/alert/LeaveConfirmAlert';
 import BackHeader from '@common/header/BackHeader';
 import Button from '@common/button/Button';
 import CharCount from '@common/charCount/CharCount';
@@ -48,6 +49,7 @@ import {
   IcTrash,
 } from '@assets/svg';
 import useInput from 'src/hooks/useInput';
+import useLeaveGuard from 'src/hooks/useLeaveGuard';
 import useListboxSelect from 'src/hooks/useListboxSelect';
 import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import { NUMERIC_ONLY_REGEX, PROJECT_CATEGORY_OPTIONS } from '@utils/constant';
@@ -312,6 +314,29 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
   const [submitError, setSubmitError] = useState('');
 
+  const formSnapshot = JSON.stringify({
+    images,
+    imageFiles: imageFiles.map(Boolean),
+    featuredIndex,
+    title,
+    subtitle,
+    description,
+    generation,
+    category,
+    teamName,
+    pmMembers,
+    designMembers,
+    frontendMembers,
+    backendMembers,
+    extraParts,
+    dateRange,
+    techStackItems,
+    banner,
+    linkRows,
+  });
+  const [initialSnapshot] = useState(formSnapshot);
+  const { isConfirmOpen, confirmLeave, cancelLeave, allowLeave } = useLeaveGuard(formSnapshot !== initialSnapshot);
+
   const { data: generations, isError: isGenerationsError } = useQuery<Generation[]>({
     queryKey: ['generations'],
     queryFn: () => getGenerations(tokenState),
@@ -461,6 +486,7 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
         // 캐시가 남아 있으면 다시 수정에 들어왔을 때 저장 전 데이터로 초기화된다
         if (isEditMode) queryClient.removeQueries({ queryKey: ['adminProject', initialData!.id] });
         sessionStorage.setItem(isEditMode ? PROJECT_UPDATED_FLAG_KEY : PROJECT_CREATED_FLAG_KEY, 'true');
+        allowLeave();
         router.push('/project');
       },
       onError: () => setSubmitError('저장에 실패했어요. 잠시 후 다시 시도해 주세요.'),
@@ -477,6 +503,7 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
       onSuccess: () => {
         queryClient.removeQueries({ queryKey: ['adminProject', initialData!.id] });
         sessionStorage.setItem(PROJECT_DELETED_FLAG_KEY, 'true');
+        allowLeave();
         router.push('/project');
       },
       onError: () => setSubmitError('삭제에 실패했어요. 잠시 후 다시 시도해 주세요.'),
@@ -857,6 +884,7 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
         <Toast variant="negative" text={submitError} show={!!submitError} onHidden={() => setSubmitError('')} />
       </ToastWrapper>
 
+      {isConfirmOpen && <LeaveConfirmAlert onCancel={cancelLeave} onConfirm={confirmLeave} />}
       {isDeleteAlertOpen && (
         <Alert
           heading="프로젝트를 삭제하시겠습니까?"

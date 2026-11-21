@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import styled from 'styled-components';
 
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
+import LeaveConfirmAlert from '@common/alert/LeaveConfirmAlert';
 import Button from '@common/button/Button';
 import Toast from '@common/toast/Toast';
 import { ToastWrapper } from '@common/toast/toastLayout';
@@ -27,6 +28,7 @@ import FAQSection from '@mypage/admin/landing/FAQSection';
 import { FaqItem, isFaqItemInvalid } from '@mypage/component/FaqCardList';
 import EditButton from '@mypage/admin/component/EditButton';
 import { syncListSection } from '@mypage/admin/utils';
+import useLeaveGuard from 'src/hooks/useLeaveGuard';
 import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import { getTracks, createTrack, updateTrack, deleteTrack, TrackResponse } from 'src/apis/track';
 import { getActivities, createActivity, updateActivity, deleteActivity, ActivityResponse } from 'src/apis/activity';
@@ -200,12 +202,26 @@ const MyPageAdminLanding = () => {
     }
   }
 
+  const getSavedItems = () => ({
+    introduceMetrics: introduce ? introduceToLocal(introduce) : DEFAULT_INTRODUCE_METRICS,
+    trackItems: (tracks ?? []).map(trackToLocal),
+    activityItems: (activities ?? []).map(activityToLocal),
+    projectItems: (projects ?? []).map(projectToLocal),
+    faqItems: (faqs ?? []).map(faqToLocal),
+  });
+  const { isConfirmOpen, confirmLeave, cancelLeave } = useLeaveGuard(
+    isEditing &&
+      JSON.stringify({ introduceMetrics, trackItems, activityItems, projectItems, faqItems }) !==
+        JSON.stringify(getSavedItems()),
+  );
+
   const handleCancel = () => {
-    setIntroduceMetrics(introduce ? introduceToLocal(introduce) : DEFAULT_INTRODUCE_METRICS);
-    setTrackItems((tracks ?? []).map(trackToLocal));
-    setActivityItems((activities ?? []).map(activityToLocal));
-    setProjectItems((projects ?? []).map(projectToLocal));
-    setFaqItems((faqs ?? []).map(faqToLocal));
+    const saved = getSavedItems();
+    setIntroduceMetrics(saved.introduceMetrics);
+    setTrackItems(saved.trackItems);
+    setActivityItems(saved.activityItems);
+    setProjectItems(saved.projectItems);
+    setFaqItems(saved.faqItems);
     hideErrors();
     setIsEditing(false);
   };
@@ -351,6 +367,7 @@ const MyPageAdminLanding = () => {
           )}
         </>
       )}
+      {isConfirmOpen && <LeaveConfirmAlert onCancel={cancelLeave} onConfirm={confirmLeave} />}
       <ToastWrapper>
         <Toast variant={toastVariant} text={toastMessage} show={!!toastMessage} onHidden={() => setToastMessage('')} />
       </ToastWrapper>

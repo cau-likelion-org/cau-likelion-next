@@ -10,6 +10,7 @@ export interface ApplyNoticeModalProps {
   confirmLabel: string;
   onCancel: () => void;
   onConfirm: () => void;
+  onClose?: () => void;
 }
 
 const ApplyNoticeModal = ({
@@ -19,8 +20,9 @@ const ApplyNoticeModal = ({
   confirmLabel,
   onCancel,
   onConfirm,
+  onClose = onCancel,
 }: ApplyNoticeModalProps) => (
-  <Modal size="medium" ariaLabel={title} onClose={onCancel}>
+  <Modal size="medium" ariaLabel={title} onClose={onClose}>
     <Information align="center">
       <ModalTitle>{title}</ModalTitle>
       <Description>{description}</Description>

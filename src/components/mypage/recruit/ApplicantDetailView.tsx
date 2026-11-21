@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import styled, { css } from 'styled-components';
 
 import Alert from '@common/alert/Alert';
+import LeaveConfirmAlert from '@common/alert/LeaveConfirmAlert';
 import Button from '@common/button/Button';
 import CharCount from '@common/charCount/CharCount';
 import Checkbox from '@common/checkbox/Checkbox';
@@ -17,6 +18,7 @@ import InfoList from '@recruit/InfoList';
 import ApplyFieldHeading from '@recruit/apply/ApplyFieldHeading';
 import { applyFieldHeadingCss } from '@recruit/apply/applyFieldStyle';
 import { EMAIL_FORMAT_MESSAGE } from '@recruit/apply/validation';
+import useLeaveGuard from 'src/hooks/useLeaveGuard';
 import { IcDocument, IcDownload, IcLink } from '@assets/svg';
 import {
   formatFileSize,
@@ -85,6 +87,10 @@ const ApplicantDetailView = ({ applicant, canDelete }: ApplicantDetailViewProps)
   const [showErrors, setShowErrors] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [toast, setToast] = useState<{ variant: 'positive' | 'negative'; message: string } | null>(null);
+  const { isConfirmOpen, confirmLeave, cancelLeave } = useLeaveGuard(
+    isEditing &&
+      (contact.name !== applicant.name || contact.phone !== applicant.phone || contact.email !== applicant.email),
+  );
 
   const refreshApplicants = () => queryClient.invalidateQueries({ queryKey: ['recruitApplicants'] });
 
@@ -355,6 +361,7 @@ const ApplicantDetailView = ({ applicant, canDelete }: ApplicantDetailViewProps)
           </AnswerSection>
         )}
       </Sections>
+      {isConfirmOpen && <LeaveConfirmAlert onCancel={cancelLeave} onConfirm={confirmLeave} />}
       {isDeleteOpen && (
         <Alert
           align="center"
