@@ -115,4 +115,8 @@ describe('isEmptyApplyDraft', () => {
     expect(isEmptyApplyDraft({ ...EMPTY, answers: { ...EMPTY.answers, texts: { q1: '동기' } } })).toBe(false);
     expect(isEmptyApplyDraft({ ...EMPTY, answers: { ...EMPTY.answers, choices: { q2: ['A'] } } })).toBe(false);
   });
+
+  it('기본 정보에 공백만 입력했으면 빈 지원서로 본다', () => {
+    expect(isEmptyApplyDraft({ ...EMPTY, basic: { ...EMPTY.basic, major: '  ' } })).toBe(true);
+  });
 });

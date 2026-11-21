@@ -125,7 +125,7 @@ export const loadApplyDraft = async (email: string, key: CryptoKey, now = new Da
 };
 
 export const isEmptyApplyDraft = ({ basic, answers }: ApplyDraft) =>
-  Object.values(basic).every((value) => value.length === 0) &&
+  Object.values(basic).every((value) => (typeof value === 'string' ? value.trim() === '' : value.length === 0)) &&
   Object.values(answers.texts).every((text) => text.trim() === '') &&
   Object.values(answers.choices).every((choice) => choice.length === 0);
 
