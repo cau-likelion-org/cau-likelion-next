@@ -1,8 +1,8 @@
 import { ReactNode } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 import Button from '@common/button/Button';
-import PageHeader from '@common/pageHeader/PageHeader';
+import RecruitPageHeader from '@recruit/RecruitPageHeader';
 import { media } from '@utils/constant/breakpoint';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
@@ -26,12 +26,14 @@ const RecruitResultLayout = ({
   children,
 }: RecruitResultLayoutProps) => (
   <Root>
-    <Header align="center" title={title} subtitle={subtitle} />
+    <Header align="center" title={title} subtitle={subtitle} $hasGraphic={!!graphic} />
     {graphic && <Graphic>{graphic}</Graphic>}
     <Content $actionGap={actionGap} $hasGraphic={!!graphic}>
       {children}
     </Content>
-    <Button onClick={onAction}>{actionLabel}</Button>
+    <ActionButton $hasGraphic={!!graphic} onClick={onAction}>
+      {actionLabel}
+    </ActionButton>
   </Root>
 );
 
@@ -45,24 +47,26 @@ const Root = styled.div`
   max-width: 640px;
 `;
 
-// 모바일 상단 여백 72px + 레이아웃 여백 8px(68px - 모바일 내비게이션 60px) = Figma 80px
-const Header = styled(PageHeader)`
-  word-break: keep-all;
-
+const Header = styled(RecruitPageHeader)<{ $hasGraphic: boolean }>`
   ${media.xs} {
-    padding-top: 72px;
+    ${(props) =>
+      props.$hasGraphic
+        ? css`
+            gap: 24px;
+            padding-top: 72px;
 
-    p:first-child {
-      ${typographyCss(Typography.display3.bold)}
-    }
-
-    p:last-child {
-      ${typographyCss(Typography.headline1.medium)}
-    }
+            p:first-child {
+              ${typographyCss(Typography.display3.bold)}
+            }
+          `
+        : css`
+            p:last-child {
+              max-width: 210px;
+            }
+          `}
   }
 `;
 
-// 모바일은 그래픽 칸과 그림을 웹의 0.7725배(240px → 185.391px)로 줄인다
 const Graphic = styled.div`
   display: flex;
   align-items: center;
@@ -91,6 +95,18 @@ const Content = styled.div<{ $actionGap: number; $hasGraphic: boolean }>`
   margin: ${(props) => (props.$hasGraphic ? 40 : 58)}px 0 ${(props) => props.$actionGap}px;
 
   ${media.xs} {
-    ${(props) => props.$hasGraphic && 'margin: 36px 0;'}
+    margin: ${(props) => (props.$hasGraphic ? 36 : 52)}px 0;
+  }
+`;
+
+const ActionButton = styled(Button)<{ $hasGraphic: boolean }>`
+  ${media.xs} {
+    ${(props) =>
+      !props.$hasGraphic &&
+      css`
+        padding: 9px 20px;
+        border-radius: 10px;
+        ${typographyCss(Typography.body2Normal.bold)}
+      `}
   }
 `;

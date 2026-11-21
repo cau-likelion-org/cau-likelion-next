@@ -110,7 +110,6 @@ const FileButton = styled(Button)<{ $invalid: boolean }>`
   width: 100%;
   outline: 1.5px dashed ${(props) => (props.$invalid ? 'rgba(255, 0, 0, 0.28)' : Label.assistive)};
   outline-offset: -1.5px;
-  /* 모바일 Figma는 안내 문구가 한 줄에 들어가도록 글자를 줄인다 */
   ${media.xs} {
     ${typographyCss(Typography.caption1.medium)}
   }

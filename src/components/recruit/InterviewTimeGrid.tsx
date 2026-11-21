@@ -148,7 +148,6 @@ const Root = styled.div`
   max-width: 100%;
 `;
 
-// 모바일은 격자를 넘기는 위치를 주황 막대로 보여주므로 기본 스크롤바를 숨긴다
 const GridScroll = styled.div`
   max-width: 100%;
   overflow-x: auto;
@@ -206,7 +205,6 @@ const cellCss = css`
   ${typographyCss(Typography.label1Normal.bold)}
 `;
 
-// 모바일 Figma는 머리글·시간 칸을 회색으로 칠한다
 const HeaderCellBox = styled.div`
   ${cellCss}
   background-color: ${Orange.o100};
@@ -244,7 +242,6 @@ const SlotButton = styled.button<{ $selected: boolean }>`
   }
 `;
 
-// 웹은 선택한 칸에만 글자를 보이고, 모바일은 빈 칸에도 흐린 '선택'을 보인다
 const SlotLabel = styled.span<{ $selected: boolean }>`
   visibility: ${(props) => (props.$selected ? 'visible' : 'hidden')};
 
