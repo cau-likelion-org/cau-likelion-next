@@ -116,10 +116,6 @@ const Banner = styled.div`
   width: 100%;
   height: 300px;
   background-color: ${Orange.o500};
-
-  ${media.xs} {
-    height: 180px;
-  }
 `;
 
 const Wrapper = styled.div`
@@ -127,6 +123,10 @@ const Wrapper = styled.div`
   justify-content: center;
   width: 100%;
   padding: 52px 20px;
+
+  ${media.xs} {
+    padding: 42px 20px;
+  }
 `;
 
 const Content = styled.div`
@@ -159,6 +159,18 @@ const StatusBadge = styled(ContentBadge)`
     props.variant === 'outlined'
       ? `border: none; box-shadow: inset 0 0 0 1px ${AccentTint.border};`
       : `background-color: ${props.color === 'accent' ? Orange.o75 : Line.alternative};`}
+
+  /* 배지 크기는 prop으로만 정해져, 모바일에서는 small 크기 값을 직접 덮어쓴다 */
+  ${media.xs} {
+    padding: 4px 6px;
+    border-radius: 6px;
+
+    span {
+      font-size: 12px;
+      line-height: 1.334;
+      letter-spacing: 0.3024px;
+    }
+  }
 `;
 
 const ButtonRow = styled.div`
@@ -178,6 +190,10 @@ const TitleGroup = styled.div`
   gap: 18px;
   width: 100%;
   color: ${Black.b900};
+
+  ${media.xs} {
+    gap: 10px;
+  }
 `;
 
 const Title = styled.h1`
@@ -186,7 +202,7 @@ const Title = styled.h1`
   ${typographyCss(Typography.display2.bold)}
 
   ${media.xs} {
-    ${typographyCss(Typography.title2.bold)}
+    ${typographyCss(Typography.title1.bold)}
   }
 `;
 
@@ -195,7 +211,7 @@ const ApplyPeriod = styled.p`
   ${typographyCss(Typography.title3.medium)}
 
   ${media.xs} {
-    ${typographyCss(Typography.headline1.medium)}
+    ${typographyCss(Typography.body1Normal.medium)}
   }
 `;
 
@@ -210,6 +226,10 @@ const ScheduleGroup = styled.div`
 const ScheduleTitle = styled.h2`
   margin: 0;
   ${typographyCss(Typography.title1.bold)}
+
+  ${media.xs} {
+    ${typographyCss(Typography.title3.bold)}
+  }
 `;
 
 const ScheduleCard = styled.div`
@@ -223,7 +243,8 @@ const ScheduleCard = styled.div`
   background-color: ${BackgroundWhite.secondary};
 
   ${media.xs} {
-    padding: 20px;
+    gap: 22px;
+    padding: 28px;
   }
 `;
 
@@ -235,7 +256,7 @@ const ScheduleRow = styled.div`
 
   ${media.xs} {
     flex-direction: column;
-    gap: 4px;
+    gap: 12px;
   }
 `;
 
@@ -244,6 +265,10 @@ const ScheduleLabel = styled.p`
   margin: 0;
   width: 200px;
   ${typographyCss(Typography.heading2.bold)}
+
+  ${media.xs} {
+    ${typographyCss(Typography.headline1.bold)}
+  }
 `;
 
 const SchedulePeriod = styled.p`
@@ -251,4 +276,8 @@ const SchedulePeriod = styled.p`
   min-width: 0;
   margin: 0;
   ${typographyCss(Typography.heading2.medium)}
+
+  ${media.xs} {
+    ${typographyCss(Typography.headline1.medium)}
+  }
 `;

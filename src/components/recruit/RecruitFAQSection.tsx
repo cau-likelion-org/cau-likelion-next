@@ -31,7 +31,7 @@ const Wrapper = styled.div`
   padding: 80px 20px;
 
   ${media.xs} {
-    padding: 60px 20px;
+    padding: 60px 20px 80px;
   }
 `;
 
