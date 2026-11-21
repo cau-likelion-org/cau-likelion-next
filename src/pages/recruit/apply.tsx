@@ -316,6 +316,7 @@ const CompleteWrapper = styled(Wrapper)`
 
   ${media.xs} {
     padding-top: 0;
+    padding-bottom: 10px;
   }
 `;
 
