@@ -6,7 +6,7 @@ import Alert from '@common/alert/Alert';
 import Button from '@common/button/Button';
 import Category from '@common/category/Category';
 import EmptyState from '@common/emptyState/EmptyState';
-import useReportDirty from 'src/hooks/useReportDirty';
+import useNotifyDirtyChange from 'src/hooks/useNotifyDirtyChange';
 import { toDateTimeLabel } from '@utils/index';
 import { Label, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -134,7 +134,7 @@ const ScreeningStageView = ({ stage, generation, data, onToast, onDirtyChange }:
     Object.keys(interviewPending).length > 0 ||
     Object.entries(templatePending).some(([key, value]) => value !== data.templates[key as TemplateKey]);
 
-  useReportDirty(isDirty, onDirtyChange);
+  useNotifyDirtyChange(isDirty, onDirtyChange);
 
   // 흐리게 막은 화면도 키보드로는 저장할 수 있어 inert로 초점 이동까지 막는다 (React 18 타입에 inert가 없다)
   useEffect(() => {

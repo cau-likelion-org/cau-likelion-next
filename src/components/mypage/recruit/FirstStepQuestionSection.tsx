@@ -8,7 +8,7 @@ import ListboxOptions from '@common/select/ListboxOptions';
 import InterviewTimeGrid from '@recruit/InterviewTimeGrid';
 import { IcLineHorizontal } from '@assets/svg';
 import useListboxSelect from 'src/hooks/useListboxSelect';
-import useReportDirty from 'src/hooks/useReportDirty';
+import useNotifyDirtyChange from 'src/hooks/useNotifyDirtyChange';
 import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import { REQUIRED_FIELD_MESSAGE } from '@utils/constant';
 import { BackgroundWhite, Black, Label, Line, Orange } from '@utils/constant/color';
@@ -50,7 +50,7 @@ const FirstStepQuestionSection = ({ initialValues, onSave, onDirtyChange }: Firs
   const [hasSaved, setHasSaved] = useState(initialValues.startDate !== '');
   const [isEditing, setIsEditing] = useState(!hasSaved);
   const [isUnitOpen, setIsUnitOpen] = useState(false);
-  useReportDirty(JSON.stringify(values) !== JSON.stringify(savedValues), onDirtyChange);
+  useNotifyDirtyChange(JSON.stringify(values) !== JSON.stringify(savedValues), onDirtyChange);
 
   const update = (patch: Partial<RecruitInterviewSetting>) => setValues((prev) => ({ ...prev, ...patch }));
 

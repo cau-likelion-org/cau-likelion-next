@@ -6,7 +6,7 @@ import ContentBadge from '@common/badge/ContentBadge';
 import DateTimeInput from '@common/dateTimeInput/DateTimeInput';
 import Switch from '@common/switch/Switch';
 import FaqCardList, { isFaqItemInvalid } from '@mypage/component/FaqCardList';
-import useReportDirty from 'src/hooks/useReportDirty';
+import useNotifyDirtyChange from 'src/hooks/useNotifyDirtyChange';
 import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import { REQUIRED_FIELD_MESSAGE } from '@utils/constant';
 import { BackgroundWhite, Black, Label, Line } from '@utils/constant/color';
@@ -63,7 +63,7 @@ const NoticeSettingSection = ({ initialValues, onSave, onDirtyChange }: NoticeSe
   const [isEditing, setIsEditing] = useState(!hasSaved);
   const isDirty = JSON.stringify(values) !== JSON.stringify(savedValues);
 
-  useReportDirty(isDirty, onDirtyChange);
+  useNotifyDirtyChange(isDirty, onDirtyChange);
   const today = toDateValue(new Date());
 
   const isFilled = isNoticeFilled(values);

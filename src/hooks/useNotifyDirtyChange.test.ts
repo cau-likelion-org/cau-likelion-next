@@ -2,14 +2,14 @@
 import { cleanup, renderHook } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import useReportDirty from './useReportDirty';
+import useNotifyDirtyChange from './useNotifyDirtyChange';
 
-describe('useReportDirty', () => {
+describe('useNotifyDirtyChange', () => {
   afterEach(cleanup);
 
   it('변경 여부가 바뀔 때마다 알린다', () => {
     const onDirtyChange = vi.fn();
-    const { rerender } = renderHook(({ isDirty }) => useReportDirty(isDirty, onDirtyChange), {
+    const { rerender } = renderHook(({ isDirty }) => useNotifyDirtyChange(isDirty, onDirtyChange), {
       initialProps: { isDirty: false },
     });
 
@@ -20,7 +20,7 @@ describe('useReportDirty', () => {
 
   it('화면이 사라지면 변경사항이 없는 것으로 알린다', () => {
     const onDirtyChange = vi.fn();
-    const { unmount } = renderHook(() => useReportDirty(true, onDirtyChange));
+    const { unmount } = renderHook(() => useNotifyDirtyChange(true, onDirtyChange));
 
     unmount();
 

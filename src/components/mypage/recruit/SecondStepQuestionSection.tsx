@@ -6,7 +6,7 @@ import Button from '@common/button/Button';
 import Category from '@common/category/Category';
 import { createId } from '@mypage/admin/utils';
 import { IcPlus } from '@assets/svg';
-import useReportDirty from 'src/hooks/useReportDirty';
+import useNotifyDirtyChange from 'src/hooks/useNotifyDirtyChange';
 import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import { Black, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -47,7 +47,7 @@ const SecondStepQuestionSection = ({ initialValues, onSave, onDirtyChange }: Sec
   const [isEditing, setIsEditing] = useState(!initialValues.isLocked);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [activePartId, setActivePartId] = useState(initialValues.parts[0]?.partId);
-  useReportDirty(JSON.stringify(values) !== JSON.stringify(savedValues ?? initialValues), onDirtyChange);
+  useNotifyDirtyChange(JSON.stringify(values) !== JSON.stringify(savedValues ?? initialValues), onDirtyChange);
 
   const readOnly = !isEditing || values.isLocked;
   const activePart = values.parts.find((part) => part.partId === activePartId);
