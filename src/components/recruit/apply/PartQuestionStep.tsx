@@ -14,6 +14,7 @@ import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import { RecruitQuestion } from '@mypage/recruit/mock';
 import { ApplyAnswersDraft } from '@utils/applyDraft';
 import { isUnfilled } from '@utils/index';
+import { media } from '@utils/constant/breakpoint';
 
 import ApplyFieldHeading from './ApplyFieldHeading';
 import ApplyFileField from './ApplyFileField';
@@ -286,6 +287,10 @@ const Root = styled.div`
   flex-direction: column;
   gap: 78px;
   width: 100%;
+
+  ${media.xs} {
+    gap: 52px;
+  }
 `;
 
 const Fields = styled.div`
@@ -293,6 +298,10 @@ const Fields = styled.div`
   flex-direction: column;
   gap: 48px;
   width: 100%;
+
+  ${media.xs} {
+    gap: 42px;
+  }
 `;
 
 // Figma의 링크 입력칸은 한 줄짜리 Textarea(높이 50px)로 그려져 있어 그대로 맞춘다
