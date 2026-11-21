@@ -305,7 +305,7 @@ const Wrapper = styled.div`
   padding: 80px 20px 68px;
 
   ${media.xs} {
-    padding-top: 40px;
+    padding-top: 44px;
   }
 `;
 
@@ -332,6 +332,10 @@ const Header = styled.div`
   flex-direction: column;
   gap: 42px;
   width: 100%;
+
+  ${media.xs} {
+    gap: 22px;
+  }
 `;
 
 const PageTitle = styled.h1`
@@ -339,6 +343,10 @@ const PageTitle = styled.h1`
   color: ${Orange.o500};
   text-align: center;
   ${typographyCss(Typography.display2.bold)}
+
+  ${media.xs} {
+    ${typographyCss(Typography.title2.bold)}
+  }
 `;
 
 // 단계 표시용이라 칩을 눌러 이동하지 않고, 선택된 칩은 주황색으로 표시한다
@@ -350,6 +358,23 @@ const StepCategory = styled(Category)`
   & > button[aria-selected='true'] {
     background-color: ${Orange.o500};
     font-weight: 600;
+  }
+
+  /* 칩 크기는 prop으로만 정해져, 모바일에서는 medium 크기 값을 직접 덮어쓴다 */
+  ${media.xs} {
+    gap: 6px;
+
+    & > button {
+      padding: 6px 8px;
+      border-radius: 8px;
+      font-size: 14px;
+      line-height: 1.429;
+      letter-spacing: 0.203px;
+    }
+
+    & > button[aria-selected='true'] {
+      font-weight: 500;
+    }
   }
 `;
 
@@ -370,6 +395,10 @@ const SectionTitle = styled.h2`
   margin: 0;
   color: ${Label.normal};
   ${typographyCss(Typography.title1.bold)}
+
+  ${media.xs} {
+    ${typographyCss(Typography.title2.bold)}
+  }
 `;
 
 const SectionDescription = styled.p`

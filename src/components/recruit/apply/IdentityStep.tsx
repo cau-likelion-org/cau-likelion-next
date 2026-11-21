@@ -17,6 +17,7 @@ import {
   isUnfilled,
 } from '@utils/index';
 import { Label } from '@utils/constant/color';
+import { media } from '@utils/constant/breakpoint';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 import { ApplicantProfile, ApplyClosedError, createApplicantAccount, requestVerificationCode } from './mock';
@@ -186,6 +187,10 @@ const Root = styled.div`
   align-items: flex-end;
   gap: 78px;
   width: 100%;
+
+  ${media.xs} {
+    gap: 52px;
+  }
 `;
 
 const Fields = styled.div`
@@ -193,6 +198,10 @@ const Fields = styled.div`
   flex-direction: column;
   gap: 48px;
   width: 100%;
+
+  ${media.xs} {
+    gap: 42px;
+  }
 `;
 
 const ApplyTextField = styled(TextField)`
@@ -205,6 +214,12 @@ const AgreementRow = styled.div`
   justify-content: space-between;
   gap: 12px;
   width: 100%;
+
+  ${media.xs} {
+    label {
+      ${typographyCss(Typography.label1Normal.regular)}
+    }
+  }
 `;
 
 const DetailButton = styled.button`
@@ -216,4 +231,8 @@ const DetailButton = styled.button`
   text-decoration: underline;
   cursor: pointer;
   ${typographyCss(Typography.body2Normal.regular)}
+
+  ${media.xs} {
+    ${typographyCss(Typography.caption1.medium)}
+  }
 `;
