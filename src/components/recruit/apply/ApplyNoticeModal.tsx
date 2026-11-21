@@ -2,6 +2,7 @@ import styled from 'styled-components';
 
 import Button from '@common/button/Button';
 import Modal, { ModalActions, ModalDescription, ModalInformation, ModalTitle } from '@common/modal/Modal';
+import { media } from '@utils/constant/breakpoint';
 
 export interface ApplyNoticeModalProps {
   title: string;
@@ -55,5 +56,9 @@ const Actions = styled(ModalActions)`
   && {
     gap: 12px;
     padding: 12px 28px 40px;
+
+    ${media.xs} {
+      padding-bottom: 28px;
+    }
   }
 `;

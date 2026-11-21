@@ -10,6 +10,7 @@ import { applyFieldHeadingCss } from '@recruit/apply/applyFieldStyle';
 import useCountdown, { formatCountdown } from 'src/hooks/useCountdown';
 import { isEmailFormatInvalid, isUnfilled } from '@utils/index';
 import { Label, Orange, State } from '@utils/constant/color';
+import { media } from '@utils/constant/breakpoint';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 export interface EmailVerificationFieldProps {
@@ -156,6 +157,10 @@ const Root = styled.div`
   flex-direction: column;
   gap: 8px;
   width: 100%;
+
+  ${media.xs} {
+    gap: 18px;
+  }
 `;
 
 const Row = styled.div`
@@ -163,6 +168,10 @@ const Row = styled.div`
   align-items: flex-start;
   gap: 12px;
   width: 100%;
+
+  ${media.xs} {
+    flex-direction: column;
+  }
 `;
 
 const EmailTextField = styled(TextField)`
@@ -174,14 +183,26 @@ const EmailTextField = styled(TextField)`
   }
 `;
 
+// 모바일에서는 입력칸 아래 전체 폭의 medium 크기 버튼
 const ActionButton = styled(Button)`
   flex-shrink: 0;
   width: 144px;
+
+  ${media.xs} {
+    width: 100%;
+    padding: 9px 20px;
+    border-radius: 10px;
+    ${typographyCss(Typography.body2Normal.bold)}
+  }
 `;
 
 // 오류 문구가 붙어도 버튼이 입력칸 옆에 머물도록, 제목 높이(22px × 1.364 + 간격 8px)만큼 내린다
 const SendCodeButton = styled(ActionButton)`
   margin-top: calc(22px * 1.364 + 8px);
+
+  ${media.xs} {
+    margin-top: 0;
+  }
 `;
 
 const Timer = styled.span`

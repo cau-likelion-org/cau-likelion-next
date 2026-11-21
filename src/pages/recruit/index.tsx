@@ -11,6 +11,7 @@ import RecruitHeroSection from '@recruit/RecruitHeroSection';
 import RecruitFAQSection from '@recruit/RecruitFAQSection';
 import { RECRUIT_MOCK } from '@recruit/mock';
 import MainPageHead from 'src/components/meta/MainPageHead';
+import { media } from '@utils/constant/breakpoint';
 
 const Recruit = () => {
   const router = useRouter();
@@ -43,6 +44,10 @@ const BottomAction = styled.div`
   justify-content: center;
   width: 100%;
   padding: 60px 20px 40px;
+
+  ${media.xs} {
+    padding: 22px 20px 171px;
+  }
 `;
 
 const ApplyButton = styled(Button)`

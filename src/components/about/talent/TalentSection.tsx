@@ -5,6 +5,7 @@ import { getTalents } from 'src/apis/talent';
 import LinearLoading from '@common/loading/LinearLoading';
 import EmptyState from '@common/emptyState/EmptyState';
 import { Black } from '@utils/constant/color';
+import { media } from '@utils/constant/breakpoint';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 import TalentListBlock from './component/TalentListBlock';
@@ -63,8 +64,8 @@ const Wrapper = styled.div`
     padding: 60px 60px 80px;
   }
 
-  @media (max-width: 700px) {
-    padding: 48px 20px 60px;
+  ${media.xs} {
+    padding: 60px 29px 80px;
   }
 `;
 
@@ -84,6 +85,10 @@ const SectionTitle = styled.p`
   word-break: keep-all;
   color: #ffffff;
   ${typographyCss(Typography.display2.bold)}
+
+  ${media.xs} {
+    ${typographyCss(Typography.title1.bold)}
+  }
 `;
 
 const Card = styled.div`
@@ -103,7 +108,7 @@ const PartRow = styled.div`
   gap: 20px;
   width: 100%;
 
-  @media (max-width: 700px) {
+  ${media.xs} {
     flex-direction: column;
   }
 `;
