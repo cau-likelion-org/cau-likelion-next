@@ -2,7 +2,7 @@ import { ReactNode } from 'react';
 import styled, { css } from 'styled-components';
 
 import Button from '@common/button/Button';
-import PageHeader from '@common/pageHeader/PageHeader';
+import RecruitPageHeader from '@recruit/RecruitPageHeader';
 import { media } from '@utils/constant/breakpoint';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
@@ -47,20 +47,18 @@ const Root = styled.div`
   max-width: 640px;
 `;
 
-const Header = styled(PageHeader)<{ $hasGraphic: boolean }>`
-  word-break: keep-all;
-
+const Header = styled(RecruitPageHeader)<{ $hasGraphic: boolean }>`
   ${media.xs} {
-    gap: ${(props) => (props.$hasGraphic ? 24 : 22)}px;
-    padding-top: ${(props) => (props.$hasGraphic ? 72 : 44)}px;
+    ${(props) =>
+      props.$hasGraphic &&
+      css`
+        gap: 24px;
+        padding-top: 72px;
 
-    p:first-child {
-      ${(props) => typographyCss(props.$hasGraphic ? Typography.display3.bold : Typography.title2.bold)}
-    }
-
-    p:last-child {
-      ${typographyCss(Typography.headline1.medium)}
-    }
+        p:first-child {
+          ${typographyCss(Typography.display3.bold)}
+        }
+      `}
   }
 `;
 

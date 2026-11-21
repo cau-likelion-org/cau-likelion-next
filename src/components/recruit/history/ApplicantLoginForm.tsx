@@ -7,17 +7,16 @@ import Alert from '@common/alert/Alert';
 import Button from '@common/button/Button';
 import TextButton from '@common/textButton/TextButton';
 import TextField from '@common/textField/TextField';
-import PageHeader from '@common/pageHeader/PageHeader';
 import Toast from '@common/toast/Toast';
 import { ToastWrapper } from '@common/toast/toastLayout';
 import ApplyNoticeModal from '@recruit/apply/ApplyNoticeModal';
+import RecruitPageHeader from '@recruit/RecruitPageHeader';
 import { applyFieldHeadingCss } from '@recruit/apply/applyFieldStyle';
 import { ApplicantLoginError, ApplicantNotFoundError, SubmittedHistory, loginApplicant } from '@recruit/apply/mock';
 import useApplicantSessionStore from 'src/store/useApplicantSessionStore';
 import { deriveDraftKey } from '@utils/applyDraft';
 import { isUnfilled } from '@utils/index';
 import { media } from '@utils/constant/breakpoint';
-import { Typography, typographyCss } from '@utils/constant/typography';
 
 export interface ApplicantLoginFormProps {
   title: string;
@@ -69,7 +68,7 @@ const ApplicantLoginForm = ({ title, isApplyOpen, onSubmittedHistory }: Applican
 
   return (
     <Root>
-      <Header
+      <RecruitPageHeader
         align="center"
         title={title}
         subtitle={
@@ -165,21 +164,6 @@ const Root = styled.div`
 
   ${media.xs} {
     gap: 52px;
-  }
-`;
-
-const Header = styled(PageHeader)`
-  ${media.xs} {
-    gap: 22px;
-    padding-top: 44px;
-
-    p:first-child {
-      ${typographyCss(Typography.title2.bold)}
-    }
-
-    p:last-child {
-      ${typographyCss(Typography.headline1.medium)}
-    }
   }
 `;
 
