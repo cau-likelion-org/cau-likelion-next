@@ -82,6 +82,7 @@ const InterviewTimeGrid = ({ className, schedule, selectedSlots = [], onToggleSl
   const dates = getDates(schedule.startDate, schedule.endDate);
   const times = getTimes(schedule.startTime, schedule.endTime, schedule.unitMinutes);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
   const [scrollThumb, setScrollThumb] = useState<ScrollThumb | null>(null);
   const hasGrid = dates.length > 0 && times.length > 0;
 
@@ -90,6 +91,8 @@ const InterviewTimeGrid = ({ className, schedule, selectedSlots = [], onToggleSl
     if (!scrollEl) return;
     const resizeObserver = new ResizeObserver(() => setScrollThumb(getScrollThumb(scrollEl)));
     resizeObserver.observe(scrollEl);
+    // 일정이 바뀌어 격자 폭만 달라져도 스크롤 칸 크기는 그대로라 격자도 함께 관찰한다
+    if (gridRef.current) resizeObserver.observe(gridRef.current);
     return () => resizeObserver.disconnect();
   }, [hasGrid]);
 
@@ -98,7 +101,7 @@ const InterviewTimeGrid = ({ className, schedule, selectedSlots = [], onToggleSl
   return (
     <Root className={className}>
       <GridScroll ref={scrollRef} onScroll={(event) => setScrollThumb(getScrollThumb(event.currentTarget))}>
-        <Grid $columns={dates.length}>
+        <Grid ref={gridRef} $columns={dates.length}>
           <HeaderCellBox />
           {dates.map(({ key, label }) => (
             <HeaderCellBox key={key}>{label}</HeaderCellBox>
