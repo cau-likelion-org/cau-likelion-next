@@ -2,6 +2,7 @@ import styled from 'styled-components';
 
 import PageHeader from '@common/pageHeader/PageHeader';
 import { Black, Orange } from '@utils/constant/color';
+import { media } from '@utils/constant/breakpoint';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import IllustBack from '@assets/svg/illustration/illust-about-hero-back.svg';
 import IllustBackMobile from '@assets/svg/illustration/illust-about-hero-back-mobile.svg';
@@ -12,7 +13,6 @@ import IllustRightSmall from '@assets/svg/illustration/illust-about-hero-right-s
 // 시안 기준 폭. 일러스트는 이 폭을 기준으로 한 절대 좌표를 그대로 사용한다
 const STAGE_WIDTH = 1440;
 const GROUND_HEIGHT = 22.05;
-const MOBILE = 700;
 
 const AboutHero = () => {
   return (
@@ -59,7 +59,7 @@ const Stage = styled.div`
   width: ${STAGE_WIDTH}px;
   height: 100%;
 
-  @media (max-width: ${MOBILE}px) {
+  ${media.xs} {
     display: none;
   }
 `;
@@ -76,7 +76,7 @@ const Header = styled(PageHeader)`
     color: ${Black.b900};
   }
 
-  @media (max-width: ${MOBILE}px) {
+  ${media.xs} {
     gap: 18px;
     padding-top: 43px;
     padding-bottom: 43px;
@@ -99,7 +99,7 @@ const Back = styled(IllustBack)`
 const BackMobile = styled(IllustBackMobile)`
   display: none;
 
-  @media (max-width: ${MOBILE}px) {
+  ${media.xs} {
     display: block;
     position: absolute;
     left: 50%;
