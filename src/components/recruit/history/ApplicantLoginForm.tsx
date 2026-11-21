@@ -16,6 +16,8 @@ import { ApplicantLoginError, ApplicantNotFoundError, SubmittedHistory, loginApp
 import useApplicantSessionStore from 'src/store/useApplicantSessionStore';
 import { deriveDraftKey } from '@utils/applyDraft';
 import { isUnfilled } from '@utils/index';
+import { media } from '@utils/constant/breakpoint';
+import { Typography, typographyCss } from '@utils/constant/typography';
 
 export interface ApplicantLoginFormProps {
   title: string;
@@ -67,7 +69,7 @@ const ApplicantLoginForm = ({ title, isApplyOpen, onSubmittedHistory }: Applican
 
   return (
     <Root>
-      <PageHeader
+      <Header
         align="center"
         title={title}
         subtitle={
@@ -160,6 +162,26 @@ const Root = styled.div`
   gap: 62px;
   width: 100%;
   max-width: 520px;
+
+  ${media.xs} {
+    gap: 52px;
+  }
+`;
+
+// 모바일 상단 여백 44px + 레이아웃 여백 8px(68px - 모바일 내비게이션 60px) = Figma 52px
+const Header = styled(PageHeader)`
+  ${media.xs} {
+    gap: 22px;
+    padding-top: 44px;
+
+    p:first-child {
+      ${typographyCss(Typography.title2.bold)}
+    }
+
+    p:last-child {
+      ${typographyCss(Typography.headline1.medium)}
+    }
+  }
 `;
 
 const Form = styled.form`
@@ -179,6 +201,11 @@ const Actions = styled.div`
   align-items: center;
   gap: 24px;
   width: 100%;
+
+  /* 모바일 Figma는 입력칸과 버튼 사이가 52px(폼 간격 42px + 10px) */
+  ${media.xs} {
+    margin-top: 10px;
+  }
 `;
 
 const LoginButton = styled(Button)`
