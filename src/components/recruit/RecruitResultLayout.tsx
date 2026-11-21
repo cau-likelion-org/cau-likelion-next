@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 import Button from '@common/button/Button';
 import PageHeader from '@common/pageHeader/PageHeader';
@@ -26,12 +26,14 @@ const RecruitResultLayout = ({
   children,
 }: RecruitResultLayoutProps) => (
   <Root>
-    <Header align="center" title={title} subtitle={subtitle} />
+    <Header align="center" title={title} subtitle={subtitle} $hasGraphic={!!graphic} />
     {graphic && <Graphic>{graphic}</Graphic>}
     <Content $actionGap={actionGap} $hasGraphic={!!graphic}>
       {children}
     </Content>
-    <Button onClick={onAction}>{actionLabel}</Button>
+    <ActionButton $hasGraphic={!!graphic} onClick={onAction}>
+      {actionLabel}
+    </ActionButton>
   </Root>
 );
 
@@ -45,15 +47,15 @@ const Root = styled.div`
   max-width: 640px;
 `;
 
-// 모바일 상단 여백 72px + 레이아웃 여백 8px(68px - 모바일 내비게이션 60px) = Figma 80px
-const Header = styled(PageHeader)`
+const Header = styled(PageHeader)<{ $hasGraphic: boolean }>`
   word-break: keep-all;
 
   ${media.xs} {
-    padding-top: 72px;
+    gap: ${(props) => (props.$hasGraphic ? 24 : 22)}px;
+    padding-top: ${(props) => (props.$hasGraphic ? 72 : 44)}px;
 
     p:first-child {
-      ${typographyCss(Typography.display3.bold)}
+      ${(props) => typographyCss(props.$hasGraphic ? Typography.display3.bold : Typography.title2.bold)}
     }
 
     p:last-child {
@@ -62,7 +64,6 @@ const Header = styled(PageHeader)`
   }
 `;
 
-// 모바일은 그래픽 칸과 그림을 웹의 0.7725배(240px → 185.391px)로 줄인다
 const Graphic = styled.div`
   display: flex;
   align-items: center;
@@ -91,6 +92,18 @@ const Content = styled.div<{ $actionGap: number; $hasGraphic: boolean }>`
   margin: ${(props) => (props.$hasGraphic ? 40 : 58)}px 0 ${(props) => props.$actionGap}px;
 
   ${media.xs} {
-    ${(props) => props.$hasGraphic && 'margin: 36px 0;'}
+    margin: ${(props) => (props.$hasGraphic ? 36 : 52)}px 0;
+  }
+`;
+
+const ActionButton = styled(Button)<{ $hasGraphic: boolean }>`
+  ${media.xs} {
+    ${(props) =>
+      !props.$hasGraphic &&
+      css`
+        padding: 9px 20px;
+        border-radius: 10px;
+        ${typographyCss(Typography.body2Normal.bold)}
+      `}
   }
 `;
