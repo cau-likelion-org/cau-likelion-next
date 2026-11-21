@@ -67,6 +67,7 @@ const RecruitApply = () => {
   // 1단계로 돌아가도 2단계 답변이 남아 있도록 한 번 들어간 2단계는 화면에서 숨기기만 한다
   const [hasVisitedPart, setHasVisitedPart] = useState(false);
   const [isPartDirty, setIsPartDirty] = useState(false);
+  const [isPrevConfirmOpen, setIsPrevConfirmOpen] = useState(false);
   // 파트를 바꾸면 2단계를 새로 그려 답변을 초기화한다
   const [partResetKey, setPartResetKey] = useState(0);
   const [submittedAt, setSubmittedAt] = useState<Date | null>(null);
@@ -119,7 +120,7 @@ const RecruitApply = () => {
       },
     [basicDraft, answersDraft, restoredAnswers],
   );
-  const { isConfirmOpen, requestLeave, confirmLeave, cancelLeave } = useLeaveGuard(
+  const { isConfirmOpen, confirmLeave, cancelLeave } = useLeaveGuard(
     !!currentDraft && !submittedAt && (currentDraft.hasFiles || !isEmptyApplyDraft(currentDraft)),
   );
 
@@ -225,7 +226,7 @@ const RecruitApply = () => {
               key={partResetKey}
               questions={PART_QUESTIONS_MOCK}
               initialAnswers={restoredAnswers ?? undefined}
-              onPrev={() => requestLeave(() => goToStep('basic'))}
+              onPrev={() => (isPartDirty ? setIsPrevConfirmOpen(true) : goToStep('basic'))}
               onDirtyChange={setIsPartDirty}
               onAnswersChange={changeAnswersDraft}
               onSubmitted={(date) => {
@@ -274,6 +275,17 @@ const RecruitApply = () => {
           body="작성한 내용은 저장되지 않을 수 있습니다."
           onCancel={cancelLeave}
           onConfirm={confirmLeave}
+        />
+      )}
+      {isPrevConfirmOpen && (
+        <LeaveConfirmAlert
+          heading="페이지를 나가시겠어요?"
+          body="작성한 내용은 저장되지 않을 수 있습니다."
+          onCancel={() => setIsPrevConfirmOpen(false)}
+          onConfirm={() => {
+            setIsPrevConfirmOpen(false);
+            goToStep('basic');
+          }}
         />
       )}
     </Wrapper>
