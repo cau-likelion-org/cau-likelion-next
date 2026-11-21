@@ -50,15 +50,20 @@ const Root = styled.div`
 const Header = styled(RecruitPageHeader)<{ $hasGraphic: boolean }>`
   ${media.xs} {
     ${(props) =>
-      props.$hasGraphic &&
-      css`
-        gap: 24px;
-        padding-top: 72px;
+      props.$hasGraphic
+        ? css`
+            gap: 24px;
+            padding-top: 72px;
 
-        p:first-child {
-          ${typographyCss(Typography.display3.bold)}
-        }
-      `}
+            p:first-child {
+              ${typographyCss(Typography.display3.bold)}
+            }
+          `
+        : css`
+            p:last-child {
+              max-width: 210px;
+            }
+          `}
   }
 `;
 
