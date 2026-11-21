@@ -2,7 +2,7 @@ import { ReactElement, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import styled from 'styled-components';
 
-import Alert from '@common/alert/Alert';
+import LeaveConfirmAlert from '@common/alert/LeaveConfirmAlert';
 import EmptyState from '@common/emptyState/EmptyState';
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import PageLoadingGate from '@common/pageGate/PageLoadingGate';
@@ -76,16 +76,7 @@ const MyPageRecruitResults = () => {
       <ToastWrapper>
         <Toast variant="positive" text={toastMessage} show={!!toastMessage} onHidden={() => setToastMessage('')} />
       </ToastWrapper>
-      {isConfirmOpen && (
-        <Alert
-          heading="저장하지 않고 나가면 작성한 내용이 사라집니다."
-          onDimmerClick={cancelLeave}
-          actions={[
-            { label: '취소', variant: 'assistive', onClick: cancelLeave },
-            { label: '나가기', variant: 'primary', onClick: confirmLeave },
-          ]}
-        />
-      )}
+      {isConfirmOpen && <LeaveConfirmAlert onCancel={cancelLeave} onConfirm={confirmLeave} />}
     </Root>
   );
 };

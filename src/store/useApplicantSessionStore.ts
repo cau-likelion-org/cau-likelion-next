@@ -10,14 +10,18 @@ export interface ApplicantSession {
 
 interface ApplicantSessionStore {
   session: ApplicantSession | null;
+  isDraftChosen: boolean;
   setSession: (session: ApplicantSession) => void;
+  chooseDraft: () => void;
   clearSession: () => void;
 }
 
 const useApplicantSessionStore = create<ApplicantSessionStore>((set) => ({
   session: null,
-  setSession: (session) => set({ session }),
-  clearSession: () => set({ session: null }),
+  isDraftChosen: false,
+  setSession: (session) => set({ session, isDraftChosen: false }),
+  chooseDraft: () => set({ isDraftChosen: true }),
+  clearSession: () => set({ session: null, isDraftChosen: false }),
 }));
 
 export default useApplicantSessionStore;

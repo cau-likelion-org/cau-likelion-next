@@ -257,7 +257,7 @@ const AssignmentCreateForm = ({
           onDimmerClick={cancelLeave}
           actions={[
             { label: '취소', variant: 'assistive', onClick: cancelLeave },
-            { label: '확인', variant: 'primary', onClick: confirmLeave },
+            { label: '나가기', variant: 'primary', onClick: confirmLeave },
           ]}
         />
       )}

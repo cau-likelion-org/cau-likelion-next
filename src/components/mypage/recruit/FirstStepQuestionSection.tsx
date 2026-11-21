@@ -8,6 +8,7 @@ import ListboxOptions from '@common/select/ListboxOptions';
 import InterviewTimeGrid from '@recruit/InterviewTimeGrid';
 import { IcLineHorizontal } from '@assets/svg';
 import useListboxSelect from 'src/hooks/useListboxSelect';
+import useReportDirty from 'src/hooks/useReportDirty';
 import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import { REQUIRED_FIELD_MESSAGE } from '@utils/constant';
 import { BackgroundWhite, Black, Label, Line, Orange } from '@utils/constant/color';
@@ -39,15 +40,17 @@ const UNIT_OPTIONS = [
 export interface FirstStepQuestionSectionProps {
   initialValues: RecruitInterviewSetting;
   onSave: (values: RecruitInterviewSetting, isUpdate: boolean) => void;
+  onDirtyChange?: (isDirty: boolean) => void;
 }
 
-const FirstStepQuestionSection = ({ initialValues, onSave }: FirstStepQuestionSectionProps) => {
+const FirstStepQuestionSection = ({ initialValues, onSave, onDirtyChange }: FirstStepQuestionSectionProps) => {
   const [values, setValues] = useState(initialValues);
   const [savedValues, setSavedValues] = useState(initialValues);
   // 저장된 값이 있으면 읽기 전용으로 시작하고, [수정]을 눌러야 편집할 수 있다
   const [hasSaved, setHasSaved] = useState(initialValues.startDate !== '');
   const [isEditing, setIsEditing] = useState(!hasSaved);
   const [isUnitOpen, setIsUnitOpen] = useState(false);
+  useReportDirty(JSON.stringify(values) !== JSON.stringify(savedValues), onDirtyChange);
 
   const update = (patch: Partial<RecruitInterviewSetting>) => setValues((prev) => ({ ...prev, ...patch }));
 

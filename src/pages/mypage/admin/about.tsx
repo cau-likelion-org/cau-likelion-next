@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import styled from 'styled-components';
 
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
+import LeaveConfirmAlert from '@common/alert/LeaveConfirmAlert';
 import Button from '@common/button/Button';
 import Toast from '@common/toast/Toast';
 import { ToastWrapper } from '@common/toast/toastLayout';
@@ -20,6 +21,7 @@ import CurriculumSection, {
 import RoadmapSection from '@mypage/admin/about/RoadmapSection';
 import EditButton from '@mypage/admin/component/EditButton';
 import { syncListSection } from '@mypage/admin/utils';
+import useLeaveGuard from 'src/hooks/useLeaveGuard';
 import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import { getTracks, TrackResponse } from 'src/apis/track';
 import { getTalents, createTalent, updateTalent, deleteTalent, TalentResponse } from 'src/apis/talent';
@@ -180,12 +182,20 @@ const MyPageAdminAbout = () => {
     );
   }
 
+  const getSavedItems = () => ({
+    talentItems: (talents ?? []).map(talentToLocal),
+    curriculumTracks: buildCurriculumTracks(tracks ?? [], curriculums ?? []),
+    roadmapFile: roadmap ? { url: roadmap.imageUrl, name: getFileNameFromUrl(roadmap.imageUrl) } : DEFAULT_ROADMAP_FILE,
+  });
+  const { isConfirmOpen, confirmLeave, cancelLeave } = useLeaveGuard(
+    isEditing && JSON.stringify({ talentItems, curriculumTracks, roadmapFile }) !== JSON.stringify(getSavedItems()),
+  );
+
   const handleCancel = () => {
-    setTalentItems((talents ?? []).map(talentToLocal));
-    setCurriculumTracks(buildCurriculumTracks(tracks ?? [], curriculums ?? []));
-    setRoadmapFile(
-      roadmap ? { url: roadmap.imageUrl, name: getFileNameFromUrl(roadmap.imageUrl) } : DEFAULT_ROADMAP_FILE,
-    );
+    const saved = getSavedItems();
+    setTalentItems(saved.talentItems);
+    setCurriculumTracks(saved.curriculumTracks);
+    setRoadmapFile(saved.roadmapFile);
     hideErrors();
     setIsEditing(false);
   };
@@ -314,6 +324,7 @@ const MyPageAdminAbout = () => {
           )}
         </>
       )}
+      {isConfirmOpen && <LeaveConfirmAlert onCancel={cancelLeave} onConfirm={confirmLeave} />}
       <ToastWrapper>
         <Toast variant={toastVariant} text={toastMessage} show={!!toastMessage} onHidden={() => setToastMessage('')} />
       </ToastWrapper>

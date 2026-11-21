@@ -1,9 +1,9 @@
-import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
+import { ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useQuery } from '@tanstack/react-query';
 import styled from 'styled-components';
 
-import Alert from '@common/alert/Alert';
+import LeaveConfirmAlert from '@common/alert/LeaveConfirmAlert';
 import Category from '@common/category/Category';
 import Divider from '@common/divider/Divider';
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
@@ -20,6 +20,7 @@ import useLeaveGuard from 'src/hooks/useLeaveGuard';
 import useApplicantSessionStore from 'src/store/useApplicantSessionStore';
 import {
   ApplyAnswersDraft,
+  ApplyDraft,
   ApplyBasicDraft,
   clearApplyDraft,
   deriveDraftKey,
@@ -69,9 +70,6 @@ const RecruitApply = () => {
   // 파트를 바꾸면 2단계를 새로 그려 답변을 초기화한다
   const [partResetKey, setPartResetKey] = useState(0);
   const [submittedAt, setSubmittedAt] = useState<Date | null>(null);
-  const { isConfirmOpen, requestLeave, confirmLeave, cancelLeave } = useLeaveGuard(
-    step === 'part' && isPartDirty && !submittedAt,
-  );
 
   const draftQuery = useQuery({
     queryKey: ['applyDraft', session?.profile.email],
@@ -82,9 +80,20 @@ const RecruitApply = () => {
     staleTime: Infinity,
     gcTime: 0,
   });
-  const [draftChoice, setDraftChoice] = useState<'load' | 'new' | null>(null);
+  const isDraftChosen = useApplicantSessionStore((state) => state.isDraftChosen);
+  const chooseDraft = useApplicantSessionStore((state) => state.chooseDraft);
+  // 같은 로그인 중에 사이트 안에서 다녀오면 묻지 않고 이어서 보여준다
+  const [draftChoice, setDraftChoice] = useState<'load' | 'new' | null>(isDraftChosen ? 'load' : null);
   const isDraftChoicePending = !!draftQuery.data && !draftChoice;
   const restoredDraft = draftChoice === 'load' ? draftQuery.data : null;
+  const selectDraft = (choice: 'load' | 'new') => {
+    chooseDraft();
+    setDraftChoice(choice);
+  };
+
+  useEffect(() => {
+    if (draftQuery.isSuccess && !draftQuery.data) chooseDraft();
+  }, [draftQuery.isSuccess, draftQuery.data, chooseDraft]);
 
   const [syncedDraft, setSyncedDraft] = useState(restoredDraft);
   if (restoredDraft !== syncedDraft) {
@@ -99,6 +108,19 @@ const RecruitApply = () => {
   const changeAnswersDraft = useCallback(
     (answers: ApplyAnswersDraft, hasFiles: boolean) => setAnswersDraft({ answers, hasFiles }),
     [],
+  );
+
+  const currentDraft = useMemo<ApplyDraft | null>(
+    () =>
+      basicDraft && {
+        basic: basicDraft.values,
+        answers: answersDraft?.answers ?? restoredAnswers ?? { texts: {}, choices: {} },
+        hasFiles: basicDraft.hasPortalImage || !!answersDraft?.hasFiles,
+      },
+    [basicDraft, answersDraft, restoredAnswers],
+  );
+  const { isConfirmOpen, requestLeave, confirmLeave, cancelLeave } = useLeaveGuard(
+    !!currentDraft && !submittedAt && (currentDraft.hasFiles || !isEmptyApplyDraft(currentDraft)),
   );
 
   // 저장은 차례대로 이어 붙여, 제출할 때 진행 중인 저장이 끝난 뒤 지울 수 있게 한다
@@ -120,18 +142,13 @@ const RecruitApply = () => {
   }, []);
 
   useEffect(() => {
-    if (!session || !basicDraft || submittedAt || isDraftChoicePending) return;
-    const draft = {
-      basic: basicDraft.values,
-      answers: answersDraft?.answers ?? restoredAnswers ?? { texts: {}, choices: {} },
-      hasFiles: basicDraft.hasPortalImage || !!answersDraft?.hasFiles,
-    };
-    pendingSaveRef.current = isEmptyApplyDraft(draft)
+    if (!session || !currentDraft || submittedAt || isDraftChoicePending) return;
+    pendingSaveRef.current = isEmptyApplyDraft(currentDraft)
       ? () => clearApplyDraft(session.profile.email).then(() => true)
-      : () => saveApplyDraft(session.profile.email, session.draftKey, draft, MOCK_APPLY_END_AT);
+      : () => saveApplyDraft(session.profile.email, session.draftKey, currentDraft, MOCK_APPLY_END_AT);
     const timer = setTimeout(runPendingSave, DRAFT_SAVE_DELAY_MS);
     return () => clearTimeout(timer);
-  }, [session, basicDraft, answersDraft, restoredAnswers, submittedAt, isDraftChoicePending, runPendingSave]);
+  }, [session, currentDraft, submittedAt, isDraftChoicePending, runPendingSave]);
 
   // 입력 직후 다른 페이지로 이동해도 예약된 저장을 버리지 않는다
   useEffect(() => () => runPendingSave(), [runPendingSave]);
@@ -245,21 +262,18 @@ const RecruitApply = () => {
           confirmLabel="불러오기"
           onCancel={async () => {
             await clearApplyDraft(session.profile.email);
-            setDraftChoice('new');
+            selectDraft('new');
           }}
-          onConfirm={() => setDraftChoice('load')}
+          onConfirm={() => selectDraft('load')}
           onClose={() => {}}
         />
       )}
       {isConfirmOpen && (
-        <Alert
+        <LeaveConfirmAlert
           heading="페이지를 나가시겠어요?"
-          body="작성 중인 내용은 현재 브라우저에만 임시 저장되며, 모집 마감 후 삭제됩니다."
-          onDimmerClick={cancelLeave}
-          actions={[
-            { label: '취소', variant: 'assistive', onClick: cancelLeave },
-            { label: '나가기', variant: 'primary', onClick: confirmLeave },
-          ]}
+          body="작성한 내용은 저장되지 않을 수 있습니다."
+          onCancel={cancelLeave}
+          onConfirm={confirmLeave}
         />
       )}
     </Wrapper>
