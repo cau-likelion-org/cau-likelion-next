@@ -1,7 +1,9 @@
+import { useEffect, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
 
 import { toDateString } from '@utils/index';
-import { Black, Label, Orange } from '@utils/constant/color';
+import { BackgroundWhite, Black, Label, Orange } from '@utils/constant/color';
+import { media } from '@utils/constant/breakpoint';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 export interface InterviewSchedule {
@@ -64,51 +66,119 @@ export interface InterviewTimeGridProps {
   onToggleSlot?: (slot: string) => void;
 }
 
+interface ScrollThumb {
+  widthPercent: number;
+  leftPercent: number;
+}
+
+const getScrollThumb = ({ scrollLeft, scrollWidth, clientWidth }: HTMLElement): ScrollThumb | null => {
+  if (scrollWidth <= clientWidth) return null;
+  const widthPercent = (clientWidth / scrollWidth) * 100;
+  const progress = scrollLeft / (scrollWidth - clientWidth);
+  return { widthPercent, leftPercent: progress * (100 - widthPercent) };
+};
+
 const InterviewTimeGrid = ({ className, schedule, selectedSlots = [], onToggleSlot }: InterviewTimeGridProps) => {
   const dates = getDates(schedule.startDate, schedule.endDate);
   const times = getTimes(schedule.startTime, schedule.endTime, schedule.unitMinutes);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [scrollThumb, setScrollThumb] = useState<ScrollThumb | null>(null);
+  const hasGrid = dates.length > 0 && times.length > 0;
 
-  if (dates.length === 0 || times.length === 0) return null;
+  useEffect(() => {
+    const scrollEl = scrollRef.current;
+    if (!scrollEl) return;
+    const resizeObserver = new ResizeObserver(() => setScrollThumb(getScrollThumb(scrollEl)));
+    resizeObserver.observe(scrollEl);
+    return () => resizeObserver.disconnect();
+  }, [hasGrid]);
+
+  if (!hasGrid) return null;
 
   return (
-    <GridScroll className={className}>
-      <Grid $columns={dates.length}>
-        <HeaderCellBox />
-        {dates.map(({ key, label }) => (
-          <HeaderCellBox key={key}>{label}</HeaderCellBox>
-        ))}
-        {times.map((time) => (
-          <GridRow key={time}>
-            <TimeCellBox>{time}</TimeCellBox>
-            {dates.map(({ key, label }) => {
-              if (!onToggleSlot) return <SlotCellBox key={key} />;
-              const slot = toSlotKey(key, time);
-              const isSelected = selectedSlots.includes(slot);
-              return (
-                <SlotButton
-                  key={key}
-                  type="button"
-                  aria-label={`${label} ${time}`}
-                  aria-pressed={isSelected}
-                  $selected={isSelected}
-                  onClick={() => onToggleSlot(slot)}
-                >
-                  {isSelected && '선택'}
-                </SlotButton>
-              );
-            })}
-          </GridRow>
-        ))}
-      </Grid>
-    </GridScroll>
+    <Root className={className}>
+      <GridScroll ref={scrollRef} onScroll={(event) => setScrollThumb(getScrollThumb(event.currentTarget))}>
+        <Grid $columns={dates.length}>
+          <HeaderCellBox />
+          {dates.map(({ key, label }) => (
+            <HeaderCellBox key={key}>{label}</HeaderCellBox>
+          ))}
+          {times.map((time) => (
+            <GridRow key={time}>
+              <TimeCellBox>{time}</TimeCellBox>
+              {dates.map(({ key, label }) => {
+                if (!onToggleSlot) return <SlotCellBox key={key} />;
+                const slot = toSlotKey(key, time);
+                const isSelected = selectedSlots.includes(slot);
+                return (
+                  <SlotButton
+                    key={key}
+                    type="button"
+                    aria-label={`${label} ${time}`}
+                    aria-pressed={isSelected}
+                    $selected={isSelected}
+                    onClick={() => onToggleSlot(slot)}
+                  >
+                    <SlotLabel $selected={isSelected}>선택</SlotLabel>
+                  </SlotButton>
+                );
+              })}
+            </GridRow>
+          ))}
+        </Grid>
+      </GridScroll>
+      {scrollThumb && (
+        <ScrollTrack aria-hidden>
+          <ScrollThumbBar style={{ width: `${scrollThumb.widthPercent}%`, left: `${scrollThumb.leftPercent}%` }} />
+        </ScrollTrack>
+      )}
+    </Root>
   );
 };
 
 export default InterviewTimeGrid;
 
+const Root = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 100%;
+`;
+
+// 모바일은 격자를 넘기는 위치를 주황 막대로 보여주므로 기본 스크롤바를 숨긴다
 const GridScroll = styled.div`
   max-width: 100%;
   overflow-x: auto;
+
+  ${media.xs} {
+    border-radius: 18px;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+`;
+
+const ScrollTrack = styled.div`
+  display: none;
+
+  ${media.xs} {
+    display: block;
+    position: relative;
+    height: 8px;
+    border-radius: 100px;
+    overflow: hidden;
+    background-color: ${BackgroundWhite.tertiary};
+  }
+`;
+
+const ScrollThumbBar = styled.div`
+  position: absolute;
+  top: 0;
+  height: 100%;
+  border-radius: 100px;
+  background-color: ${Orange.o500};
 `;
 
 const Grid = styled.div<{ $columns: number }>`
@@ -133,14 +203,23 @@ const cellCss = css`
   ${typographyCss(Typography.label1Normal.bold)}
 `;
 
+// 모바일 Figma는 머리글·시간 칸을 회색으로 칠한다
 const HeaderCellBox = styled.div`
   ${cellCss}
   background-color: ${Orange.o100};
+
+  ${media.xs} {
+    background-color: ${Black.b30};
+  }
 `;
 
 const TimeCellBox = styled.div`
   ${cellCss}
   background-color: ${Orange.o50};
+
+  ${media.xs} {
+    background-color: ${Black.b30};
+  }
 `;
 
 const SlotCellBox = styled.div`
@@ -156,4 +235,19 @@ const SlotButton = styled.button<{ $selected: boolean }>`
   background-color: ${(props) => (props.$selected ? Orange.o500 : Black.b10)};
   color: ${Black.b0};
   ${typographyCss(Typography.body2Normal.bold)}
+
+  ${media.xs} {
+    background-color: ${(props) => (props.$selected ? Orange.o100 : Black.b10)};
+  }
+`;
+
+// 웹은 선택한 칸에만 글자를 보이고, 모바일은 빈 칸에도 흐린 '선택'을 보인다
+const SlotLabel = styled.span<{ $selected: boolean }>`
+  visibility: ${(props) => (props.$selected ? 'visible' : 'hidden')};
+
+  ${media.xs} {
+    visibility: visible;
+    color: ${(props) => (props.$selected ? Orange.o500 : Label.assistive)};
+    ${(props) => typographyCss(props.$selected ? Typography.label1Normal.bold : Typography.label1Normal.regular)}
+  }
 `;
