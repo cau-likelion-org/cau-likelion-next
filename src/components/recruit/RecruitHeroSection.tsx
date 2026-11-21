@@ -160,7 +160,6 @@ const StatusBadge = styled(ContentBadge)`
       ? `border: none; box-shadow: inset 0 0 0 1px ${AccentTint.border};`
       : `background-color: ${props.color === 'accent' ? Orange.o75 : Line.alternative};`}
 
-  /* 배지 크기는 prop으로만 정해져, 모바일에서는 small 크기 값을 직접 덮어쓴다 */
   ${media.xs} {
     padding: 4px 6px;
     border-radius: 6px;

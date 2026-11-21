@@ -361,7 +361,6 @@ const StepCategory = styled(Category)`
     font-weight: 600;
   }
 
-  /* 칩 크기는 prop으로만 정해져, 모바일에서는 medium 크기 값을 직접 덮어쓴다 */
   ${media.xs} {
     gap: 6px;
 

@@ -168,7 +168,6 @@ const Root = styled.div`
   }
 `;
 
-// 모바일 상단 여백 44px + 레이아웃 여백 8px(68px - 모바일 내비게이션 60px) = Figma 52px
 const Header = styled(PageHeader)`
   ${media.xs} {
     gap: 22px;
@@ -202,7 +201,6 @@ const Actions = styled.div`
   gap: 24px;
   width: 100%;
 
-  /* 모바일 Figma는 입력칸과 버튼 사이가 52px(폼 간격 42px + 10px) */
   ${media.xs} {
     margin-top: 10px;
   }

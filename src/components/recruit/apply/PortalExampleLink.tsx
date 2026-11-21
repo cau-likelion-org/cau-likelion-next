@@ -11,7 +11,6 @@ import { Typography, typographyCss } from '@utils/constant/typography';
 
 const GUIDE = '정보가 잘 보이게 캡쳐해주세요.';
 
-// 모바일은 입력칸 옆에 말풍선을 띄울 자리가 없어 모달로 보여준다
 type ExampleView = 'popover' | 'modal';
 
 const PortalExampleLink = () => {
