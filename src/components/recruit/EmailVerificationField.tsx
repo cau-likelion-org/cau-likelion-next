@@ -183,7 +183,6 @@ const EmailTextField = styled(TextField)`
   }
 `;
 
-// 모바일에서는 입력칸 아래 전체 폭의 medium 크기 버튼
 const ActionButton = styled(Button)`
   flex-shrink: 0;
   width: 144px;

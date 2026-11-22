@@ -7,15 +7,16 @@ import Alert from '@common/alert/Alert';
 import Button from '@common/button/Button';
 import TextButton from '@common/textButton/TextButton';
 import TextField from '@common/textField/TextField';
-import PageHeader from '@common/pageHeader/PageHeader';
 import Toast from '@common/toast/Toast';
 import { ToastWrapper } from '@common/toast/toastLayout';
 import ApplyNoticeModal from '@recruit/apply/ApplyNoticeModal';
+import RecruitPageHeader from '@recruit/RecruitPageHeader';
 import { applyFieldHeadingCss } from '@recruit/apply/applyFieldStyle';
 import { ApplicantLoginError, ApplicantNotFoundError, SubmittedHistory, loginApplicant } from '@recruit/apply/mock';
 import useApplicantSessionStore from 'src/store/useApplicantSessionStore';
 import { deriveDraftKey } from '@utils/applyDraft';
 import { isUnfilled } from '@utils/index';
+import { media } from '@utils/constant/breakpoint';
 
 export interface ApplicantLoginFormProps {
   title: string;
@@ -67,7 +68,7 @@ const ApplicantLoginForm = ({ title, isApplyOpen, onSubmittedHistory }: Applican
 
   return (
     <Root>
-      <PageHeader
+      <RecruitPageHeader
         align="center"
         title={title}
         subtitle={
@@ -160,6 +161,10 @@ const Root = styled.div`
   gap: 62px;
   width: 100%;
   max-width: 520px;
+
+  ${media.xs} {
+    gap: 52px;
+  }
 `;
 
 const Form = styled.form`
@@ -179,6 +184,10 @@ const Actions = styled.div`
   align-items: center;
   gap: 24px;
   width: 100%;
+
+  ${media.xs} {
+    margin-top: 10px;
+  }
 `;
 
 const LoginButton = styled(Button)`

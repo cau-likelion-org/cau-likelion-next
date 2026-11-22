@@ -7,7 +7,6 @@ import { Typography, typographyCss } from '@utils/constant/typography';
 
 const TITLE = '제출 후에는 수정 및 재제출이 불가합니다.\n제출하시겠습니까?';
 const LATE_TITLE = '마감 기한이 초과되어\n평가 시 불이익이 발생할 수 있습니다.\n제출하시겠습니까?';
-// 모바일은 모달 폭이 좁아 Figma에서 줄을 다르게 나눈다
 const MOBILE_TITLE = '제출 후에는\n수정 및 재제출이 불가합니다.\n제출하시겠습니까?';
 const MOBILE_LATE_TITLE = '마감 기한이 초과되어 평가 시\n불이익이 발생할 수 있습니다.\n제출하시겠습니까?';
 
@@ -41,7 +40,6 @@ const ApplySubmitModal = ({ isLate, loading, onCancel, onConfirm }: ApplySubmitM
 
 export default ApplySubmitModal;
 
-// 모바일 Figma는 이 모달을 medium 규격(모서리 16px, 여백 28px, 제목 Heading 2)으로 그린다
 const SubmitModal = styled(Modal)`
   ${media.xs} {
     && {
