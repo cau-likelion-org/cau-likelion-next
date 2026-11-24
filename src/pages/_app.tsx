@@ -1,6 +1,5 @@
 import '@styles/global.css';
 import 'pretendard/dist/web/static/pretendard-subset.css';
-import 'swiper/css';
 import Head from 'next/head';
 import { QueryCache, QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
 import axios from 'axios';
