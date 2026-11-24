@@ -1,6 +1,7 @@
 import { ChangeEvent, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import styled from 'styled-components';
 
 import Alert from '@common/alert/Alert';
 import LeaveConfirmAlert from '@common/alert/LeaveConfirmAlert';
@@ -8,6 +9,7 @@ import BackHeader from '@common/header/BackHeader';
 import Button from '@common/button/Button';
 import CharCount from '@common/charCount/CharCount';
 import TextField from '@common/textField/TextField';
+import Textarea from '@common/textarea/Textarea';
 import Toast from '@common/toast/Toast';
 import { ToastWrapper } from '@common/toast/toastLayout';
 import ProjectFilterSelect from '@project/projects/ProjectFilterSelect';
@@ -33,49 +35,18 @@ import {
 } from 'src/apis/project';
 import useImageSlots from 'src/hooks/useImageSlots';
 import useTokenStore from 'src/store/useTokenStore';
-import { IcCircleClose } from '@assets/svg';
+import { IcCircleClose, IcLineHorizontal } from '@assets/svg';
 import useInput from 'src/hooks/useInput';
 import useLeaveGuard from 'src/hooks/useLeaveGuard';
 import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import { NUMERIC_ONLY_REGEX, PROJECT_CATEGORY_OPTIONS } from '@utils/constant';
+import { AccentTint, BackgroundColor, Black, Fill, Label, Line, Orange, State } from '@utils/constant/color';
 import { isUnfilled } from '@utils/index';
 import { resizeImageFile } from '@utils/resizeImage';
+import { Typography, typographyCss } from '@utils/constant/typography';
+import { containerCss } from '@utils/constant/breakpoint';
 import ExtraPartFields, { ExtraPart } from './ExtraPartFields';
 import LinkFields, { LINK_TYPE_OPTIONS, LinkRow } from './LinkFields';
-import {
-  ActionArea,
-  ActionDescription,
-  ContentTextarea,
-  DateDescription,
-  DateFieldGroup,
-  DateRangeDivider,
-  DateRangeRow,
-  EditActionGroup,
-  FeaturedChip,
-  FieldGroup,
-  FieldHeading,
-  FieldHeadingSmall,
-  FormContent,
-  HiddenFileInput,
-  ImageUploadGroup,
-  LinkHeading,
-  MainThumbnail,
-  MainThumbnailImage,
-  NarrowField,
-  PageTitle,
-  RemoveThumbnailButton,
-  Required,
-  RequiredSmall,
-  Row,
-  TeamColumn,
-  TeamRow,
-  ThumbnailImage,
-  ThumbnailRow,
-  ThumbnailSlot,
-  TitleTextarea,
-  UploadGuide,
-  Wrapper,
-} from './ProjectUploadForm.styles';
 import SingleDateInput from './SingleDateInput';
 
 const MAX_IMAGE_COUNT = 4;
@@ -714,3 +685,274 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
 };
 
 export default ProjectUploadForm;
+
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  ${containerCss}
+  padding-bottom: 80px;
+`;
+
+const PageTitle = styled.h2`
+  margin: 0 0 42px;
+  color: ${Black.b900};
+  ${typographyCss(Typography.display3.bold)}
+`;
+
+const FormContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 46px;
+  width: 100%;
+`;
+
+const ImageUploadGroup = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 46px;
+`;
+
+const MainThumbnail = styled.label<{ $hasImage: boolean }>`
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 22px;
+  background-color: ${(props) => (props.$hasImage ? '#f5f7f9' : '#f4f4f5')};
+  cursor: pointer;
+`;
+
+const MainThumbnailImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+`;
+
+const UploadGuide = styled.p`
+  ${typographyCss(Typography.body2Normal.regular)}
+  color: ${Orange.o500};
+  text-align: center;
+  margin: 0;
+`;
+
+const FeaturedChip = styled.span`
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  background-color: ${Orange.o50};
+  box-shadow:
+    inset 0 0 0 9999px rgba(255, 96, 0, 0.05),
+    inset 0 0 0 1px ${AccentTint.border};
+  color: ${Orange.o500};
+  ${typographyCss(Typography.body2Normal.medium)}
+`;
+
+const ThumbnailRow = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+`;
+
+const ThumbnailSlot = styled.label<{ $active?: boolean; $dragging?: boolean; $dropTarget?: boolean }>`
+  position: relative;
+  flex-shrink: 0;
+  width: 160px;
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: ${(props) => (props.$active ? `2px solid ${Orange.o500}` : 'none')};
+  border-radius: 8px;
+  background-color: ${Fill.subtle};
+  color: ${Line.normal};
+  cursor: pointer;
+  padding: 0;
+  opacity: ${(props) => (props.$dragging ? 0.4 : 1)};
+  outline: ${(props) => (props.$dropTarget ? `2px dashed ${Orange.o500}` : 'none')};
+  outline-offset: 2px;
+`;
+
+const RemoveThumbnailButton = styled.button`
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background-color: ${BackgroundColor};
+  color: ${Orange.o500};
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+
+  ${ThumbnailSlot}:hover &,
+  ${ThumbnailSlot}:focus-within & {
+    opacity: 1;
+    pointer-events: auto;
+  }
+`;
+
+const ThumbnailImage = styled.img`
+  width: 100%;
+  height: 100%;
+  border-radius: 6px;
+  object-fit: cover;
+`;
+
+const HiddenFileInput = styled.input`
+  display: none;
+`;
+
+const FieldGroup = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+`;
+
+const FieldHeading = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  ${typographyCss(Typography.title3.bold)}
+  color: ${Label.neutral};
+`;
+
+const FieldHeadingSmall = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  ${typographyCss(Typography.label1Normal.bold)}
+  color: ${Label.neutral};
+`;
+
+const Required = styled.span`
+  color: ${State.error};
+  ${typographyCss(Typography.title3.bold)}
+`;
+
+const RequiredSmall = styled.span`
+  color: ${State.error};
+  ${typographyCss(Typography.label1Normal.medium)}
+`;
+
+const TitleTextarea = styled(Textarea)`
+  textarea {
+    min-height: 26px;
+  }
+`;
+
+const ContentTextarea = styled(Textarea)`
+  textarea {
+    min-height: 172px;
+  }
+`;
+
+const Row = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+`;
+
+const NarrowField = styled.div`
+  flex-shrink: 0;
+  width: 160px;
+`;
+
+const TeamRow = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+`;
+
+const TeamColumn = styled.div`
+  flex: 1 0 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 24px;
+`;
+
+const DateFieldGroup = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+`;
+
+const DateRangeRow = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+`;
+
+const DateDescription = styled.p`
+  margin: 0;
+  width: 100%;
+  color: ${State.error};
+  ${typographyCss(Typography.caption1.regular)}
+`;
+
+const DateRangeDivider = styled(IcLineHorizontal)`
+  flex-shrink: 0;
+  color: ${Label.assistive};
+`;
+
+const LinkHeading = styled.p`
+  margin: 0;
+  color: ${Label.neutral};
+  ${typographyCss(Typography.title3.bold)}
+`;
+
+const ActionArea = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 16px;
+  width: 375px;
+  max-width: 100%;
+  margin: 0 auto;
+
+  button {
+    width: 100%;
+  }
+`;
+
+const EditActionGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 20px;
+  width: 100%;
+`;
+
+const ActionDescription = styled.p`
+  margin: 0;
+  text-align: center;
+  color: ${Label.alternative};
+  ${typographyCss(Typography.label2.regular)}
+`;
