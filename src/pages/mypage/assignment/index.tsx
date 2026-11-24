@@ -34,6 +34,7 @@ import { Fill, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { media } from '@utils/constant/breakpoint';
 import useUserProfile from 'src/apis/useUserProfile';
+import useSessionFlash from 'src/hooks/useSessionFlash';
 
 const groupByDeadline = (assignments: AssignmentSummary[]) => {
   const buckets = new Map<string, AssignmentSummary[]>();
@@ -72,20 +73,12 @@ const MyPageAssignment = () => {
 
   // 과제 생성/제출 완료 후 넘어오면 토스트 표시
   const [toastMessage, setToastMessage] = useState('');
-  useEffect(() => {
-    const createdWeek = sessionStorage.getItem('assignmentCreatedWeek');
-    const submitted = sessionStorage.getItem('assignmentSubmitted');
-    if (!createdWeek && !submitted) return;
-    sessionStorage.removeItem('assignmentCreatedWeek');
-    sessionStorage.removeItem('assignmentSubmitted');
-    const message = createdWeek
-      ? `${createdWeek}주차 과제가 생성되었습니다.`
-      : submitted === 'edited'
-        ? '수정이 완료되었습니다.'
-        : '제출이 완료되었습니다.';
-    const frame = requestAnimationFrame(() => setToastMessage(message));
-    return () => cancelAnimationFrame(frame);
-  }, []);
+  useSessionFlash('assignmentSubmitted', (submitted) =>
+    setToastMessage(submitted === 'edited' ? '수정이 완료되었습니다.' : '제출이 완료되었습니다.'),
+  );
+  useSessionFlash('assignmentCreatedWeek', (createdWeek) =>
+    setToastMessage(`${createdWeek}주차 과제가 생성되었습니다.`),
+  );
 
   const isStaffOrAdmin = !!userProfile && isAdminRole(userProfile.role); // STAFF/PRESIDENT/ADMIN
   const isPresident = !!userProfile && isFullAdminRole(userProfile.role); // 회장/관리자 — 파트별 조회
