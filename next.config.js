@@ -135,6 +135,7 @@ const nextConfig = {
     config.module.rules.push({
       test: /\.svg$/i,
       issuer: /\.[jt]sx?$/,
+      sideEffects: false,
       use: [
         {
           loader: '@svgr/webpack',
@@ -142,6 +143,8 @@ const nextConfig = {
         },
       ],
     });
+    // 아이콘 묶음(index.ts)에서 하나만 import해도 모든 SVG가 번들에 들어가지 않도록, 쓰지 않는 re-export를 걷어내게 한다
+    config.module.rules.push({ test: /src[\\/]assets[\\/]svg[\\/]index\.ts$/, sideEffects: false });
     return config;
   },
 };

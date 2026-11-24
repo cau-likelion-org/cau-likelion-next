@@ -96,7 +96,7 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 ## 프로젝트 개요
 
 - **스택**: Next.js 16 (Pages Router, dev·build 모두 webpack 고정 — Turbopack은 SVG 컴포넌트 변환이 안 돼 사용 안 함) + TypeScript 5
-- **스타일링**: styled-components v5 (`styled-reset`은 `package.json`에 남아있으나 소스에서 미사용)
+- **스타일링**: styled-components v5
 - **전역 상태**: Zustand (`src/store/`) — Recoil 마이그레이션 완료
 - **서버 상태**: TanStack Query(react-query) v5 + axios (커스텀 `authAxios` 인터셉터)
 - **에러 모니터링**: Sentry (`@sentry/nextjs`, `src/lib/errorReporter.ts`에서 지연 로드)
