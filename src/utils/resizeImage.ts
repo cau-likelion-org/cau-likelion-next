@@ -1,13 +1,24 @@
 const MAX_DIMENSION = 2400;
 const JPEG_QUALITY = 0.85;
 
-// gif는 캔버스를 거치면 애니메이션이 사라지므로 리사이징하지 않고 원본을 그대로 사용
-export const resizeImageFile = (
+const ANIMATION_MARKERS: Record<string, string> = { 'image/png': 'acTL', 'image/webp': 'ANIM' };
+const ANIMATION_SCAN_BYTES = 64 * 1024;
+
+export const isAnimatedImage = async (file: File) => {
+  if (file.type === 'image/gif') return true;
+  const marker = ANIMATION_MARKERS[file.type];
+  if (!marker) return false;
+  const head = new TextDecoder('latin1').decode(await file.slice(0, ANIMATION_SCAN_BYTES).arrayBuffer());
+  return head.includes(marker);
+};
+
+// 애니메이션 이미지(gif, APNG, 움직이는 WebP)는 캔버스를 거치면 첫 프레임만 남으므로 원본을 그대로 사용
+export const resizeImageFile = async (
   file: File,
   outputType: string = file.type,
   maxDimension: number = MAX_DIMENSION,
 ): Promise<File> => {
-  if (file.type === 'image/gif') return Promise.resolve(file);
+  if (await isAnimatedImage(file)) return file;
   const isConverting = outputType !== file.type;
 
   return new Promise((resolve) => {
