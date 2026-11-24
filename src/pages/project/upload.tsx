@@ -1,30 +1,19 @@
 import { ReactElement, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 
-import { UserProfile } from '@@types/request';
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import PageLoadingGate from '@common/pageGate/PageLoadingGate';
 import ProjectUploadForm from '@project/upload/ProjectUploadForm';
-import { getUserProfile } from 'src/apis/account';
 import useTokenStore from 'src/store/useTokenStore';
 import { isAdminRole } from '@utils/index';
+import useUserProfile from 'src/apis/useUserProfile';
 
 const ProjectUpload = () => {
   const router = useRouter();
   const tokenState = useTokenStore((state) => state.token);
   const hasHydrated = useTokenStore((state) => state.hasHydrated);
 
-  const {
-    data: userProfile,
-    isFetched,
-    isError: isUserProfileError,
-  } = useQuery<UserProfile>({
-    queryKey: ['userProfile'],
-    queryFn: () => getUserProfile(tokenState),
-    retry: false,
-    enabled: !!tokenState.access,
-  });
+  const { data: userProfile, isFetched, isError: isUserProfileError } = useUserProfile();
 
   useEffect(() => {
     if (!hasHydrated) return;

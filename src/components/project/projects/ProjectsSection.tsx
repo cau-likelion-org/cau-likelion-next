@@ -1,4 +1,4 @@
-import { ArchivingArrayType, IProjectData, UserProfile } from '@@types/request';
+import { ArchivingArrayType, IProjectData } from '@@types/request';
 import Button from '@common/button/Button';
 import CircularLoading from '@common/loading/CircularLoading';
 import EmptyState from '@common/emptyState/EmptyState';
@@ -9,7 +9,6 @@ import { IcAdd } from '@assets/svg';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
-import { getUserProfile } from 'src/apis/account';
 import useSessionFlagToast from 'src/hooks/useSessionFlagToast';
 import {
   PROJECT_CATEGORY_LABEL,
@@ -18,7 +17,6 @@ import {
   PROJECT_UPDATED_FLAG_KEY,
   getProjects,
 } from 'src/apis/project';
-import useTokenStore from 'src/store/useTokenStore';
 import { isAdminRole, sortArchivingListDesc } from '@utils/index';
 import usePageEngagementTracking from 'src/hooks/usePageEngagementTracking';
 import { track, getDeviceType } from 'src/lib/amplitude';
@@ -26,6 +24,7 @@ import styled from 'styled-components';
 import ProjectCard from './ProjectCard';
 import ProjectFilterSelect from './ProjectFilterSelect';
 import { containerCss, media } from '@utils/constant/breakpoint';
+import useUserProfile from 'src/apis/useUserProfile';
 
 const ALL_OPTION = '전체';
 
@@ -56,13 +55,7 @@ const ProjectsSection = ({ staticData }: { staticData: ArchivingArrayType<IProje
   // 목록↔상세는 같은 페이지 컴포넌트(얕은 라우팅)라서, 상세를 열고 닫아도 하나의 체류시간으로 합산된다
   usePageEngagementTracking({ pagePath: '/project', exitEvent: 'Project Tab Page Exited' });
 
-  const tokenState = useTokenStore((state) => state.token);
-  const { data: userProfile } = useQuery<UserProfile>({
-    queryKey: ['userProfile'],
-    queryFn: () => getUserProfile(tokenState),
-    retry: false,
-    enabled: !!tokenState.access,
-  });
+  const { data: userProfile } = useUserProfile();
 
   const [selectedGeneration, setSelectedGeneration] = useState(ALL_OPTION);
   const [selectedCategory, setSelectedCategory] = useState(ALL_OPTION);

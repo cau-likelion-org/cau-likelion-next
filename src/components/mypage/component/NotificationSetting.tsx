@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import styled from 'styled-components';
 
-import { UserProfile } from '@@types/request';
-import { deleteFcmToken, getUserProfile, updateFcmToken, updatePushSetting } from 'src/apis/account';
+import { deleteFcmToken, updateFcmToken, updatePushSetting } from 'src/apis/account';
 import {
   clearCachedFcmToken,
   getCachedFcmToken,
@@ -15,6 +14,7 @@ import useTokenStore from 'src/store/useTokenStore';
 import Switch from '@common/switch/Switch';
 import { BackgroundWhite, Black, Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
+import useUserProfile from 'src/apis/useUserProfile';
 
 export type NotificationPermissionState = NotificationPermission | 'unsupported';
 
@@ -66,12 +66,7 @@ const NotificationSetting = ({ guideAlign }: { guideAlign?: GuideAlign }) => {
   const [pending, setPending] = useState(false);
   const hasRestoredToken = useRef(false);
 
-  const { data: userProfile } = useQuery<UserProfile>({
-    queryKey: ['userProfile'],
-    queryFn: () => getUserProfile(tokenState),
-    retry: false,
-    enabled: !!tokenState.access,
-  });
+  const { data: userProfile } = useUserProfile();
 
   const enabled = optimisticEnabled ?? userProfile?.pushEnabled ?? false;
 

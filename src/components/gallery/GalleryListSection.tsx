@@ -18,8 +18,7 @@ import { IcAdd } from '@assets/svg';
 import PageHeader from '@common/pageHeader/PageHeader';
 import useListboxSelect from 'src/hooks/useListboxSelect';
 import usePageEngagementTracking from 'src/hooks/usePageEngagementTracking';
-import useTokenStore from 'src/store/useTokenStore';
-import { getUserProfile, getGenerations } from 'src/apis/account';
+import { getGenerations } from 'src/apis/account';
 import { COMMON_PART_NAME } from '@utils/constant';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -30,6 +29,7 @@ import { getGalleryProjectList, getGalleryProject, GALLERY_PROJECT_CATEGORY_LABE
 import { track as trackEvent, getDeviceType } from 'src/lib/amplitude';
 
 import { containerCss, media } from '@utils/constant/breakpoint';
+import useUserProfile from 'src/apis/useUserProfile';
 
 // 모달 9종은 열렸을 때만 렌더되므로, 갤러리 페이지 첫 로드 번들에서 빼고 여는 시점에 받는다
 const HistoryDetailModal = dynamic(() => import('./component/history/HistoryDetailModal'), { ssr: false });
@@ -107,12 +107,7 @@ const GalleryListSection = () => {
     setActiveTab(queryTab);
   }
 
-  const tokenState = useTokenStore((state) => state.token);
-  const { data: userProfile } = useQuery({
-    queryKey: ['userProfile'],
-    queryFn: () => getUserProfile(tokenState),
-    enabled: !!tokenState.access,
-  });
+  const { data: userProfile } = useUserProfile();
   // 프로젝트/갤러리 게시물 생성·수정·삭제는 운영진 이상만 가능 (역할 정의: 운영진/회장/admin)
   const isStaff = !!userProfile && isAdminRole(userProfile.role);
 

@@ -1,4 +1,3 @@
-import { UserProfile } from '@@types/request';
 import { useQuery } from '@tanstack/react-query';
 import BackHeader from '@common/header/BackHeader';
 import ScrollArea from '@common/scrollArea/ScrollArea';
@@ -9,15 +8,14 @@ import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import CircularLoading from '@common/loading/CircularLoading';
 import EmptyState from '@common/emptyState/EmptyState';
-import { getUserProfile } from 'src/apis/account';
 import { PROJECT_CATEGORY_LABEL, ProjectResponseDto, getProjectDetail, getSortedProjectImages } from 'src/apis/project';
 import useScrollLock from 'src/hooks/useScrollLock';
-import useTokenStore from 'src/store/useTokenStore';
 import { isAdminRole } from '@utils/index';
 import styled from 'styled-components';
 import ProjectDetailCarousel from './ProjectDetailCarousel';
 import ProjectDetailMetaPanel from './ProjectDetailMetaPanel';
 import ProjectDetailTeamPanel from './ProjectDetailTeamPanel';
+import useUserProfile from 'src/apis/useUserProfile';
 
 interface ProjectDetailModalProps {
   projectId: string;
@@ -27,13 +25,7 @@ interface ProjectDetailModalProps {
 
 const ProjectDetailModal = ({ projectId, staticData, onClose }: ProjectDetailModalProps) => {
   const router = useRouter();
-  const tokenState = useTokenStore((state) => state.token);
-  const { data: userProfile } = useQuery<UserProfile>({
-    queryKey: ['userProfile'],
-    queryFn: () => getUserProfile(tokenState),
-    retry: false,
-    enabled: !!tokenState.access,
-  });
+  const { data: userProfile } = useUserProfile();
 
   const { data, isError } = useQuery<ProjectResponseDto>({
     queryKey: ['projectDetail', projectId],

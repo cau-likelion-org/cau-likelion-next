@@ -1,5 +1,3 @@
-import { UserProfile } from '@@types/request';
-import { AxiosError } from 'axios';
 import { ReactElement, useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
@@ -15,7 +13,7 @@ import MyPageShell from '@mypage/component/MyPageShell';
 import TextSelect from '@common/select/TextSelect';
 import StaffAssignmentCard from '@mypage/component/assignment/StaffAssignmentCard';
 import WeeklyAssignmentCard, { WeeklyAssignmentGroup } from '@mypage/component/assignment/WeeklyAssignmentCard';
-import { getGenerations, getUserProfile } from 'src/apis/account';
+import { getGenerations } from 'src/apis/account';
 import {
   AssignmentSummary,
   AssignmentSummaryWeekGroup,
@@ -35,6 +33,7 @@ import { IcPlus } from '@assets/svg';
 import { Fill, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { media } from '@utils/constant/breakpoint';
+import useUserProfile from 'src/apis/useUserProfile';
 
 const groupByDeadline = (assignments: AssignmentSummary[]) => {
   const buckets = new Map<string, AssignmentSummary[]>();
@@ -58,12 +57,7 @@ const MyPageAssignment = () => {
   const hasHydrated = useTokenStore((state) => state.hasHydrated);
   const router = useRouter();
 
-  const { data: userProfile, isError: isUserProfileError } = useQuery<UserProfile, AxiosError>({
-    queryKey: ['userProfile'],
-    queryFn: () => getUserProfile(tokenState),
-    retry: false,
-    enabled: !!tokenState.access,
-  });
+  const { data: userProfile, isError: isUserProfileError } = useUserProfile();
 
   useEffect(() => {
     if (hasHydrated && !tokenState.access) router.push('/login');

@@ -1,23 +1,16 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { useQuery } from '@tanstack/react-query';
-import { AxiosError } from 'axios';
 
-import { MemberRole, UserProfile } from '@@types/request';
-import { getUserProfile } from 'src/apis/account';
+import { MemberRole } from '@@types/request';
 import useTokenStore from 'src/store/useTokenStore';
+import useUserProfile from 'src/apis/useUserProfile';
 
 const useRoleGuard = (canAccess: (role: MemberRole) => boolean) => {
   const tokenState = useTokenStore((state) => state.token);
   const hasHydrated = useTokenStore((state) => state.hasHydrated);
   const router = useRouter();
 
-  const { data: userProfile, isError: isUserProfileError } = useQuery<UserProfile, AxiosError>({
-    queryKey: ['userProfile'],
-    queryFn: () => getUserProfile(tokenState),
-    retry: false,
-    enabled: !!tokenState.access,
-  });
+  const { data: userProfile, isError: isUserProfileError } = useUserProfile();
 
   useEffect(() => {
     if (hasHydrated && !tokenState.access) router.push('/login');

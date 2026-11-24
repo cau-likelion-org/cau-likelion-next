@@ -1,9 +1,5 @@
-import { UserProfile } from '@@types/request';
-import { AxiosError } from 'axios';
 import { ReactElement, useEffect, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
 import useTokenStore from 'src/store/useTokenStore';
-import { getUserProfile } from 'src/apis/account';
 import { INACTIVE_MEMBER_NOTICE_KEY } from '@utils/constant';
 import { canCreateAttendance, isAdminRole, isAttendanceTarget } from '@utils/index';
 import styled from 'styled-components';
@@ -19,18 +15,14 @@ import MyScoreSection from '@mypage/MyScoreSection';
 import MemberScoreSection from '@mypage/MemberScoreSection';
 import { useRouter } from 'next/router';
 import { media } from '@utils/constant/breakpoint';
+import useUserProfile from 'src/apis/useUserProfile';
 
 const MyPage = () => {
   const tokenState = useTokenStore((state) => state.token);
   const hasHydrated = useTokenStore((state) => state.hasHydrated);
   const router = useRouter();
 
-  const { data: userProfile, isError: isUserProfileError } = useQuery<UserProfile, AxiosError>({
-    queryKey: ['userProfile'],
-    queryFn: () => getUserProfile(tokenState),
-    retry: false,
-    enabled: !!tokenState.access,
-  });
+  const { data: userProfile, isError: isUserProfileError } = useUserProfile();
 
   useEffect(() => {
     if (hasHydrated && !tokenState.access) router.push('/login');
