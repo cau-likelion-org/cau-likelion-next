@@ -7,7 +7,6 @@ import LeaveConfirmAlert from '@common/alert/LeaveConfirmAlert';
 import BackHeader from '@common/header/BackHeader';
 import Button from '@common/button/Button';
 import CharCount from '@common/charCount/CharCount';
-import TextButton from '@common/textButton/TextButton';
 import TextField from '@common/textField/TextField';
 import Toast from '@common/toast/Toast';
 import { ToastWrapper } from '@common/toast/toastLayout';
@@ -33,27 +32,24 @@ import {
 } from 'src/apis/project';
 import useImageSlots from 'src/hooks/useImageSlots';
 import useTokenStore from 'src/store/useTokenStore';
-import { IcAdd, IcCircleClose, IcTrash } from '@assets/svg';
+import { IcCircleClose } from '@assets/svg';
 import useInput from 'src/hooks/useInput';
 import useLeaveGuard from 'src/hooks/useLeaveGuard';
 import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import { NUMERIC_ONLY_REGEX, PROJECT_CATEGORY_OPTIONS } from '@utils/constant';
 import { isUnfilled } from '@utils/index';
 import { resizeImageFile } from '@utils/resizeImage';
-import LinkTypeSelect from './LinkTypeSelect';
+import ExtraPartFields, { ExtraPart } from './ExtraPartFields';
+import LinkFields, { LINK_TYPE_OPTIONS, LinkRow } from './LinkFields';
 import {
   ActionArea,
   ActionDescription,
-  AddLinkButton,
   ContentTextarea,
   DateDescription,
   DateFieldGroup,
   DateRangeDivider,
   DateRangeRow,
-  DeleteLinkButton,
   EditActionGroup,
-  ExtraPartGroup,
-  ExtraPartHeaderRow,
   FeaturedChip,
   FieldGroup,
   FieldHeading,
@@ -62,12 +58,10 @@ import {
   HiddenFileInput,
   ImageUploadGroup,
   LinkHeading,
-  LinkRowWrapper,
   MainThumbnail,
   MainThumbnailImage,
   NarrowField,
   PageTitle,
-  PartNameInput,
   RemoveThumbnailButton,
   Required,
   RequiredSmall,
@@ -91,7 +85,6 @@ const MAX_TITLE_LENGTH_KO = 16;
 const MAX_TITLE_LENGTH_EN = 20;
 const HANGUL_REGEX = /[ㄱ-ㅎㅏ-ㅣ가-힣]/;
 const getMaxTitleLength = (value: string) => (HANGUL_REGEX.test(value) ? MAX_TITLE_LENGTH_KO : MAX_TITLE_LENGTH_EN);
-const LINK_TYPE_OPTIONS = ['Web', 'GitHub', 'Behance'];
 const CONTENT_PLACEHOLDER = '서비스 기획 배경, 핵심 기능 등을 자유롭게 입력해주세요.';
 
 const LINK_TYPE_TO_PLATFORM: Record<string, LinkPlatform> = {
@@ -131,18 +124,6 @@ const ImagePlaceholderIcon = () => (
     />
   </svg>
 );
-
-interface ExtraPart {
-  id: number;
-  name: string;
-  members: string[];
-}
-
-interface LinkRow {
-  id: number;
-  type: string;
-  url: string;
-}
 
 interface ProjectUploadFormProps {
   mode?: 'create' | 'edit';
@@ -293,22 +274,6 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
     const next = event.target.value;
     if (next.length > title.length && next.length > getMaxTitleLength(next)) return;
     setTitle(next);
-  };
-
-  const handleAddPart = () => {
-    setExtraParts((prev) => [...prev, { id: nextId(), name: '', members: [] }]);
-  };
-
-  const handleRemovePart = (id: number) => {
-    setExtraParts((prev) => prev.filter((part) => part.id !== id));
-  };
-
-  const handleAddLinkRow = () => {
-    setLinkRows((prev) => [...prev, { id: nextId(), type: LINK_TYPE_OPTIONS[0], url: '' }]);
-  };
-
-  const handleRemoveLinkRow = (id: number) => {
-    setLinkRows((prev) => prev.filter((row) => row.id !== id));
   };
 
   const handleCancel = () => {
@@ -634,40 +599,7 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
               values={backendMembers}
               onChange={setBackendMembers}
             />
-            {extraParts.map((part) => (
-              <ExtraPartGroup key={part.id}>
-                <ExtraPartHeaderRow>
-                  <PartNameInput
-                    placeholder="파트 이름 입력"
-                    value={part.name}
-                    onChange={(event) =>
-                      setExtraParts((prev) =>
-                        prev.map((p) => (p.id === part.id ? { ...p, name: event.target.value } : p)),
-                      )
-                    }
-                  />
-                  <TextButton size="small" color="assistive" onClick={() => handleRemovePart(part.id)}>
-                    삭제
-                  </TextButton>
-                </ExtraPartHeaderRow>
-                <TagChipInput
-                  placeholder="텍스트 입력 후 띄어쓰기"
-                  values={part.members}
-                  onChange={(members) =>
-                    setExtraParts((prev) => prev.map((p) => (p.id === part.id ? { ...p, members } : p)))
-                  }
-                />
-              </ExtraPartGroup>
-            ))}
-            <Button
-              variant="solid"
-              color="assistive"
-              size="medium"
-              trailingIcon={<IcAdd width={16} height={16} />}
-              onClick={handleAddPart}
-            >
-              파트 추가
-            </Button>
+            <ExtraPartFields parts={extraParts} onChange={setExtraParts} nextId={nextId} />
           </TeamColumn>
           <TeamColumn>
             <DateFieldGroup>
@@ -721,30 +653,7 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
 
         <FieldGroup>
           <LinkHeading>링크첨부</LinkHeading>
-          {linkRows.map((row, index) => (
-            <LinkRowWrapper key={row.id}>
-              <LinkTypeSelect
-                value={row.type}
-                options={LINK_TYPE_OPTIONS}
-                onChange={(type) => setLinkRows((prev) => prev.map((r) => (r.id === row.id ? { ...r, type } : r)))}
-              />
-              <TextField
-                placeholder="복사한 링크를 붙여넣어 주세요."
-                value={row.url}
-                onChange={(event) =>
-                  setLinkRows((prev) => prev.map((r) => (r.id === row.id ? { ...r, url: event.target.value } : r)))
-                }
-              />
-              {index > 0 && (
-                <DeleteLinkButton type="button" onClick={() => handleRemoveLinkRow(row.id)} aria-label="링크 삭제">
-                  <IcTrash width={24} height={24} />
-                </DeleteLinkButton>
-              )}
-            </LinkRowWrapper>
-          ))}
-          <AddLinkButton type="button" onClick={handleAddLinkRow} aria-label="링크 추가">
-            <IcAdd width={20} height={20} />
-          </AddLinkButton>
+          <LinkFields rows={linkRows} onChange={setLinkRows} nextId={nextId} />
         </FieldGroup>
 
         <ActionArea>

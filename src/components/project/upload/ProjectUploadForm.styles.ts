@@ -215,39 +215,6 @@ export const TeamColumn = styled.div`
   gap: 24px;
 `;
 
-export const ExtraPartGroup = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
-`;
-
-export const ExtraPartHeaderRow = styled.div`
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-`;
-
-export const PartNameInput = styled.input`
-  flex-shrink: 0;
-  width: 94px;
-  padding: 4px 6px;
-  margin: 0 -6px;
-  border: none;
-  border-radius: 6px;
-  outline: none;
-  background-color: rgba(0, 0, 0, 0.04);
-  color: ${Label.normal};
-  ${typographyCss(Typography.label1Normal.medium)}
-
-  &::placeholder {
-    color: ${Label.assistive};
-  }
-`;
-
 export const DateFieldGroup = styled.div`
   width: 100%;
   display: flex;
@@ -279,38 +246,6 @@ export const LinkHeading = styled.p`
   margin: 0;
   color: ${Label.neutral};
   ${typographyCss(Typography.title3.bold)}
-`;
-
-export const LinkRowWrapper = styled.div`
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-`;
-
-export const DeleteLinkButton = styled.button`
-  display: flex;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  border: none;
-  background: none;
-  color: ${Label.normal};
-  cursor: pointer;
-`;
-
-export const AddLinkButton = styled.button`
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 12px;
-  border: none;
-  border-radius: 12px;
-  background-color: ${Fill.normal};
-  color: ${Label.neutral};
-  cursor: pointer;
 `;
 
 export const ActionArea = styled.div`
