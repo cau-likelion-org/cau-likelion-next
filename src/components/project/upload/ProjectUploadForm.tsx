@@ -1,4 +1,4 @@
-import { ChangeEvent, DragEvent, KeyboardEvent, ReactNode, useRef, useState } from 'react';
+import { ChangeEvent, KeyboardEvent, ReactNode, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import styled from 'styled-components';
@@ -36,6 +36,7 @@ import {
   updateProject,
   uploadProjectImage,
 } from 'src/apis/project';
+import useImageSlots from 'src/hooks/useImageSlots';
 import useTokenStore from 'src/store/useTokenStore';
 import {
   IcAdd,
@@ -181,102 +182,9 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
   const membersByPart = (part: string) =>
     initialData?.members.filter((member) => member.part === part).map((member) => member.name) ?? [];
 
-  const [images, setImages] = useState<(string | null)[]>(initialImages);
-  const [imageFiles, setImageFiles] = useState<(File | null)[]>(Array(MAX_IMAGE_COUNT).fill(null));
-  const [featuredIndex, setFeaturedIndex] = useState(initialFeaturedIndex);
+  const { images, imageFiles, featuredIndex, isDragging, isDropTarget, addFiles, removeImage, thumbnailProps } =
+    useImageSlots({ maxCount: MAX_IMAGE_COUNT, initialImages, initialFeaturedIndex });
   const [isUploadingImages, setIsUploadingImages] = useState(false);
-  const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
-  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
-
-  const handleFileChange = (index: number, event: ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files ?? []);
-    event.target.value = '';
-    if (files.length === 0) return;
-
-    const hadNoImages = images.every((image) => image === null);
-
-    const targets: { targetIndex: number; file: File }[] = [];
-    let cursor = index;
-    for (const file of files) {
-      while (cursor < MAX_IMAGE_COUNT && images[cursor] !== null) cursor++;
-      if (cursor >= MAX_IMAGE_COUNT) break;
-      targets.push({ targetIndex: cursor, file });
-      cursor++;
-    }
-    if (targets.length === 0) return;
-
-    setImages((prev) => {
-      const next = [...prev];
-      targets.forEach(({ targetIndex, file }) => {
-        if (next[targetIndex]) URL.revokeObjectURL(next[targetIndex] as string);
-        next[targetIndex] = URL.createObjectURL(file);
-      });
-      return next;
-    });
-    setImageFiles((prev) => {
-      const next = [...prev];
-      targets.forEach(({ targetIndex, file }) => {
-        next[targetIndex] = file;
-      });
-      return next;
-    });
-    if (hadNoImages) setFeaturedIndex(targets[0].targetIndex);
-  };
-
-  const handleRemoveImage = (index: number) => {
-    const removed = images[index];
-    if (removed) URL.revokeObjectURL(removed);
-
-    const compact = <T,>(list: T[]) => {
-      const next = [...list];
-      next.splice(index, 1);
-      next.push(null as T);
-      return next;
-    };
-    const nextImages = compact(images);
-    setImages(nextImages);
-    setImageFiles(compact);
-    setFeaturedIndex((prev) => {
-      if (prev < index) return prev;
-      if (prev > index) return prev - 1;
-      const fallback = nextImages.findIndex((image) => image !== null);
-      return fallback === -1 ? 0 : fallback;
-    });
-  };
-
-  const moveImage = (from: number, to: number) => {
-    if (from === to) return;
-    const reorder = <T,>(list: T[]) => {
-      const next = [...list];
-      const [moved] = next.splice(from, 1);
-      next.splice(to, 0, moved);
-      return next;
-    };
-    setImages(reorder);
-    setImageFiles(reorder);
-    setFeaturedIndex((prev) => {
-      if (prev === from) return to;
-      if (from < prev && prev <= to) return prev - 1;
-      if (to <= prev && prev < from) return prev + 1;
-      return prev;
-    });
-  };
-
-  const dropTargetProps = (index: number) => ({
-    onDragOver: (event: DragEvent<HTMLElement>) => {
-      if (draggingIndex === null) return;
-      event.preventDefault();
-      event.dataTransfer.dropEffect = 'move';
-      setDragOverIndex(index);
-    },
-    onDragLeave: () => setDragOverIndex((prev) => (prev === index ? null : prev)),
-    onDrop: (event: DragEvent<HTMLElement>) => {
-      event.preventDefault();
-      if (draggingIndex !== null) moveImage(draggingIndex, index);
-      setDraggingIndex(null);
-      setDragOverIndex(null);
-    },
-  });
 
   const [title, setTitle] = useState(initialData?.title ?? '');
   const [subtitle, setSubtitle] = useState(initialData?.tagline ?? '');
@@ -531,7 +439,7 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
                   accept="image/*"
                   multiple
                   aria-label="대표 이미지 선택"
-                  onChange={(event) => handleFileChange(featuredIndex, event)}
+                  onChange={(event) => addFiles(featuredIndex, event)}
                 />
               </>
             )}
@@ -546,28 +454,10 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
                   role="button"
                   tabIndex={0}
                   $active={index === featuredIndex}
-                  $dragging={draggingIndex === index}
-                  $dropTarget={dragOverIndex === index && draggingIndex !== index}
+                  $dragging={isDragging(index)}
+                  $dropTarget={isDropTarget(index)}
                   aria-label={`${index + 1}번째 이미지를 대표사진으로 설정`}
-                  onClick={() => setFeaturedIndex(index)}
-                  onKeyDown={(event) => {
-                    if (event.key === 'Enter' || event.key === ' ') {
-                      event.preventDefault();
-                      setFeaturedIndex(index);
-                    }
-                  }}
-                  draggable
-                  onDragStart={(event: DragEvent<HTMLElement>) => {
-                    event.dataTransfer.effectAllowed = 'move';
-                    // Firefox는 데이터가 설정되어야 드래그를 시작함
-                    event.dataTransfer.setData('text/plain', String(index));
-                    setDraggingIndex(index);
-                  }}
-                  onDragEnd={() => {
-                    setDraggingIndex(null);
-                    setDragOverIndex(null);
-                  }}
-                  {...dropTargetProps(index)}
+                  {...thumbnailProps(index)}
                 >
                   <ThumbnailImage src={image} alt="" draggable={false} />
                   <RemoveThumbnailButton
@@ -575,7 +465,7 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
                     aria-label={`${index + 1}번째 이미지 삭제`}
                     onClick={(event) => {
                       event.stopPropagation();
-                      handleRemoveImage(index);
+                      removeImage(index);
                     }}
                   >
                     <IcCircleClose width={24} height={24} />
@@ -589,7 +479,7 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
                     accept="image/*"
                     multiple
                     aria-label={`이미지 ${index + 1} 선택`}
-                    onChange={(event) => handleFileChange(index, event)}
+                    onChange={(event) => addFiles(index, event)}
                   />
                 </ThumbnailSlot>
               ),

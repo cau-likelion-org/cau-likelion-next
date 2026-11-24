@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useState } from 'react';
+import { ReactElement, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -28,6 +28,7 @@ import useStaffOnly from 'src/hooks/useStaffOnly';
 import useTokenStore from 'src/store/useTokenStore';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { containerCss } from '@utils/constant/breakpoint';
+import useSessionFlash from 'src/hooks/useSessionFlash';
 
 // 셋 다 특정 상태일 때만 렌더되는 모달이라, 첫 로드 번들 대신 여는 시점에 받는다
 const AssignmentDeadlineModal = dynamic(() => import('@mypage/component/assignment/AssignmentDeadlineModal'), {
@@ -96,12 +97,7 @@ const MyPageAssignmentDetail = () => {
   );
 
   // 과제 수정 후 넘어오면 토스트 표시
-  useEffect(() => {
-    if (!sessionStorage.getItem('assignmentEdited')) return;
-    sessionStorage.removeItem('assignmentEdited');
-    const frame = requestAnimationFrame(() => showToast('positive', '변경사항이 저장되었습니다.'));
-    return () => cancelAnimationFrame(frame);
-  }, []);
+  useSessionFlash('assignmentEdited', () => showToast('positive', '변경사항이 저장되었습니다.'));
 
   const deadlineMutation = useMutation({
     mutationFn: ({ assignmentId, payload }: { assignmentId: number; payload: IndividualDeadlinePayload }) =>

@@ -1,9 +1,5 @@
-import { UserProfile } from '@@types/request';
-import { AxiosError } from 'axios';
 import { ReactElement, useEffect, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
 import useTokenStore from 'src/store/useTokenStore';
-import { getUserProfile } from 'src/apis/account';
 import { INACTIVE_MEMBER_NOTICE_KEY } from '@utils/constant';
 import { canCreateAttendance, isAdminRole, isAttendanceTarget } from '@utils/index';
 import styled from 'styled-components';
@@ -19,18 +15,15 @@ import MyScoreSection from '@mypage/MyScoreSection';
 import MemberScoreSection from '@mypage/MemberScoreSection';
 import { useRouter } from 'next/router';
 import { media } from '@utils/constant/breakpoint';
+import useUserProfile from 'src/apis/useUserProfile';
+import useSessionFlash from 'src/hooks/useSessionFlash';
 
 const MyPage = () => {
   const tokenState = useTokenStore((state) => state.token);
   const hasHydrated = useTokenStore((state) => state.hasHydrated);
   const router = useRouter();
 
-  const { data: userProfile, isError: isUserProfileError } = useQuery<UserProfile, AxiosError>({
-    queryKey: ['userProfile'],
-    queryFn: () => getUserProfile(tokenState),
-    retry: false,
-    enabled: !!tokenState.access,
-  });
+  const { data: userProfile, isError: isUserProfileError } = useUserProfile();
 
   useEffect(() => {
     if (hasHydrated && !tokenState.access) router.push('/login');
@@ -38,14 +31,7 @@ const MyPage = () => {
 
   // 활동 전용 메뉴에서 돌려보내진 경우에만 안내 (홈 자체 진입에는 띄우지 않는다)
   const [toastMessage, setToastMessage] = useState('');
-  useEffect(() => {
-    const frame = requestAnimationFrame(() => {
-      if (!sessionStorage.getItem(INACTIVE_MEMBER_NOTICE_KEY)) return;
-      sessionStorage.removeItem(INACTIVE_MEMBER_NOTICE_KEY);
-      setToastMessage('현재 활동 중인 구성원이 아닙니다.');
-    });
-    return () => cancelAnimationFrame(frame);
-  }, []);
+  useSessionFlash(INACTIVE_MEMBER_NOTICE_KEY, () => setToastMessage('현재 활동 중인 구성원이 아닙니다.'));
 
   return (
     <>

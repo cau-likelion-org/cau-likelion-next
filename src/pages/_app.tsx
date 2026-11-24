@@ -3,7 +3,7 @@ import 'pretendard/dist/web/static/pretendard-subset.css';
 import Head from 'next/head';
 import Script from 'next/script';
 import dynamic from 'next/dynamic';
-import { QueryCache, QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
+import { QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import axios from 'axios';
 import type { AppProps } from 'next/app';
 import React, { ReactElement, ReactNode } from 'react';
@@ -17,9 +17,8 @@ import ErrorBoundary from '@common/errorBoundary/ErrorBoundary';
 import useTokenStore from 'src/store/useTokenStore';
 import { registerMessagingServiceWorker, subscribeForegroundNotification } from 'src/lib/pushNotification';
 import { track, identifyUser, resetUser } from 'src/lib/amplitude';
-import { getUserProfile } from 'src/apis/account';
-import { UserProfile } from '@@types/request';
 import { env } from 'src/lib/env';
+import useUserProfile, { USER_PROFILE_QUERY_KEY } from 'src/apis/useUserProfile';
 
 const GA_ID = process.env.NODE_ENV === 'production' ? env.gaId : undefined;
 
@@ -38,11 +37,7 @@ function AmplitudeIdentitySync() {
   const hasHydrated = useTokenStore((state) => state.hasHydrated);
   const tokenAccess = useTokenStore((state) => state.token.access);
 
-  const { data: userProfile } = useQuery<UserProfile>({
-    queryKey: ['userProfile'],
-    queryFn: () => getUserProfile(useTokenStore.getState().token),
-    enabled: !!tokenAccess,
-  });
+  const { data: userProfile } = useUserProfile();
 
   useEffect(() => {
     if (userProfile) identifyUser(userProfile);
@@ -68,7 +63,7 @@ function AppContent({ Component, pageProps }: AppPropsWithLayout) {
         },
         queryCache: new QueryCache({
           onError: (error, query) => {
-            if (query.queryKey[0] !== 'userProfile') return;
+            if (query.queryKey[0] !== USER_PROFILE_QUERY_KEY[0]) return;
             const status = axios.isAxiosError(error) ? error.response?.status : undefined;
             if (status !== 401 && status !== 403) return;
             useTokenStore.getState().setToken({ access: null, refresh: null });

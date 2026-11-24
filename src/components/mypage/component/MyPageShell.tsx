@@ -1,20 +1,17 @@
 import { ReactNode, useEffect, useRef, useState } from 'react';
 import { Router } from 'next/router';
-import { useQuery } from '@tanstack/react-query';
 import styled from 'styled-components';
 
-import { UserProfile } from '@@types/request';
 import LogoutButton from '@mypage/component/LogoutButton';
 import Sidebar, { PATHNAME_TO_ACTIVE, SidebarActive } from '@mypage/component/Sidebar';
 import PageLoadingGate from '@common/pageGate/PageLoadingGate';
 import PageScrollbar from '@common/pageScrollbar/PageScrollbar';
 import { IcChevronRight } from '@assets/svg';
-import { getUserProfile } from 'src/apis/account';
-import useTokenStore from 'src/store/useTokenStore';
 import { canManageRecruit, canManageSitePages } from '@utils/index';
 import { Black, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { containerCss, media } from '@utils/constant/breakpoint';
+import useUserProfile from 'src/apis/useUserProfile';
 
 const BREADCRUMB_LABEL: Record<SidebarActive, string> = {
   home: '홈',
@@ -43,13 +40,7 @@ const MyPageShell = ({
   isAdmin?: boolean;
   children: ReactNode;
 }) => {
-  const tokenState = useTokenStore((state) => state.token);
-  const { data: userProfile } = useQuery<UserProfile>({
-    queryKey: ['userProfile'],
-    queryFn: () => getUserProfile(tokenState),
-    retry: false,
-    enabled: !!tokenState.access,
-  });
+  const { data: userProfile } = useUserProfile();
   const showAdminMenu = isAdmin ?? (!!userProfile && canManageSitePages(userProfile.role));
   // 리크루팅은 회장단도 관리하므로 관리자 메뉴보다 넓은 권한으로 노출한다
   const showRecruitMenu = isAdmin ?? (!!userProfile && canManageRecruit(userProfile.role));

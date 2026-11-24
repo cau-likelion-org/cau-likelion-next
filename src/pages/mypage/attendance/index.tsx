@@ -3,7 +3,6 @@ import { useRouter } from 'next/router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import styled from 'styled-components';
 
-import { UserProfile } from '@@types/request';
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import MyPageShell from '@mypage/component/MyPageShell';
 import Toast from '@common/toast/Toast';
@@ -16,7 +15,7 @@ import WeeklyAttendanceCard, {
   WeeklyAttendanceRecord,
   WeeklyAttendanceStatus,
 } from '@mypage/component/attendance/WeeklyAttendanceCard';
-import { getGenerations, getUserProfile } from 'src/apis/account';
+import { getGenerations } from 'src/apis/account';
 import {
   AttendanceStatus,
   AttendanceStatusResponse,
@@ -33,6 +32,7 @@ import { excludeCommonPart, isAdminRole, isFullAdminRole } from '@utils/index';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { media } from '@utils/constant/breakpoint';
+import useUserProfile from 'src/apis/useUserProfile';
 
 // 회장/관리자 파트 필터의 '전체' 옵션 (나머지는 현재 활동 기수의 파트 목록에서 가져옴)
 const ALL_PART = '전체';
@@ -64,12 +64,7 @@ const MyPageAttendance = () => {
     if (hasHydrated && !tokenState.access) router.push('/login');
   }, [hasHydrated, tokenState, router]);
 
-  const { data: userProfile, isError: isUserProfileError } = useQuery<UserProfile>({
-    queryKey: ['userProfile'],
-    queryFn: () => getUserProfile(tokenState),
-    retry: false,
-    enabled: !!tokenState.access,
-  });
+  const { data: userProfile, isError: isUserProfileError } = useUserProfile();
 
   // 어른사자는 활동 중인 구성원이 아니므로 홈으로 돌려보내고, 홈에서 사유를 토스트로 안내한다
   useEffect(() => {

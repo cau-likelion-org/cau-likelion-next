@@ -1,13 +1,10 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useQuery } from '@tanstack/react-query';
 import styled from 'styled-components';
 
-import { UserProfile } from '@@types/request';
 import Button from '@common/button/Button';
 import LogoutButton from '@mypage/component/LogoutButton';
 import NotificationSetting from '@mypage/component/NotificationSetting';
-import { getUserProfile } from 'src/apis/account';
 import useTokenStore from 'src/store/useTokenStore';
 import useRecruitModalStore from 'src/store/useRecruitModalStore';
 import useScrollLock from 'src/hooks/useScrollLock';
@@ -16,6 +13,7 @@ import { track, getDeviceType, markNextAction } from 'src/lib/amplitude';
 import { BackgroundColor, Black, Line } from '@utils/constant/color';
 import { media } from '@utils/constant/breakpoint';
 import { Typography, typographyCss } from '@utils/constant/typography';
+import useUserProfile from 'src/apis/useUserProfile';
 
 const SITE_MENU = [
   { title: '소개', routing: '/about' },
@@ -41,12 +39,7 @@ const MobileNavModal = ({ isModalOn, onClose }: { isModalOn: boolean; onClose?: 
 
   const openRecruitClosedAlert = useRecruitModalStore((state) => state.openClosedAlert);
 
-  const { data: userProfile } = useQuery<UserProfile>({
-    queryKey: ['userProfile'],
-    queryFn: () => getUserProfile({ access, refresh: null }),
-    retry: false,
-    enabled: isLogin,
-  });
+  const { data: userProfile } = useUserProfile({ enabled: hasHydrated });
 
   const handleNavigate = (routing: string) => {
     onClose?.();

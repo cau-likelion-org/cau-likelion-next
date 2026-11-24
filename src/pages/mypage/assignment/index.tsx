@@ -1,5 +1,3 @@
-import { UserProfile } from '@@types/request';
-import { AxiosError } from 'axios';
 import { ReactElement, useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
@@ -15,7 +13,7 @@ import MyPageShell from '@mypage/component/MyPageShell';
 import TextSelect from '@common/select/TextSelect';
 import StaffAssignmentCard from '@mypage/component/assignment/StaffAssignmentCard';
 import WeeklyAssignmentCard, { WeeklyAssignmentGroup } from '@mypage/component/assignment/WeeklyAssignmentCard';
-import { getGenerations, getUserProfile } from 'src/apis/account';
+import { getGenerations } from 'src/apis/account';
 import {
   AssignmentSummary,
   AssignmentSummaryWeekGroup,
@@ -35,6 +33,8 @@ import { IcPlus } from '@assets/svg';
 import { Fill, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { media } from '@utils/constant/breakpoint';
+import useUserProfile from 'src/apis/useUserProfile';
+import useSessionFlash from 'src/hooks/useSessionFlash';
 
 const groupByDeadline = (assignments: AssignmentSummary[]) => {
   const buckets = new Map<string, AssignmentSummary[]>();
@@ -58,12 +58,7 @@ const MyPageAssignment = () => {
   const hasHydrated = useTokenStore((state) => state.hasHydrated);
   const router = useRouter();
 
-  const { data: userProfile, isError: isUserProfileError } = useQuery<UserProfile, AxiosError>({
-    queryKey: ['userProfile'],
-    queryFn: () => getUserProfile(tokenState),
-    retry: false,
-    enabled: !!tokenState.access,
-  });
+  const { data: userProfile, isError: isUserProfileError } = useUserProfile();
 
   useEffect(() => {
     if (hasHydrated && !tokenState.access) router.push('/login');
@@ -78,20 +73,12 @@ const MyPageAssignment = () => {
 
   // 과제 생성/제출 완료 후 넘어오면 토스트 표시
   const [toastMessage, setToastMessage] = useState('');
-  useEffect(() => {
-    const createdWeek = sessionStorage.getItem('assignmentCreatedWeek');
-    const submitted = sessionStorage.getItem('assignmentSubmitted');
-    if (!createdWeek && !submitted) return;
-    sessionStorage.removeItem('assignmentCreatedWeek');
-    sessionStorage.removeItem('assignmentSubmitted');
-    const message = createdWeek
-      ? `${createdWeek}주차 과제가 생성되었습니다.`
-      : submitted === 'edited'
-        ? '수정이 완료되었습니다.'
-        : '제출이 완료되었습니다.';
-    const frame = requestAnimationFrame(() => setToastMessage(message));
-    return () => cancelAnimationFrame(frame);
-  }, []);
+  useSessionFlash('assignmentSubmitted', (submitted) =>
+    setToastMessage(submitted === 'edited' ? '수정이 완료되었습니다.' : '제출이 완료되었습니다.'),
+  );
+  useSessionFlash('assignmentCreatedWeek', (createdWeek) =>
+    setToastMessage(`${createdWeek}주차 과제가 생성되었습니다.`),
+  );
 
   const isStaffOrAdmin = !!userProfile && isAdminRole(userProfile.role); // STAFF/PRESIDENT/ADMIN
   const isPresident = !!userProfile && isFullAdminRole(userProfile.role); // 회장/관리자 — 파트별 조회
