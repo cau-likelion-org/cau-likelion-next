@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, KeyboardEvent, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import Chip from '@common/chip/Chip';
@@ -20,8 +20,22 @@ const TechStackInput = ({
   invalid?: boolean;
 }) => {
   const [draft, setDraft] = useState('');
+  const isComposingRef = useRef(false);
 
-  const removeTag = (tag: string) => onChange(value.filter((item) => item !== tag));
+  const removeTag = (index: number) => onChange(value.filter((_, i) => i !== index));
+
+  const addTags = (tags: string[]) => {
+    const newTags = Array.from(new Set(tags.filter((tag) => !value.includes(tag))));
+    if (newTags.length > 0) {
+      onChange([...value, ...newTags]);
+    }
+  };
+
+  const commitDraft = () => {
+    const trimmed = draft.trim();
+    if (trimmed) addTags([trimmed]);
+    setDraft('');
+  };
 
   // keydown에서 스페이스/쉼표를 가로채면, 한글 조합을 끝내는 경계 키의 isComposing 값이
   // 브라우저마다 달라 조합 중이던 글자가 씹히거나 중복되는 문제가 있었다. 스페이스/쉼표는
@@ -38,26 +52,33 @@ const TechStackInput = ({
       .slice(0, -1)
       .map((part) => part.trim())
       .filter(Boolean);
-    const newTags = Array.from(new Set(segments.filter((part) => !value.includes(part))));
-    if (newTags.length > 0) {
-      onChange([...value, ...newTags]);
-    }
+    addTags(segments);
     setDraft(parts[parts.length - 1]);
+  };
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (isComposingRef.current) return;
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      commitDraft();
+    } else if (event.key === 'Backspace' && !draft && value.length > 0) {
+      onChange(value.slice(0, -1));
+    }
   };
 
   return (
     <Wrapper $invalid={invalid}>
-      {value.map((tag) =>
+      {value.map((tag, index) =>
         disabled ? (
-          <Chip key={tag} size="xsmall">
+          <Chip key={`${tag}-${index}`} size="xsmall">
             {tag}
           </Chip>
         ) : (
           <Chip
-            key={tag}
+            key={`${tag}-${index}`}
             size="xsmall"
             trailingIcon={
-              <RemoveIcon type="button" onClick={() => removeTag(tag)} aria-label={`${tag} 삭제`}>
+              <RemoveIcon type="button" onClick={() => removeTag(index)} aria-label={`${tag} 삭제`}>
                 ×
               </RemoveIcon>
             }
@@ -70,6 +91,14 @@ const TechStackInput = ({
         <Input
           value={draft}
           onChange={handleChange}
+          onKeyDown={handleKeyDown}
+          onCompositionStart={() => {
+            isComposingRef.current = true;
+          }}
+          onCompositionEnd={() => {
+            isComposingRef.current = false;
+          }}
+          onBlur={commitDraft}
           placeholder={value.length === 0 ? placeholder : ''}
           aria-invalid={invalid}
         />

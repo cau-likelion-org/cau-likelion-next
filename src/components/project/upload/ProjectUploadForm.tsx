@@ -1,4 +1,4 @@
-import { ChangeEvent, KeyboardEvent, ReactNode, useRef, useState } from 'react';
+import { ChangeEvent, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import styled from 'styled-components';
@@ -8,15 +8,12 @@ import LeaveConfirmAlert from '@common/alert/LeaveConfirmAlert';
 import BackHeader from '@common/header/BackHeader';
 import Button from '@common/button/Button';
 import CharCount from '@common/charCount/CharCount';
-import Chip from '@common/chip/Chip';
-import Menu from '@common/menu/Menu';
-import Select from '@common/select/Select';
-import TextButton from '@common/textButton/TextButton';
 import TextField from '@common/textField/TextField';
 import Textarea from '@common/textarea/Textarea';
 import Toast from '@common/toast/Toast';
 import { ToastWrapper } from '@common/toast/toastLayout';
 import ProjectFilterSelect from '@project/projects/ProjectFilterSelect';
+import TechStackInput from '@mypage/admin/component/TechStackInput';
 import { Generation } from '@@types/request';
 import {
   LinkPlatform,
@@ -38,20 +35,9 @@ import {
 } from 'src/apis/project';
 import useImageSlots from 'src/hooks/useImageSlots';
 import useTokenStore from 'src/store/useTokenStore';
-import {
-  IcAdd,
-  IcBehance,
-  IcCalendar,
-  IcCircleClose,
-  IcCircleExclamation,
-  IcGithub,
-  IcLineHorizontal,
-  IcLink,
-  IcTrash,
-} from '@assets/svg';
+import { IcCircleClose, IcLineHorizontal } from '@assets/svg';
 import useInput from 'src/hooks/useInput';
 import useLeaveGuard from 'src/hooks/useLeaveGuard';
-import useListboxSelect from 'src/hooks/useListboxSelect';
 import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import { NUMERIC_ONLY_REGEX, PROJECT_CATEGORY_OPTIONS } from '@utils/constant';
 import { AccentTint, BackgroundColor, Black, Fill, Label, Line, Orange, State } from '@utils/constant/color';
@@ -59,6 +45,9 @@ import { isUnfilled } from '@utils/index';
 import { resizeImageFile } from '@utils/resizeImage';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { containerCss } from '@utils/constant/breakpoint';
+import ExtraPartFields, { ExtraPart } from './ExtraPartFields';
+import LinkFields, { LINK_TYPE_OPTIONS, LinkRow } from './LinkFields';
+import SingleDateInput from './SingleDateInput';
 
 const MAX_IMAGE_COUNT = 4;
 const MAX_BANNER_LENGTH = 15;
@@ -67,9 +56,7 @@ const MAX_TITLE_LENGTH_KO = 16;
 const MAX_TITLE_LENGTH_EN = 20;
 const HANGUL_REGEX = /[ㄱ-ㅎㅏ-ㅣ가-힣]/;
 const getMaxTitleLength = (value: string) => (HANGUL_REGEX.test(value) ? MAX_TITLE_LENGTH_KO : MAX_TITLE_LENGTH_EN);
-const LINK_TYPE_OPTIONS = ['Web', 'GitHub', 'Behance'];
 const CONTENT_PLACEHOLDER = '서비스 기획 배경, 핵심 기능 등을 자유롭게 입력해주세요.';
-const TAG_SEPARATOR_REGEX = /[\s,]+/;
 
 const LINK_TYPE_TO_PLATFORM: Record<string, LinkPlatform> = {
   Web: 'WEB',
@@ -80,17 +67,6 @@ const PLATFORM_TO_LINK_TYPE: Record<LinkPlatform, string> = {
   GITHUB: 'GitHub',
   WEB: 'Web',
   BEHANCE: 'Behance',
-};
-
-const LINK_TYPE_LABEL: Record<string, string> = {
-  Web: '웹링크',
-  GitHub: '깃허브',
-  Behance: '비핸스',
-};
-const LINK_TYPE_ICON: Record<string, ReactNode> = {
-  Web: <IcLink width={20} height={20} />,
-  GitHub: <IcGithub width={20} height={20} />,
-  Behance: <IcBehance width={20} height={14} />,
 };
 
 const CATEGORY_CODE_TO_LABEL = PROJECT_CATEGORY_LABEL;
@@ -119,18 +95,6 @@ const ImagePlaceholderIcon = () => (
     />
   </svg>
 );
-
-interface ExtraPart {
-  id: number;
-  name: string;
-  members: string[];
-}
-
-interface LinkRow {
-  id: number;
-  type: string;
-  url: string;
-}
 
 interface ProjectUploadFormProps {
   mode?: 'create' | 'edit';
@@ -281,22 +245,6 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
     const next = event.target.value;
     if (next.length > title.length && next.length > getMaxTitleLength(next)) return;
     setTitle(next);
-  };
-
-  const handleAddPart = () => {
-    setExtraParts((prev) => [...prev, { id: nextId(), name: '', members: [] }]);
-  };
-
-  const handleRemovePart = (id: number) => {
-    setExtraParts((prev) => prev.filter((part) => part.id !== id));
-  };
-
-  const handleAddLinkRow = () => {
-    setLinkRows((prev) => [...prev, { id: nextId(), type: LINK_TYPE_OPTIONS[0], url: '' }]);
-  };
-
-  const handleRemoveLinkRow = (id: number) => {
-    setLinkRows((prev) => prev.filter((row) => row.id !== id));
   };
 
   const handleCancel = () => {
@@ -598,64 +546,31 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
               status={showErrors && isUnfilled(teamName) ? 'negative' : 'normal'}
               description={showErrors && isUnfilled(teamName) ? '팀명을 입력해 주세요.' : undefined}
             />
-            <TagChipInput
-              heading="기획"
-              placeholder="텍스트 입력 후 띄어쓰기"
-              values={pmMembers}
-              onChange={setPmMembers}
-            />
-            <TagChipInput
-              heading="디자인"
-              placeholder="텍스트 입력 후 띄어쓰기"
-              values={designMembers}
-              onChange={setDesignMembers}
-            />
-            <TagChipInput
-              heading="프론트엔드"
-              placeholder="텍스트 입력 후 띄어쓰기"
-              values={frontendMembers}
-              onChange={setFrontendMembers}
-            />
-            <TagChipInput
-              heading="백엔드"
-              placeholder="텍스트 입력 후 띄어쓰기"
-              values={backendMembers}
-              onChange={setBackendMembers}
-            />
-            {extraParts.map((part) => (
-              <ExtraPartGroup key={part.id}>
-                <ExtraPartHeaderRow>
-                  <PartNameInput
-                    placeholder="파트 이름 입력"
-                    value={part.name}
-                    onChange={(event) =>
-                      setExtraParts((prev) =>
-                        prev.map((p) => (p.id === part.id ? { ...p, name: event.target.value } : p)),
-                      )
-                    }
-                  />
-                  <TextButton size="small" color="assistive" onClick={() => handleRemovePart(part.id)}>
-                    삭제
-                  </TextButton>
-                </ExtraPartHeaderRow>
-                <TagChipInput
-                  placeholder="텍스트 입력 후 띄어쓰기"
-                  values={part.members}
-                  onChange={(members) =>
-                    setExtraParts((prev) => prev.map((p) => (p.id === part.id ? { ...p, members } : p)))
-                  }
-                />
-              </ExtraPartGroup>
-            ))}
-            <Button
-              variant="solid"
-              color="assistive"
-              size="medium"
-              trailingIcon={<IcAdd width={16} height={16} />}
-              onClick={handleAddPart}
-            >
-              파트 추가
-            </Button>
+            <FieldGroup>
+              <FieldHeadingSmall>기획</FieldHeadingSmall>
+              <TechStackInput placeholder="텍스트 입력 후 띄어쓰기" value={pmMembers} onChange={setPmMembers} />
+            </FieldGroup>
+            <FieldGroup>
+              <FieldHeadingSmall>디자인</FieldHeadingSmall>
+              <TechStackInput placeholder="텍스트 입력 후 띄어쓰기" value={designMembers} onChange={setDesignMembers} />
+            </FieldGroup>
+            <FieldGroup>
+              <FieldHeadingSmall>프론트엔드</FieldHeadingSmall>
+              <TechStackInput
+                placeholder="텍스트 입력 후 띄어쓰기"
+                value={frontendMembers}
+                onChange={setFrontendMembers}
+              />
+            </FieldGroup>
+            <FieldGroup>
+              <FieldHeadingSmall>백엔드</FieldHeadingSmall>
+              <TechStackInput
+                placeholder="텍스트 입력 후 띄어쓰기"
+                value={backendMembers}
+                onChange={setBackendMembers}
+              />
+            </FieldGroup>
+            <ExtraPartFields parts={extraParts} onChange={setExtraParts} nextId={nextId} />
           </TeamColumn>
           <TeamColumn>
             <DateFieldGroup>
@@ -686,12 +601,14 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
                 <DateDescription>종료일은 시작일 이후로 선택해 주세요.</DateDescription>
               )}
             </DateFieldGroup>
-            <TagChipInput
-              heading="기술스택"
-              placeholder="텍스트 입력 후 띄어쓰기"
-              values={techStackItems}
-              onChange={setTechStackItems}
-            />
+            <FieldGroup>
+              <FieldHeadingSmall>기술스택</FieldHeadingSmall>
+              <TechStackInput
+                placeholder="텍스트 입력 후 띄어쓰기"
+                value={techStackItems}
+                onChange={setTechStackItems}
+              />
+            </FieldGroup>
             <TextField
               heading="배너 추가하기"
               placeholder="예시) 2026 해커톤 본선진출작"
@@ -709,30 +626,7 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
 
         <FieldGroup>
           <LinkHeading>링크첨부</LinkHeading>
-          {linkRows.map((row, index) => (
-            <LinkRowWrapper key={row.id}>
-              <LinkTypeSelect
-                value={row.type}
-                options={LINK_TYPE_OPTIONS}
-                onChange={(type) => setLinkRows((prev) => prev.map((r) => (r.id === row.id ? { ...r, type } : r)))}
-              />
-              <TextField
-                placeholder="복사한 링크를 붙여넣어 주세요."
-                value={row.url}
-                onChange={(event) =>
-                  setLinkRows((prev) => prev.map((r) => (r.id === row.id ? { ...r, url: event.target.value } : r)))
-                }
-              />
-              {index > 0 && (
-                <DeleteLinkButton type="button" onClick={() => handleRemoveLinkRow(row.id)} aria-label="링크 삭제">
-                  <IcTrash width={24} height={24} />
-                </DeleteLinkButton>
-              )}
-            </LinkRowWrapper>
-          ))}
-          <AddLinkButton type="button" onClick={handleAddLinkRow} aria-label="링크 추가">
-            <IcAdd width={20} height={20} />
-          </AddLinkButton>
+          <LinkFields rows={linkRows} onChange={setLinkRows} nextId={nextId} />
         </FieldGroup>
 
         <ActionArea>
@@ -791,181 +685,6 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
 };
 
 export default ProjectUploadForm;
-
-const LinkTypeSelect = ({
-  value,
-  options,
-  onChange,
-}: {
-  value: string;
-  options: string[];
-  onChange: (value: string) => void;
-}) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const { listId, wrapperRef, triggerRef, activeIndex, handleKeyDown, handleBlur, selectOption } = useListboxSelect({
-    isOpen,
-    options,
-    value,
-    onOpen: () => setIsOpen(true),
-    onClose: () => setIsOpen(false),
-    onSelect: onChange,
-  });
-
-  return (
-    <LinkTypeWrapper ref={wrapperRef} onKeyDownCapture={handleKeyDown} onBlur={handleBlur}>
-      <Select
-        ref={triggerRef}
-        value={value}
-        onClick={() => setIsOpen((prev) => !prev)}
-        aria-expanded={isOpen}
-        aria-activedescendant={isOpen ? `${listId}-${activeIndex}` : undefined}
-        aria-controls={listId}
-        aria-label="링크 타입 선택"
-        hideValue
-        leadingIcon={LINK_TYPE_ICON[value]}
-      />
-      {isOpen && (
-        <MenuPositioner>
-          <Menu
-            items={options.map((option, index) => ({
-              id: `${listId}-${index}`,
-              label: LINK_TYPE_LABEL[option],
-              icon: LINK_TYPE_ICON[option],
-              selected: option === value,
-              active: index === activeIndex,
-              onClick: () => selectOption(option, index),
-            }))}
-          />
-        </MenuPositioner>
-      )}
-    </LinkTypeWrapper>
-  );
-};
-
-const TagChipInput = ({
-  heading,
-  required,
-  placeholder,
-  values,
-  onChange,
-}: {
-  heading?: string;
-  required?: boolean;
-  placeholder?: string;
-  values: string[];
-  onChange: (values: string[]) => void;
-}) => {
-  const [inputValue, setInputValue] = useState('');
-  const isComposingRef = useRef(false);
-
-  const commitValue = () => {
-    const trimmed = inputValue.trim();
-    if (trimmed) onChange([...values, trimmed]);
-    setInputValue('');
-  };
-
-  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const raw = event.target.value;
-    if (!TAG_SEPARATOR_REGEX.test(raw)) {
-      setInputValue(raw);
-      return;
-    }
-    const parts = raw.split(TAG_SEPARATOR_REGEX);
-    const pending = parts.pop() ?? '';
-    const committed = parts.filter(Boolean);
-    if (committed.length > 0) onChange([...values, ...committed]);
-    setInputValue(pending);
-  };
-
-  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (isComposingRef.current) return;
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      commitValue();
-    } else if (event.key === 'Backspace' && !inputValue && values.length > 0) {
-      onChange(values.slice(0, -1));
-    }
-  };
-
-  const handleRemove = (index: number) => {
-    onChange(values.filter((_, i) => i !== index));
-  };
-
-  return (
-    <TagInputRoot>
-      {heading && (
-        <TagInputHeading>
-          {heading}
-          {required && <RequiredSmall>*</RequiredSmall>}
-        </TagInputHeading>
-      )}
-      <TagInputWrapper>
-        {values.map((value, index) => (
-          <Chip
-            key={`${value}-${index}`}
-            size="xsmall"
-            trailingIcon={<RemoveIcon>×</RemoveIcon>}
-            onClick={() => handleRemove(index)}
-          >
-            {value}
-          </Chip>
-        ))}
-        <TagTextInput
-          value={inputValue}
-          onChange={handleInputChange}
-          onKeyDown={handleKeyDown}
-          onCompositionStart={() => {
-            isComposingRef.current = true;
-          }}
-          onCompositionEnd={() => {
-            isComposingRef.current = false;
-          }}
-          onBlur={commitValue}
-          placeholder={values.length === 0 ? placeholder : ''}
-        />
-      </TagInputWrapper>
-    </TagInputRoot>
-  );
-};
-
-const SingleDateInput = ({
-  placeholder,
-  ariaLabel,
-  value,
-  min,
-  onChange,
-  invalid = false,
-}: {
-  placeholder: string;
-  ariaLabel: string;
-  value: string;
-  min?: string;
-  onChange: (value: string) => void;
-  invalid?: boolean;
-}) => {
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  return (
-    <DateInputWrapper $invalid={invalid} onClick={() => inputRef.current?.showPicker?.()}>
-      <IcCalendar width={22} height={22} />
-      <DateValue $placeholder={!value}>{value || placeholder}</DateValue>
-      {invalid && (
-        <IconSlot>
-          <IcCircleExclamation width={22} height={22} />
-        </IconSlot>
-      )}
-      <HiddenDateInput
-        ref={inputRef}
-        type="date"
-        value={value}
-        min={min}
-        onChange={(event) => onChange(event.target.value)}
-        aria-label={ariaLabel}
-        aria-invalid={invalid}
-      />
-    </DateInputWrapper>
-  );
-};
 
 const Wrapper = styled.div`
   display: flex;
@@ -1101,60 +820,6 @@ const HiddenFileInput = styled.input`
   display: none;
 `;
 
-const TagInputRoot = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  width: 100%;
-`;
-
-const TagInputHeading = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  color: ${Label.neutral};
-  ${typographyCss(Typography.label1Normal.bold)}
-`;
-
-const TagInputWrapper = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px;
-  width: 100%;
-  min-height: 24px;
-  padding: 12px;
-  border-radius: 12px;
-  background-color: rgba(255, 255, 255, 0.08);
-  box-shadow:
-    inset 0 0 0 1px ${Line.normal},
-    0 1px 2px -1px rgba(23, 23, 23, 0.1);
-
-  &:focus-within {
-    box-shadow: inset 0 0 0 2px rgba(71, 172, 255, 0.43);
-  }
-`;
-
-const TagTextInput = styled.input`
-  flex: 1 0 60px;
-  min-width: 60px;
-  padding: 0 4px;
-  border: none;
-  outline: none;
-  background: none;
-  color: ${Label.normal};
-  ${typographyCss(Typography.body1Normal.regular)}
-
-  &::placeholder {
-    color: ${Label.assistive};
-  }
-`;
-
-const RemoveIcon = styled.span`
-  font-size: 12px;
-  line-height: 1;
-`;
-
 const FieldGroup = styled.div`
   width: 100%;
   display: flex;
@@ -1230,39 +895,6 @@ const TeamColumn = styled.div`
   gap: 24px;
 `;
 
-const ExtraPartGroup = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
-`;
-
-const ExtraPartHeaderRow = styled.div`
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-`;
-
-const PartNameInput = styled.input`
-  flex-shrink: 0;
-  width: 94px;
-  padding: 4px 6px;
-  margin: 0 -6px;
-  border: none;
-  border-radius: 6px;
-  outline: none;
-  background-color: rgba(0, 0, 0, 0.04);
-  color: ${Label.normal};
-  ${typographyCss(Typography.label1Normal.medium)}
-
-  &::placeholder {
-    color: ${Label.assistive};
-  }
-`;
-
 const DateFieldGroup = styled.div`
   width: 100%;
   display: flex;
@@ -1278,35 +910,6 @@ const DateRangeRow = styled.div`
   gap: 12px;
 `;
 
-const DateInputWrapper = styled.div<{ $invalid: boolean }>`
-  position: relative;
-  display: flex;
-  flex: 1 0 0;
-  min-width: 0;
-  align-items: center;
-  gap: 8px;
-  min-height: 24px;
-  padding: 12px;
-  border-radius: 12px;
-  background-color: rgba(255, 255, 255, 0.08);
-  color: ${Label.normal};
-  box-shadow: ${(props) =>
-    props.$invalid
-      ? 'inset 0 0 0 1px rgba(255, 0, 0, 0.28), 0 1px 2px -1px rgba(23, 23, 23, 0.1)'
-      : `inset 0 0 0 1px ${Line.normal}, 0 1px 2px -1px rgba(23, 23, 23, 0.1)`};
-  cursor: pointer;
-
-  &:focus-within {
-    box-shadow: inset 0 0 0 2px rgba(71, 172, 255, 0.43);
-  }
-`;
-
-const IconSlot = styled.span`
-  display: flex;
-  flex-shrink: 0;
-  color: ${State.error};
-`;
-
 const DateDescription = styled.p`
   margin: 0;
   width: 100%;
@@ -1319,74 +922,10 @@ const DateRangeDivider = styled(IcLineHorizontal)`
   color: ${Label.assistive};
 `;
 
-const DateValue = styled.span<{ $placeholder: boolean }>`
-  flex: 1 0 0;
-  min-width: 0;
-  ${typographyCss(Typography.body1Normal.regular)}
-  color: ${(props) => (props.$placeholder ? Label.assistive : Label.normal)};
-`;
-
-const HiddenDateInput = styled.input`
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  border: none;
-  opacity: 0;
-  cursor: pointer;
-`;
-
 const LinkHeading = styled.p`
   margin: 0;
   color: ${Label.neutral};
   ${typographyCss(Typography.title3.bold)}
-`;
-
-const LinkRowWrapper = styled.div`
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-`;
-
-const LinkTypeWrapper = styled.div`
-  position: relative;
-  flex-shrink: 0;
-  width: fit-content;
-`;
-
-const MenuPositioner = styled.div`
-  position: absolute;
-  top: calc(100% + 8px);
-  left: 0;
-  z-index: 1;
-`;
-
-const DeleteLinkButton = styled.button`
-  display: flex;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  border: none;
-  background: none;
-  color: ${Label.normal};
-  cursor: pointer;
-`;
-
-const AddLinkButton = styled.button`
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 12px;
-  border: none;
-  border-radius: 12px;
-  background-color: ${Fill.normal};
-  color: ${Label.neutral};
-  cursor: pointer;
 `;
 
 const ActionArea = styled.div`
