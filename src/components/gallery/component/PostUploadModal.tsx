@@ -100,6 +100,8 @@ export interface PostUploadModalProps {
   onSubmit?: (values: PostUploadModalSubmitValues) => Promise<void>;
 }
 
+const toUploadImage = (file: File) => resizeImageFile(file, 'image/webp');
+
 const PostUploadModal = ({
   onClose,
   postType,
@@ -178,7 +180,7 @@ const PostUploadModal = ({
     0,
   );
   const { images, imageFiles, featuredIndex, isDragging, isDropTarget, addFiles, removeImage, thumbnailProps } =
-    useImageSlots({ maxCount: MAX_IMAGE_COUNT, initialImages, initialFeaturedIndex, prepareFile: resizeImageFile });
+    useImageSlots({ maxCount: MAX_IMAGE_COUNT, initialImages, initialFeaturedIndex, prepareFile: toUploadImage });
 
   const thumbnailRowRef = useRef<HTMLDivElement>(null);
   const rowScrollDragRef = useRef<{ startX: number; scrollLeft: number } | null>(null);

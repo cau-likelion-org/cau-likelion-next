@@ -1,4 +1,4 @@
-const MAX_DIMENSION = 1920;
+const MAX_DIMENSION = 2400;
 const JPEG_QUALITY = 0.85;
 
 // gif는 캔버스를 거치면 애니메이션이 사라지므로 리사이징하지 않고 원본을 그대로 사용
