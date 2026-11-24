@@ -17,7 +17,7 @@ import {
   PENDING_SIGNUP_TOKEN_KEY,
   PENDING_SIGNUP_ATTEMPT_ID_KEY,
 } from 'src/apis/signUp';
-import { consumeGoogleLoginRedirect, redirectToGoogleLogin } from '@utils/googleOAuth';
+import { consumeGoogleLoginRedirect, redirectToGoogleLogin } from 'src/lib/googleOAuth';
 import { track, newAttemptId } from 'src/lib/amplitude';
 import { BackgroundWhite, Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
