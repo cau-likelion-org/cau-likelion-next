@@ -723,14 +723,14 @@ const MainThumbnail = styled.label<{ $empty: boolean }>`
   justify-content: center;
   overflow: hidden;
   border-radius: 22px;
-  background-color: ${(props) => (props.$empty ? '#F4F4F5' : Fill.subtle)};
+  background-color: ${(props) => (props.$empty ? '#F4F4F5' : '#f5f7f9')};
   cursor: ${(props) => (props.$empty ? 'pointer' : 'default')};
 `;
 
 const MainThumbnailImage = styled.img`
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 `;
 
 const UploadGuide = styled.p`

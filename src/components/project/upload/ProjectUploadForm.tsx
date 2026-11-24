@@ -1006,14 +1006,14 @@ const MainThumbnail = styled.label<{ $hasImage: boolean }>`
   justify-content: center;
   overflow: hidden;
   border-radius: 22px;
-  background-color: ${(props) => (props.$hasImage ? BackgroundColor : '#f4f4f5')};
+  background-color: ${(props) => (props.$hasImage ? '#f5f7f9' : '#f4f4f5')};
   cursor: pointer;
 `;
 
 const MainThumbnailImage = styled.img`
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 `;
 
 const UploadGuide = styled.p`
