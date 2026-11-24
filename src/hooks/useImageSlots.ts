@@ -27,6 +27,7 @@ const useImageSlots = ({ maxCount, initialImages, initialFeaturedIndex, prepareF
   const [featuredIndex, setFeaturedIndex] = useState(initialFeaturedIndex);
   const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+  const [preparingCount, setPreparingCount] = useState(0);
 
   // 갤러리처럼 파일 변환을 기다리는 동안 다른 선택·삭제가 끼어들 수 있어, 칸 배정은 항상 최신 상태를 기준으로 한다
   const slotsRef = useRef({ images, imageFiles });
@@ -41,7 +42,15 @@ const useImageSlots = ({ maxCount, initialImages, initialFeaturedIndex, prepareF
     event.target.value = '';
     if (files.length === 0) return;
 
-    const preparedFiles = prepareFile ? await Promise.all(files.map(prepareFile)) : files;
+    let preparedFiles = files;
+    if (prepareFile) {
+      setPreparingCount((count) => count + 1);
+      try {
+        preparedFiles = await Promise.all(files.map(prepareFile));
+      } finally {
+        setPreparingCount((count) => count - 1);
+      }
+    }
 
     const { images: currentImages, imageFiles: currentFiles } = slotsRef.current;
     const hadNoImages = currentImages.every((image) => image === null);
@@ -129,6 +138,7 @@ const useImageSlots = ({ maxCount, initialImages, initialFeaturedIndex, prepareF
     images,
     imageFiles,
     featuredIndex,
+    isPreparing: preparingCount > 0,
     isDragging: (index: number) => draggingIndex === index,
     isDropTarget: (index: number) => dragOverIndex === index && draggingIndex !== index,
     addFiles,
