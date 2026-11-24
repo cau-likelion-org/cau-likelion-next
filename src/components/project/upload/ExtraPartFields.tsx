@@ -3,10 +3,10 @@ import styled from 'styled-components';
 
 import Button from '@common/button/Button';
 import TextButton from '@common/textButton/TextButton';
+import TechStackInput from '@mypage/admin/component/TechStackInput';
 import { IcAdd } from '@assets/svg';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
-import TagChipInput from './TagChipInput';
 
 export interface ExtraPart {
   id: number;
@@ -47,9 +47,9 @@ const ExtraPartFields = ({
               삭제
             </TextButton>
           </ExtraPartHeaderRow>
-          <TagChipInput
+          <TechStackInput
             placeholder="텍스트 입력 후 띄어쓰기"
-            values={part.members}
+            value={part.members}
             onChange={(members) => onChange((prev) => prev.map((p) => (p.id === part.id ? { ...p, members } : p)))}
           />
         </ExtraPartGroup>

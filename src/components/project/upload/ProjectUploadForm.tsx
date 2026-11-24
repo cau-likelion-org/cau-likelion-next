@@ -11,6 +11,7 @@ import TextField from '@common/textField/TextField';
 import Toast from '@common/toast/Toast';
 import { ToastWrapper } from '@common/toast/toastLayout';
 import ProjectFilterSelect from '@project/projects/ProjectFilterSelect';
+import TechStackInput from '@mypage/admin/component/TechStackInput';
 import { Generation } from '@@types/request';
 import {
   LinkPlatform,
@@ -76,7 +77,6 @@ import {
   Wrapper,
 } from './ProjectUploadForm.styles';
 import SingleDateInput from './SingleDateInput';
-import TagChipInput from './TagChipInput';
 
 const MAX_IMAGE_COUNT = 4;
 const MAX_BANNER_LENGTH = 15;
@@ -575,30 +575,30 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
               status={showErrors && isUnfilled(teamName) ? 'negative' : 'normal'}
               description={showErrors && isUnfilled(teamName) ? '팀명을 입력해 주세요.' : undefined}
             />
-            <TagChipInput
-              heading="기획"
-              placeholder="텍스트 입력 후 띄어쓰기"
-              values={pmMembers}
-              onChange={setPmMembers}
-            />
-            <TagChipInput
-              heading="디자인"
-              placeholder="텍스트 입력 후 띄어쓰기"
-              values={designMembers}
-              onChange={setDesignMembers}
-            />
-            <TagChipInput
-              heading="프론트엔드"
-              placeholder="텍스트 입력 후 띄어쓰기"
-              values={frontendMembers}
-              onChange={setFrontendMembers}
-            />
-            <TagChipInput
-              heading="백엔드"
-              placeholder="텍스트 입력 후 띄어쓰기"
-              values={backendMembers}
-              onChange={setBackendMembers}
-            />
+            <FieldGroup>
+              <FieldHeadingSmall>기획</FieldHeadingSmall>
+              <TechStackInput placeholder="텍스트 입력 후 띄어쓰기" value={pmMembers} onChange={setPmMembers} />
+            </FieldGroup>
+            <FieldGroup>
+              <FieldHeadingSmall>디자인</FieldHeadingSmall>
+              <TechStackInput placeholder="텍스트 입력 후 띄어쓰기" value={designMembers} onChange={setDesignMembers} />
+            </FieldGroup>
+            <FieldGroup>
+              <FieldHeadingSmall>프론트엔드</FieldHeadingSmall>
+              <TechStackInput
+                placeholder="텍스트 입력 후 띄어쓰기"
+                value={frontendMembers}
+                onChange={setFrontendMembers}
+              />
+            </FieldGroup>
+            <FieldGroup>
+              <FieldHeadingSmall>백엔드</FieldHeadingSmall>
+              <TechStackInput
+                placeholder="텍스트 입력 후 띄어쓰기"
+                value={backendMembers}
+                onChange={setBackendMembers}
+              />
+            </FieldGroup>
             <ExtraPartFields parts={extraParts} onChange={setExtraParts} nextId={nextId} />
           </TeamColumn>
           <TeamColumn>
@@ -630,12 +630,14 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
                 <DateDescription>종료일은 시작일 이후로 선택해 주세요.</DateDescription>
               )}
             </DateFieldGroup>
-            <TagChipInput
-              heading="기술스택"
-              placeholder="텍스트 입력 후 띄어쓰기"
-              values={techStackItems}
-              onChange={setTechStackItems}
-            />
+            <FieldGroup>
+              <FieldHeadingSmall>기술스택</FieldHeadingSmall>
+              <TechStackInput
+                placeholder="텍스트 입력 후 띄어쓰기"
+                value={techStackItems}
+                onChange={setTechStackItems}
+              />
+            </FieldGroup>
             <TextField
               heading="배너 추가하기"
               placeholder="예시) 2026 해커톤 본선진출작"
