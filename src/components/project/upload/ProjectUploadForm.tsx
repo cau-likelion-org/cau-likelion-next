@@ -1,4 +1,4 @@
-import { ChangeEvent, KeyboardEvent, ReactNode, useRef, useState } from 'react';
+import { ChangeEvent, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import styled from 'styled-components';
@@ -8,9 +8,6 @@ import LeaveConfirmAlert from '@common/alert/LeaveConfirmAlert';
 import BackHeader from '@common/header/BackHeader';
 import Button from '@common/button/Button';
 import CharCount from '@common/charCount/CharCount';
-import Chip from '@common/chip/Chip';
-import Menu from '@common/menu/Menu';
-import Select from '@common/select/Select';
 import TextButton from '@common/textButton/TextButton';
 import TextField from '@common/textField/TextField';
 import Textarea from '@common/textarea/Textarea';
@@ -38,20 +35,9 @@ import {
 } from 'src/apis/project';
 import useImageSlots from 'src/hooks/useImageSlots';
 import useTokenStore from 'src/store/useTokenStore';
-import {
-  IcAdd,
-  IcBehance,
-  IcCalendar,
-  IcCircleClose,
-  IcCircleExclamation,
-  IcGithub,
-  IcLineHorizontal,
-  IcLink,
-  IcTrash,
-} from '@assets/svg';
+import { IcAdd, IcCircleClose, IcLineHorizontal, IcTrash } from '@assets/svg';
 import useInput from 'src/hooks/useInput';
 import useLeaveGuard from 'src/hooks/useLeaveGuard';
-import useListboxSelect from 'src/hooks/useListboxSelect';
 import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import { NUMERIC_ONLY_REGEX, PROJECT_CATEGORY_OPTIONS } from '@utils/constant';
 import { AccentTint, BackgroundColor, Black, Fill, Label, Line, Orange, State } from '@utils/constant/color';
@@ -59,6 +45,10 @@ import { isUnfilled } from '@utils/index';
 import { resizeImageFile } from '@utils/resizeImage';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { containerCss } from '@utils/constant/breakpoint';
+import LinkTypeSelect from './LinkTypeSelect';
+import { RequiredSmall } from './ProjectUploadForm.styles';
+import SingleDateInput from './SingleDateInput';
+import TagChipInput from './TagChipInput';
 
 const MAX_IMAGE_COUNT = 4;
 const MAX_BANNER_LENGTH = 15;
@@ -69,7 +59,6 @@ const HANGUL_REGEX = /[ㄱ-ㅎㅏ-ㅣ가-힣]/;
 const getMaxTitleLength = (value: string) => (HANGUL_REGEX.test(value) ? MAX_TITLE_LENGTH_KO : MAX_TITLE_LENGTH_EN);
 const LINK_TYPE_OPTIONS = ['Web', 'GitHub', 'Behance'];
 const CONTENT_PLACEHOLDER = '서비스 기획 배경, 핵심 기능 등을 자유롭게 입력해주세요.';
-const TAG_SEPARATOR_REGEX = /[\s,]+/;
 
 const LINK_TYPE_TO_PLATFORM: Record<string, LinkPlatform> = {
   Web: 'WEB',
@@ -80,17 +69,6 @@ const PLATFORM_TO_LINK_TYPE: Record<LinkPlatform, string> = {
   GITHUB: 'GitHub',
   WEB: 'Web',
   BEHANCE: 'Behance',
-};
-
-const LINK_TYPE_LABEL: Record<string, string> = {
-  Web: '웹링크',
-  GitHub: '깃허브',
-  Behance: '비핸스',
-};
-const LINK_TYPE_ICON: Record<string, ReactNode> = {
-  Web: <IcLink width={20} height={20} />,
-  GitHub: <IcGithub width={20} height={20} />,
-  Behance: <IcBehance width={20} height={14} />,
 };
 
 const CATEGORY_CODE_TO_LABEL = PROJECT_CATEGORY_LABEL;
@@ -792,181 +770,6 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
 
 export default ProjectUploadForm;
 
-const LinkTypeSelect = ({
-  value,
-  options,
-  onChange,
-}: {
-  value: string;
-  options: string[];
-  onChange: (value: string) => void;
-}) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const { listId, wrapperRef, triggerRef, activeIndex, handleKeyDown, handleBlur, selectOption } = useListboxSelect({
-    isOpen,
-    options,
-    value,
-    onOpen: () => setIsOpen(true),
-    onClose: () => setIsOpen(false),
-    onSelect: onChange,
-  });
-
-  return (
-    <LinkTypeWrapper ref={wrapperRef} onKeyDownCapture={handleKeyDown} onBlur={handleBlur}>
-      <Select
-        ref={triggerRef}
-        value={value}
-        onClick={() => setIsOpen((prev) => !prev)}
-        aria-expanded={isOpen}
-        aria-activedescendant={isOpen ? `${listId}-${activeIndex}` : undefined}
-        aria-controls={listId}
-        aria-label="링크 타입 선택"
-        hideValue
-        leadingIcon={LINK_TYPE_ICON[value]}
-      />
-      {isOpen && (
-        <MenuPositioner>
-          <Menu
-            items={options.map((option, index) => ({
-              id: `${listId}-${index}`,
-              label: LINK_TYPE_LABEL[option],
-              icon: LINK_TYPE_ICON[option],
-              selected: option === value,
-              active: index === activeIndex,
-              onClick: () => selectOption(option, index),
-            }))}
-          />
-        </MenuPositioner>
-      )}
-    </LinkTypeWrapper>
-  );
-};
-
-const TagChipInput = ({
-  heading,
-  required,
-  placeholder,
-  values,
-  onChange,
-}: {
-  heading?: string;
-  required?: boolean;
-  placeholder?: string;
-  values: string[];
-  onChange: (values: string[]) => void;
-}) => {
-  const [inputValue, setInputValue] = useState('');
-  const isComposingRef = useRef(false);
-
-  const commitValue = () => {
-    const trimmed = inputValue.trim();
-    if (trimmed) onChange([...values, trimmed]);
-    setInputValue('');
-  };
-
-  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const raw = event.target.value;
-    if (!TAG_SEPARATOR_REGEX.test(raw)) {
-      setInputValue(raw);
-      return;
-    }
-    const parts = raw.split(TAG_SEPARATOR_REGEX);
-    const pending = parts.pop() ?? '';
-    const committed = parts.filter(Boolean);
-    if (committed.length > 0) onChange([...values, ...committed]);
-    setInputValue(pending);
-  };
-
-  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (isComposingRef.current) return;
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      commitValue();
-    } else if (event.key === 'Backspace' && !inputValue && values.length > 0) {
-      onChange(values.slice(0, -1));
-    }
-  };
-
-  const handleRemove = (index: number) => {
-    onChange(values.filter((_, i) => i !== index));
-  };
-
-  return (
-    <TagInputRoot>
-      {heading && (
-        <TagInputHeading>
-          {heading}
-          {required && <RequiredSmall>*</RequiredSmall>}
-        </TagInputHeading>
-      )}
-      <TagInputWrapper>
-        {values.map((value, index) => (
-          <Chip
-            key={`${value}-${index}`}
-            size="xsmall"
-            trailingIcon={<RemoveIcon>×</RemoveIcon>}
-            onClick={() => handleRemove(index)}
-          >
-            {value}
-          </Chip>
-        ))}
-        <TagTextInput
-          value={inputValue}
-          onChange={handleInputChange}
-          onKeyDown={handleKeyDown}
-          onCompositionStart={() => {
-            isComposingRef.current = true;
-          }}
-          onCompositionEnd={() => {
-            isComposingRef.current = false;
-          }}
-          onBlur={commitValue}
-          placeholder={values.length === 0 ? placeholder : ''}
-        />
-      </TagInputWrapper>
-    </TagInputRoot>
-  );
-};
-
-const SingleDateInput = ({
-  placeholder,
-  ariaLabel,
-  value,
-  min,
-  onChange,
-  invalid = false,
-}: {
-  placeholder: string;
-  ariaLabel: string;
-  value: string;
-  min?: string;
-  onChange: (value: string) => void;
-  invalid?: boolean;
-}) => {
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  return (
-    <DateInputWrapper $invalid={invalid} onClick={() => inputRef.current?.showPicker?.()}>
-      <IcCalendar width={22} height={22} />
-      <DateValue $placeholder={!value}>{value || placeholder}</DateValue>
-      {invalid && (
-        <IconSlot>
-          <IcCircleExclamation width={22} height={22} />
-        </IconSlot>
-      )}
-      <HiddenDateInput
-        ref={inputRef}
-        type="date"
-        value={value}
-        min={min}
-        onChange={(event) => onChange(event.target.value)}
-        aria-label={ariaLabel}
-        aria-invalid={invalid}
-      />
-    </DateInputWrapper>
-  );
-};
-
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -1101,60 +904,6 @@ const HiddenFileInput = styled.input`
   display: none;
 `;
 
-const TagInputRoot = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  width: 100%;
-`;
-
-const TagInputHeading = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  color: ${Label.neutral};
-  ${typographyCss(Typography.label1Normal.bold)}
-`;
-
-const TagInputWrapper = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px;
-  width: 100%;
-  min-height: 24px;
-  padding: 12px;
-  border-radius: 12px;
-  background-color: rgba(255, 255, 255, 0.08);
-  box-shadow:
-    inset 0 0 0 1px ${Line.normal},
-    0 1px 2px -1px rgba(23, 23, 23, 0.1);
-
-  &:focus-within {
-    box-shadow: inset 0 0 0 2px rgba(71, 172, 255, 0.43);
-  }
-`;
-
-const TagTextInput = styled.input`
-  flex: 1 0 60px;
-  min-width: 60px;
-  padding: 0 4px;
-  border: none;
-  outline: none;
-  background: none;
-  color: ${Label.normal};
-  ${typographyCss(Typography.body1Normal.regular)}
-
-  &::placeholder {
-    color: ${Label.assistive};
-  }
-`;
-
-const RemoveIcon = styled.span`
-  font-size: 12px;
-  line-height: 1;
-`;
-
 const FieldGroup = styled.div`
   width: 100%;
   display: flex;
@@ -1183,11 +932,6 @@ const FieldHeadingSmall = styled.div`
 const Required = styled.span`
   color: ${State.error};
   ${typographyCss(Typography.title3.bold)}
-`;
-
-const RequiredSmall = styled.span`
-  color: ${State.error};
-  ${typographyCss(Typography.label1Normal.medium)}
 `;
 
 const TitleTextarea = styled(Textarea)`
@@ -1278,35 +1022,6 @@ const DateRangeRow = styled.div`
   gap: 12px;
 `;
 
-const DateInputWrapper = styled.div<{ $invalid: boolean }>`
-  position: relative;
-  display: flex;
-  flex: 1 0 0;
-  min-width: 0;
-  align-items: center;
-  gap: 8px;
-  min-height: 24px;
-  padding: 12px;
-  border-radius: 12px;
-  background-color: rgba(255, 255, 255, 0.08);
-  color: ${Label.normal};
-  box-shadow: ${(props) =>
-    props.$invalid
-      ? 'inset 0 0 0 1px rgba(255, 0, 0, 0.28), 0 1px 2px -1px rgba(23, 23, 23, 0.1)'
-      : `inset 0 0 0 1px ${Line.normal}, 0 1px 2px -1px rgba(23, 23, 23, 0.1)`};
-  cursor: pointer;
-
-  &:focus-within {
-    box-shadow: inset 0 0 0 2px rgba(71, 172, 255, 0.43);
-  }
-`;
-
-const IconSlot = styled.span`
-  display: flex;
-  flex-shrink: 0;
-  color: ${State.error};
-`;
-
 const DateDescription = styled.p`
   margin: 0;
   width: 100%;
@@ -1317,25 +1032,6 @@ const DateDescription = styled.p`
 const DateRangeDivider = styled(IcLineHorizontal)`
   flex-shrink: 0;
   color: ${Label.assistive};
-`;
-
-const DateValue = styled.span<{ $placeholder: boolean }>`
-  flex: 1 0 0;
-  min-width: 0;
-  ${typographyCss(Typography.body1Normal.regular)}
-  color: ${(props) => (props.$placeholder ? Label.assistive : Label.normal)};
-`;
-
-const HiddenDateInput = styled.input`
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  border: none;
-  opacity: 0;
-  cursor: pointer;
 `;
 
 const LinkHeading = styled.p`
@@ -1349,19 +1045,6 @@ const LinkRowWrapper = styled.div`
   display: flex;
   align-items: center;
   gap: 20px;
-`;
-
-const LinkTypeWrapper = styled.div`
-  position: relative;
-  flex-shrink: 0;
-  width: fit-content;
-`;
-
-const MenuPositioner = styled.div`
-  position: absolute;
-  top: calc(100% + 8px);
-  left: 0;
-  z-index: 1;
 `;
 
 const DeleteLinkButton = styled.button`
