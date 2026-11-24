@@ -10,7 +10,7 @@ const useAuthRedirect = () => {
     if (tokenState.access) {
       router.replace('/mypage');
     }
-  }, [tokenState.access]);
+  }, [tokenState.access, router]);
 };
 
 export default useAuthRedirect;
