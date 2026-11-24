@@ -22,7 +22,7 @@ const TechStackInput = ({
   const [draft, setDraft] = useState('');
   const isComposingRef = useRef(false);
 
-  const removeTag = (tag: string) => onChange(value.filter((item) => item !== tag));
+  const removeTag = (index: number) => onChange(value.filter((_, i) => i !== index));
 
   const addTags = (tags: string[]) => {
     const newTags = Array.from(new Set(tags.filter((tag) => !value.includes(tag))));
@@ -68,17 +68,17 @@ const TechStackInput = ({
 
   return (
     <Wrapper $invalid={invalid}>
-      {value.map((tag) =>
+      {value.map((tag, index) =>
         disabled ? (
-          <Chip key={tag} size="xsmall">
+          <Chip key={`${tag}-${index}`} size="xsmall">
             {tag}
           </Chip>
         ) : (
           <Chip
-            key={tag}
+            key={`${tag}-${index}`}
             size="xsmall"
             trailingIcon={
-              <RemoveIcon type="button" onClick={() => removeTag(tag)} aria-label={`${tag} 삭제`}>
+              <RemoveIcon type="button" onClick={() => removeTag(index)} aria-label={`${tag} 삭제`}>
                 ×
               </RemoveIcon>
             }
