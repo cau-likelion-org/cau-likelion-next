@@ -1,8 +1,5 @@
 {
   "compilerOptions": {
-    "types": [
-      "@types/gtag.js" // 추가
-    ],
     "target": "es2017",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
