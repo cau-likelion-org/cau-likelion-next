@@ -1,4 +1,4 @@
-import { ChangeEvent, DragEvent, KeyboardEvent, useState } from 'react';
+import { ChangeEvent, DragEvent, KeyboardEvent, useRef, useState } from 'react';
 
 interface UseImageSlotsOptions {
   maxCount: number;
@@ -23,59 +23,53 @@ const removeAndCompact = <T>(list: (T | null)[], index: number) => {
 
 const useImageSlots = ({ maxCount, initialImages, initialFeaturedIndex, prepareFile }: UseImageSlotsOptions) => {
   const [images, setImages] = useState<(string | null)[]>(initialImages);
-  const [imageFiles, setImageFiles] = useState<(File | null)[]>(Array(maxCount).fill(null));
+  const [imageFiles, setImageFiles] = useState<(File | null)[]>(() => Array(maxCount).fill(null));
   const [featuredIndex, setFeaturedIndex] = useState(initialFeaturedIndex);
   const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
+  // 갤러리처럼 파일 변환을 기다리는 동안 다른 선택·삭제가 끼어들 수 있어, 칸 배정은 항상 최신 상태를 기준으로 한다
+  const slotsRef = useRef({ images, imageFiles });
+  const commitSlots = (nextImages: (string | null)[], nextImageFiles: (File | null)[]) => {
+    slotsRef.current = { images: nextImages, imageFiles: nextImageFiles };
+    setImages(nextImages);
+    setImageFiles(nextImageFiles);
+  };
+
   const addFiles = async (index: number, event: ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files ?? []);
+    const files = Array.from(event.target.files ?? []).slice(0, maxCount);
     event.target.value = '';
     if (files.length === 0) return;
 
-    const hadNoImages = images.every((image) => image === null);
+    const preparedFiles = prepareFile ? await Promise.all(files.map(prepareFile)) : files;
 
-    const targets: { targetIndex: number; file: File }[] = [];
+    const { images: currentImages, imageFiles: currentFiles } = slotsRef.current;
+    const hadNoImages = currentImages.every((image) => image === null);
+    const nextImages = [...currentImages];
+    const nextImageFiles = [...currentFiles];
+    let firstFilledIndex: number | null = null;
     let cursor = index;
-    for (const file of files) {
-      while (cursor < maxCount && images[cursor] !== null) cursor++;
+    for (const file of preparedFiles) {
+      while (cursor < maxCount && nextImages[cursor] !== null) cursor++;
       if (cursor >= maxCount) break;
-      targets.push({ targetIndex: cursor, file });
+      nextImages[cursor] = URL.createObjectURL(file);
+      nextImageFiles[cursor] = file;
+      firstFilledIndex ??= cursor;
       cursor++;
     }
-    if (targets.length === 0) return;
+    if (firstFilledIndex === null) return;
 
-    const preparedTargets = prepareFile
-      ? await Promise.all(
-          targets.map(async ({ targetIndex, file }) => ({ targetIndex, file: await prepareFile(file) })),
-        )
-      : targets;
-
-    setImages((prev) => {
-      const next = [...prev];
-      preparedTargets.forEach(({ targetIndex, file }) => {
-        if (next[targetIndex]) URL.revokeObjectURL(next[targetIndex] as string);
-        next[targetIndex] = URL.createObjectURL(file);
-      });
-      return next;
-    });
-    setImageFiles((prev) => {
-      const next = [...prev];
-      preparedTargets.forEach(({ targetIndex, file }) => {
-        next[targetIndex] = file;
-      });
-      return next;
-    });
-    if (hadNoImages) setFeaturedIndex(preparedTargets[0].targetIndex);
+    commitSlots(nextImages, nextImageFiles);
+    if (hadNoImages) setFeaturedIndex(firstFilledIndex);
   };
 
   const removeImage = (index: number) => {
-    const removed = images[index];
+    const { images: currentImages, imageFiles: currentFiles } = slotsRef.current;
+    const removed = currentImages[index];
     if (removed) URL.revokeObjectURL(removed);
 
-    const nextImages = removeAndCompact(images, index);
-    setImages(nextImages);
-    setImageFiles((prev) => removeAndCompact(prev, index));
+    const nextImages = removeAndCompact(currentImages, index);
+    commitSlots(nextImages, removeAndCompact(currentFiles, index));
     setFeaturedIndex((prev) => {
       if (prev < index) return prev;
       if (prev > index) return prev - 1;
@@ -86,8 +80,8 @@ const useImageSlots = ({ maxCount, initialImages, initialFeaturedIndex, prepareF
 
   const moveImage = (from: number, to: number) => {
     if (from === to) return;
-    setImages((prev) => reorder(prev, from, to));
-    setImageFiles((prev) => reorder(prev, from, to));
+    const { images: currentImages, imageFiles: currentFiles } = slotsRef.current;
+    commitSlots(reorder(currentImages, from, to), reorder(currentFiles, from, to));
     setFeaturedIndex((prev) => {
       if (prev === from) return to;
       if (from < prev && prev <= to) return prev - 1;

@@ -60,6 +60,36 @@ describe('useImageSlots', () => {
     expect(result.current.imageFiles[0]?.name).toBe('resized-a.png');
   });
 
+  it('파일 변환을 기다리는 동안 또 고른 파일도 덮어쓰지 않고 빈 칸에 넣는다', async () => {
+    const pending: Record<string, (file: File) => void> = {};
+    const prepareFile = (file: File) => new Promise<File>((resolve) => (pending[file.name] = resolve));
+    const { result } = renderHook(() =>
+      useImageSlots({ maxCount: 4, initialImages: [null, null, null, null], initialFeaturedIndex: 0, prepareFile }),
+    );
+
+    let first: Promise<void> = Promise.resolve();
+    let second: Promise<void> = Promise.resolve();
+    act(() => {
+      first = result.current.addFiles(0, fileEvent('a.png', 'b.png'));
+    });
+    act(() => {
+      second = result.current.addFiles(0, fileEvent('c.png'));
+    });
+
+    await act(async () => {
+      pending['c.png'](new File(['x'], 'c.png'));
+      await second;
+    });
+    await act(async () => {
+      pending['a.png'](new File(['x'], 'a.png'));
+      pending['b.png'](new File(['x'], 'b.png'));
+      await first;
+    });
+
+    expect(result.current.imageFiles.map((file) => file?.name ?? null)).toEqual(['c.png', 'a.png', 'b.png', null]);
+    expect(result.current.featuredIndex).toBe(0);
+  });
+
   it('삭제하면 뒤 이미지를 앞으로 당기고 대표 이미지 위치를 맞춘다', () => {
     const { result } = renderSlots(['u0', 'u1', 'u2', null], 2);
 
