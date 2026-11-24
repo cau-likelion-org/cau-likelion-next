@@ -8,6 +8,7 @@ import LeaveConfirmAlert from '@common/alert/LeaveConfirmAlert';
 import BackHeader from '@common/header/BackHeader';
 import Button from '@common/button/Button';
 import CharCount from '@common/charCount/CharCount';
+import DateTimeInput from '@common/dateTimeInput/DateTimeInput';
 import TextField from '@common/textField/TextField';
 import Textarea from '@common/textarea/Textarea';
 import Toast from '@common/toast/Toast';
@@ -47,7 +48,6 @@ import { Typography, typographyCss } from '@utils/constant/typography';
 import { containerCss } from '@utils/constant/breakpoint';
 import ExtraPartFields, { ExtraPart } from './ExtraPartFields';
 import LinkFields, { LINK_TYPE_OPTIONS, LinkRow } from './LinkFields';
-import SingleDateInput from './SingleDateInput';
 
 const MAX_IMAGE_COUNT = 4;
 const MAX_BANNER_LENGTH = 15;
@@ -579,21 +579,21 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
                 <RequiredSmall>*</RequiredSmall>
               </FieldHeadingSmall>
               <DateRangeRow>
-                <SingleDateInput
+                <DateTimeInput
                   placeholder="시작일 선택"
-                  ariaLabel="시작일"
+                  aria-label="시작일"
                   value={dateRange[0]}
                   onChange={(next) => setDateRange([next, dateRange[1]])}
-                  invalid={showErrors && isDateInvalid}
+                  status={showErrors && isDateInvalid ? 'negative' : 'normal'}
                 />
                 <DateRangeDivider width={16} height={16} />
-                <SingleDateInput
+                <DateTimeInput
                   placeholder="종료일 선택"
-                  ariaLabel="종료일"
+                  aria-label="종료일"
                   value={dateRange[1]}
                   min={dateRange[0] || undefined}
                   onChange={(next) => setDateRange([dateRange[0], next])}
-                  invalid={showErrors && isDateInvalid}
+                  status={showErrors && isDateInvalid ? 'negative' : 'normal'}
                 />
               </DateRangeRow>
               {showErrors && isDateMissing && <DateDescription>프로젝트 기간을 선택해 주세요.</DateDescription>}
