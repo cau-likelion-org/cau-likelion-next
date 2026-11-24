@@ -10,9 +10,10 @@ import TextButton from '@common/textButton/TextButton';
 import TextField from '@common/textField/TextField';
 import Textarea from '@common/textarea/Textarea';
 import CharCount from '@common/charCount/CharCount';
+import DateTimeInput from '@common/dateTimeInput/DateTimeInput';
 import Toast from '@common/toast/Toast';
 import { ToastWrapper } from '@common/toast/toastLayout';
-import { IcAdd, IcCalendar, IcCircleExclamation, IcCloseCircle, IcLineHorizontal } from '@assets/svg';
+import { IcAdd, IcCloseCircle, IcLineHorizontal } from '@assets/svg';
 import useFocusTrap from 'src/hooks/useFocusTrap';
 import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import useInput from 'src/hooks/useInput';
@@ -592,42 +593,6 @@ const CategorySelect = ({
   );
 };
 
-const SingleDateInput = ({
-  placeholder,
-  ariaLabel,
-  value,
-  onChange,
-  invalid = false,
-}: {
-  placeholder: string;
-  ariaLabel: string;
-  value: string;
-  onChange: (value: string) => void;
-  invalid?: boolean;
-}) => {
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  return (
-    <DateInputWrapper $invalid={invalid} onClick={() => inputRef.current?.showPicker?.()}>
-      <IcCalendar width={22} height={22} />
-      <DateValue $placeholder={!value}>{value || placeholder}</DateValue>
-      {invalid && (
-        <IconSlot>
-          <IcCircleExclamation width={22} height={22} />
-        </IconSlot>
-      )}
-      <HiddenDateInput
-        ref={inputRef}
-        type="date"
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        aria-label={ariaLabel}
-        aria-invalid={invalid}
-      />
-    </DateInputWrapper>
-  );
-};
-
 const DateField = ({
   mode,
   value,
@@ -645,12 +610,12 @@ const DateField = ({
 }) => {
   if (mode === 'single') {
     return (
-      <SingleDateInput
+      <DateTimeInput
         placeholder="날짜 선택"
-        ariaLabel="일자"
+        aria-label="일자"
         value={value ?? ''}
         onChange={(next) => onChange?.(next)}
-        invalid={invalid}
+        status={invalid ? 'negative' : 'normal'}
       />
     );
   }
@@ -658,22 +623,22 @@ const DateField = ({
   return (
     <DateRangeRow>
       <DateRangeItem>
-        <SingleDateInput
+        <DateTimeInput
           placeholder="날짜 선택"
-          ariaLabel="시작일"
+          aria-label="시작일"
           value={rangeValue?.[0] ?? ''}
           onChange={(next) => onRangeChange?.(0, next)}
-          invalid={invalid}
+          status={invalid ? 'negative' : 'normal'}
         />
       </DateRangeItem>
       <DateRangeDivider width={16} height={16} />
       <DateRangeItem>
-        <SingleDateInput
+        <DateTimeInput
           placeholder="날짜 선택"
-          ariaLabel="종료일"
+          aria-label="종료일"
           value={rangeValue?.[1] ?? ''}
           onChange={(next) => onRangeChange?.(1, next)}
-          invalid={invalid}
+          status={invalid ? 'negative' : 'normal'}
         />
       </DateRangeItem>
     </DateRangeRow>
@@ -927,34 +892,6 @@ const RadioItem = styled.div`
   min-width: 0;
 `;
 
-const DateInputWrapper = styled.div<{ $invalid: boolean }>`
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-  min-height: 24px;
-  padding: 12px;
-  border-radius: 12px;
-  background-color: rgba(255, 255, 255, 0.08);
-  color: ${Label.normal};
-  box-shadow: ${(props) =>
-    props.$invalid
-      ? 'inset 0 0 0 1px rgba(255, 0, 0, 0.28), 0 1px 2px -1px rgba(23, 23, 23, 0.1)'
-      : `inset 0 0 0 1px ${Line.normal}, 0 1px 2px -1px rgba(23, 23, 23, 0.1)`};
-  cursor: pointer;
-
-  &:focus-within {
-    box-shadow: inset 0 0 0 2px rgba(71, 172, 255, 0.43);
-  }
-`;
-
-const IconSlot = styled.span`
-  display: flex;
-  flex-shrink: 0;
-  color: ${State.error};
-`;
-
 const DateDescription = styled.p`
   margin: 0;
   width: 100%;
@@ -977,25 +914,6 @@ const DateRangeItem = styled.div`
 const DateRangeDivider = styled(IcLineHorizontal)`
   flex-shrink: 0;
   color: ${Label.assistive};
-`;
-
-const DateValue = styled.span<{ $placeholder: boolean }>`
-  flex: 1 0 0;
-  min-width: 0;
-  ${typographyCss(Typography.body1Normal.regular)}
-  color: ${(props) => (props.$placeholder ? Label.assistive : Label.normal)};
-`;
-
-const HiddenDateInput = styled.input`
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  border: none;
-  opacity: 0;
-  cursor: pointer;
 `;
 
 const Actions = styled.div<{ $mode: 'create' | 'edit' }>`

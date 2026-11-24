@@ -4,6 +4,7 @@ import Chip from '@common/chip/Chip';
 import { LinkPlatform, ProjectLinkDto } from 'src/apis/project';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
+import { formatDate } from '@utils/index';
 import styled from 'styled-components';
 
 const LINK_PLATFORM_ICON: Record<LinkPlatform, ReactNode> = {
@@ -37,11 +38,11 @@ const ProjectDetailMetaPanel = ({ startDate, endDate, stack, links }: ProjectDet
       <Column>
         <RowLabel>프로젝트 기간</RowLabel>
         <DateRow>
-          <Chip size="small">{startDate}</Chip>
+          <Chip size="small">{formatDate(startDate)}</Chip>
           {endDate && (
             <>
               <IcLineHorizontal width={24} height={24} style={{ color: Label.assistive }} />
-              <Chip size="small">{endDate}</Chip>
+              <Chip size="small">{formatDate(endDate)}</Chip>
             </>
           )}
         </DateRow>

@@ -19,6 +19,10 @@ export const toDateString = (date?: Date, formatter = '-') => {
   return year + formatter + month + formatter + day;
 };
 
+export const formatDate = (value: string) => value.slice(0, 10).replace(/-/g, '/');
+
+export const formatDateTime = (value: string) => `${formatDate(value)} ${value.slice(11, 16)}`;
+
 const DAY_LABELS = ['일', '월', '화', '수', '목', '금', '토'];
 const pad2 = (value: number) => String(value).padStart(2, '0');
 

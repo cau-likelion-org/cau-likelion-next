@@ -11,6 +11,7 @@ import {
   getFieldBackground,
   getFieldBoxShadow,
 } from '@common/fieldStatus/FieldStatus';
+import { formatDate } from '@utils/index';
 
 type DateTimeInputType = 'date' | 'time';
 
@@ -32,8 +33,7 @@ const DEFAULT_PLACEHOLDER: Record<DateTimeInputType, string> = {
   time: '시간 선택',
 };
 
-const formatValue = (type: DateTimeInputType, value: string) =>
-  type === 'date' ? value.slice(0, 10).replace(/-/g, '/') : value;
+const formatValue = (type: DateTimeInputType, value: string) => (type === 'date' ? formatDate(value) : value);
 
 const DateTimeInput = ({
   className,
