@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import TextField from '@common/textField/TextField';
 import Button from '@common/button/Button';
 import { getGenerations } from 'src/apis/account';
+import { Generation } from '@@types/request';
 import useNotifyDirtyChange from 'src/hooks/useNotifyDirtyChange';
 import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import { excludeCommonPart } from '@utils/index';
@@ -26,10 +27,14 @@ const GenerationSettingSection = ({ initialValues, onSave, onDirtyChange }: Gene
   const [values, setValues] = useState(initialValues);
   const [savedValues, setSavedValues] = useState(initialValues);
   const [isEditing, setIsEditing] = useState(initialValues.generation === '');
-  useNotifyDirtyChange(JSON.stringify(values) !== JSON.stringify(savedValues), onDirtyChange);
+  useNotifyDirtyChange(JSON.stringify(values.quotas) !== JSON.stringify(savedValues.quotas), onDirtyChange);
 
   const { data: generations } = useQuery({ queryKey: ['adminGenerations'], queryFn: getGenerations });
-  const generation = generations?.find((item) => String(item.number) === values.generation);
+  const generation = generations?.reduce<Generation | undefined>(
+    (latest, item) => (!latest || item.number > latest.number ? item : latest),
+    undefined,
+  );
+  const generationNumber = generation ? String(generation.number) : '';
   const parts = generation ? excludeCommonPart(generation.parts) : [];
 
   const hasSaved = savedValues.generation !== '';
@@ -40,8 +45,9 @@ const GenerationSettingSection = ({ initialValues, onSave, onDirtyChange }: Gene
 
   const requestSave = () => {
     if (!validate(!isFilled)) return;
-    onSave(values, hasSaved);
-    setSavedValues(values);
+    const nextValues = { ...values, generation: generationNumber };
+    onSave(nextValues, hasSaved);
+    setSavedValues(nextValues);
     setIsEditing(false);
   };
 
@@ -51,10 +57,6 @@ const GenerationSettingSection = ({ initialValues, onSave, onDirtyChange }: Gene
     setIsEditing(false);
   };
 
-  const isGenerationMissing = showErrors && values.generation === '';
-  // 없는 기수를 입력한 경우는 아래 안내 문구로 알리고 입력칸만 오류로 표시한다
-  const isGenerationInvalid = isGenerationMissing || (showErrors && parts.length === 0);
-
   const updateQuota = (partId: number, quota: string) => {
     setValues((prev) => ({ ...prev, quotas: { ...prev.quotas, [partId]: quota } }));
   };
@@ -63,16 +65,11 @@ const GenerationSettingSection = ({ initialValues, onSave, onDirtyChange }: Gene
     <Wrapper ref={wrapperRef}>
       <Field>
         <SectionTitle>모집 기수</SectionTitle>
-        <TextField
+        <GenerationField
           aria-label="모집 기수"
-          inputMode="numeric"
-          placeholder="숫자로 입력해주세요."
-          value={values.generation}
-          readOnly={!isEditing}
-          status={isGenerationInvalid ? 'negative' : 'normal'}
-          description={isGenerationMissing ? REQUIRED_FIELD_MESSAGE : undefined}
-          onChange={(event) => setValues((prev) => ({ ...prev, generation: toDigits(event.target.value) }))}
-          trailingContent={<Unit>기</Unit>}
+          value={generationNumber}
+          disabled
+          trailingContent={<GenerationUnit>기</GenerationUnit>}
         />
       </Field>
       <QuotaGroup>
@@ -95,9 +92,11 @@ const GenerationSettingSection = ({ initialValues, onSave, onDirtyChange }: Gene
             ))
           ) : (
             <EmptyMessage>
-              {values.generation === ''
-                ? '모집 기수를 입력하면 해당 기수의 파트가 표시됩니다.'
-                : `${values.generation}기가 없습니다. 전체회원/파트관리 페이지에서 기수를 먼저 생성해 주세요.`}
+              {!generations
+                ? ''
+                : generation
+                  ? `${generation.number}기에 파트가 없습니다. 전체회원/파트관리 페이지에서 파트를 먼저 생성해 주세요.`
+                  : '생성된 기수가 없습니다. 전체회원/파트관리 페이지에서 기수를 먼저 생성해 주세요.'}
             </EmptyMessage>
           )}
           <Caption>전체회원/파트관리 페이지에서 설정한 파트만 불러와집니다.</Caption>
@@ -171,6 +170,17 @@ const Unit = styled.span`
   padding: 0 4px;
   color: ${Label.assistive};
   ${typographyCss(Typography.body1Normal.medium)}
+`;
+
+const GenerationField = styled(TextField)`
+  input:disabled {
+    color: ${Label.alternative};
+    cursor: default;
+  }
+`;
+
+const GenerationUnit = styled(Unit)`
+  opacity: 0.22;
 `;
 
 const EmptyMessage = styled.p`
