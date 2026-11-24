@@ -16,6 +16,7 @@ import { Typography, typographyCss } from '@utils/constant/typography';
 import { ApplicantDetail, SCREENING_RESULT_LABEL, SUBMISSION_STATUS_LABEL, ScreeningResult } from '../applicantMock';
 import ResultSection, { BorderBox, GrayBox, Inset } from './ResultSection';
 import { InterviewInfo, ScreeningStage } from './resultMock';
+import { formatDate } from '@utils/index';
 
 const PAGE_SIZE = 6;
 const ALL = '전체';
@@ -239,7 +240,7 @@ const ResultInputSection = forwardRef<HTMLElement, ResultInputSectionProps>(func
                         </BodyCell>
                       ) : (
                         <BodyCell role="cell" $width={186}>
-                          {interview ? `${interview.date.replace(/-/g, '/')} ${interview.time}` : '-'}
+                          {interview ? `${formatDate(interview.date)} ${interview.time}` : '-'}
                         </BodyCell>
                       )}
                       <ResultCell role="cell">

@@ -10,11 +10,10 @@ import PaginationNavigation from '@common/pagination/PaginationNavigation';
 import TextSelect from '@common/select/TextSelect';
 import { Black, Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
+import { formatDate } from '@utils/index';
 
 export const ALL_PART_FILTER = '전체';
 const PAGE_SIZE = 6;
-
-const formatDate = (value: string) => value.slice(0, 10).replace(/-/g, '/');
 
 interface RecruitmentSubscriberSectionProps {
   subscribers: RecruitmentSubscriberResponse[];

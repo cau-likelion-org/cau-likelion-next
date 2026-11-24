@@ -8,6 +8,8 @@ import {
   canManageRecruit,
   canManageSitePages,
   excludeCommonPart,
+  formatDate,
+  formatDateTime,
   formatFileSize,
   formatPhoneNumber,
   getPasswordError,
@@ -67,6 +69,22 @@ describe('toDateString', () => {
 
   it('날짜가 없으면 빈 문자열을 돌려준다', () => {
     expect(toDateString()).toBe('');
+  });
+});
+
+describe('formatDate', () => {
+  it('YYYY-MM-DD를 YYYY/MM/DD로 표시한다', () => {
+    expect(formatDate('2026-01-05')).toBe('2026/01/05');
+  });
+
+  it('날짜시간 문자열은 날짜 부분만 표시한다', () => {
+    expect(formatDate('2026-01-05T09:30:00')).toBe('2026/01/05');
+  });
+});
+
+describe('formatDateTime', () => {
+  it('날짜시간 문자열을 YYYY/MM/DD HH:mm으로 표시한다', () => {
+    expect(formatDateTime('2026-01-05T09:30:45')).toBe('2026/01/05 09:30');
   });
 });
 

@@ -11,9 +11,7 @@ import { IcCaretDown, IcCaretUp } from '@assets/svg';
 import { BackgroundColor, Fill, Label, Line, Orange, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import useFocusTrap from 'src/hooks/useFocusTrap';
-
-const formatDateTime = (value: string | null) =>
-  value ? `${value.slice(0, 10).replace(/-/g, '/')} ${value.slice(11, 16)}` : '-';
+import { formatDateTime } from '@utils/index';
 
 interface RecruitmentTextDetailModalProps {
   text: RecruitmentTextResponse;
@@ -125,7 +123,7 @@ const RecruitmentTextDetailModal = ({
               <ContentBadge text={badge.label} color={badge.color} variant={badge.variant} size="medium" />
               <ScheduledAt>
                 발송 일시<Divider>ㅣ</Divider>
-                {formatDateTime(text.scheduledSendAt)}
+                {text.scheduledSendAt ? formatDateTime(text.scheduledSendAt) : '-'}
               </ScheduledAt>
             </StatusRow>
           </Information>

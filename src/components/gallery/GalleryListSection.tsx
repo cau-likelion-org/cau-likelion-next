@@ -22,7 +22,7 @@ import { getGenerations } from 'src/apis/account';
 import { COMMON_PART_NAME } from '@utils/constant';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
-import { isAdminRole } from '@utils/index';
+import { isAdminRole, formatDate } from '@utils/index';
 import { getSessionList, getSession } from 'src/apis/session';
 import { getHistoryList, getHistory } from 'src/apis/history';
 import { getGalleryProjectList, getGalleryProject, GALLERY_PROJECT_CATEGORY_LABEL } from 'src/apis/gallery';
@@ -79,7 +79,7 @@ const ALL_OPTION = '전체';
 // 스크롤해서 다 보기 전까진 이벤트가 안 찍히거나 아예 안 찍힌다
 const INITIAL_VISIBLE_CARD_COUNT = 10;
 
-const toDisplayDate = (isoDate: string | undefined) => (isoDate ?? '').split('T')[0].replaceAll('-', '/');
+const toDisplayDate = (isoDate: string | undefined) => formatDate(isoDate ?? '');
 const toPeriodDisplay = (startDate: string, endDate: string | null) =>
   `${toDisplayDate(startDate)}${endDate && endDate !== startDate ? `-${toDisplayDate(endDate)}` : ''}`;
 // react-hooks/purity가 컴포넌트 스코프 안의 Date.now() 호출을 useEffect 안이어도 막아서, 계측용 타임스탬프는 밖에서 받는다

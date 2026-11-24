@@ -8,6 +8,7 @@ import Tooltip from '@common/tooltip/Tooltip';
 import { AssignmentDisplayStatus, AssignmentMemberSubmission, AssignmentSubmission } from 'src/apis/assignment';
 import { Black, Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
+import { formatDate, formatDateTime } from '@utils/index';
 
 const STATUS_BADGE: Record<AssignmentDisplayStatus, { label: string; color: 'neutral' | 'accent' }> = {
   BEFORE_SUBMISSION: { label: '제출 전', color: 'neutral' },
@@ -17,9 +18,6 @@ const STATUS_BADGE: Record<AssignmentDisplayStatus, { label: string; color: 'neu
   APPROVED: { label: '승인 완료', color: 'neutral' },
   REJECTED: { label: '승인 반려', color: 'neutral' },
 };
-
-const formatDateTime = (value: string) => value.replace('T', ' ').slice(0, 16).replace(/-/g, '/');
-const formatDate = (value: string) => value.slice(0, 10).replace(/-/g, '/');
 
 const APPROVAL_OPTIONS = [
   { label: '승인', value: 'APPROVED' },

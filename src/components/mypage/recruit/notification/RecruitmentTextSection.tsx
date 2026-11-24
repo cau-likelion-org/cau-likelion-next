@@ -8,6 +8,7 @@ import EmptyState from '@common/emptyState/EmptyState';
 import PaginationNavigation from '@common/pagination/PaginationNavigation';
 import { Black, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
+import { formatDate, formatDateTime } from '@utils/index';
 
 const PAGE_SIZE = 6;
 
@@ -19,10 +20,6 @@ export const STATUS_BADGE: Record<
   SENT: { label: '발송 완료', color: 'accent', variant: 'solid' },
   CANCELLED: { label: '발송 취소', color: 'neutral', variant: 'solid' },
 };
-
-const formatDate = (value: string) => value.slice(0, 10).replace(/-/g, '/');
-const formatDateTime = (value: string | null) =>
-  value ? `${value.slice(0, 10).replace(/-/g, '/')} ${value.slice(11, 16)}` : '-';
 
 interface RecruitmentTextSectionProps {
   texts: RecruitmentTextResponse[];
@@ -74,7 +71,7 @@ const RecruitmentTextSection = ({
                     </TitleCell>
                     <Cell>{text.targetCount}명</Cell>
                     <Cell>{formatDate(text.createdAt)}</Cell>
-                    <Cell>{formatDateTime(text.scheduledSendAt)}</Cell>
+                    <Cell>{text.scheduledSendAt ? formatDateTime(text.scheduledSendAt) : '-'}</Cell>
                     <BadgeCell>
                       <ContentBadge text={badge.label} color={badge.color} variant={badge.variant} size="medium" />
                     </BadgeCell>

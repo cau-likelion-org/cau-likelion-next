@@ -28,7 +28,7 @@ import {
 } from 'src/apis/attendance';
 import useTokenStore from 'src/store/useTokenStore';
 import { INACTIVE_MEMBER_NOTICE_KEY, TRACK_OPTIONS } from '@utils/constant';
-import { excludeCommonPart, isAdminRole, isFullAdminRole } from '@utils/index';
+import { excludeCommonPart, isAdminRole, isFullAdminRole, formatDate } from '@utils/index';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { media } from '@utils/constant/breakpoint';
@@ -49,7 +49,7 @@ const CARD_STATUS: Record<AttendanceStatus, WeeklyAttendanceStatus> = {
 // 서버 응답(YYYY-MM-DD / ISO date-time)을 카드 표기 형식으로 바꾼다
 const toWeeklyRecord = (record: AttendanceStatusResponse): WeeklyAttendanceRecord => ({
   week: record.weekNumber,
-  date: record.date.replace(/-/g, '/'),
+  date: formatDate(record.date),
   status: CARD_STATUS[record.status],
   checkInTime: record.checkedAt ? record.checkedAt.slice(11, 19) : undefined,
   reason: record.reason || undefined,
