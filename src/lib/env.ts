@@ -13,6 +13,7 @@ export const env = {
   sentryEnv: process.env.NEXT_PUBLIC_SENTRY_ENV,
   sentryRelease: process.env.NEXT_PUBLIC_SENTRY_RELEASE,
   amplitudeApiKey: process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY,
+  gaId: process.env.NEXT_PUBLIC_GA_ID,
   firebase: {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
     authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,

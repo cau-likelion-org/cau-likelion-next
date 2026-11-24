@@ -111,6 +111,14 @@ export interface AmplitudeEventProperties {
     post_id: number;
     away_duration_ms: number;
   };
+  'Web Vital Reported': {
+    metric_name: string;
+    value: number;
+    rating: 'good' | 'needs-improvement' | 'poor';
+    page_route: string;
+    navigation_type: string;
+    device_type: 'mobile' | 'desktop';
+  };
 }
 
 export type AmplitudeEventName = keyof AmplitudeEventProperties;
