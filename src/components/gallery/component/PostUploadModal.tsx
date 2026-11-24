@@ -299,44 +299,46 @@ const PostUploadModal = ({
                 onMouseUp={handleThumbnailRowMouseUp}
                 onMouseLeave={handleThumbnailRowMouseUp}
               >
-                {images.map((image, index) =>
-                  image ? (
-                    <ThumbnailSlot
-                      key={index}
-                      as="div"
-                      role="button"
-                      tabIndex={0}
-                      data-thumbnail-index={index}
-                      $featured={index === featuredIndex}
-                      $dragging={isDragging(index)}
-                      $dropTarget={isDropTarget(index)}
-                      aria-label={`${index + 1}번째 이미지를 대표사진으로 설정`}
-                      {...thumbnailProps(index)}
-                    >
-                      <ThumbnailImage src={image} alt="" draggable={false} />
-                      <RemoveThumbnailButton
-                        type="button"
-                        aria-label={`${index + 1}번째 이미지 삭제`}
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          removeImage(index);
-                        }}
+                {images.includes(null) && (
+                  <AddImageButton>
+                    <IcAdd width={24} height={24} />
+                    <HiddenFileInput
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      aria-label="이미지 추가"
+                      onChange={(event) => addFiles(0, event)}
+                    />
+                  </AddImageButton>
+                )}
+                {images.map(
+                  (image, index) =>
+                    image && (
+                      <ThumbnailSlot
+                        key={index}
+                        as="div"
+                        role="button"
+                        tabIndex={0}
+                        data-thumbnail-index={index}
+                        $featured={index === featuredIndex}
+                        $dragging={isDragging(index)}
+                        $dropTarget={isDropTarget(index)}
+                        aria-label={`${index + 1}번째 이미지를 대표사진으로 설정`}
+                        {...thumbnailProps(index)}
                       >
-                        <IcCloseCircle width={24} height={24} />
-                      </RemoveThumbnailButton>
-                    </ThumbnailSlot>
-                  ) : (
-                    <ThumbnailSlot key={index} $featured={false}>
-                      <IcAdd width={24} height={24} />
-                      <HiddenFileInput
-                        type="file"
-                        accept="image/*"
-                        multiple
-                        aria-label={`이미지 ${index + 1} 선택`}
-                        onChange={(event) => addFiles(index, event)}
-                      />
-                    </ThumbnailSlot>
-                  ),
+                        <ThumbnailImage src={image} alt="" draggable={false} />
+                        <RemoveThumbnailButton
+                          type="button"
+                          aria-label={`${index + 1}번째 이미지 삭제`}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            removeImage(index);
+                          }}
+                        >
+                          <IcCloseCircle width={24} height={24} />
+                        </RemoveThumbnailButton>
+                      </ThumbnailSlot>
+                    ),
                 )}
               </ThumbnailRow>
             </ImageUploadGroup>
@@ -709,7 +711,7 @@ const ImageUploadGroup = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 46px;
+  gap: 42px;
 `;
 
 const MainThumbnail = styled.label<{ $empty: boolean }>`
@@ -757,7 +759,7 @@ const ThumbnailRow = styled.div`
   gap: 20px;
   overflow-x: auto;
   overflow-y: hidden;
-  padding: 16px 16px 4px 0;
+  padding: 4px 4px 4px 0;
   scrollbar-width: none;
   -ms-overflow-style: none;
   cursor: grab;
@@ -784,6 +786,20 @@ const ThumbnailSlot = styled.label<{ $featured: boolean; $dragging?: boolean; $d
   cursor: pointer;
 `;
 
+const AddImageButton = styled.label`
+  position: relative;
+  flex-shrink: 0;
+  width: 160px;
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background-color: ${Fill.normal};
+  color: ${Label.neutral};
+  cursor: pointer;
+`;
+
 const ThumbnailImage = styled.img`
   width: 100%;
   height: 100%;
@@ -797,8 +813,8 @@ const HiddenFileInput = styled.input`
 
 const RemoveThumbnailButton = styled.button`
   position: absolute;
-  top: -12px;
-  right: -12px;
+  top: -4px;
+  right: -4px;
   z-index: 1;
   display: flex;
   align-items: center;
@@ -811,12 +827,6 @@ const RemoveThumbnailButton = styled.button`
   color: ${Orange.o500};
   padding: 0;
   cursor: pointer;
-  opacity: 0;
-  transition: opacity 0.15s ease;
-
-  ${ThumbnailSlot}:hover & {
-    opacity: 1;
-  }
 `;
 
 const FieldGroup = styled.div`
