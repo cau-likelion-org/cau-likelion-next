@@ -1,4 +1,4 @@
-import { ChangeEvent, DragEvent, MouseEvent as ReactMouseEvent, useEffect, useRef, useState } from 'react';
+import { MouseEvent as ReactMouseEvent, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { useQuery } from '@tanstack/react-query';
 import Button from '@common/button/Button';
@@ -24,6 +24,7 @@ import { NUMERIC_ONLY_REGEX } from '@utils/constant';
 import { BackgroundColor, Fill, Label, Line, Material, Orange, State } from '@utils/constant/color';
 import { isUnfilled } from '@utils/index';
 import { resizeImageFile } from '@utils/resizeImage';
+import useImageSlots from 'src/hooks/useImageSlots';
 import { Typography, typographyCss } from '@utils/constant/typography';
 const MAX_IMAGE_COUNT = 10;
 const TITLE_PLACEHOLDER: Record<PostType, string> = {
@@ -176,11 +177,8 @@ const PostUploadModal = ({
     initialValues?.thumbnailUrl ? initialImageUrls.indexOf(initialValues.thumbnailUrl) : 0,
     0,
   );
-  const [images, setImages] = useState<(string | null)[]>(initialImages);
-  const [imageFiles, setImageFiles] = useState<(File | null)[]>(Array(MAX_IMAGE_COUNT).fill(null));
-  const [featuredIndex, setFeaturedIndex] = useState(initialFeaturedIndex);
-  const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
-  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+  const { images, imageFiles, featuredIndex, isDragging, isDropTarget, addFiles, removeImage, thumbnailProps } =
+    useImageSlots({ maxCount: MAX_IMAGE_COUNT, initialImages, initialFeaturedIndex, prepareFile: resizeImageFile });
 
   const thumbnailRowRef = useRef<HTMLDivElement>(null);
   const rowScrollDragRef = useRef<{ startX: number; scrollLeft: number } | null>(null);
@@ -189,99 +187,6 @@ const PostUploadModal = ({
   useFocusTrap(modalRef, onClose);
   const { showErrors, validate } = useRequiredFieldsSave(modalRef);
   const modalAriaLabel = `${POST_TYPE_LABEL[postType]} ${mode === 'edit' ? '수정' : '추가'}`;
-
-  const handleFileChange = async (index: number, event: ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files ?? []);
-    event.target.value = '';
-    if (files.length === 0) return;
-
-    const hadNoImages = images.every((image) => image === null);
-
-    const targets: { targetIndex: number; file: File }[] = [];
-    let cursor = index;
-    for (const file of files) {
-      while (cursor < MAX_IMAGE_COUNT && images[cursor] !== null) cursor++;
-      if (cursor >= MAX_IMAGE_COUNT) break;
-      targets.push({ targetIndex: cursor, file });
-      cursor++;
-    }
-    if (targets.length === 0) return;
-
-    const resizedTargets = await Promise.all(
-      targets.map(async ({ targetIndex, file }) => ({ targetIndex, file: await resizeImageFile(file) })),
-    );
-
-    setImages((prev) => {
-      const next = [...prev];
-      resizedTargets.forEach(({ targetIndex, file }) => {
-        if (next[targetIndex]) URL.revokeObjectURL(next[targetIndex] as string);
-        next[targetIndex] = URL.createObjectURL(file);
-      });
-      return next;
-    });
-    setImageFiles((prev) => {
-      const next = [...prev];
-      resizedTargets.forEach(({ targetIndex, file }) => {
-        next[targetIndex] = file;
-      });
-      return next;
-    });
-    if (hadNoImages) setFeaturedIndex(resizedTargets[0].targetIndex);
-  };
-
-  const handleRemoveImage = (index: number) => {
-    const removedUrl = images[index];
-    if (removedUrl) URL.revokeObjectURL(removedUrl);
-
-    const nextImages = images.filter((_, i) => i !== index);
-    while (nextImages.length < MAX_IMAGE_COUNT) nextImages.push(null);
-    const nextImageFiles = imageFiles.filter((_, i) => i !== index);
-    while (nextImageFiles.length < MAX_IMAGE_COUNT) nextImageFiles.push(null);
-
-    setImages(nextImages);
-    setImageFiles(nextImageFiles);
-
-    if (featuredIndex === index) {
-      const fallback = nextImages.findIndex((image) => image !== null);
-      setFeaturedIndex(fallback === -1 ? 0 : fallback);
-    } else if (featuredIndex > index) {
-      setFeaturedIndex((prev) => prev - 1);
-    }
-  };
-
-  const moveImage = (from: number, to: number) => {
-    if (from === to) return;
-    const reorder = <T,>(list: T[]) => {
-      const next = [...list];
-      const [moved] = next.splice(from, 1);
-      next.splice(to, 0, moved);
-      return next;
-    };
-    setImages(reorder);
-    setImageFiles(reorder);
-    setFeaturedIndex((prev) => {
-      if (prev === from) return to;
-      if (from < prev && prev <= to) return prev - 1;
-      if (to <= prev && prev < from) return prev + 1;
-      return prev;
-    });
-  };
-
-  const dropTargetProps = (index: number) => ({
-    onDragOver: (event: DragEvent<HTMLElement>) => {
-      if (draggingIndex === null) return;
-      event.preventDefault();
-      event.dataTransfer.dropEffect = 'move';
-      setDragOverIndex(index);
-    },
-    onDragLeave: () => setDragOverIndex((prev) => (prev === index ? null : prev)),
-    onDrop: (event: DragEvent<HTMLElement>) => {
-      event.preventDefault();
-      if (draggingIndex !== null) moveImage(draggingIndex, index);
-      setDraggingIndex(null);
-      setDragOverIndex(null);
-    },
-  });
 
   // 썸네일(드래그 가능한 이미지) 바깥 영역에서 시작한 드래그만 좌우 스크롤로 처리하고,
   // 이미지 위에서 시작한 드래그는 네이티브 HTML5 드래그(순서 변경)에 맡긴다.
@@ -382,7 +287,7 @@ const PostUploadModal = ({
                       accept="image/*"
                       multiple
                       aria-label="대표 이미지 선택"
-                      onChange={(event) => handleFileChange(featuredIndex, event)}
+                      onChange={(event) => addFiles(featuredIndex, event)}
                     />
                   </>
                 )}
@@ -403,28 +308,10 @@ const PostUploadModal = ({
                       tabIndex={0}
                       data-thumbnail-index={index}
                       $featured={index === featuredIndex}
-                      $dragging={draggingIndex === index}
-                      $dropTarget={dragOverIndex === index && draggingIndex !== index}
+                      $dragging={isDragging(index)}
+                      $dropTarget={isDropTarget(index)}
                       aria-label={`${index + 1}번째 이미지를 대표사진으로 설정`}
-                      onClick={() => setFeaturedIndex(index)}
-                      onKeyDown={(event) => {
-                        if (event.key === 'Enter' || event.key === ' ') {
-                          event.preventDefault();
-                          setFeaturedIndex(index);
-                        }
-                      }}
-                      draggable
-                      onDragStart={(event: DragEvent<HTMLElement>) => {
-                        event.dataTransfer.effectAllowed = 'move';
-                        // Firefox는 데이터가 설정되어야 드래그를 시작함
-                        event.dataTransfer.setData('text/plain', String(index));
-                        setDraggingIndex(index);
-                      }}
-                      onDragEnd={() => {
-                        setDraggingIndex(null);
-                        setDragOverIndex(null);
-                      }}
-                      {...dropTargetProps(index)}
+                      {...thumbnailProps(index)}
                     >
                       <ThumbnailImage src={image} alt="" draggable={false} />
                       <RemoveThumbnailButton
@@ -432,7 +319,7 @@ const PostUploadModal = ({
                         aria-label={`${index + 1}번째 이미지 삭제`}
                         onClick={(event) => {
                           event.stopPropagation();
-                          handleRemoveImage(index);
+                          removeImage(index);
                         }}
                       >
                         <IcCloseCircle width={24} height={24} />
@@ -446,7 +333,7 @@ const PostUploadModal = ({
                         accept="image/*"
                         multiple
                         aria-label={`이미지 ${index + 1} 선택`}
-                        onChange={(event) => handleFileChange(index, event)}
+                        onChange={(event) => addFiles(index, event)}
                       />
                     </ThumbnailSlot>
                   ),
