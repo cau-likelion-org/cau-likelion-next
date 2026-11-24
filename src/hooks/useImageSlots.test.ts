@@ -90,6 +90,26 @@ describe('useImageSlots', () => {
     expect(result.current.featuredIndex).toBe(0);
   });
 
+  it('파일 변환 중에는 준비 중 상태를 알린다', async () => {
+    let finish: (file: File) => void = () => undefined;
+    const prepareFile = () => new Promise<File>((resolve) => (finish = resolve));
+    const { result } = renderHook(() =>
+      useImageSlots({ maxCount: 4, initialImages: [null, null, null, null], initialFeaturedIndex: 0, prepareFile }),
+    );
+
+    let pending: Promise<void> = Promise.resolve();
+    act(() => {
+      pending = result.current.addFiles(0, fileEvent('a.png'));
+    });
+    expect(result.current.isPreparing).toBe(true);
+
+    await act(async () => {
+      finish(new File(['x'], 'a.png'));
+      await pending;
+    });
+    expect(result.current.isPreparing).toBe(false);
+  });
+
   it('삭제하면 뒤 이미지를 앞으로 당기고 대표 이미지 위치를 맞춘다', () => {
     const { result } = renderSlots(['u0', 'u1', 'u2', null], 2);
 

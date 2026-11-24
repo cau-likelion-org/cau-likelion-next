@@ -179,8 +179,17 @@ const PostUploadModal = ({
     initialValues?.thumbnailUrl ? initialImageUrls.indexOf(initialValues.thumbnailUrl) : 0,
     0,
   );
-  const { images, imageFiles, featuredIndex, isDragging, isDropTarget, addFiles, removeImage, thumbnailProps } =
-    useImageSlots({ maxCount: MAX_IMAGE_COUNT, initialImages, initialFeaturedIndex, prepareFile: toUploadImage });
+  const {
+    images,
+    imageFiles,
+    featuredIndex,
+    isPreparing,
+    isDragging,
+    isDropTarget,
+    addFiles,
+    removeImage,
+    thumbnailProps,
+  } = useImageSlots({ maxCount: MAX_IMAGE_COUNT, initialImages, initialFeaturedIndex, prepareFile: toUploadImage });
 
   const thumbnailRowRef = useRef<HTMLDivElement>(null);
   const rowScrollDragRef = useRef<{ startX: number; scrollLeft: number } | null>(null);
@@ -504,7 +513,7 @@ const PostUploadModal = ({
               size="large"
               onClick={handleSubmit}
               loading={isSubmitting}
-              disabled={!!generationError}
+              disabled={!!generationError || isPreparing}
             >
               {mode === 'edit' ? '저장하기' : '등록하기'}
             </Button>
