@@ -2,6 +2,7 @@ import '@styles/global.css';
 import 'pretendard/dist/web/static/pretendard-subset.css';
 import 'swiper/css';
 import Head from 'next/head';
+import Script from 'next/script';
 import { QueryCache, QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import type { AppProps } from 'next/app';
@@ -18,6 +19,9 @@ import { registerMessagingServiceWorker, subscribeForegroundNotification } from 
 import { track, identifyUser, resetUser } from 'src/lib/amplitude';
 import { getUserProfile } from 'src/apis/account';
 import { UserProfile } from '@@types/request';
+import { env } from 'src/lib/env';
+
+const GA_ID = process.env.NODE_ENV === 'production' ? env.gaId : undefined;
 
 type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -165,6 +169,17 @@ function AppContent({ Component, pageProps }: AppPropsWithLayout) {
       <Head>
         <title>LikeLionCAU</title>
       </Head>
+      {GA_ID && (
+        <>
+          <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} strategy="afterInteractive" />
+          <Script id="ga-init" strategy="afterInteractive">
+            {`window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '${GA_ID}');`}
+          </Script>
+        </>
+      )}
       <div>
         {/* 레이아웃 안쪽을 감싸서, 페이지가 죽어도 네비게이션으로 빠져나갈 수 있게 한다 */}
         {isRouting ? (
