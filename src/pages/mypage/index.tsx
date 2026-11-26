@@ -1,5 +1,5 @@
-import { ReactElement, useEffect, useState } from 'react';
-import useTokenStore from 'src/store/useTokenStore';
+import { ReactElement, useState } from 'react';
+import useLoginRequired from 'src/hooks/useLoginRequired';
 import { INACTIVE_MEMBER_NOTICE_KEY } from '@utils/constant';
 import { canCreateAttendance, isAdminRole, isAttendanceTarget } from '@utils/index';
 import styled from 'styled-components';
@@ -13,21 +13,14 @@ import AttendanceCheckCard from '@mypage/component/home/AttendanceCheckCard';
 import MakeAttendanceCard from '@mypage/component/home/MakeAttendanceCard';
 import MyScoreSection from '@mypage/MyScoreSection';
 import MemberScoreSection from '@mypage/MemberScoreSection';
-import { useRouter } from 'next/router';
 import { media } from '@utils/constant/breakpoint';
 import useUserProfile from 'src/apis/useUserProfile';
 import useSessionFlash from 'src/hooks/useSessionFlash';
 
 const MyPage = () => {
-  const tokenState = useTokenStore((state) => state.token);
-  const hasHydrated = useTokenStore((state) => state.hasHydrated);
-  const router = useRouter();
-
   const { data: userProfile, isError: isUserProfileError } = useUserProfile();
 
-  useEffect(() => {
-    if (hasHydrated && !tokenState.access) router.push('/login');
-  }, [hasHydrated, tokenState, router]);
+  useLoginRequired();
 
   // 활동 전용 메뉴에서 돌려보내진 경우에만 안내 (홈 자체 진입에는 띄우지 않는다)
   const [toastMessage, setToastMessage] = useState('');

@@ -27,6 +27,7 @@ import {
   resolveAssignmentActionLabel,
 } from 'src/apis/assignment';
 import useTokenStore from 'src/store/useTokenStore';
+import useLoginRequired from 'src/hooks/useLoginRequired';
 import { INACTIVE_MEMBER_NOTICE_KEY, TRACK_OPTIONS } from '@utils/constant';
 import { excludeCommonPart, isAdminRole, isFullAdminRole } from '@utils/index';
 import { IcPlus } from '@assets/svg';
@@ -55,14 +56,11 @@ const resolveActionLabel = (assignments: AssignmentSummary[]) => {
 
 const MyPageAssignment = () => {
   const tokenState = useTokenStore((state) => state.token);
-  const hasHydrated = useTokenStore((state) => state.hasHydrated);
   const router = useRouter();
 
   const { data: userProfile, isError: isUserProfileError } = useUserProfile();
 
-  useEffect(() => {
-    if (hasHydrated && !tokenState.access) router.push('/login');
-  }, [hasHydrated, tokenState, router]);
+  useLoginRequired();
 
   // 어른사자는 활동 중인 구성원이 아니므로 홈으로 돌려보내고, 홈에서 사유를 토스트로 안내한다
   useEffect(() => {

@@ -27,6 +27,7 @@ import {
   updateAttendanceBatch,
 } from 'src/apis/attendance';
 import useTokenStore from 'src/store/useTokenStore';
+import useLoginRequired from 'src/hooks/useLoginRequired';
 import { INACTIVE_MEMBER_NOTICE_KEY, TRACK_OPTIONS } from '@utils/constant';
 import { excludeCommonPart, isAdminRole, isFullAdminRole, formatDate } from '@utils/index';
 import { Label } from '@utils/constant/color';
@@ -57,12 +58,9 @@ const toWeeklyRecord = (record: AttendanceStatusResponse): WeeklyAttendanceRecor
 
 const MyPageAttendance = () => {
   const tokenState = useTokenStore((state) => state.token);
-  const hasHydrated = useTokenStore((state) => state.hasHydrated);
   const router = useRouter();
 
-  useEffect(() => {
-    if (hasHydrated && !tokenState.access) router.push('/login');
-  }, [hasHydrated, tokenState, router]);
+  useLoginRequired();
 
   const { data: userProfile, isError: isUserProfileError } = useUserProfile();
 
