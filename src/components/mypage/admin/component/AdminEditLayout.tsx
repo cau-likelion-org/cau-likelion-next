@@ -57,7 +57,7 @@ const AdminEditLayout = ({
               </Button>
             </>
           ) : (
-            <EditButton onClick={onEdit} />
+            <EditButton onClick={onEdit} disabled={!isDataLoaded || isDataError} />
           )}
         </ButtonRow>
       </TitleRow>
