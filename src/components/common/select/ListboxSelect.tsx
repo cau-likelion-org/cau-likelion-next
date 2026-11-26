@@ -40,7 +40,9 @@ const ListboxSelect = ({
   hideValue,
   fullWidth = false,
 }: ListboxSelectProps) => {
+  const isInteractive = !disabled && !readOnly;
   const [isOpen, setIsOpen] = useState(false);
+  if (!isInteractive && isOpen) setIsOpen(false);
   const { listId, wrapperRef, triggerRef, activeIndex, handleKeyDown, handleBlur, selectOption } = useListboxSelect({
     isOpen,
     options,
@@ -49,14 +51,13 @@ const ListboxSelect = ({
     onClose: () => setIsOpen(false),
     onSelect: onChange,
   });
-  const isInteractive = !disabled && !readOnly;
 
   return (
     <Wrapper
       className={className}
       $fullWidth={fullWidth}
       ref={wrapperRef}
-      onKeyDownCapture={handleKeyDown}
+      onKeyDownCapture={isInteractive ? handleKeyDown : undefined}
       onBlur={handleBlur}
     >
       <Select
@@ -67,7 +68,9 @@ const ListboxSelect = ({
         value={value}
         disabled={disabled}
         readOnly={readOnly}
-        onClick={() => setIsOpen((prev) => !prev)}
+        onClick={() => {
+          if (isInteractive) setIsOpen((prev) => !prev);
+        }}
         aria-label={ariaLabel}
         aria-expanded={isOpen}
         aria-activedescendant={isOpen ? `${listId}-${activeIndex}` : undefined}
@@ -77,7 +80,7 @@ const ListboxSelect = ({
         leadingIcon={leadingIcon}
         hideValue={hideValue}
       >
-        {isInteractive && isOpen && (
+        {isOpen && (
           <ListboxOptions
             listId={listId}
             options={options}
