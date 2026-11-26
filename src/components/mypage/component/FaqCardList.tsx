@@ -5,7 +5,7 @@ import TextField from '@common/textField/TextField';
 import CharCount from '@common/charCount/CharCount';
 import AddCardButton from '@mypage/component/AddCardButton';
 import RemoveCardButton from '@mypage/component/RemoveCardButton';
-import { createId } from '@mypage/admin/utils';
+import { createId } from '@utils/listSync';
 import { IcHandleDesktop } from '@assets/svg';
 import useDragReorder from 'src/hooks/useDragReorder';
 import useListItems from 'src/hooks/useListItems';

@@ -11,7 +11,7 @@ import { BlogCategory } from 'src/apis/blog';
 import { NUMERIC_ONLY_REGEX } from '@utils/constant';
 import { isUnfilled, invertRecord } from '@utils/index';
 import { BackgroundWhite, Label, Line } from '@utils/constant/color';
-import { createId } from '../utils';
+import { createId } from '@utils/listSync';
 
 const ALL_OPTION = '전체';
 

@@ -3,8 +3,8 @@ import { useRouter } from 'next/router';
 import styled from 'styled-components';
 
 import Button from '@common/button/Button';
-import LogoutButton from '@mypage/component/LogoutButton';
-import NotificationSetting from '@mypage/component/NotificationSetting';
+import LogoutButton from '@common/header/LogoutButton';
+import NotificationSetting from '@common/header/NotificationSetting';
 import useTokenStore from 'src/store/useTokenStore';
 import useRecruitModalStore from 'src/store/useRecruitModalStore';
 import useScrollLock from 'src/hooks/useScrollLock';

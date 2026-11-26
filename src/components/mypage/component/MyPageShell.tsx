@@ -2,7 +2,7 @@ import { ReactNode, useEffect, useRef, useState } from 'react';
 import { Router } from 'next/router';
 import styled from 'styled-components';
 
-import LogoutButton from '@mypage/component/LogoutButton';
+import LogoutButton from '@common/header/LogoutButton';
 import Sidebar, { PATHNAME_TO_ACTIVE, SidebarActive } from '@mypage/component/Sidebar';
 import PageLoadingGate from '@common/pageGate/PageLoadingGate';
 import PageScrollbar from '@common/pageScrollbar/PageScrollbar';

@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 import Button from '@common/button/Button';
 import TextButton from '@common/textButton/TextButton';
-import TechStackInput from '@mypage/admin/component/TechStackInput';
+import ChipInput from '@common/chipInput/ChipInput';
 import { IcAdd } from '@assets/svg';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -47,7 +47,7 @@ const ExtraPartFields = ({
               삭제
             </TextButton>
           </ExtraPartHeaderRow>
-          <TechStackInput
+          <ChipInput
             placeholder="텍스트 입력 후 띄어쓰기"
             value={part.members}
             onChange={(members) => onChange((prev) => prev.map((p) => (p.id === part.id ? { ...p, members } : p)))}

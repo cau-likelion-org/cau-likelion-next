@@ -16,7 +16,7 @@ import CurriculumSection, {
   getFirstInvalidTrackKey,
 } from '@mypage/admin/about/CurriculumSection';
 import RoadmapSection from '@mypage/admin/about/RoadmapSection';
-import { syncListSection } from '@mypage/admin/utils';
+import { syncListSection } from '@utils/listSync';
 import useLeaveGuard from 'src/hooks/useLeaveGuard';
 import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import { getTracks, TrackResponse } from 'src/apis/track';

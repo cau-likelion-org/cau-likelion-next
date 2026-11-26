@@ -6,7 +6,7 @@ import Switch from '@common/switch/Switch';
 import Textarea from '@common/textarea/Textarea';
 import TextField from '@common/textField/TextField';
 import RemoveCardButton from '@mypage/component/RemoveCardButton';
-import { createId } from '@mypage/admin/utils';
+import { createId } from '@utils/listSync';
 import { IcCircleClose, IcHandleDesktop, IcPlus } from '@assets/svg';
 import useDragReorder from 'src/hooks/useDragReorder';
 import { REQUIRED_FIELD_MESSAGE } from '@utils/constant';

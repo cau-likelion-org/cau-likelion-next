@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
 
-import NotificationSetting from '@mypage/component/NotificationSetting';
+import NotificationSetting from '@common/header/NotificationSetting';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
