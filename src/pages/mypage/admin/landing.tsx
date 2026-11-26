@@ -16,11 +16,7 @@ import ActivitySection, {
   PAGE_NAVIGATION_LABEL,
   PAGE_NAVIGATION_BY_LABEL,
 } from '@mypage/admin/landing/ActivitySection';
-import ProjectSection, {
-  FeaturedProject,
-  isProjectSelectionInvalid,
-  MIN_EXPOSED_PROJECT_COUNT,
-} from '@mypage/admin/landing/ProjectSection';
+import ProjectSection, { FeaturedProject, isProjectSelectionInvalid } from '@mypage/admin/landing/ProjectSection';
 import FAQSection from '@mypage/admin/landing/FAQSection';
 import { FaqItem, isFaqItemInvalid } from '@mypage/component/FaqCardList';
 import { syncListSection } from '@mypage/admin/utils';
@@ -227,13 +223,7 @@ const MyPageAdminLanding = () => {
       isProjectSelectionInvalid(projectItems) ||
       faqItems.some(isFaqItemInvalid);
 
-    if (!validate(hasError)) {
-      if (isProjectSelectionInvalid(projectItems)) {
-        setToastVariant('negative');
-        setToastMessage(`노출 프로젝트는 최소 ${MIN_EXPOSED_PROJECT_COUNT}개 이상 선택해 주세요.`);
-      }
-      return;
-    }
+    if (!validate(hasError)) return;
     setIsSaving(true);
     try {
       await Promise.all([
