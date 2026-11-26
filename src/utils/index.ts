@@ -19,6 +19,9 @@ export const toDateString = (date?: Date, formatter = '-') => {
   return year + formatter + month + formatter + day;
 };
 
+export const invertRecord = <K extends string, V extends string>(record: Record<K, V>) =>
+  Object.fromEntries(Object.entries(record).map(([key, value]) => [value, key])) as Record<V, K>;
+
 export const formatDate = (value: string) => value.slice(0, 10).replace(/-/g, '/');
 
 export const formatDateTime = (value: string) => `${formatDate(value)} ${value.slice(11, 16)}`;

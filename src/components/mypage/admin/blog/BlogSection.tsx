@@ -9,7 +9,7 @@ import { IcAdd, IcCircleClose, IcLink, IcSearch } from '@assets/svg';
 import useListItems from 'src/hooks/useListItems';
 import { BlogCategory } from 'src/apis/blog';
 import { NUMERIC_ONLY_REGEX } from '@utils/constant';
-import { isUnfilled } from '@utils/index';
+import { isUnfilled, invertRecord } from '@utils/index';
 import { BackgroundWhite, Label, Line } from '@utils/constant/color';
 import { createId } from '../utils';
 
@@ -29,9 +29,7 @@ export const BLOG_CATEGORY_LABEL: Record<BlogCategory, string> = {
   CAREER: '취업/인턴 후기',
   ETC: '기타',
 };
-export const BLOG_CATEGORY_BY_LABEL: Record<string, BlogCategory> = Object.fromEntries(
-  Object.entries(BLOG_CATEGORY_LABEL).map(([category, label]) => [label, category]),
-) as Record<string, BlogCategory>;
+export const BLOG_CATEGORY_BY_LABEL: Record<string, BlogCategory> = invertRecord(BLOG_CATEGORY_LABEL);
 const BLOG_CATEGORY_OPTIONS = Object.values(BLOG_CATEGORY_LABEL);
 
 export const isBlogItemInvalid = (item: BlogItem) =>

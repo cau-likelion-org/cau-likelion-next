@@ -1,21 +1,12 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import useTokenStore from 'src/store/useTokenStore';
-import {
-  deleteGalleryProject,
-  updateGalleryProject,
-  GALLERY_PROJECT_CATEGORY_LABEL,
-  GalleryProjectCategory,
-} from 'src/apis/gallery';
+import { deleteGalleryProject, updateGalleryProject, GALLERY_PROJECT_CATEGORY_LABEL } from 'src/apis/gallery';
 import { getGenerations } from 'src/apis/project';
 import PostUploadModal, { PostUploadModalSubmitValues } from '../PostUploadModal';
+import { invertRecord } from '@utils/index';
 
 const CATEGORY_OPTIONS = Object.values(GALLERY_PROJECT_CATEGORY_LABEL);
-const CATEGORY_BY_LABEL = Object.fromEntries(
-  Object.entries(GALLERY_PROJECT_CATEGORY_LABEL).map(([category, label]) => [
-    label,
-    category as GalleryProjectCategory,
-  ]),
-);
+const CATEGORY_BY_LABEL = invertRecord(GALLERY_PROJECT_CATEGORY_LABEL);
 
 interface ProjectEditModalProps {
   id: number;

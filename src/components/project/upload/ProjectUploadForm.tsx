@@ -43,7 +43,7 @@ import useLeaveGuard from 'src/hooks/useLeaveGuard';
 import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import { NUMERIC_ONLY_REGEX, PROJECT_CATEGORY_OPTIONS } from '@utils/constant';
 import { Black, Label, State } from '@utils/constant/color';
-import { isUnfilled } from '@utils/index';
+import { isUnfilled, invertRecord } from '@utils/index';
 import { resizeImageFile } from '@utils/resizeImage';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { containerCss } from '@utils/constant/breakpoint';
@@ -71,9 +71,7 @@ const PLATFORM_TO_LINK_TYPE: Record<LinkPlatform, string> = {
 };
 
 const CATEGORY_CODE_TO_LABEL = PROJECT_CATEGORY_LABEL;
-const CATEGORY_LABEL_TO_CODE: Record<string, ProjectCategoryCode> = Object.fromEntries(
-  Object.entries(CATEGORY_CODE_TO_LABEL).map(([code, label]) => [label, code as ProjectCategoryCode]),
-);
+const CATEGORY_LABEL_TO_CODE: Record<string, ProjectCategoryCode> = invertRecord(CATEGORY_CODE_TO_LABEL);
 
 const PART_LABELS = {
   pm: '기획',

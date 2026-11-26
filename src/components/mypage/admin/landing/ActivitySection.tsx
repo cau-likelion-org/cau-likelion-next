@@ -7,7 +7,7 @@ import TextField from '@common/textField/TextField';
 import AddCardButton from '@mypage/component/AddCardButton';
 import RemoveCardButton from '@mypage/component/RemoveCardButton';
 import CharCount from '@common/charCount/CharCount';
-import { isUnfilled } from '@utils/index';
+import { isUnfilled, invertRecord } from '@utils/index';
 import { PageNavigation } from 'src/apis/activity';
 import { IcCircleCloseOutline, IcCircleExclamation, IcImage } from '@assets/svg';
 import { BackgroundWhite, Label, Line, State } from '@utils/constant/color';
@@ -52,9 +52,7 @@ export const PAGE_NAVIGATION_LABEL: Record<PageNavigation, string> = {
   GALLERY_PROJECT: '갤러리 페이지 / 프로젝트',
   GALLERY_MEMORY: '갤러리 페이지 / 추억',
 };
-export const PAGE_NAVIGATION_BY_LABEL: Record<string, PageNavigation> = Object.fromEntries(
-  Object.entries(PAGE_NAVIGATION_LABEL).map(([navigation, label]) => [label, navigation]),
-) as Record<string, PageNavigation>;
+export const PAGE_NAVIGATION_BY_LABEL: Record<string, PageNavigation> = invertRecord(PAGE_NAVIGATION_LABEL);
 const PAGE_LINK_OPTIONS = Object.values(PAGE_NAVIGATION_LABEL);
 
 const createEmptyItem = (): ActivityIntroItem => ({

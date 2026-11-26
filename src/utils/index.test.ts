@@ -15,6 +15,7 @@ import {
   getPasswordError,
   getPaths,
   getServerMessage,
+  invertRecord,
   isAdminRole,
   isAttendanceTarget,
   isEmailFormatInvalid,
@@ -69,6 +70,12 @@ describe('toDateString', () => {
 
   it('날짜가 없으면 빈 문자열을 돌려준다', () => {
     expect(toDateString()).toBe('');
+  });
+});
+
+describe('invertRecord', () => {
+  it('키와 값을 뒤바꾼 객체를 만든다', () => {
+    expect(invertRecord({ PASS: '합격', FAIL: '불합격' })).toEqual({ 합격: 'PASS', 불합격: 'FAIL' });
   });
 });
 
