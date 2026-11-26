@@ -16,7 +16,7 @@ import Textarea from '@common/textarea/Textarea';
 import Toast from '@common/toast/Toast';
 import { ToastWrapper } from '@common/toast/toastLayout';
 import ListboxSelect from '@common/select/ListboxSelect';
-import TechStackInput from '@mypage/admin/component/TechStackInput';
+import ChipInput from '@common/chipInput/ChipInput';
 import { Generation } from '@@types/request';
 import {
   LinkPlatform,
@@ -472,27 +472,19 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
             />
             <FieldGroup>
               <FieldHeadingSmall>기획</FieldHeadingSmall>
-              <TechStackInput placeholder="텍스트 입력 후 띄어쓰기" value={pmMembers} onChange={setPmMembers} />
+              <ChipInput placeholder="텍스트 입력 후 띄어쓰기" value={pmMembers} onChange={setPmMembers} />
             </FieldGroup>
             <FieldGroup>
               <FieldHeadingSmall>디자인</FieldHeadingSmall>
-              <TechStackInput placeholder="텍스트 입력 후 띄어쓰기" value={designMembers} onChange={setDesignMembers} />
+              <ChipInput placeholder="텍스트 입력 후 띄어쓰기" value={designMembers} onChange={setDesignMembers} />
             </FieldGroup>
             <FieldGroup>
               <FieldHeadingSmall>프론트엔드</FieldHeadingSmall>
-              <TechStackInput
-                placeholder="텍스트 입력 후 띄어쓰기"
-                value={frontendMembers}
-                onChange={setFrontendMembers}
-              />
+              <ChipInput placeholder="텍스트 입력 후 띄어쓰기" value={frontendMembers} onChange={setFrontendMembers} />
             </FieldGroup>
             <FieldGroup>
               <FieldHeadingSmall>백엔드</FieldHeadingSmall>
-              <TechStackInput
-                placeholder="텍스트 입력 후 띄어쓰기"
-                value={backendMembers}
-                onChange={setBackendMembers}
-              />
+              <ChipInput placeholder="텍스트 입력 후 띄어쓰기" value={backendMembers} onChange={setBackendMembers} />
             </FieldGroup>
             <ExtraPartFields parts={extraParts} onChange={setExtraParts} nextId={nextId} />
           </TeamColumn>
@@ -529,11 +521,7 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
             </DateFieldGroup>
             <FieldGroup>
               <FieldHeadingSmall>기술스택</FieldHeadingSmall>
-              <TechStackInput
-                placeholder="텍스트 입력 후 띄어쓰기"
-                value={techStackItems}
-                onChange={setTechStackItems}
-              />
+              <ChipInput placeholder="텍스트 입력 후 띄어쓰기" value={techStackItems} onChange={setTechStackItems} />
             </FieldGroup>
             <TextField
               heading="배너 추가하기"

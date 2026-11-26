@@ -8,7 +8,7 @@ import TextField from '@common/textField/TextField';
 import AddCardButton from '@mypage/component/AddCardButton';
 import RemoveCardButton from '@mypage/component/RemoveCardButton';
 import CharCount from '@common/charCount/CharCount';
-import TechStackInput from '@mypage/admin/component/TechStackInput';
+import ChipInput from '@common/chipInput/ChipInput';
 import useListItems from 'src/hooks/useListItems';
 import { isUnfilled } from '@utils/index';
 import { BackgroundWhite, Label, Line } from '@utils/constant/color';
@@ -100,7 +100,7 @@ const TrackSection = ({
           <StackRow>
             <StackField>
               <FieldLabel>기술 스택</FieldLabel>
-              <TechStackInput
+              <ChipInput
                 value={item.techStack}
                 onChange={(techStack) => updateItem(item.id, { techStack })}
                 disabled={disabled}
