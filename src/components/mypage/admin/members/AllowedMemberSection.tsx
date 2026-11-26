@@ -4,6 +4,7 @@ import styled, { css } from 'styled-components';
 
 import { AllowedUserEmailItem } from '@@types/request';
 import ListCell from '@common/listCell/ListCell';
+import LoadingArea from '@common/loading/LoadingArea';
 import { FieldDescription } from '@common/fieldStatus/FieldStatus';
 import CircularLoading from '@common/loading/CircularLoading';
 import Button from '@common/button/Button';
@@ -145,9 +146,9 @@ const AllowedMemberSection = ({
           {isEditing && saveError && <FieldDescription $status="negative">{saveError}</FieldDescription>}
 
           {isLoading ? (
-            <StateWrapper>
+            <LoadingArea minHeight={120}>
               <CircularLoading size={32} />
-            </StateWrapper>
+            </LoadingArea>
           ) : isError ? (
             <ErrorMessage>예비 회원 목록을 불러오지 못했습니다.</ErrorMessage>
           ) : isEditing ? (
@@ -347,14 +348,6 @@ const EmailField = styled(NameField)`
   width: auto;
   min-width: 0;
   ${typographyCss(Typography.headline2.medium)}
-`;
-
-const StateWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 120px;
 `;
 
 const ErrorMessage = styled.p`

@@ -3,6 +3,7 @@ import styled, { css } from 'styled-components';
 
 import { Generation, MemberResponse, MemberRole, MemberUpdateRequest } from '@@types/request';
 import TextField from '@common/textField/TextField';
+import LoadingArea from '@common/loading/LoadingArea';
 import { FieldDescription } from '@common/fieldStatus/FieldStatus';
 import CircularLoading from '@common/loading/CircularLoading';
 import EmptyState from '@common/emptyState/EmptyState';
@@ -314,9 +315,9 @@ const MemberSection = ({
       </HeaderRow>
 
       {isLoading ? (
-        <StateWrapper>
+        <LoadingArea minHeight={240}>
           <CircularLoading size={32} />
-        </StateWrapper>
+        </LoadingArea>
       ) : isError ? (
         <TableEmptyState variant="error" />
       ) : visibleMembers.length === 0 ? (
@@ -556,14 +557,6 @@ const EmailFieldColumn = styled.div`
   flex-direction: column;
   min-width: 0;
   gap: 4px;
-`;
-
-const StateWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 240px;
 `;
 
 const TableEmptyState = styled(EmptyState)`

@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 import { RecruitmentTextResponse, RecruitmentTextStatus } from 'src/apis/recruitment';
 import ContentBadge from '@common/badge/ContentBadge';
+import LoadingArea from '@common/loading/LoadingArea';
 import CircularLoading from '@common/loading/CircularLoading';
 import EmptyState from '@common/emptyState/EmptyState';
 import PaginationNavigation from '@common/pagination/PaginationNavigation';
@@ -52,9 +53,9 @@ const RecruitmentTextSection = ({
         </HeaderRow>
 
         {isLoading ? (
-          <StateWrapper>
+          <LoadingArea minHeight={240}>
             <CircularLoading size={32} />
-          </StateWrapper>
+          </LoadingArea>
         ) : isError ? (
           <TableEmptyState variant="error" />
         ) : texts.length === 0 ? (
@@ -167,14 +168,6 @@ const Cell = styled.div`
 
 const BadgeCell = styled.div`
   display: flex;
-`;
-
-const StateWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 240px;
 `;
 
 const TableEmptyState = styled(EmptyState)`
