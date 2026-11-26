@@ -1,7 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import BackHeader from '@common/header/BackHeader';
+import ModalOverlay from '@common/modalOverlay/ModalOverlay';
 import ScrollArea from '@common/scrollArea/ScrollArea';
-import { AccentTint, Label, Material, Orange } from '@utils/constant/color';
+import { AccentTint, Label, Orange } from '@utils/constant/color';
 import { media } from '@utils/constant/breakpoint';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { useRouter } from 'next/router';
@@ -46,8 +47,8 @@ const ProjectDetailModal = ({ projectId, staticData, onClose }: ProjectDetailMod
   const project = data ?? staticData ?? undefined;
 
   return (
-    <Backdrop onClick={onClose}>
-      <ModalOuter onClick={(event) => event.stopPropagation()}>
+    <Overlay onDimmerClick={onClose}>
+      <ModalOuter>
         <ModalScrollArea deps={[project]}>
           {/* 모바일은 모달이 화면을 덮어 배경 클릭으로 닫을 수 없으므로, 로딩 중에도 닫기 버튼을 노출한다 */}
           <MobileHeader>
@@ -98,21 +99,14 @@ const ProjectDetailModal = ({ projectId, staticData, onClose }: ProjectDetailMod
           </Actions>
         )}
       </ModalOuter>
-    </Backdrop>
+    </Overlay>
   );
 };
 
 export default ProjectDetailModal;
 
-const Backdrop = styled.div`
-  position: fixed;
-  inset: 0;
-  z-index: 10000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+const Overlay = styled(ModalOverlay)`
   padding: 24px;
-  background-color: ${Material.dimmer};
 
   @media (max-width: 700px) {
     top: 60px;

@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { useMutation, useQuery } from '@tanstack/react-query';
 
 import Button from '@common/button/Button';
+import ModalOverlay from '@common/modalOverlay/ModalOverlay';
 import ListboxSelect from '@common/select/ListboxSelect';
 import ScrollArea from '@common/scrollArea/ScrollArea';
 import TextField from '@common/textField/TextField';
@@ -11,7 +12,7 @@ import useFocusTrap from 'src/hooks/useFocusTrap';
 import { getAvailableParts, subscribeRecruitment } from 'src/apis/recruitment';
 import useRecruitModalStore from 'src/store/useRecruitModalStore';
 import { excludeCommonPart, isUnfilled } from '@utils/index';
-import { BackgroundColor, Fill, Label, Material } from '@utils/constant/color';
+import { BackgroundColor, Fill, Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { MOBILE } from '@home/common/responsive';
 
@@ -61,15 +62,8 @@ const RecruitNotifyModal = ({ onClose }: { onClose: () => void }) => {
   };
 
   return (
-    <Backdrop onClick={onClose}>
-      <Modal
-        ref={modalRef}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={titleId}
-        tabIndex={-1}
-        onClick={(event) => event.stopPropagation()}
-      >
+    <ModalOverlay onDimmerClick={onClose}>
+      <Modal ref={modalRef} role="dialog" aria-modal="true" aria-labelledby={titleId} tabIndex={-1}>
         <InformationScroll>
           <Information>
             <Title id={titleId}>다음 기수 모집 알림받기</Title>
@@ -140,22 +134,11 @@ const RecruitNotifyModal = ({ onClose }: { onClose: () => void }) => {
           </ActionRow>
         </Actions>
       </Modal>
-    </Backdrop>
+    </ModalOverlay>
   );
 };
 
 export default RecruitNotifyModal;
-
-const Backdrop = styled.div`
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 20px;
-  background-color: ${Material.dimmer};
-  z-index: 9999;
-`;
 
 const Modal = styled.div`
   position: relative;

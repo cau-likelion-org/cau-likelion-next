@@ -2,6 +2,7 @@ import { useId, useRef } from 'react';
 import styled from 'styled-components';
 
 import BackHeader from '@common/header/BackHeader';
+import ModalOverlay from '@common/modalOverlay/ModalOverlay';
 import ContentBadge from '@common/badge/ContentBadge';
 import Chip from '@common/chip/Chip';
 import ScrollArea from '@common/scrollArea/ScrollArea';
@@ -9,7 +10,7 @@ import TextButton from '@common/textButton/TextButton';
 import ProjectDetailCarousel from '@project/detail/ProjectDetailCarousel';
 import IcLineHorizontal from '@assets/svg/icon/ic-line-horizontal.svg';
 import useFocusTrap from 'src/hooks/useFocusTrap';
-import { BackgroundColor, Label, Material } from '@utils/constant/color';
+import { BackgroundColor, Label } from '@utils/constant/color';
 import { media } from '@utils/constant/breakpoint';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
@@ -39,15 +40,8 @@ const PostDetailModal = ({
   useFocusTrap(modalRef, onClose);
 
   return (
-    <Backdrop onClick={onClose}>
-      <Modal
-        ref={modalRef}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={titleId}
-        tabIndex={-1}
-        onClick={(event) => event.stopPropagation()}
-      >
+    <Overlay onDimmerClick={onClose}>
+      <Modal ref={modalRef} role="dialog" aria-modal="true" aria-labelledby={titleId} tabIndex={-1}>
         <ModalScrollArea>
           <MobileHeader>
             <BackHeader label={headerTitle} onClick={onClose} />
@@ -95,23 +89,16 @@ const PostDetailModal = ({
           </TextButton>
         </Actions>
       </Modal>
-    </Backdrop>
+    </Overlay>
   );
 };
 
 export default PostDetailModal;
 
-const Backdrop = styled.div`
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: ${Material.dimmer};
-  z-index: 9999;
-
+const Overlay = styled(ModalOverlay)`
   @media (max-width: 700px) {
     top: 60px;
+    padding: 0;
   }
 `;
 

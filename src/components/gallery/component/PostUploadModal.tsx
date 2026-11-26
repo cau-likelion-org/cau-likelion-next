@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { useQuery } from '@tanstack/react-query';
 import Button from '@common/button/Button';
+import ModalOverlay from '@common/modalOverlay/ModalOverlay';
 import Radio from '@common/radio/Radio';
 import ScrollArea from '@common/scrollArea/ScrollArea';
 import TextButton from '@common/textButton/TextButton';
@@ -21,7 +22,7 @@ import useTokenStore from 'src/store/useTokenStore';
 import { UploadDomain, uploadFile } from 'src/apis/upload';
 import { getGenerations } from 'src/apis/account';
 import { NUMERIC_ONLY_REGEX } from '@utils/constant';
-import { BackgroundColor, Label, Line, Material, State } from '@utils/constant/color';
+import { BackgroundColor, Label, Line, State } from '@utils/constant/color';
 import { isUnfilled } from '@utils/index';
 import { resizeImageFile } from '@utils/resizeImage';
 import useImageSlots from 'src/hooks/useImageSlots';
@@ -251,7 +252,7 @@ const PostUploadModal = ({
   };
 
   return (
-    <Backdrop>
+    <ModalOverlay>
       <Modal ref={modalRef} role="dialog" aria-modal="true" aria-label={modalAriaLabel} tabIndex={-1}>
         <ModalScrollArea>
           <Information>
@@ -434,7 +435,7 @@ const PostUploadModal = ({
           onHidden={() => setErrorToast('')}
         />
       </ToastWrapper>
-    </Backdrop>
+    </ModalOverlay>
   );
 };
 
@@ -491,16 +492,6 @@ const DateField = ({
     </DateRangeRow>
   );
 };
-
-const Backdrop = styled.div`
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: ${Material.dimmer};
-  z-index: 9999;
-`;
 
 const Modal = styled.div`
   position: relative;
