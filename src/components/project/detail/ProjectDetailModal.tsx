@@ -14,7 +14,7 @@ import { PROJECT_CATEGORY_LABEL, ProjectResponseDto, getProjectDetail, getSorted
 import useScrollLock from 'src/hooks/useScrollLock';
 import { isAdminRole } from '@utils/index';
 import styled from 'styled-components';
-import ProjectDetailCarousel from './ProjectDetailCarousel';
+import ImageCarousel from '@common/carousel/ImageCarousel';
 import ProjectDetailMetaPanel from './ProjectDetailMetaPanel';
 import ProjectDetailTeamPanel from './ProjectDetailTeamPanel';
 import useUserProfile from 'src/apis/useUserProfile';
@@ -63,7 +63,7 @@ const ProjectDetailModal = ({ projectId, staticData, onClose }: ProjectDetailMod
             </LoadingArea>
           ) : (
             <Contents>
-              <ProjectDetailCarousel images={getSortedProjectImages(project.images)} />
+              <ImageCarousel images={getSortedProjectImages(project.images)} />
               <TextBlock>
                 <Title>{project.title}</Title>
                 {project.tagline && <Description>{project.tagline}</Description>}

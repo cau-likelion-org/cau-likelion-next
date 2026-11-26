@@ -7,7 +7,7 @@ import ContentBadge from '@common/badge/ContentBadge';
 import Chip from '@common/chip/Chip';
 import ScrollArea from '@common/scrollArea/ScrollArea';
 import TextButton from '@common/textButton/TextButton';
-import ProjectDetailCarousel from '@project/detail/ProjectDetailCarousel';
+import ImageCarousel from '@common/carousel/ImageCarousel';
 import IcLineHorizontal from '@assets/svg/icon/ic-line-horizontal.svg';
 import useFocusTrap from 'src/hooks/useFocusTrap';
 import { BackgroundColor, Label } from '@utils/constant/color';
@@ -48,7 +48,7 @@ const PostDetailModal = ({
           </MobileHeader>
           <Information>
             <ImageGroup>
-              <ProjectDetailCarousel key={imageUrls.join(',')} images={imageUrls} />
+              <ImageCarousel key={imageUrls.join(',')} images={imageUrls} />
             </ImageGroup>
 
             <TextGroup>
