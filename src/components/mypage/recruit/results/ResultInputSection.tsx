@@ -1,4 +1,4 @@
-import { forwardRef, useState } from 'react';
+import { forwardRef } from 'react';
 import styled from 'styled-components';
 
 import Button from '@common/button/Button';
@@ -17,9 +17,9 @@ import { ApplicantDetail, SCREENING_RESULT_LABEL, SUBMISSION_STATUS_LABEL, Scree
 import ResultSection, { BorderBox, GrayBox, Inset } from './ResultSection';
 import { InterviewInfo, ScreeningStage } from './resultMock';
 import { formatDate } from '@utils/index';
+import useApplicantFilter, { ALL } from '../useApplicantFilter';
 
 const PAGE_SIZE = 6;
-const ALL = '전체';
 const UNSET = '미입력';
 const RESULTS: ScreeningResult[] = ['PASS', 'FAIL', 'HOLD'];
 const toResult = (label: string) => RESULTS.find((result) => SCREENING_RESULT_LABEL[result] === label);
@@ -57,12 +57,6 @@ const ResultInputSection = forwardRef<HTMLElement, ResultInputSectionProps>(func
   },
   ref,
 ) {
-  const [statusFilter, setStatusFilter] = useState(ALL);
-  const [partFilter, setPartFilter] = useState(ALL);
-  const [resultFilter, setResultFilter] = useState(ALL);
-  const [keyword, setKeyword] = useState('');
-  const [page, setPage] = useState(1);
-
   const currentResult = (applicant: ApplicantDetail) => pending[applicant.id] ?? getSavedResult(stage, applicant);
   // 공개 후에는 합격·불합격을 보류로 되돌릴 수 없다
   const canHold = (applicant: ApplicantDetail) => {
@@ -70,24 +64,27 @@ const ResultInputSection = forwardRef<HTMLElement, ResultInputSectionProps>(func
     return !isPublished || (savedResult !== 'PASS' && savedResult !== 'FAIL');
   };
 
-  const trimmedKeyword = keyword.trim();
-  const filtered = applicants.filter((applicant) => {
-    if (statusFilter !== ALL && SUBMISSION_STATUS_LABEL[applicant.submissionStatus] !== statusFilter) return false;
-    if (partFilter !== ALL && applicant.part !== partFilter) return false;
-    const result = currentResult(applicant);
-    if (resultFilter !== ALL && (result ? SCREENING_RESULT_LABEL[result] : UNSET) !== resultFilter) return false;
-    if (trimmedKeyword && !applicant.name.includes(trimmedKeyword) && !applicant.studentId?.includes(trimmedKeyword))
-      return false;
-    return true;
+  const {
+    statusFilter,
+    partFilter,
+    resultFilter,
+    keyword,
+    changeStatusFilter,
+    changePartFilter,
+    changeResultFilter,
+    changeKeyword,
+    filtered,
+    pageItems,
+    currentPage,
+    totalPage,
+    setPage,
+  } = useApplicantFilter(applicants, {
+    pageSize: PAGE_SIZE,
+    getResultLabel: (applicant) => {
+      const result = currentResult(applicant);
+      return result ? SCREENING_RESULT_LABEL[result] : UNSET;
+    },
   });
-  const totalPage = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  const currentPage = Math.min(page, totalPage);
-  const pageItems = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
-
-  const changeFilter = (setter: (value: string) => void) => (value: string) => {
-    setter(value);
-    setPage(1);
-  };
 
   const setResults = (ids: number[], result: ScreeningResult) => {
     const next = { ...pending };
@@ -137,27 +134,27 @@ const ResultInputSection = forwardRef<HTMLElement, ResultInputSectionProps>(func
               heading="제출 상태"
               options={[ALL, SUBMISSION_STATUS_LABEL.ON_TIME, SUBMISSION_STATUS_LABEL.LATE]}
               value={statusFilter}
-              onChange={changeFilter(setStatusFilter)}
+              onChange={changeStatusFilter}
             />
           )}
           <FilterSelect
             heading="파트 구분"
             options={[ALL, ...PART_OPTIONS_MOCK]}
             value={partFilter}
-            onChange={changeFilter(setPartFilter)}
+            onChange={changePartFilter}
           />
           <FilterSelect
             heading="결과"
             options={[ALL, ...RESULTS.map((result) => SCREENING_RESULT_LABEL[result]), UNSET]}
             value={resultFilter}
-            onChange={changeFilter(setResultFilter)}
+            onChange={changeResultFilter}
           />
           <SearchField
             heading="이름/학번 검색"
             placeholder="텍스트를 입력해 주세요."
             leadingIcon={<IcSearch width={22} height={22} />}
             value={keyword}
-            onChange={(event) => changeFilter(setKeyword)(event.target.value)}
+            onChange={(event) => changeKeyword(event.target.value)}
           />
         </Filters>
         <GrayBox>
