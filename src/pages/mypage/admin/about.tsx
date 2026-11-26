@@ -6,7 +6,7 @@ import LeaveConfirmAlert from '@common/alert/LeaveConfirmAlert';
 import Toast from '@common/toast/Toast';
 import { ToastWrapper } from '@common/toast/toastLayout';
 import MyPageShell from '@mypage/component/MyPageShell';
-import SitePageEditor from '@mypage/admin/component/SitePageEditor';
+import AdminEditLayout from '@mypage/admin/component/AdminEditLayout';
 import LinearLoading from '@common/loading/LinearLoading';
 import TalentSection, { TalentItem, isTalentItemsInvalid } from '@mypage/admin/about/TalentSection';
 import CurriculumSection, {
@@ -262,7 +262,7 @@ const MyPageAdminAbout = () => {
 
   return (
     <>
-      <SitePageEditor
+      <AdminEditLayout
         title="소개 페이지 관리"
         isAuthorized={isAuthorized}
         isUserProfileError={isUserProfileError}
@@ -293,7 +293,7 @@ const MyPageAdminAbout = () => {
           disabled={!isEditing}
           isUploading={isUploadingRoadmap}
         />
-      </SitePageEditor>
+      </AdminEditLayout>
       {isConfirmOpen && <LeaveConfirmAlert onCancel={cancelLeave} onConfirm={confirmLeave} />}
       <ToastWrapper>
         <Toast variant={toastVariant} text={toastMessage} show={!!toastMessage} onHidden={() => setToastMessage('')} />

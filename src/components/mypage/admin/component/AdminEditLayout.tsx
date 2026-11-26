@@ -10,7 +10,7 @@ import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { media } from '@utils/constant/breakpoint';
 
-interface SitePageEditorProps {
+interface AdminEditLayoutProps {
   title: string;
   isAuthorized: boolean;
   isUserProfileError: boolean;
@@ -26,7 +26,7 @@ interface SitePageEditorProps {
   children: ReactNode;
 }
 
-const SitePageEditor = ({
+const AdminEditLayout = ({
   title,
   isAuthorized,
   isUserProfileError,
@@ -40,7 +40,7 @@ const SitePageEditor = ({
   loadingIndicator,
   contentRef,
   children,
-}: SitePageEditorProps) => {
+}: AdminEditLayoutProps) => {
   if (!isAuthorized) return <PageLoadingGate isError={isUserProfileError} />;
 
   return (
@@ -73,7 +73,7 @@ const SitePageEditor = ({
   );
 };
 
-export default SitePageEditor;
+export default AdminEditLayout;
 
 const TitleRow = styled.div`
   display: flex;

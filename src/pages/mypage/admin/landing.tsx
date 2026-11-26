@@ -6,7 +6,7 @@ import LeaveConfirmAlert from '@common/alert/LeaveConfirmAlert';
 import Toast from '@common/toast/Toast';
 import { ToastWrapper } from '@common/toast/toastLayout';
 import MyPageShell from '@mypage/component/MyPageShell';
-import SitePageEditor from '@mypage/admin/component/SitePageEditor';
+import AdminEditLayout from '@mypage/admin/component/AdminEditLayout';
 import LinearLoading from '@common/loading/LinearLoading';
 import IntroduceSection, { LandingMetrics, isMetricsInvalid } from '@mypage/admin/landing/IntroduceSection';
 import TrackSection, { TrackIntroItem, isTrackItemInvalid } from '@mypage/admin/landing/TrackSection';
@@ -305,7 +305,7 @@ const MyPageAdminLanding = () => {
 
   return (
     <>
-      <SitePageEditor
+      <AdminEditLayout
         title="랜딩페이지 관리"
         isAuthorized={isAuthorized}
         isUserProfileError={isUserProfileError}
@@ -341,7 +341,7 @@ const MyPageAdminLanding = () => {
           disabled={!isEditing}
         />
         <FAQSection items={faqItems} onChange={setFaqItems} showErrors={showErrors} disabled={!isEditing} />
-      </SitePageEditor>
+      </AdminEditLayout>
       {isConfirmOpen && <LeaveConfirmAlert onCancel={cancelLeave} onConfirm={confirmLeave} />}
       <ToastWrapper>
         <Toast variant={toastVariant} text={toastMessage} show={!!toastMessage} onHidden={() => setToastMessage('')} />

@@ -7,7 +7,7 @@ import LeaveConfirmAlert from '@common/alert/LeaveConfirmAlert';
 import Toast from '@common/toast/Toast';
 import { ToastWrapper } from '@common/toast/toastLayout';
 import MyPageShell from '@mypage/component/MyPageShell';
-import SitePageEditor from '@mypage/admin/component/SitePageEditor';
+import AdminEditLayout from '@mypage/admin/component/AdminEditLayout';
 import CircularLoading from '@common/loading/CircularLoading';
 import BlogSection, {
   BlogItem,
@@ -125,7 +125,7 @@ const MyPageAdminBlog = () => {
 
   return (
     <>
-      <SitePageEditor
+      <AdminEditLayout
         title="블로그 페이지 관리"
         isAuthorized={isAuthorized}
         isUserProfileError={isUserProfileError}
@@ -140,7 +140,7 @@ const MyPageAdminBlog = () => {
         contentRef={contentRef}
       >
         <BlogSection items={blogItems} onChange={setBlogItems} showErrors={showErrors} disabled={!isEditing} />
-      </SitePageEditor>
+      </AdminEditLayout>
       {isConfirmOpen && <LeaveConfirmAlert onCancel={cancelLeave} onConfirm={confirmLeave} />}
       <ToastWrapper>
         <Toast variant={toastVariant} text={toastMessage} show={!!toastMessage} onHidden={() => setToastMessage('')} />
