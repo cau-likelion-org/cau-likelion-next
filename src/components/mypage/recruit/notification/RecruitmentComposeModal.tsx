@@ -4,15 +4,13 @@ import styled from 'styled-components';
 import TextField from '@common/textField/TextField';
 import Textarea from '@common/textarea/Textarea';
 import Button from '@common/button/Button';
-import ModalOverlay from '@common/modalOverlay/ModalOverlay';
-import ScrollArea from '@common/scrollArea/ScrollArea';
 import DateTimeInput from '@common/dateTimeInput/DateTimeInput';
 import { isUnfilled } from '@utils/index';
-import { BackgroundColor, Label, Line, Orange, State } from '@utils/constant/color';
+import { Label, Line, Orange, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
-import useFocusTrap from 'src/hooks/useFocusTrap';
 import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import SendTargetChipList from './SendTargetChipList';
+import EmailModalLayout, { Field, LargeHeading, LargeRequired } from './EmailModalLayout';
 
 export interface RecruitmentComposeForm {
   title: string;
@@ -57,7 +55,6 @@ const RecruitmentComposeModal = ({
   const [time, setTime] = useState(initialValues?.scheduledSendAt ? initialValues.scheduledSendAt.slice(11, 16) : '');
   const [pendingCancelAction, setPendingCancelAction] = useState<(() => void) | null>(null);
   const modalRef = useRef<HTMLDivElement>(null);
-  useFocusTrap(modalRef, onClose);
   const { showErrors, validate } = useRequiredFieldsSave(modalRef);
 
   const isScheduleInvalid = !date || !time;
@@ -73,80 +70,11 @@ const RecruitmentComposeModal = ({
   };
 
   return (
-    <ModalOverlay onDimmerClick={onClose}>
-      <Modal ref={modalRef} role="dialog" aria-modal="true" aria-label="메일 작성" tabIndex={-1}>
-        <InformationScroll>
-          <Information>
-            <Field>
-              <LargeHeading>
-                발송 대상<LargeRequired>*</LargeRequired>
-              </LargeHeading>
-              <RecipientBox
-                $status={showErrors && recipients.length === 0 ? 'negative' : 'normal'}
-                tabIndex={-1}
-                aria-invalid={showErrors && recipients.length === 0}
-              >
-                <SendTargetChipList
-                  chips={recipients.map((recipient) => ({
-                    key: String(recipient.id),
-                    label: recipient.email,
-                    onRemove: () => onRemoveRecipient(recipient.id),
-                  }))}
-                />
-              </RecipientBox>
-              {showErrors && recipients.length === 0 && <FieldDescription>발송 대상을 선택해 주세요.</FieldDescription>}
-            </Field>
-
-            <Field>
-              <LargeHeading>
-                제목<LargeRequired>*</LargeRequired>
-              </LargeHeading>
-              <TextField
-                value={title}
-                placeholder="메시지를 입력해 주세요."
-                onChange={(event) => setTitle(event.target.value)}
-                status={showErrors && isUnfilled(title) ? 'negative' : 'normal'}
-                description={showErrors && isUnfilled(title) ? '제목을 입력해 주세요.' : undefined}
-              />
-            </Field>
-
-            <Field>
-              <LargeHeading>
-                내용<LargeRequired>*</LargeRequired>
-              </LargeHeading>
-              <ContentTextarea
-                value={content}
-                placeholder="메세지를 입력해 주세요."
-                onChange={(event) => setContent(event.target.value)}
-                status={showErrors && isUnfilled(content) ? 'negative' : 'normal'}
-                description={showErrors && isUnfilled(content) ? '내용을 입력해 주세요.' : undefined}
-              />
-            </Field>
-
-            <Field>
-              <Heading>
-                발송 예약<Required>*</Required>
-              </Heading>
-              <DateRow>
-                <DateTimeInput
-                  aria-label="발송 날짜"
-                  value={date}
-                  onChange={setDate}
-                  status={showErrors && !date ? 'negative' : 'normal'}
-                  description={showErrors && !date ? SCHEDULE_ERROR_MESSAGE : undefined}
-                />
-                <DateTimeInput
-                  type="time"
-                  aria-label="발송 시간"
-                  value={time}
-                  onChange={setTime}
-                  status={showErrors && !time ? 'negative' : 'normal'}
-                  description={showErrors && date && !time ? SCHEDULE_ERROR_MESSAGE : undefined}
-                />
-              </DateRow>
-            </Field>
-          </Information>
-        </InformationScroll>
+    <EmailModalLayout
+      ariaLabel="메일 작성"
+      onClose={onClose}
+      modalRef={modalRef}
+      actions={
         <Actions>
           {pendingCancelAction ? (
             <ConfirmBox>
@@ -195,56 +123,81 @@ const RecruitmentComposeModal = ({
             </Button>
           </ButtonGroup>
         </Actions>
-      </Modal>
-    </ModalOverlay>
+      }
+    >
+      <Field>
+        <LargeHeading>
+          발송 대상<LargeRequired>*</LargeRequired>
+        </LargeHeading>
+        <RecipientBox
+          $status={showErrors && recipients.length === 0 ? 'negative' : 'normal'}
+          tabIndex={-1}
+          aria-invalid={showErrors && recipients.length === 0}
+        >
+          <SendTargetChipList
+            chips={recipients.map((recipient) => ({
+              key: String(recipient.id),
+              label: recipient.email,
+              onRemove: () => onRemoveRecipient(recipient.id),
+            }))}
+          />
+        </RecipientBox>
+        {showErrors && recipients.length === 0 && <FieldDescription>발송 대상을 선택해 주세요.</FieldDescription>}
+      </Field>
+
+      <Field>
+        <LargeHeading>
+          제목<LargeRequired>*</LargeRequired>
+        </LargeHeading>
+        <TextField
+          value={title}
+          placeholder="메시지를 입력해 주세요."
+          onChange={(event) => setTitle(event.target.value)}
+          status={showErrors && isUnfilled(title) ? 'negative' : 'normal'}
+          description={showErrors && isUnfilled(title) ? '제목을 입력해 주세요.' : undefined}
+        />
+      </Field>
+
+      <Field>
+        <LargeHeading>
+          내용<LargeRequired>*</LargeRequired>
+        </LargeHeading>
+        <ContentTextarea
+          value={content}
+          placeholder="메세지를 입력해 주세요."
+          onChange={(event) => setContent(event.target.value)}
+          status={showErrors && isUnfilled(content) ? 'negative' : 'normal'}
+          description={showErrors && isUnfilled(content) ? '내용을 입력해 주세요.' : undefined}
+        />
+      </Field>
+
+      <Field>
+        <Heading>
+          발송 예약<Required>*</Required>
+        </Heading>
+        <DateRow>
+          <DateTimeInput
+            aria-label="발송 날짜"
+            value={date}
+            onChange={setDate}
+            status={showErrors && !date ? 'negative' : 'normal'}
+            description={showErrors && !date ? SCHEDULE_ERROR_MESSAGE : undefined}
+          />
+          <DateTimeInput
+            type="time"
+            aria-label="발송 시간"
+            value={time}
+            onChange={setTime}
+            status={showErrors && !time ? 'negative' : 'normal'}
+            description={showErrors && date && !time ? SCHEDULE_ERROR_MESSAGE : undefined}
+          />
+        </DateRow>
+      </Field>
+    </EmailModalLayout>
   );
 };
 
 export default RecruitmentComposeModal;
-
-const Modal = styled.div`
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  max-width: 1040px;
-  max-height: 90vh;
-  border-radius: 16px;
-  overflow: hidden;
-  background-color: ${BackgroundColor};
-`;
-
-const InformationScroll = styled(ScrollArea)`
-  flex: 1 1 auto;
-`;
-
-const Information = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 42px;
-  padding: 28px;
-`;
-
-const Field = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  width: 100%;
-`;
-
-const LargeHeading = styled.p`
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  margin: 0;
-  color: ${Label.neutral};
-  ${typographyCss(Typography.title3.bold)}
-`;
-
-const LargeRequired = styled.span`
-  color: ${State.error};
-  ${typographyCss(Typography.title3.bold)}
-`;
 
 const Heading = styled.p`
   display: flex;
