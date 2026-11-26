@@ -63,15 +63,22 @@ describe('useRoleGuard', () => {
     await waitFor(() => expect(push).toHaveBeenCalledWith('/mypage'));
   });
 
-  it('보낼 주소를 바꾸면 그 주소로 보낸다', async () => {
+  it('접근할 수 없는 역할이면 forbiddenPath로 보낸다', async () => {
     const queryClient = new QueryClient();
     queryClient.setQueryData(['userProfile'], { ...PROFILE, role: 'STAFF' });
-    renderGuard(queryClient, { forbiddenPath: '/project' });
-    await waitFor(() => expect(push).toHaveBeenCalledWith('/project'));
 
-    push.mockReset();
-    act(() => useTokenStore.getState().setToken({ access: null, refresh: null }));
-    renderGuard(new QueryClient(), { loginPath: '/project' });
+    renderGuard(queryClient, { forbiddenPath: '/project' });
+
     await waitFor(() => expect(push).toHaveBeenCalledWith('/project'));
+    expect(push).not.toHaveBeenCalledWith('/mypage');
+  });
+
+  it('로그인하지 않았으면 loginPath로 보낸다', async () => {
+    useTokenStore.setState({ token: { access: null, refresh: null } });
+
+    renderGuard(new QueryClient(), { loginPath: '/project' });
+
+    await waitFor(() => expect(push).toHaveBeenCalledWith('/project'));
+    expect(push).not.toHaveBeenCalledWith('/login');
   });
 });
