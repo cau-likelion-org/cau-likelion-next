@@ -215,6 +215,10 @@ const FilterRow = styled.div`
 const SearchField = styled(TextField)`
   flex: 1 0 0;
   min-width: 0;
+
+  @media (max-width: 600px) {
+    display: none;
+  }
 `;
 
 const PostList = styled.div`
