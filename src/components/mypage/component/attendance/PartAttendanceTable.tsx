@@ -10,6 +10,7 @@ import {
   MemberAttendanceResponse,
 } from 'src/apis/attendance';
 import EmptyState from '@common/emptyState/EmptyState';
+import LoadingArea from '@common/loading/LoadingArea';
 import TextSelect from '@common/select/TextSelect';
 import CircularLoading from '@common/loading/CircularLoading';
 import { Inverse, Label, Line, Orange } from '@utils/constant/color';
@@ -228,9 +229,9 @@ const PartAttendanceTable = ({
       </Header>
 
       {isLoading ? (
-        <LoadingWrapper>
+        <LoadingArea minHeight={240}>
           <CircularLoading size={32} />
-        </LoadingWrapper>
+        </LoadingArea>
       ) : isError ? (
         <AttendanceEmptyState variant="error" />
       ) : members.length === 0 ? (
@@ -309,14 +310,6 @@ const PartAttendanceTable = ({
 export default PartAttendanceTable;
 
 // 표 안에 들어가는 자리라 프로젝트 목록(468px)보다 낮게 잡는다
-const LoadingWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 240px;
-`;
-
 const AttendanceEmptyState = styled(EmptyState)`
   min-height: 240px;
 `;

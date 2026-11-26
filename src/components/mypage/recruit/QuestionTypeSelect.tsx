@@ -1,9 +1,5 @@
-import { useState } from 'react';
-
 import { FieldStatus } from '@common/fieldStatus/FieldStatus';
-import Select from '@common/select/Select';
-import ListboxOptions from '@common/select/ListboxOptions';
-import useListboxSelect from 'src/hooks/useListboxSelect';
+import ListboxSelect from '@common/select/ListboxSelect';
 
 import { RecruitQuestionType } from './mock';
 
@@ -26,46 +22,19 @@ export interface QuestionTypeSelectProps {
   description?: string;
 }
 
-const QuestionTypeSelect = ({ value, onChange, readOnly = false, status, description }: QuestionTypeSelectProps) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const label = value ? QUESTION_TYPE_LABEL[value] : '';
-  const { listId, wrapperRef, triggerRef, activeIndex, handleKeyDown, handleBlur, selectOption } = useListboxSelect({
-    isOpen,
-    options: LABELS,
-    value: label,
-    onOpen: () => setIsOpen(true),
-    onClose: () => setIsOpen(false),
-    onSelect: (selected) => onChange(TYPES[LABELS.indexOf(selected)]),
-  });
-
-  return (
-    <div ref={wrapperRef} onKeyDownCapture={handleKeyDown} onBlur={handleBlur}>
-      <Select
-        ref={triggerRef}
-        heading="문항 유형"
-        aria-label="문항 유형"
-        aria-expanded={isOpen}
-        aria-controls={listId}
-        aria-activedescendant={isOpen ? `${listId}-${activeIndex}` : undefined}
-        placeholder="선택해주세요."
-        value={label}
-        readOnly={readOnly}
-        status={status}
-        description={description}
-        onClick={() => setIsOpen((prev) => !prev)}
-      >
-        {isOpen && (
-          <ListboxOptions
-            listId={listId}
-            options={LABELS}
-            value={label}
-            activeIndex={activeIndex}
-            onSelect={selectOption}
-          />
-        )}
-      </Select>
-    </div>
-  );
-};
+const QuestionTypeSelect = ({ value, onChange, readOnly = false, status, description }: QuestionTypeSelectProps) => (
+  <ListboxSelect
+    fullWidth
+    heading="문항 유형"
+    ariaLabel="문항 유형"
+    placeholder="선택해주세요."
+    options={LABELS}
+    value={value ? QUESTION_TYPE_LABEL[value] : ''}
+    readOnly={readOnly}
+    status={status}
+    description={description}
+    onChange={(selected) => onChange(TYPES[LABELS.indexOf(selected)])}
+  />
+);
 
 export default QuestionTypeSelect;

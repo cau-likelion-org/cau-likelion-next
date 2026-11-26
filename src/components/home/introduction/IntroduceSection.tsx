@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 import { getIntroduce } from 'src/apis/introduce';
 import LinearLoading from '@common/loading/LinearLoading';
+import LoadingArea from '@common/loading/LoadingArea';
 import EmptyState from '@common/emptyState/EmptyState';
 import { Black, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -37,9 +38,9 @@ const IntroduceSection = () => {
           <MobileDescription>{MOBILE_DESCRIPTION}</MobileDescription>
         </TextGroup>
         {isLoading ? (
-          <LoadingWrapper>
+          <LoadingArea minHeight={200}>
             <LinearLoading />
-          </LoadingWrapper>
+          </LoadingArea>
         ) : isError ? (
           <EmptyState variant="error" />
         ) : (
@@ -214,12 +215,4 @@ const Footnote = styled.p`
   @media (max-width: ${MOBILE}px) {
     ${typographyCss(Typography.caption2.regular)}
   }
-`;
-
-const LoadingWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 200px;
 `;

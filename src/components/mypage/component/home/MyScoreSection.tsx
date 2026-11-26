@@ -6,6 +6,7 @@ import { UserProfile } from '@@types/request';
 import { getMyScore } from 'src/apis/mypage';
 import useTokenStore from 'src/store/useTokenStore';
 import LinearLoading from '@common/loading/LinearLoading';
+import LoadingArea from '@common/loading/LoadingArea';
 import EmptyState from '@common/emptyState/EmptyState';
 import { BackgroundWhite, Black, Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -35,9 +36,9 @@ const MyScoreSection = ({ userProfile }: { userProfile: UserProfile }) => {
       {!isActiveGeneration ? (
         <EmptyCard>올해 활동 내역이 없습니다</EmptyCard>
       ) : isLoading ? (
-        <LoadingWrapper>
+        <LoadingArea minHeight={164}>
           <LinearLoading />
-        </LoadingWrapper>
+        </LoadingArea>
       ) : isError ? (
         <EmptyState variant="error" />
       ) : (
@@ -122,14 +123,6 @@ const EmptyCard = styled.div`
   background-color: ${BackgroundWhite.secondary};
   color: ${Label.assistive};
   ${typographyCss(Typography.body1Normal.medium)}
-`;
-
-const LoadingWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 164px;
 `;
 
 const StatCardWrapper = styled.div`

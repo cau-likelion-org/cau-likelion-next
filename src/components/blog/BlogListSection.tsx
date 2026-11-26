@@ -2,15 +2,14 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { useQuery } from '@tanstack/react-query';
 import PageHeader from '@common/pageHeader/PageHeader';
-import Select from '@common/select/Select';
-import ListboxOptions from '@common/select/ListboxOptions';
+import LoadingArea from '@common/loading/LoadingArea';
+import ListboxSelect from '@common/select/ListboxSelect';
 import CircularLoading from '@common/loading/CircularLoading';
 import EmptyState from '@common/emptyState/EmptyState';
 import PaginationNavigation from '@common/pagination/PaginationNavigation';
 import TextField from '@common/textField/TextField';
 import PageScrollbar from '@common/pageScrollbar/PageScrollbar';
 import { IcSearch } from '@assets/svg';
-import useListboxSelect from 'src/hooks/useListboxSelect';
 import { getBlogs, BlogCategory } from 'src/apis/blog';
 import { toDateString } from '@utils/index';
 import { Label } from '@utils/constant/color';
@@ -18,8 +17,6 @@ import { track } from 'src/lib/amplitude';
 
 import BlogCard from './component/BlogCard';
 import { containerCss, media } from '@utils/constant/breakpoint';
-
-type FilterKey = 'generation' | 'category';
 
 const ALL_OPTION = '전체';
 
@@ -44,7 +41,6 @@ const BlogListSection = () => {
   const [category, setCategory] = useState(ALL_OPTION);
   const [keyword, setKeyword] = useState('');
   const [debouncedKeyword, setDebouncedKeyword] = useState('');
-  const [openFilter, setOpenFilter] = useState<FilterKey | null>(null);
   const [page, setPage] = useState(1);
 
   useEffect(() => {
@@ -96,29 +92,21 @@ const BlogListSection = () => {
       <Wrapper ref={contentRef}>
         <Header>
           <FilterRow>
-            <FilterSelect
-              label="기수 구분"
+            <ListboxSelect
+              heading="기수 구분"
               value={generation}
               options={generationOptions}
-              isOpen={openFilter === 'generation'}
-              onToggle={() => setOpenFilter((prev) => (prev === 'generation' ? null : 'generation'))}
-              onClose={() => setOpenFilter(null)}
-              onSelect={(option) => {
+              onChange={(option) => {
                 setGeneration(option);
-                setOpenFilter(null);
                 setPage(1);
               }}
             />
-            <FilterSelect
-              label="내용 구분"
+            <ListboxSelect
+              heading="내용 구분"
               value={category}
               options={CATEGORY_OPTIONS}
-              isOpen={openFilter === 'category'}
-              onToggle={() => setOpenFilter((prev) => (prev === 'category' ? null : 'category'))}
-              onClose={() => setOpenFilter(null)}
-              onSelect={(option) => {
+              onChange={(option) => {
                 setCategory(option);
-                setOpenFilter(null);
                 setPage(1);
               }}
             />
@@ -136,9 +124,9 @@ const BlogListSection = () => {
         </Header>
 
         {isLoading ? (
-          <LoadingWrapper>
+          <LoadingArea minHeight={468}>
             <CircularLoading size={32} />
-          </LoadingWrapper>
+          </LoadingArea>
         ) : isError && posts.length === 0 ? (
           <EmptyState variant="error" />
         ) : posts.length === 0 ? (
@@ -177,57 +165,6 @@ const BlogListSection = () => {
 };
 
 export default BlogListSection;
-
-const FilterSelect = ({
-  label,
-  value,
-  options,
-  isOpen,
-  onToggle,
-  onClose,
-  onSelect,
-}: {
-  label: string;
-  value: string;
-  options: string[];
-  isOpen: boolean;
-  onToggle: () => void;
-  onClose: () => void;
-  onSelect: (option: string) => void;
-}) => {
-  const { listId, wrapperRef, triggerRef, activeIndex, handleKeyDown, handleBlur, selectOption } = useListboxSelect({
-    isOpen,
-    options,
-    value,
-    onOpen: onToggle,
-    onClose,
-    onSelect,
-  });
-
-  return (
-    <SelectWrapper ref={wrapperRef} onKeyDownCapture={handleKeyDown} onBlur={handleBlur}>
-      <Select
-        ref={triggerRef}
-        heading={label}
-        value={value}
-        onClick={onToggle}
-        aria-expanded={isOpen}
-        aria-activedescendant={isOpen ? `${listId}-${activeIndex}` : undefined}
-        aria-controls={listId}
-      >
-        {isOpen && (
-          <ListboxOptions
-            listId={listId}
-            options={options}
-            value={value}
-            activeIndex={activeIndex}
-            onSelect={selectOption}
-          />
-        )}
-      </Select>
-    </SelectWrapper>
-  );
-};
 
 const Wrapper = styled.div`
   ${containerCss}
@@ -275,23 +212,13 @@ const FilterRow = styled.div`
   width: 100%;
 `;
 
-const SelectWrapper = styled.div`
-  position: relative;
-  width: 160px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-
-  @media (max-width: 600px) {
-    flex: 1 0 0;
-    min-width: 0;
-    width: auto;
-  }
-`;
-
 const SearchField = styled(TextField)`
   flex: 1 0 0;
   min-width: 0;
+
+  @media (max-width: 600px) {
+    display: none;
+  }
 `;
 
 const PostList = styled.div`
@@ -310,12 +237,4 @@ const PaginationRow = styled.div`
   display: flex;
   justify-content: center;
   width: 100%;
-`;
-
-const LoadingWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 468px;
 `;

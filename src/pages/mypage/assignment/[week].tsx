@@ -1,4 +1,4 @@
-import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
+import { ReactElement, useCallback, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import styled from 'styled-components';
@@ -28,13 +28,13 @@ import {
   submitAssignmentBatch,
 } from 'src/apis/assignmentSubmit';
 import useTokenStore from 'src/store/useTokenStore';
+import useLoginRequired from 'src/hooks/useLoginRequired';
 import { Black, Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { containerCss, media } from '@utils/constant/breakpoint';
 
 const AssignmentSubmit = () => {
   const tokenState = useTokenStore((state) => state.token);
-  const hasHydrated = useTokenStore((state) => state.hasHydrated);
   const router = useRouter();
   const queryClient = useQueryClient();
   const week = Number(router.query.week);
@@ -54,9 +54,7 @@ const AssignmentSubmit = () => {
   const [retryIds, setRetryIds] = useState<string[] | null>(null);
   const [toastMessage, setToastMessage] = useState('');
 
-  useEffect(() => {
-    if (hasHydrated && !tokenState.access) router.push('/login');
-  }, [hasHydrated, tokenState, router]);
+  useLoginRequired();
 
   const { data: weekGroups } = useQuery<MyAssignmentHistoryWeekGroup[]>({
     queryKey: ['myAssignmentHistory', week],

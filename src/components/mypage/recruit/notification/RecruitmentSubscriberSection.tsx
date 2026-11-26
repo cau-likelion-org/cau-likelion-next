@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 import { RecruitmentSubscriberResponse } from 'src/apis/recruitment';
 import Button from '@common/button/Button';
+import LoadingArea from '@common/loading/LoadingArea';
 import Checkbox from '@common/checkbox/Checkbox';
 import CircularLoading from '@common/loading/CircularLoading';
 import EmptyState from '@common/emptyState/EmptyState';
@@ -78,9 +79,9 @@ const RecruitmentSubscriberSection = ({
         </HeaderRow>
 
         {isLoading ? (
-          <StateWrapper>
+          <LoadingArea minHeight={240}>
             <CircularLoading size={32} />
-          </StateWrapper>
+          </LoadingArea>
         ) : isError ? (
           <TableEmptyState variant="error" />
         ) : subscribers.length === 0 ? (
@@ -220,14 +221,6 @@ const Cell = styled.div`
   white-space: nowrap;
   color: ${Label.strong};
   ${typographyCss(Typography.headline2.medium)}
-`;
-
-const StateWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 240px;
 `;
 
 const TableEmptyState = styled(EmptyState)`

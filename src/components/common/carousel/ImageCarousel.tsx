@@ -9,7 +9,7 @@ const TRANSITION_MS = 300;
 // react-hooks/purity가 useRef 초기값으로 넘기는 Date.now() 호출을 막아서, 계측용 타임스탬프는 밖에서 받는다
 const now = () => Date.now();
 
-const ProjectDetailCarousel = ({ images }: { images: string[] }) => {
+const ImageCarousel = ({ images }: { images: string[] }) => {
   const router = useRouter();
   const isLoopable = images.length > 1;
   const slides = isLoopable ? [...images, images[0]] : images;
@@ -105,7 +105,7 @@ const ProjectDetailCarousel = ({ images }: { images: string[] }) => {
   );
 };
 
-export default ProjectDetailCarousel;
+export default ImageCarousel;
 
 const Wrapper = styled.div`
   display: flex;

@@ -1,18 +1,20 @@
 import { useQuery } from '@tanstack/react-query';
 import BackHeader from '@common/header/BackHeader';
+import ModalOverlay from '@common/modalOverlay/ModalOverlay';
 import ScrollArea from '@common/scrollArea/ScrollArea';
-import { AccentTint, Label, Material, Orange } from '@utils/constant/color';
+import { AccentTint, Label, Orange } from '@utils/constant/color';
 import { media } from '@utils/constant/breakpoint';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import CircularLoading from '@common/loading/CircularLoading';
+import LoadingArea from '@common/loading/LoadingArea';
 import EmptyState from '@common/emptyState/EmptyState';
 import { PROJECT_CATEGORY_LABEL, ProjectResponseDto, getProjectDetail, getSortedProjectImages } from 'src/apis/project';
 import useScrollLock from 'src/hooks/useScrollLock';
 import { isAdminRole } from '@utils/index';
 import styled from 'styled-components';
-import ProjectDetailCarousel from './ProjectDetailCarousel';
+import ImageCarousel from '@common/carousel/ImageCarousel';
 import ProjectDetailMetaPanel from './ProjectDetailMetaPanel';
 import ProjectDetailTeamPanel from './ProjectDetailTeamPanel';
 import useUserProfile from 'src/apis/useUserProfile';
@@ -46,24 +48,22 @@ const ProjectDetailModal = ({ projectId, staticData, onClose }: ProjectDetailMod
   const project = data ?? staticData ?? undefined;
 
   return (
-    <Backdrop onClick={onClose}>
-      <ModalOuter onClick={(event) => event.stopPropagation()}>
+    <Overlay onDimmerClick={onClose}>
+      <ModalOuter>
         <ModalScrollArea deps={[project]}>
           {/* 모바일은 모달이 화면을 덮어 배경 클릭으로 닫을 수 없으므로, 로딩 중에도 닫기 버튼을 노출한다 */}
           <MobileHeader>
             <BackHeader label="프로젝트 목록으로 돌아가기" onClick={onClose} />
           </MobileHeader>
           {isError ? (
-            <LoadingWrapper>
-              <EmptyState variant="error" />
-            </LoadingWrapper>
+            <EmptyState variant="error" />
           ) : !project ? (
-            <LoadingWrapper>
+            <LoadingArea minHeight={468}>
               <CircularLoading size={32} />
-            </LoadingWrapper>
+            </LoadingArea>
           ) : (
             <Contents>
-              <ProjectDetailCarousel images={getSortedProjectImages(project.images)} />
+              <ImageCarousel images={getSortedProjectImages(project.images)} />
               <TextBlock>
                 <Title>{project.title}</Title>
                 {project.tagline && <Description>{project.tagline}</Description>}
@@ -98,21 +98,14 @@ const ProjectDetailModal = ({ projectId, staticData, onClose }: ProjectDetailMod
           </Actions>
         )}
       </ModalOuter>
-    </Backdrop>
+    </Overlay>
   );
 };
 
 export default ProjectDetailModal;
 
-const Backdrop = styled.div`
-  position: fixed;
-  inset: 0;
-  z-index: 10000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+const Overlay = styled(ModalOverlay)`
   padding: 24px;
-  background-color: ${Material.dimmer};
 
   @media (max-width: 700px) {
     top: 60px;
@@ -158,12 +151,6 @@ const MobileHeader = styled.div`
     display: block;
     padding: 0 20px;
   }
-`;
-
-const LoadingWrapper = styled.div`
-  padding: 80px 28px;
-  text-align: center;
-  color: ${Label.alternative};
 `;
 
 const Contents = styled.div`

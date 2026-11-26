@@ -1,19 +1,17 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import TextField from '@common/textField/TextField';
+import { FieldDescription } from '@common/fieldStatus/FieldStatus';
 import Textarea from '@common/textarea/Textarea';
 import Button from '@common/button/Button';
-import Chip from '@common/chip/Chip';
-import ModalOverlay from '@common/modalOverlay/ModalOverlay';
-import ScrollArea from '@common/scrollArea/ScrollArea';
-import { IcCaretDown, IcCaretUp } from '@assets/svg';
 import DateTimeInput from '@common/dateTimeInput/DateTimeInput';
 import { isUnfilled } from '@utils/index';
-import { BackgroundColor, Label, Line, Orange, State } from '@utils/constant/color';
+import { Label, Line, Orange, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
-import useFocusTrap from 'src/hooks/useFocusTrap';
 import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
+import SendTargetChipList from './SendTargetChipList';
+import EmailModalLayout, { Field, LargeHeading, LargeRequired } from './EmailModalLayout';
 
 export interface RecruitmentComposeForm {
   title: string;
@@ -56,32 +54,9 @@ const RecruitmentComposeModal = ({
   const [content, setContent] = useState(initialValues?.content ?? '');
   const [date, setDate] = useState(initialValues?.scheduledSendAt ? initialValues.scheduledSendAt.slice(0, 10) : '');
   const [time, setTime] = useState(initialValues?.scheduledSendAt ? initialValues.scheduledSendAt.slice(11, 16) : '');
-  const [isRecipientListExpanded, setIsRecipientListExpanded] = useState(false);
-  const [isRecipientListFaded, setIsRecipientListFaded] = useState(false);
-  const [hasOverflow, setHasOverflow] = useState(false);
   const [pendingCancelAction, setPendingCancelAction] = useState<(() => void) | null>(null);
-  const recipientChipRowRef = useRef<HTMLDivElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
-  useFocusTrap(modalRef, onClose);
   const { showErrors, validate } = useRequiredFieldsSave(modalRef);
-
-  useEffect(() => {
-    const el = recipientChipRowRef.current;
-    if (!el) return;
-    const checkOverflow = () => {
-      setIsRecipientListFaded(el.scrollWidth - el.scrollLeft - el.clientWidth > 1);
-      // 펼쳐진 상태(줄바꿈)에서는 scrollWidth가 오버플로우를 반영하지 않으므로, 접힌 상태에서 잰 값만 반영한다
-      if (!isRecipientListExpanded) setHasOverflow(el.scrollWidth - el.clientWidth > 1);
-    };
-    checkOverflow();
-    el.addEventListener('scroll', checkOverflow);
-    const observer = new ResizeObserver(checkOverflow);
-    observer.observe(el);
-    return () => {
-      el.removeEventListener('scroll', checkOverflow);
-      observer.disconnect();
-    };
-  }, [recipients, isRecipientListExpanded]);
 
   const isScheduleInvalid = !date || !time;
   const isInvalid = recipients.length === 0 || isUnfilled(title) || isUnfilled(content) || isScheduleInvalid;
@@ -96,114 +71,11 @@ const RecruitmentComposeModal = ({
   };
 
   return (
-    <ModalOverlay onDimmerClick={onClose}>
-      <Modal ref={modalRef} role="dialog" aria-modal="true" aria-label="메일 작성" tabIndex={-1}>
-        <InformationScroll>
-          <Information>
-            <Field>
-              <LargeHeading>
-                발송 대상<LargeRequired>*</LargeRequired>
-              </LargeHeading>
-              <RecipientBox
-                $status={showErrors && recipients.length === 0 ? 'negative' : 'normal'}
-                tabIndex={-1}
-                aria-invalid={showErrors && recipients.length === 0}
-              >
-                <RecipientChipRow
-                  ref={recipientChipRowRef}
-                  $expanded={isRecipientListExpanded}
-                  $faded={isRecipientListFaded}
-                >
-                  {recipients.map((recipient) => (
-                    <RecipientChip
-                      key={recipient.id}
-                      size="xsmall"
-                      trailingIcon={
-                        <RemoveButton
-                          type="button"
-                          aria-label={`${recipient.email} 삭제`}
-                          onClick={() => onRemoveRecipient(recipient.id)}
-                        >
-                          ×
-                        </RemoveButton>
-                      }
-                    >
-                      {recipient.email}
-                    </RecipientChip>
-                  ))}
-                </RecipientChipRow>
-                {hasOverflow ? (
-                  <RecipientCount
-                    type="button"
-                    aria-expanded={isRecipientListExpanded}
-                    onClick={() => setIsRecipientListExpanded((prev) => !prev)}
-                  >
-                    <CountText>총 {recipients.length}명</CountText>
-                    {isRecipientListExpanded ? (
-                      <IcCaretUp width={16} height={16} />
-                    ) : (
-                      <IcCaretDown width={16} height={16} />
-                    )}
-                  </RecipientCount>
-                ) : (
-                  <RecipientCount as="span">
-                    <CountText>총 {recipients.length}명</CountText>
-                  </RecipientCount>
-                )}
-              </RecipientBox>
-              {showErrors && recipients.length === 0 && <FieldDescription>발송 대상을 선택해 주세요.</FieldDescription>}
-            </Field>
-
-            <Field>
-              <LargeHeading>
-                제목<LargeRequired>*</LargeRequired>
-              </LargeHeading>
-              <TextField
-                value={title}
-                placeholder="메시지를 입력해 주세요."
-                onChange={(event) => setTitle(event.target.value)}
-                status={showErrors && isUnfilled(title) ? 'negative' : 'normal'}
-                description={showErrors && isUnfilled(title) ? '제목을 입력해 주세요.' : undefined}
-              />
-            </Field>
-
-            <Field>
-              <LargeHeading>
-                내용<LargeRequired>*</LargeRequired>
-              </LargeHeading>
-              <ContentTextarea
-                value={content}
-                placeholder="메세지를 입력해 주세요."
-                onChange={(event) => setContent(event.target.value)}
-                status={showErrors && isUnfilled(content) ? 'negative' : 'normal'}
-                description={showErrors && isUnfilled(content) ? '내용을 입력해 주세요.' : undefined}
-              />
-            </Field>
-
-            <Field>
-              <Heading>
-                발송 예약<Required>*</Required>
-              </Heading>
-              <DateRow>
-                <DateTimeInput
-                  aria-label="발송 날짜"
-                  value={date}
-                  onChange={setDate}
-                  status={showErrors && !date ? 'negative' : 'normal'}
-                  description={showErrors && !date ? SCHEDULE_ERROR_MESSAGE : undefined}
-                />
-                <DateTimeInput
-                  type="time"
-                  aria-label="발송 시간"
-                  value={time}
-                  onChange={setTime}
-                  status={showErrors && !time ? 'negative' : 'normal'}
-                  description={showErrors && date && !time ? SCHEDULE_ERROR_MESSAGE : undefined}
-                />
-              </DateRow>
-            </Field>
-          </Information>
-        </InformationScroll>
+    <EmailModalLayout
+      ariaLabel="메일 작성"
+      onClose={onClose}
+      modalRef={modalRef}
+      actions={
         <Actions>
           {pendingCancelAction ? (
             <ConfirmBox>
@@ -252,56 +124,83 @@ const RecruitmentComposeModal = ({
             </Button>
           </ButtonGroup>
         </Actions>
-      </Modal>
-    </ModalOverlay>
+      }
+    >
+      <Field>
+        <LargeHeading>
+          발송 대상<LargeRequired>*</LargeRequired>
+        </LargeHeading>
+        <RecipientBox
+          $status={showErrors && recipients.length === 0 ? 'negative' : 'normal'}
+          tabIndex={-1}
+          aria-invalid={showErrors && recipients.length === 0}
+        >
+          <SendTargetChipList
+            chips={recipients.map((recipient) => ({
+              key: String(recipient.id),
+              label: recipient.email,
+              onRemove: () => onRemoveRecipient(recipient.id),
+            }))}
+          />
+        </RecipientBox>
+        {showErrors && recipients.length === 0 && (
+          <FieldDescription $status="negative">발송 대상을 선택해 주세요.</FieldDescription>
+        )}
+      </Field>
+
+      <Field>
+        <LargeHeading>
+          제목<LargeRequired>*</LargeRequired>
+        </LargeHeading>
+        <TextField
+          value={title}
+          placeholder="메시지를 입력해 주세요."
+          onChange={(event) => setTitle(event.target.value)}
+          status={showErrors && isUnfilled(title) ? 'negative' : 'normal'}
+          description={showErrors && isUnfilled(title) ? '제목을 입력해 주세요.' : undefined}
+        />
+      </Field>
+
+      <Field>
+        <LargeHeading>
+          내용<LargeRequired>*</LargeRequired>
+        </LargeHeading>
+        <ContentTextarea
+          value={content}
+          placeholder="메세지를 입력해 주세요."
+          onChange={(event) => setContent(event.target.value)}
+          status={showErrors && isUnfilled(content) ? 'negative' : 'normal'}
+          description={showErrors && isUnfilled(content) ? '내용을 입력해 주세요.' : undefined}
+        />
+      </Field>
+
+      <Field>
+        <Heading>
+          발송 예약<Required>*</Required>
+        </Heading>
+        <DateRow>
+          <DateTimeInput
+            aria-label="발송 날짜"
+            value={date}
+            onChange={setDate}
+            status={showErrors && !date ? 'negative' : 'normal'}
+            description={showErrors && !date ? SCHEDULE_ERROR_MESSAGE : undefined}
+          />
+          <DateTimeInput
+            type="time"
+            aria-label="발송 시간"
+            value={time}
+            onChange={setTime}
+            status={showErrors && !time ? 'negative' : 'normal'}
+            description={showErrors && date && !time ? SCHEDULE_ERROR_MESSAGE : undefined}
+          />
+        </DateRow>
+      </Field>
+    </EmailModalLayout>
   );
 };
 
 export default RecruitmentComposeModal;
-
-const Modal = styled.div`
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  max-width: 1040px;
-  max-height: 90vh;
-  border-radius: 16px;
-  overflow: hidden;
-  background-color: ${BackgroundColor};
-`;
-
-const InformationScroll = styled(ScrollArea)`
-  flex: 1 1 auto;
-`;
-
-const Information = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 42px;
-  padding: 28px;
-`;
-
-const Field = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  width: 100%;
-`;
-
-const LargeHeading = styled.p`
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  margin: 0;
-  color: ${Label.neutral};
-  ${typographyCss(Typography.title3.bold)}
-`;
-
-const LargeRequired = styled.span`
-  color: ${State.error};
-  ${typographyCss(Typography.title3.bold)}
-`;
 
 const Heading = styled.p`
   display: flex;
@@ -329,83 +228,6 @@ const RecipientBox = styled.div<{ $status: 'normal' | 'negative' }>`
     props.$status === 'negative'
       ? 'inset 0 0 0 1px rgba(255, 0, 0, 0.28), 0 1px 2px -1px rgba(23, 23, 23, 0.1)'
       : `inset 0 0 0 1px ${Line.normal}, 0 1px 2px -1px rgba(23, 23, 23, 0.1)`};
-`;
-
-const FieldDescription = styled.p`
-  margin: 0;
-  width: 100%;
-  color: ${State.error};
-  ${typographyCss(Typography.caption1.regular)}
-`;
-
-const RecipientCount = styled.button`
-  display: inline-flex;
-  flex-shrink: 0;
-  align-items: center;
-  gap: 4px;
-  height: 24px;
-  border: none;
-  background: none;
-  padding: 0;
-  color: ${Label.normal};
-  cursor: pointer;
-`;
-
-const CountText = styled.span`
-  color: ${Label.alternative};
-  opacity: 0.74;
-  ${typographyCss({ ...Typography.label2.bold, fontWeight: 500 })}
-`;
-
-const RecipientChipRow = styled.div<{ $expanded: boolean; $faded: boolean }>`
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  flex: 1 0 0;
-  min-width: 0;
-  min-height: 24px;
-
-  ${(props) =>
-    props.$expanded
-      ? `
-    flex-wrap: wrap;
-  `
-      : `
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-
-    &::-webkit-scrollbar {
-      display: none;
-    }
-
-    ${
-      props.$faded
-        ? `
-      mask-image: linear-gradient(to right, black calc(100% - 32px), transparent 100%);
-      -webkit-mask-image: linear-gradient(to right, black calc(100% - 32px), transparent 100%);
-    `
-        : ''
-    }
-  `}
-`;
-
-const RecipientChip = styled(Chip)`
-  flex-shrink: 0;
-`;
-
-const RemoveButton = styled.button`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  background: none;
-  padding: 0;
-  font-size: 12px;
-  line-height: 1;
-  color: inherit;
-  cursor: pointer;
 `;
 
 const DateRow = styled.div`

@@ -1,16 +1,13 @@
 import { ReactElement, ReactNode, useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import styled from 'styled-components';
 
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import LeaveConfirmAlert from '@common/alert/LeaveConfirmAlert';
-import Button from '@common/button/Button';
 import Toast from '@common/toast/Toast';
 import { ToastWrapper } from '@common/toast/toastLayout';
 import MyPageShell from '@mypage/component/MyPageShell';
+import AdminEditLayout from '@mypage/admin/component/AdminEditLayout';
 import LinearLoading from '@common/loading/LinearLoading';
-import EmptyState from '@common/emptyState/EmptyState';
-import PageLoadingGate from '@common/pageGate/PageLoadingGate';
 import TalentSection, { TalentItem, isTalentItemsInvalid } from '@mypage/admin/about/TalentSection';
 import CurriculumSection, {
   CurriculumTrackItems,
@@ -19,8 +16,7 @@ import CurriculumSection, {
   getFirstInvalidTrackKey,
 } from '@mypage/admin/about/CurriculumSection';
 import RoadmapSection from '@mypage/admin/about/RoadmapSection';
-import EditButton from '@mypage/admin/component/EditButton';
-import { syncListSection } from '@mypage/admin/utils';
+import { syncListSection } from '@utils/listSync';
 import useLeaveGuard from 'src/hooks/useLeaveGuard';
 import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import { getTracks, TrackResponse } from 'src/apis/track';
@@ -38,9 +34,6 @@ import { uploadFile } from 'src/apis/upload';
 import useRoleGuard from 'src/apis/useRoleGuard';
 import useTokenStore from 'src/store/useTokenStore';
 import { canManageSitePages } from '@utils/index';
-import { Label } from '@utils/constant/color';
-import { Typography, typographyCss } from '@utils/constant/typography';
-import { media } from '@utils/constant/breakpoint';
 
 const talentToLocal = (talent: TalentResponse): TalentItem => ({
   id: String(talent.id),
@@ -269,61 +262,38 @@ const MyPageAdminAbout = () => {
 
   return (
     <>
-      {!isAuthorized ? (
-        <PageLoadingGate isError={isUserProfileError} />
-      ) : (
-        <>
-          <TitleRow>
-            <PageTitle>소개 페이지 관리</PageTitle>
-            <ButtonRow>
-              {isEditing ? (
-                <>
-                  <Button variant="outlined" color="assistive" size="small" onClick={handleCancel}>
-                    취소
-                  </Button>
-                  <Button size="small" onClick={handleSave} loading={isSaving}>
-                    저장
-                  </Button>
-                </>
-              ) : (
-                <EditButton onClick={() => setIsEditing(true)} />
-              )}
-            </ButtonRow>
-          </TitleRow>
-          {isDataError ? (
-            <EmptyState variant="error" />
-          ) : !isDataLoaded ? (
-            <LoadingWrapper>
-              <LinearLoading progress={dataLoadProgress} />
-            </LoadingWrapper>
-          ) : (
-            <ContentWrapper ref={contentRef}>
-              <TalentSection
-                items={talentItems}
-                onChange={setTalentItems}
-                showErrors={showErrors}
-                disabled={!isEditing}
-              />
-              <CurriculumSection
-                tracks={curriculumTracks}
-                onChange={setCurriculumTracks}
-                showErrors={showErrors}
-                activeKey={curriculumActiveKey}
-                onActiveKeyChange={setCurriculumActiveKey}
-                disabled={!isEditing}
-              />
-              <RoadmapSection
-                imageUrl={roadmapFile.url}
-                fileName={roadmapFile.name}
-                onSelectFile={handleRoadmapFileSelect}
-                onClear={handleRoadmapClear}
-                disabled={!isEditing}
-                isUploading={isUploadingRoadmap}
-              />
-            </ContentWrapper>
-          )}
-        </>
-      )}
+      <AdminEditLayout
+        title="소개 페이지 관리"
+        isAuthorized={isAuthorized}
+        isUserProfileError={isUserProfileError}
+        isEditing={isEditing}
+        isSaving={isSaving}
+        onEdit={() => setIsEditing(true)}
+        onCancel={handleCancel}
+        onSave={handleSave}
+        isDataError={isDataError}
+        isDataLoaded={isDataLoaded}
+        loadingIndicator={<LinearLoading progress={dataLoadProgress} />}
+        contentRef={contentRef}
+      >
+        <TalentSection items={talentItems} onChange={setTalentItems} showErrors={showErrors} disabled={!isEditing} />
+        <CurriculumSection
+          tracks={curriculumTracks}
+          onChange={setCurriculumTracks}
+          showErrors={showErrors}
+          activeKey={curriculumActiveKey}
+          onActiveKeyChange={setCurriculumActiveKey}
+          disabled={!isEditing}
+        />
+        <RoadmapSection
+          imageUrl={roadmapFile.url}
+          fileName={roadmapFile.name}
+          onSelectFile={handleRoadmapFileSelect}
+          onClear={handleRoadmapClear}
+          disabled={!isEditing}
+          isUploading={isUploadingRoadmap}
+        />
+      </AdminEditLayout>
       {isConfirmOpen && <LeaveConfirmAlert onCancel={cancelLeave} onConfirm={confirmLeave} />}
       <ToastWrapper>
         <Toast variant={toastVariant} text={toastMessage} show={!!toastMessage} onHidden={() => setToastMessage('')} />
@@ -341,42 +311,3 @@ MyPageAdminAbout.getLayout = function getLayout(page: ReactElement) {
 };
 
 export default MyPageAdminAbout;
-
-const TitleRow = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-`;
-
-const PageTitle = styled.p`
-  margin: 0;
-  color: ${Label.normal};
-  ${typographyCss(Typography.heading2.bold)}
-`;
-
-const ButtonRow = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 12px;
-`;
-
-const LoadingWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 300px;
-`;
-
-const ContentWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  width: 100%;
-  gap: 40px;
-
-  ${media.xs} {
-    gap: 32px;
-  }
-`;

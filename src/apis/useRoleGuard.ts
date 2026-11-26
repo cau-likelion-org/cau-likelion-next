@@ -4,21 +4,27 @@ import { useRouter } from 'next/router';
 import { MemberRole } from '@@types/request';
 import useTokenStore from 'src/store/useTokenStore';
 import useUserProfile from 'src/apis/useUserProfile';
+import useLoginRequired from 'src/hooks/useLoginRequired';
 
-const useRoleGuard = (canAccess: (role: MemberRole) => boolean) => {
+interface RoleGuardOptions {
+  loginPath?: string;
+  forbiddenPath?: string;
+}
+
+const useRoleGuard = (
+  canAccess: (role: MemberRole) => boolean,
+  { loginPath = '/login', forbiddenPath = '/mypage' }: RoleGuardOptions = {},
+) => {
   const tokenState = useTokenStore((state) => state.token);
-  const hasHydrated = useTokenStore((state) => state.hasHydrated);
   const router = useRouter();
 
   const { data: userProfile, isError: isUserProfileError } = useUserProfile();
 
-  useEffect(() => {
-    if (hasHydrated && !tokenState.access) router.push('/login');
-  }, [hasHydrated, tokenState, router]);
+  useLoginRequired(loginPath);
 
   useEffect(() => {
-    if (userProfile && !canAccess(userProfile.role)) router.push('/mypage');
-  }, [userProfile, canAccess, router]);
+    if (userProfile && !canAccess(userProfile.role)) router.push(forbiddenPath);
+  }, [userProfile, canAccess, router, forbiddenPath]);
 
   const isAuthorized = !!tokenState.access && !!userProfile && canAccess(userProfile.role);
 

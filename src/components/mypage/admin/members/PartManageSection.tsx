@@ -2,6 +2,7 @@ import styled from 'styled-components';
 
 import { Generation } from '@@types/request';
 import Radio from '@common/radio/Radio';
+import LoadingArea from '@common/loading/LoadingArea';
 import ContentBadge from '@common/badge/ContentBadge';
 import CircularLoading from '@common/loading/CircularLoading';
 import EmptyState from '@common/emptyState/EmptyState';
@@ -46,9 +47,9 @@ const PartManageSection = ({
       </HeaderRow>
 
       {isLoading ? (
-        <StateWrapper>
+        <LoadingArea minHeight={240}>
           <CircularLoading size={32} />
-        </StateWrapper>
+        </LoadingArea>
       ) : isError ? (
         <TableEmptyState variant="error" />
       ) : sortedGenerations.length === 0 ? (
@@ -155,14 +156,6 @@ const BadgeCell = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-`;
-
-const StateWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 240px;
 `;
 
 const TableEmptyState = styled(EmptyState)`

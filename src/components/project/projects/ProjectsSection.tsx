@@ -1,5 +1,6 @@
 import { ArchivingArrayType, IProjectData } from '@@types/request';
 import Button from '@common/button/Button';
+import LoadingArea from '@common/loading/LoadingArea';
 import CircularLoading from '@common/loading/CircularLoading';
 import EmptyState from '@common/emptyState/EmptyState';
 import Toast from '@common/toast/Toast';
@@ -22,7 +23,7 @@ import usePageEngagementTracking from 'src/hooks/usePageEngagementTracking';
 import { track, getDeviceType } from 'src/lib/amplitude';
 import styled from 'styled-components';
 import ProjectCard from './ProjectCard';
-import ProjectFilterSelect from './ProjectFilterSelect';
+import ListboxSelect from '@common/select/ListboxSelect';
 import { containerCss, media } from '@utils/constant/breakpoint';
 import useUserProfile from 'src/apis/useUserProfile';
 
@@ -150,13 +151,13 @@ const ProjectsSection = ({ staticData }: { staticData: ArchivingArrayType<IProje
         </ToastWrapper>
         <FilterRow>
           <FilterGroup>
-            <ProjectFilterSelect
+            <ListboxSelect
               heading="기수 구분"
               options={generationOptions}
               value={selectedGeneration}
               onChange={setSelectedGeneration}
             />
-            <ProjectFilterSelect
+            <ListboxSelect
               heading="프로젝트 구분"
               options={CATEGORY_OPTIONS}
               value={selectedCategory}
@@ -178,9 +179,9 @@ const ProjectsSection = ({ staticData }: { staticData: ArchivingArrayType<IProje
           )}
         </FilterRow>
         {isLoading ? (
-          <LoadingWrapper>
+          <LoadingArea minHeight={468}>
             <CircularLoading size={32} />
-          </LoadingWrapper>
+          </LoadingArea>
         ) : isError && !hasLoadedProjects ? (
           <EmptyState variant="error" />
         ) : sortedProjects.length === 0 ? (
@@ -236,14 +237,6 @@ const AddButtonWrapper = styled.div`
   @media (max-width: 600px) {
     display: none;
   }
-`;
-
-const LoadingWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 468px;
 `;
 
 const CardGrid = styled.div`

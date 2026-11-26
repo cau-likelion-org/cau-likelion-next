@@ -6,7 +6,7 @@ import { IcCircleExclamation } from '@assets/svg';
 import { Label, Line, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
-const TechStackInput = ({
+const ChipInput = ({
   value,
   onChange,
   placeholder = '이름을 입력해 주세요.',
@@ -112,7 +112,7 @@ const TechStackInput = ({
   );
 };
 
-export default TechStackInput;
+export default ChipInput;
 
 const Wrapper = styled.div<{ $invalid: boolean }>`
   display: flex;

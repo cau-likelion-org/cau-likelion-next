@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import styled from 'styled-components';
 
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
+import LoadingArea from '@common/loading/LoadingArea';
 import MyPageShell from '@mypage/component/MyPageShell';
 import Toast from '@common/toast/Toast';
 import { ToastWrapper } from '@common/toast/toastLayout';
@@ -27,6 +28,7 @@ import {
   updateAttendanceBatch,
 } from 'src/apis/attendance';
 import useTokenStore from 'src/store/useTokenStore';
+import useLoginRequired from 'src/hooks/useLoginRequired';
 import { INACTIVE_MEMBER_NOTICE_KEY, TRACK_OPTIONS } from '@utils/constant';
 import { excludeCommonPart, isAdminRole, isFullAdminRole, formatDate } from '@utils/index';
 import { Label } from '@utils/constant/color';
@@ -57,12 +59,9 @@ const toWeeklyRecord = (record: AttendanceStatusResponse): WeeklyAttendanceRecor
 
 const MyPageAttendance = () => {
   const tokenState = useTokenStore((state) => state.token);
-  const hasHydrated = useTokenStore((state) => state.hasHydrated);
   const router = useRouter();
 
-  useEffect(() => {
-    if (hasHydrated && !tokenState.access) router.push('/login');
-  }, [hasHydrated, tokenState, router]);
+  useLoginRequired();
 
   const { data: userProfile, isError: isUserProfileError } = useUserProfile();
 
@@ -164,9 +163,9 @@ const MyPageAttendance = () => {
             <TrackName>{userProfile.partName} 파트</TrackName>
           </TitleRow>
           {isMyAttendancesLoading ? (
-            <LoadingWrapper>
+            <LoadingArea minHeight={300}>
               <CircularLoading size={32} />
-            </LoadingWrapper>
+            </LoadingArea>
           ) : isMyAttendancesError ? (
             <EmptyState variant="error" />
           ) : myRecords.length === 0 ? (
@@ -225,12 +224,4 @@ const List = styled.div`
   align-items: flex-start;
   gap: 18px;
   width: 100%;
-`;
-
-const LoadingWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 300px;
 `;

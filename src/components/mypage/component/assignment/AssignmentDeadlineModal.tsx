@@ -2,11 +2,9 @@ import { useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import Button from '@common/button/Button';
+import ListboxSelect from '@common/select/ListboxSelect';
 import ModalOverlay from '@common/modalOverlay/ModalOverlay';
 import Radio from '@common/radio/Radio';
-import Select from '@common/select/Select';
-import ListboxOptions from '@common/select/ListboxOptions';
-import useListboxSelect from 'src/hooks/useListboxSelect';
 import useFocusTrap from 'src/hooks/useFocusTrap';
 import { AssignmentStaffSummary } from 'src/apis/assignment';
 import DateTimeInput from '@common/dateTimeInput/DateTimeInput';
@@ -48,50 +46,28 @@ const AssignmentDeadlineModal = ({
   const selectedAssignment = assignments.find((assignment) => assignment.assignmentId === assignmentId);
   const titles = assignments.map((assignment) => assignment.title);
 
-  const [isOpen, setIsOpen] = useState(false);
-  const { listId, wrapperRef, triggerRef, activeIndex, handleKeyDown, handleBlur, selectOption } = useListboxSelect({
-    isOpen,
-    options: titles,
-    value: selectedAssignment?.title ?? '',
-    onOpen: () => setIsOpen(true),
-    onClose: () => setIsOpen(false),
-    onSelect: (title) => {
-      const next = assignments.find((assignment) => assignment.title === title);
-      if (next) setAssignmentId(next.assignmentId);
-    },
-  });
-
   const canSubmit = !!deadline && memberIds.length > 0 && !submitting;
 
   return (
     <ModalOverlay role="dialog" aria-modal="true" aria-label="개별 마감일 변경" onDimmerClick={onClose}>
       <Modal ref={modalRef} tabIndex={-1}>
         <Information>
-          <SelectField ref={wrapperRef} onKeyDownCapture={handleKeyDown} onBlur={handleBlur}>
+          <Field>
             <LargeHeading>
               과제<LargeRequired>*</LargeRequired>
             </LargeHeading>
-            <Select
-              ref={triggerRef}
-              aria-label="과제 선택"
-              aria-expanded={isOpen}
-              aria-controls={listId}
-              aria-activedescendant={isOpen ? `${listId}-${activeIndex}` : undefined}
-              value={selectedAssignment?.title ?? ''}
+            <ListboxSelect
+              fullWidth
+              ariaLabel="과제 선택"
               placeholder="과제 선택"
-              onClick={() => setIsOpen((prev) => !prev)}
-            >
-              {isOpen && (
-                <ListboxOptions
-                  listId={listId}
-                  options={titles}
-                  value={selectedAssignment?.title ?? ''}
-                  activeIndex={activeIndex}
-                  onSelect={selectOption}
-                />
-              )}
-            </Select>
-          </SelectField>
+              value={selectedAssignment?.title ?? ''}
+              options={titles}
+              onChange={(title) => {
+                const next = assignments.find((assignment) => assignment.title === title);
+                if (next) setAssignmentId(next.assignmentId);
+              }}
+            />
+          </Field>
 
           <DateRow>
             <Field>
@@ -162,10 +138,6 @@ const Field = styled.div`
   min-width: 0;
   flex-direction: column;
   gap: 8px;
-`;
-
-const SelectField = styled(Field)`
-  position: relative;
 `;
 
 const LargeHeading = styled.p`

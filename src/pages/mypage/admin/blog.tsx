@@ -1,25 +1,21 @@
 import { ReactElement, ReactNode, useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import styled from 'styled-components';
 
 import { Generation } from '@@types/request';
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import LeaveConfirmAlert from '@common/alert/LeaveConfirmAlert';
-import Button from '@common/button/Button';
 import Toast from '@common/toast/Toast';
 import { ToastWrapper } from '@common/toast/toastLayout';
 import MyPageShell from '@mypage/component/MyPageShell';
+import AdminEditLayout from '@mypage/admin/component/AdminEditLayout';
 import CircularLoading from '@common/loading/CircularLoading';
-import EmptyState from '@common/emptyState/EmptyState';
-import PageLoadingGate from '@common/pageGate/PageLoadingGate';
 import BlogSection, {
   BlogItem,
   BLOG_CATEGORY_LABEL,
   BLOG_CATEGORY_BY_LABEL,
   isBlogItemInvalid,
 } from '@mypage/admin/blog/BlogSection';
-import EditButton from '@mypage/admin/component/EditButton';
-import { syncListSection } from '@mypage/admin/utils';
+import { syncListSection } from '@utils/listSync';
 import useLeaveGuard from 'src/hooks/useLeaveGuard';
 import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import { getGenerations } from 'src/apis/account';
@@ -27,8 +23,6 @@ import { getBlogs, createBlog, updateBlog, deleteBlog, BlogResponse, BlogRequest
 import useRoleGuard from 'src/apis/useRoleGuard';
 import useTokenStore from 'src/store/useTokenStore';
 import { canManageSitePages, getServerMessage } from '@utils/index';
-import { Label } from '@utils/constant/color';
-import { Typography, typographyCss } from '@utils/constant/typography';
 
 const blogToLocal = (blog: BlogResponse): BlogItem => ({
   id: String(blog.id),
@@ -131,40 +125,22 @@ const MyPageAdminBlog = () => {
 
   return (
     <>
-      {!isAuthorized ? (
-        <PageLoadingGate isError={isUserProfileError} />
-      ) : (
-        <>
-          <TitleRow>
-            <PageTitle>블로그 페이지 관리</PageTitle>
-            <ButtonRow>
-              {isEditing ? (
-                <>
-                  <Button variant="outlined" color="assistive" size="small" onClick={handleCancel}>
-                    취소
-                  </Button>
-                  <Button size="small" onClick={handleSave} loading={isSaving}>
-                    저장
-                  </Button>
-                </>
-              ) : (
-                <EditButton onClick={() => setIsEditing(true)} />
-              )}
-            </ButtonRow>
-          </TitleRow>
-          {isDataError ? (
-            <EmptyState variant="error" />
-          ) : !isDataLoaded ? (
-            <LoadingWrapper>
-              <CircularLoading size={32} />
-            </LoadingWrapper>
-          ) : (
-            <ContentWrapper ref={contentRef}>
-              <BlogSection items={blogItems} onChange={setBlogItems} showErrors={showErrors} disabled={!isEditing} />
-            </ContentWrapper>
-          )}
-        </>
-      )}
+      <AdminEditLayout
+        title="블로그 페이지 관리"
+        isAuthorized={isAuthorized}
+        isUserProfileError={isUserProfileError}
+        isEditing={isEditing}
+        isSaving={isSaving}
+        onEdit={() => setIsEditing(true)}
+        onCancel={handleCancel}
+        onSave={handleSave}
+        isDataError={isDataError}
+        isDataLoaded={isDataLoaded}
+        loadingIndicator={<CircularLoading size={32} />}
+        contentRef={contentRef}
+      >
+        <BlogSection items={blogItems} onChange={setBlogItems} showErrors={showErrors} disabled={!isEditing} />
+      </AdminEditLayout>
       {isConfirmOpen && <LeaveConfirmAlert onCancel={cancelLeave} onConfirm={confirmLeave} />}
       <ToastWrapper>
         <Toast variant={toastVariant} text={toastMessage} show={!!toastMessage} onHidden={() => setToastMessage('')} />
@@ -182,34 +158,3 @@ MyPageAdminBlog.getLayout = function getLayout(page: ReactElement) {
 };
 
 export default MyPageAdminBlog;
-
-const TitleRow = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-`;
-
-const PageTitle = styled.p`
-  margin: 0;
-  color: ${Label.normal};
-  ${typographyCss(Typography.heading2.bold)}
-`;
-
-const ButtonRow = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 12px;
-`;
-
-const LoadingWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 300px;
-`;
-
-const ContentWrapper = styled.div`
-  width: 100%;
-`;

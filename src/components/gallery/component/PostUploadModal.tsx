@@ -1,28 +1,29 @@
-import { MouseEvent as ReactMouseEvent, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { useQuery } from '@tanstack/react-query';
 import Button from '@common/button/Button';
+import { FieldDescription } from '@common/fieldStatus/FieldStatus';
+import ModalOverlay from '@common/modalOverlay/ModalOverlay';
 import Radio from '@common/radio/Radio';
-import Select from '@common/select/Select';
-import ListboxOptions from '@common/select/ListboxOptions';
 import ScrollArea from '@common/scrollArea/ScrollArea';
 import TextButton from '@common/textButton/TextButton';
 import TextField from '@common/textField/TextField';
 import Textarea from '@common/textarea/Textarea';
 import CharCount from '@common/charCount/CharCount';
 import DateTimeInput from '@common/dateTimeInput/DateTimeInput';
+import ListboxSelect from '@common/select/ListboxSelect';
+import ImageSlotUploader from '@common/imageSlotUploader/ImageSlotUploader';
 import Toast from '@common/toast/Toast';
 import { ToastWrapper } from '@common/toast/toastLayout';
-import { IcAdd, IcCloseCircle, IcLineHorizontal } from '@assets/svg';
+import { IcLineHorizontal } from '@assets/svg';
 import useFocusTrap from 'src/hooks/useFocusTrap';
 import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import useInput from 'src/hooks/useInput';
-import useListboxSelect from 'src/hooks/useListboxSelect';
 import useTokenStore from 'src/store/useTokenStore';
 import { UploadDomain, uploadFile } from 'src/apis/upload';
 import { getGenerations } from 'src/apis/account';
 import { NUMERIC_ONLY_REGEX } from '@utils/constant';
-import { BackgroundColor, Fill, Label, Line, Material, Orange, State } from '@utils/constant/color';
+import { BackgroundColor, Label, Line } from '@utils/constant/color';
 import { isUnfilled } from '@utils/index';
 import { resizeImageFile } from '@utils/resizeImage';
 import useImageSlots from 'src/hooks/useImageSlots';
@@ -180,20 +181,13 @@ const PostUploadModal = ({
     initialValues?.thumbnailUrl ? initialImageUrls.indexOf(initialValues.thumbnailUrl) : 0,
     0,
   );
-  const {
-    images,
-    imageFiles,
-    featuredIndex,
-    isPreparing,
-    isDragging,
-    isDropTarget,
-    addFiles,
-    removeImage,
-    thumbnailProps,
-  } = useImageSlots({ maxCount: MAX_IMAGE_COUNT, initialImages, initialFeaturedIndex, prepareFile: toUploadImage });
-
-  const thumbnailRowRef = useRef<HTMLDivElement>(null);
-  const rowScrollDragRef = useRef<{ startX: number; scrollLeft: number } | null>(null);
+  const imageSlots = useImageSlots({
+    maxCount: MAX_IMAGE_COUNT,
+    initialImages,
+    initialFeaturedIndex,
+    prepareFile: toUploadImage,
+  });
+  const { images, imageFiles, featuredIndex, isPreparing } = imageSlots;
 
   const modalRef = useRef<HTMLDivElement>(null);
   useFocusTrap(modalRef, onClose);
@@ -202,25 +196,6 @@ const PostUploadModal = ({
 
   // 썸네일(드래그 가능한 이미지) 바깥 영역에서 시작한 드래그만 좌우 스크롤로 처리하고,
   // 이미지 위에서 시작한 드래그는 네이티브 HTML5 드래그(순서 변경)에 맡긴다.
-  const handleThumbnailRowMouseDown = (event: ReactMouseEvent<HTMLDivElement>) => {
-    if (event.button !== 0) return;
-    if ((event.target as HTMLElement).closest('[data-thumbnail-index]')) return;
-    const row = thumbnailRowRef.current;
-    if (!row) return;
-    rowScrollDragRef.current = { startX: event.clientX, scrollLeft: row.scrollLeft };
-  };
-
-  const handleThumbnailRowMouseMove = (event: ReactMouseEvent<HTMLDivElement>) => {
-    const dragState = rowScrollDragRef.current;
-    const row = thumbnailRowRef.current;
-    if (!dragState || !row) return;
-    row.scrollLeft = dragState.scrollLeft - (event.clientX - dragState.startX);
-  };
-
-  const handleThumbnailRowMouseUp = () => {
-    rowScrollDragRef.current = null;
-  };
-
   const isDateMissing = dateMode === 'single' ? isUnfilled(date) : isUnfilled(dateRange[0]) || isUnfilled(dateRange[1]);
   const isDateOrderInvalid = dateMode === 'range' && !isDateMissing && dateRange[1] < dateRange[0];
   const isDateInvalid = isDateMissing || isDateOrderInvalid;
@@ -278,82 +253,11 @@ const PostUploadModal = ({
   };
 
   return (
-    <Backdrop>
+    <ModalOverlay>
       <Modal ref={modalRef} role="dialog" aria-modal="true" aria-label={modalAriaLabel} tabIndex={-1}>
         <ModalScrollArea>
           <Information>
-            <ImageUploadGroup>
-              <MainThumbnail as={images[featuredIndex] ? 'div' : 'label'} $empty={!images[featuredIndex]}>
-                <FeaturedChip>대표</FeaturedChip>
-                {images[featuredIndex] ? (
-                  <MainThumbnailImage src={images[featuredIndex] as string} alt="대표 이미지" />
-                ) : (
-                  <>
-                    <UploadGuide>
-                      사진을 {MAX_IMAGE_COUNT}장까지 업로드하고
-                      <br />
-                      표지가 되는 대표사진을 선택해주세요
-                    </UploadGuide>
-                    <HiddenFileInput
-                      type="file"
-                      accept="image/*"
-                      multiple
-                      aria-label="대표 이미지 선택"
-                      onChange={(event) => addFiles(featuredIndex, event)}
-                    />
-                  </>
-                )}
-              </MainThumbnail>
-              <ThumbnailRow
-                ref={thumbnailRowRef}
-                onMouseDown={handleThumbnailRowMouseDown}
-                onMouseMove={handleThumbnailRowMouseMove}
-                onMouseUp={handleThumbnailRowMouseUp}
-                onMouseLeave={handleThumbnailRowMouseUp}
-              >
-                {images.includes(null) && (
-                  <AddImageButton>
-                    <IcAdd width={24} height={24} />
-                    <HiddenFileInput
-                      type="file"
-                      accept="image/*"
-                      multiple
-                      aria-label="이미지 추가"
-                      onChange={(event) => addFiles(0, event)}
-                    />
-                  </AddImageButton>
-                )}
-                {images.map(
-                  (image, index) =>
-                    image && (
-                      <ThumbnailSlot
-                        key={index}
-                        as="div"
-                        role="button"
-                        tabIndex={0}
-                        data-thumbnail-index={index}
-                        $featured={index === featuredIndex}
-                        $dragging={isDragging(index)}
-                        $dropTarget={isDropTarget(index)}
-                        aria-label={`${index + 1}번째 이미지를 대표사진으로 설정`}
-                        {...thumbnailProps(index)}
-                      >
-                        <ThumbnailImage src={image} alt="" draggable={false} />
-                        <RemoveThumbnailButton
-                          type="button"
-                          aria-label={`${index + 1}번째 이미지 삭제`}
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            removeImage(index);
-                          }}
-                        >
-                          <IcCloseCircle width={24} height={24} />
-                        </RemoveThumbnailButton>
-                      </ThumbnailSlot>
-                    ),
-                )}
-              </ThumbnailRow>
-            </ImageUploadGroup>
+            <ImageSlotUploader slots={imageSlots} maxCount={MAX_IMAGE_COUNT} addable />
 
             <FieldGroup>
               <FieldHeading>
@@ -402,8 +306,10 @@ const PostUploadModal = ({
                 />
               </NarrowField>
               {categoryConfig && (
-                <CategorySelect
-                  label={categoryConfig.label}
+                <ListboxSelect
+                  heading={categoryConfig.label}
+                  required
+                  placeholder="선택"
                   options={categoryOptions}
                   value={category}
                   onChange={setCategory}
@@ -477,9 +383,11 @@ const PostUploadModal = ({
                   }
                   invalid={showErrors && isDateInvalid}
                 />
-                {showErrors && isDateMissing && <DateDescription>날짜를 선택해 주세요.</DateDescription>}
+                {showErrors && isDateMissing && (
+                  <FieldDescription $status="negative">날짜를 선택해 주세요.</FieldDescription>
+                )}
                 {showErrors && isDateOrderInvalid && (
-                  <DateDescription>종료일은 시작일 이후로 선택해 주세요.</DateDescription>
+                  <FieldDescription $status="negative">종료일은 시작일 이후로 선택해 주세요.</FieldDescription>
                 )}
               </RowField>
             </Row>
@@ -530,68 +438,11 @@ const PostUploadModal = ({
           onHidden={() => setErrorToast('')}
         />
       </ToastWrapper>
-    </Backdrop>
+    </ModalOverlay>
   );
 };
 
 export default PostUploadModal;
-
-const CategorySelect = ({
-  label,
-  options,
-  value,
-  onChange,
-  disabled = false,
-  status,
-  description,
-}: {
-  label: string;
-  options: string[];
-  value: string;
-  onChange: (value: string) => void;
-  disabled?: boolean;
-  status?: 'normal' | 'positive' | 'negative';
-  description?: string;
-}) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const { listId, wrapperRef, triggerRef, activeIndex, handleKeyDown, handleBlur, selectOption } = useListboxSelect({
-    isOpen,
-    options,
-    value,
-    onOpen: () => setIsOpen(true),
-    onClose: () => setIsOpen(false),
-    onSelect: onChange,
-  });
-
-  return (
-    <NarrowSelectWrapper ref={wrapperRef} onKeyDownCapture={handleKeyDown} onBlur={handleBlur}>
-      <Select
-        ref={triggerRef}
-        heading={label}
-        required
-        placeholder="선택"
-        value={value}
-        disabled={disabled}
-        onClick={() => setIsOpen((prev) => !prev)}
-        aria-expanded={isOpen}
-        aria-activedescendant={isOpen ? `${listId}-${activeIndex}` : undefined}
-        aria-controls={listId}
-        status={status}
-        description={description}
-      >
-        {isOpen && (
-          <ListboxOptions
-            listId={listId}
-            options={options}
-            value={value}
-            activeIndex={activeIndex}
-            onSelect={selectOption}
-          />
-        )}
-      </Select>
-    </NarrowSelectWrapper>
-  );
-};
 
 const DateField = ({
   mode,
@@ -645,16 +496,6 @@ const DateField = ({
   );
 };
 
-const Backdrop = styled.div`
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: ${Material.dimmer};
-  z-index: 9999;
-`;
-
 const Modal = styled.div`
   position: relative;
   width: 1040px;
@@ -680,129 +521,6 @@ const Information = styled.div`
   flex-direction: column;
   align-items: flex-start;
   gap: 42px;
-`;
-
-const ImageUploadGroup = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 42px;
-`;
-
-const MainThumbnail = styled.label<{ $empty: boolean }>`
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  border-radius: 22px;
-  background-color: ${(props) => (props.$empty ? '#F4F4F5' : '#f5f7f9')};
-  cursor: ${(props) => (props.$empty ? 'pointer' : 'default')};
-`;
-
-const MainThumbnailImage = styled.img`
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-`;
-
-const UploadGuide = styled.p`
-  ${typographyCss(Typography.body2Normal.regular)}
-  color: ${Orange.o500};
-  text-align: center;
-  margin: 0;
-`;
-
-const FeaturedChip = styled.span`
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  padding: 9px 12px;
-  border-radius: 10px;
-  background-color: rgba(255, 96, 0, 0.05);
-  box-shadow: inset 0 0 0 1px rgba(255, 96, 0, 0.43);
-  color: ${Orange.o500};
-  ${typographyCss(Typography.body2Normal.medium)}
-`;
-
-const ThumbnailRow = styled.div`
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  overflow-x: auto;
-  overflow-y: hidden;
-  padding: 4px 4px 4px 0;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  cursor: grab;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
-`;
-
-const ThumbnailSlot = styled.label<{ $featured: boolean; $dragging?: boolean; $dropTarget?: boolean }>`
-  position: relative;
-  flex-shrink: 0;
-  width: 160px;
-  height: 90px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 4px;
-  background-color: ${Fill.subtle};
-  color: ${Label.neutral};
-  outline: ${(props) => (props.$featured || props.$dropTarget ? `2px solid ${Orange.o500}` : 'none')};
-  outline-offset: -2px;
-  opacity: ${(props) => (props.$dragging ? 0.4 : 1)};
-  cursor: pointer;
-`;
-
-const AddImageButton = styled.label`
-  position: relative;
-  flex-shrink: 0;
-  width: 160px;
-  height: 90px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 12px;
-  background-color: ${Fill.normal};
-  color: ${Label.neutral};
-  cursor: pointer;
-`;
-
-const ThumbnailImage = styled.img`
-  width: 100%;
-  height: 100%;
-  border-radius: 4px;
-  object-fit: cover;
-`;
-
-const HiddenFileInput = styled.input`
-  display: none;
-`;
-
-const RemoveThumbnailButton = styled.button`
-  position: absolute;
-  top: -4px;
-  right: -4px;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  border: none;
-  border-radius: 50%;
-  background-color: ${BackgroundColor};
-  color: ${Orange.o500};
-  padding: 0;
-  cursor: pointer;
 `;
 
 const FieldGroup = styled.div`
@@ -873,12 +591,6 @@ const NarrowField = styled.div`
   width: 160px;
 `;
 
-const NarrowSelectWrapper = styled.div`
-  position: relative;
-  flex-shrink: 0;
-  width: 160px;
-`;
-
 const RadioRow = styled.div`
   width: 100%;
   min-height: 48px;
@@ -890,13 +602,6 @@ const RadioRow = styled.div`
 const RadioItem = styled.div`
   flex: 1 0 0;
   min-width: 0;
-`;
-
-const DateDescription = styled.p`
-  margin: 0;
-  width: 100%;
-  color: ${State.error};
-  ${typographyCss(Typography.caption1.regular)}
 `;
 
 const DateRangeRow = styled.div`

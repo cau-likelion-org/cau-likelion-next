@@ -2,17 +2,18 @@ import { useState } from 'react';
 import styled from 'styled-components';
 
 import Alert from '@common/alert/Alert';
+import { FieldDescription } from '@common/fieldStatus/FieldStatus';
 import Textarea from '@common/textarea/Textarea';
 import TextField from '@common/textField/TextField';
 import AddCardButton from '@mypage/component/AddCardButton';
 import RemoveCardButton from '@mypage/component/RemoveCardButton';
 import CharCount from '@common/charCount/CharCount';
-import TechStackInput from '@mypage/admin/component/TechStackInput';
+import ChipInput from '@common/chipInput/ChipInput';
 import useListItems from 'src/hooks/useListItems';
 import { isUnfilled } from '@utils/index';
-import { BackgroundWhite, Label, Line, State } from '@utils/constant/color';
+import { BackgroundWhite, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
-import { createId } from '../utils';
+import { createId } from '@utils/listSync';
 
 export interface TrackIntroItem {
   id: string;
@@ -99,15 +100,19 @@ const TrackSection = ({
           <StackRow>
             <StackField>
               <FieldLabel>기술 스택</FieldLabel>
-              <TechStackInput
+              <ChipInput
                 value={item.techStack}
                 onChange={(techStack) => updateItem(item.id, { techStack })}
                 disabled={disabled}
                 invalid={showErrors && (item.techStack.length === 0 || isTechStackTooLong(item.techStack))}
               />
-              {showErrors && item.techStack.length === 0 && <ErrorText>기술 스택을 입력해 주세요.</ErrorText>}
+              {showErrors && item.techStack.length === 0 && (
+                <FieldDescription $status="negative">기술 스택을 입력해 주세요.</FieldDescription>
+              )}
               {showErrors && item.techStack.length > 0 && isTechStackTooLong(item.techStack) && (
-                <ErrorText>기술스택은 최대 {TECH_STACK_MAX_LENGTH}자까지 입력 가능합니다.</ErrorText>
+                <FieldDescription $status="negative">
+                  기술스택은 최대 {TECH_STACK_MAX_LENGTH}자까지 입력 가능합니다.
+                </FieldDescription>
               )}
             </StackField>
             {!disabled && <RemoveCardButton onClick={() => setPendingRemoveId(item.id)} />}
@@ -216,12 +221,6 @@ const FieldLabel = styled.p`
   margin: 0;
   color: ${Label.neutral};
   ${typographyCss(Typography.label1Normal.bold)}
-`;
-
-const ErrorText = styled.p`
-  margin: 0;
-  color: ${State.error};
-  ${typographyCss(Typography.caption1.regular)}
 `;
 
 const DescriptionTextarea = styled(Textarea)`

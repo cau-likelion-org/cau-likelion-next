@@ -15,8 +15,8 @@ vi.mock('src/apis/account', () => ({ getUserProfile: vi.fn() }));
 const PROFILE = { id: 1, name: '관리자', role: 'ADMIN' } as UserProfile;
 const canAccessAdmin = (role: string) => role === 'ADMIN';
 
-const renderGuard = (queryClient: QueryClient) =>
-  renderHook(() => useRoleGuard(canAccessAdmin), {
+const renderGuard = (queryClient: QueryClient, options?: Parameters<typeof useRoleGuard>[1]) =>
+  renderHook(() => useRoleGuard(canAccessAdmin, options), {
     wrapper: ({ children }: { children: ReactNode }) => (
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     ),
@@ -61,5 +61,24 @@ describe('useRoleGuard', () => {
 
     expect(result.current.isAuthorized).toBe(false);
     await waitFor(() => expect(push).toHaveBeenCalledWith('/mypage'));
+  });
+
+  it('접근할 수 없는 역할이면 forbiddenPath로 보낸다', async () => {
+    const queryClient = new QueryClient();
+    queryClient.setQueryData(['userProfile'], { ...PROFILE, role: 'STAFF' });
+
+    renderGuard(queryClient, { forbiddenPath: '/project' });
+
+    await waitFor(() => expect(push).toHaveBeenCalledWith('/project'));
+    expect(push).not.toHaveBeenCalledWith('/mypage');
+  });
+
+  it('로그인하지 않았으면 loginPath로 보낸다', async () => {
+    useTokenStore.setState({ token: { access: null, refresh: null } });
+
+    renderGuard(new QueryClient(), { loginPath: '/project' });
+
+    await waitFor(() => expect(push).toHaveBeenCalledWith('/project'));
+    expect(push).not.toHaveBeenCalledWith('/login');
   });
 });

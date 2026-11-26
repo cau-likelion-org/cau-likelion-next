@@ -3,19 +3,20 @@ import styled, { css } from 'styled-components';
 
 import { Generation, MemberResponse, MemberRole, MemberUpdateRequest } from '@@types/request';
 import TextField from '@common/textField/TextField';
+import LoadingArea from '@common/loading/LoadingArea';
+import { FieldDescription } from '@common/fieldStatus/FieldStatus';
 import CircularLoading from '@common/loading/CircularLoading';
 import EmptyState from '@common/emptyState/EmptyState';
 import Button from '@common/button/Button';
 import TextSelect from '@common/select/TextSelect';
-import ProjectFilterSelect from '@project/projects/ProjectFilterSelect';
+import ListboxSelect from '@common/select/ListboxSelect';
 import EditButton from '@mypage/admin/component/EditButton';
 import Alert from '@common/alert/Alert';
 import { IcSearch } from '@assets/svg';
 import { NUMERIC_ONLY_REGEX, ROLE_LABEL } from '@utils/constant';
 import { excludeCommonPart, isEmailFormatInvalid } from '@utils/index';
-import { Black, Label, Line, State } from '@utils/constant/color';
+import { Black, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
-import { media } from '@utils/constant/breakpoint';
 
 export const ALL_FILTER = '전체';
 const NO_PART_LABEL = '소속 없음';
@@ -274,7 +275,7 @@ const MemberSection = ({
           ))}
       </Header>
 
-      {isEditing && saveError && <ErrorText>{saveError}</ErrorText>}
+      {isEditing && saveError && <FieldDescription $status="negative">{saveError}</FieldDescription>}
 
       <FilterRow>
         <SearchField
@@ -284,19 +285,19 @@ const MemberSection = ({
           value={nameQuery}
           onChange={(event) => onNameQueryChange(event.target.value)}
         />
-        <ProjectFilterSelect
+        <ListboxSelect
           heading="기수 구분"
           options={[ALL_FILTER, ...generationFilter.options]}
           value={generationFilter.value}
           onChange={generationFilter.onChange}
         />
-        <ProjectFilterSelect
+        <ListboxSelect
           heading="파트 구분"
           options={[ALL_FILTER, ...partFilter.options]}
           value={partFilter.value}
           onChange={partFilter.onChange}
         />
-        <ProjectFilterSelect
+        <ListboxSelect
           heading="권한 구분"
           options={[ALL_FILTER, ...roleFilter.options]}
           value={roleFilter.value}
@@ -314,9 +315,9 @@ const MemberSection = ({
       </HeaderRow>
 
       {isLoading ? (
-        <StateWrapper>
+        <LoadingArea minHeight={240}>
           <CircularLoading size={32} />
-        </StateWrapper>
+        </LoadingArea>
       ) : isError ? (
         <TableEmptyState variant="error" />
       ) : visibleMembers.length === 0 ? (
@@ -384,7 +385,7 @@ const MemberSection = ({
                       aria-label={`${member.name} 이메일 수정`}
                       onChange={(event) => changeEmail(member, event.target.value)}
                     />
-                    {emailErrorText && <ErrorText>{emailErrorText}</ErrorText>}
+                    {emailErrorText && <FieldDescription $status="negative">{emailErrorText}</FieldDescription>}
                   </EmailFieldColumn>
                 ) : (
                   <Cell>{member.email}</Cell>
@@ -463,10 +464,6 @@ const FilterRow = styled.div`
   align-items: flex-start;
   gap: 18px;
   width: 100%;
-
-  ${media.xs} {
-    flex-wrap: wrap;
-  }
 `;
 
 const SearchField = styled(TextField)`
@@ -560,20 +557,6 @@ const EmailFieldColumn = styled.div`
   flex-direction: column;
   min-width: 0;
   gap: 4px;
-`;
-
-const ErrorText = styled.p`
-  margin: 0;
-  color: ${State.error};
-  ${typographyCss(Typography.caption1.regular)}
-`;
-
-const StateWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 240px;
 `;
 
 const TableEmptyState = styled(EmptyState)`

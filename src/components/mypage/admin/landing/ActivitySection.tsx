@@ -1,20 +1,19 @@
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import styled from 'styled-components';
 
-import Select from '@common/select/Select';
-import ListboxOptions from '@common/select/ListboxOptions';
 import Textarea from '@common/textarea/Textarea';
+import { FieldDescription } from '@common/fieldStatus/FieldStatus';
+import ListboxSelect from '@common/select/ListboxSelect';
 import TextField from '@common/textField/TextField';
 import AddCardButton from '@mypage/component/AddCardButton';
 import RemoveCardButton from '@mypage/component/RemoveCardButton';
 import CharCount from '@common/charCount/CharCount';
-import useListboxSelect from 'src/hooks/useListboxSelect';
-import { isUnfilled } from '@utils/index';
+import { isUnfilled, invertRecord } from '@utils/index';
 import { PageNavigation } from 'src/apis/activity';
 import { IcCircleCloseOutline, IcCircleExclamation, IcImage } from '@assets/svg';
 import { BackgroundWhite, Label, Line, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
-import { createId } from '../utils';
+import { createId } from '@utils/listSync';
 
 // imageName엔 원본 파일명이 아니라 업로드된 이미지의 URL이 들어있어(S3 URL만 내려옴),
 // 화면에 보여줄 파일명은 URL 마지막 경로에서 추출한다
@@ -54,9 +53,7 @@ export const PAGE_NAVIGATION_LABEL: Record<PageNavigation, string> = {
   GALLERY_PROJECT: '갤러리 페이지 / 프로젝트',
   GALLERY_MEMORY: '갤러리 페이지 / 추억',
 };
-export const PAGE_NAVIGATION_BY_LABEL: Record<string, PageNavigation> = Object.fromEntries(
-  Object.entries(PAGE_NAVIGATION_LABEL).map(([navigation, label]) => [label, navigation]),
-) as Record<string, PageNavigation>;
+export const PAGE_NAVIGATION_BY_LABEL: Record<string, PageNavigation> = invertRecord(PAGE_NAVIGATION_LABEL);
 const PAGE_LINK_OPTIONS = Object.values(PAGE_NAVIGATION_LABEL);
 
 const createEmptyItem = (): ActivityIntroItem => ({
@@ -134,24 +131,6 @@ const ActivityCard = ({
 }) => {
   const imageInputRef = useRef<HTMLInputElement>(null);
   const isImageInteractive = !disabled && !isUploading;
-  const [isPageLinkOpen, setIsPageLinkOpen] = useState(false);
-  const {
-    listId: pageLinkListId,
-    wrapperRef: pageLinkRef,
-    triggerRef: pageLinkTriggerRef,
-    activeIndex: pageLinkActiveIndex,
-    handleKeyDown: handlePageLinkKeyDown,
-    handleBlur: handlePageLinkBlur,
-    selectOption: selectPageLink,
-  } = useListboxSelect({
-    isOpen: isPageLinkOpen,
-    options: PAGE_LINK_OPTIONS,
-    value: item.href,
-    onOpen: () => setIsPageLinkOpen(true),
-    onClose: () => setIsPageLinkOpen(false),
-    onSelect: (href) => onChange({ href }),
-  });
-
   return (
     <Card>
       <Row>
@@ -213,7 +192,9 @@ const ActivityCard = ({
               event.target.value = '';
             }}
           />
-          {showErrors && isUnfilled(item.imageName) && <ImageErrorText>이미지를 첨부해 주세요.</ImageErrorText>}
+          {showErrors && isUnfilled(item.imageName) && (
+            <FieldDescription $status="negative">이미지를 첨부해 주세요.</FieldDescription>
+          )}
         </FieldWrapper>
       </Row>
       <TextField
@@ -248,31 +229,16 @@ const ActivityCard = ({
             description={showErrors && isUnfilled(item.buttonText) ? '버튼명을 입력해 주세요.' : undefined}
           />
         </FieldWrapper>
-        <SelectWrapper ref={pageLinkRef} onKeyDownCapture={handlePageLinkKeyDown} onBlur={handlePageLinkBlur}>
-          <Select
-            ref={pageLinkTriggerRef}
-            heading="페이지 이동"
-            placeholder="선택"
-            value={item.href}
-            readOnly={disabled}
-            onClick={() => setIsPageLinkOpen((prev) => !prev)}
-            aria-expanded={isPageLinkOpen}
-            aria-activedescendant={isPageLinkOpen ? `${pageLinkListId}-${pageLinkActiveIndex}` : undefined}
-            aria-controls={pageLinkListId}
-            status={showErrors && isUnfilled(item.href) ? 'negative' : 'normal'}
-            description={showErrors && isUnfilled(item.href) ? '페이지 이동을 선택해 주세요.' : undefined}
-          >
-            {isPageLinkOpen && (
-              <ListboxOptions
-                listId={pageLinkListId}
-                options={PAGE_LINK_OPTIONS}
-                value={item.href}
-                activeIndex={pageLinkActiveIndex}
-                onSelect={selectPageLink}
-              />
-            )}
-          </Select>
-        </SelectWrapper>
+        <PageLinkSelect
+          heading="페이지 이동"
+          placeholder="선택"
+          value={item.href}
+          options={PAGE_LINK_OPTIONS}
+          readOnly={disabled}
+          onChange={(href) => onChange({ href })}
+          status={showErrors && isUnfilled(item.href) ? 'negative' : 'normal'}
+          description={showErrors && isUnfilled(item.href) ? '페이지 이동을 선택해 주세요.' : undefined}
+        />
       </Row>
       {!disabled && (
         <ButtonRow>
@@ -326,10 +292,10 @@ const FieldWrapper = styled.div`
   min-width: 0;
 `;
 
-const SelectWrapper = styled.div`
-  position: relative;
+const PageLinkSelect = styled(ListboxSelect)`
   flex: 1 0 0;
   min-width: 0;
+  width: auto;
 `;
 
 const ButtonRow = styled.div`
@@ -392,11 +358,4 @@ const ClearButton = styled.button`
 
 const HiddenInput = styled.input`
   display: none;
-`;
-
-const ImageErrorText = styled.p`
-  margin: 0;
-  width: 100%;
-  color: ${State.error};
-  ${typographyCss(Typography.caption1.regular)}
 `;

@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import styled from 'styled-components';
 
 import Chip from '@common/chip/Chip';
+import LoadingArea from '@common/loading/LoadingArea';
 import { getTracks } from 'src/apis/track';
 import LinearLoading from '@common/loading/LinearLoading';
 import EmptyState from '@common/emptyState/EmptyState';
@@ -16,9 +17,9 @@ const TrackSection = () => {
     <Wrapper>
       <Title>14기 트랙 소개</Title>
       {isLoading ? (
-        <LoadingWrapper>
+        <LoadingArea minHeight={300}>
           <LinearLoading />
-        </LoadingWrapper>
+        </LoadingArea>
       ) : isError ? (
         <EmptyState variant="error" />
       ) : (
@@ -192,12 +193,4 @@ const Footnote = styled.p`
   color: ${Black.b50};
   align-self: flex-start;
   margin: 0;
-`;
-
-const LoadingWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 300px;
 `;

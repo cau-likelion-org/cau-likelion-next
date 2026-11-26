@@ -1,10 +1,7 @@
-import { useState } from 'react';
 import styled from 'styled-components';
 
 import { FieldStatus } from '@common/fieldStatus/FieldStatus';
-import Select from '@common/select/Select';
-import ListboxOptions from '@common/select/ListboxOptions';
-import useListboxSelect from 'src/hooks/useListboxSelect';
+import ListboxSelect from '@common/select/ListboxSelect';
 
 import { applyFieldHeadingCss } from './applyFieldStyle';
 
@@ -17,49 +14,23 @@ export interface ApplySelectProps {
   onChange: (value: string) => void;
 }
 
-const ApplySelect = ({ heading, options, value, status, description, onChange }: ApplySelectProps) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const { listId, wrapperRef, triggerRef, activeIndex, handleKeyDown, handleBlur, selectOption } = useListboxSelect({
-    isOpen,
-    options,
-    value,
-    onOpen: () => setIsOpen(true),
-    onClose: () => setIsOpen(false),
-    onSelect: onChange,
-  });
-
-  return (
-    <div ref={wrapperRef} onKeyDownCapture={handleKeyDown} onBlur={handleBlur}>
-      <StyledSelect
-        ref={triggerRef}
-        heading={heading}
-        required
-        aria-label={heading}
-        aria-expanded={isOpen}
-        aria-controls={listId}
-        aria-activedescendant={isOpen ? `${listId}-${activeIndex}` : undefined}
-        placeholder="선택해주세요"
-        value={value}
-        status={status}
-        description={description}
-        onClick={() => setIsOpen((prev) => !prev)}
-      >
-        {isOpen && (
-          <ListboxOptions
-            listId={listId}
-            options={options}
-            value={value}
-            activeIndex={activeIndex}
-            onSelect={selectOption}
-          />
-        )}
-      </StyledSelect>
-    </div>
-  );
-};
+const ApplySelect = ({ heading, options, value, status, description, onChange }: ApplySelectProps) => (
+  <StyledSelect
+    fullWidth
+    heading={heading}
+    required
+    ariaLabel={heading}
+    placeholder="선택해주세요"
+    options={options}
+    value={value}
+    status={status}
+    description={description}
+    onChange={onChange}
+  />
+);
 
 export default ApplySelect;
 
-const StyledSelect = styled(Select)`
+const StyledSelect = styled(ListboxSelect)`
   ${applyFieldHeadingCss}
 `;

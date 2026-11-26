@@ -9,7 +9,7 @@ import PaginationNavigation from '@common/pagination/PaginationNavigation';
 import HorizontalScrollArea from '@common/scrollArea/HorizontalScrollArea';
 import TextField from '@common/textField/TextField';
 import TextSelect from '@common/select/TextSelect';
-import ProjectFilterSelect from '@project/projects/ProjectFilterSelect';
+import ListboxSelect from '@common/select/ListboxSelect';
 import { PART_OPTIONS_MOCK } from '@recruit/apply/mock';
 import { IcDownload, IcSearch } from '@assets/svg';
 import { downloadCsv } from '@utils/csv';
@@ -27,9 +27,9 @@ import {
 } from './applicantMock';
 import { RECRUIT_INTERVIEW_SETTING_MOCK } from './mock';
 import StatCounts from './StatCounts';
+import useApplicantFilter, { ALL } from './useApplicantFilter';
 
 const PAGE_SIZE = 10;
-const ALL = '전체';
 
 const SUBMISSION_STATUS_OPTIONS = [ALL, ...Object.values(SUBMISSION_STATUS_LABEL)];
 const PART_FILTER_OPTIONS = [ALL, ...PART_OPTIONS_MOCK];
@@ -55,11 +55,6 @@ const getLatestResult = (applicant: ApplicantDetail): ScreeningResult | undefine
 
 const ApplicantListSection = () => {
   const [generation, setGeneration] = useState(APPLICANT_GENERATIONS[0]);
-  const [statusFilter, setStatusFilter] = useState(ALL);
-  const [partFilter, setPartFilter] = useState(ALL);
-  const [resultFilter, setResultFilter] = useState(ALL);
-  const [keyword, setKeyword] = useState('');
-  const [page, setPage] = useState(1);
 
   const applicantsQuery = useQuery({
     queryKey: ['recruitApplicants', generation],
@@ -67,25 +62,27 @@ const ApplicantListSection = () => {
   });
   const applicants = applicantsQuery.data ?? [];
 
-  const trimmedKeyword = keyword.trim();
-  const filtered = applicants.filter((applicant) => {
-    if (statusFilter !== ALL && SUBMISSION_STATUS_LABEL[applicant.submissionStatus] !== statusFilter) return false;
-    if (partFilter !== ALL && applicant.part !== partFilter) return false;
-    const latestResult = getLatestResult(applicant);
-    if (resultFilter !== ALL && (!latestResult || SCREENING_RESULT_LABEL[latestResult] !== resultFilter)) return false;
-    if (trimmedKeyword && !applicant.name.includes(trimmedKeyword) && !applicant.studentId?.includes(trimmedKeyword))
-      return false;
-    return true;
+  const {
+    statusFilter,
+    partFilter,
+    resultFilter,
+    keyword,
+    changeStatusFilter,
+    changePartFilter,
+    changeResultFilter,
+    changeKeyword,
+    filtered,
+    pageItems,
+    currentPage,
+    totalPage,
+    setPage,
+  } = useApplicantFilter(applicants, {
+    pageSize: PAGE_SIZE,
+    getResultLabel: (applicant) => {
+      const latestResult = getLatestResult(applicant);
+      return latestResult && SCREENING_RESULT_LABEL[latestResult];
+    },
   });
-
-  const totalPage = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  const currentPage = Math.min(page, totalPage);
-  const pageItems = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
-
-  const changeFilter = (setter: (value: string) => void) => (value: string) => {
-    setter(value);
-    setPage(1);
-  };
 
   const downloadFiltered = () =>
     downloadCsv(
@@ -137,26 +134,21 @@ const ApplicantListSection = () => {
               heading="제출 상태"
               options={SUBMISSION_STATUS_OPTIONS}
               value={statusFilter}
-              onChange={changeFilter(setStatusFilter)}
+              onChange={changeStatusFilter}
             />
             <FilterSelect
               heading="파트 구분"
               options={PART_FILTER_OPTIONS}
               value={partFilter}
-              onChange={changeFilter(setPartFilter)}
+              onChange={changePartFilter}
             />
-            <FilterSelect
-              heading="결과"
-              options={RESULT_OPTIONS}
-              value={resultFilter}
-              onChange={changeFilter(setResultFilter)}
-            />
+            <FilterSelect heading="결과" options={RESULT_OPTIONS} value={resultFilter} onChange={changeResultFilter} />
             <SearchField
               heading="이름/학번 검색"
               placeholder="텍스트를 입력해 주세요."
               leadingIcon={<IcSearch width={22} height={22} />}
               value={keyword}
-              onChange={(event) => changeFilter(setKeyword)(event.target.value)}
+              onChange={(event) => changeKeyword(event.target.value)}
             />
           </Filters>
           {applicantsQuery.isPending ? null : applicants.length === 0 ? (
@@ -274,7 +266,7 @@ const Filters = styled.div`
   gap: 18px;
 `;
 
-const FilterSelect = styled(ProjectFilterSelect)`
+const FilterSelect = styled(ListboxSelect)`
   flex-shrink: 0;
   width: 160px;
 `;

@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import styled from 'styled-components';
 
 import Toast from '@common/toast/Toast';
+import { FieldDescription } from '@common/fieldStatus/FieldStatus';
 import { ToastWrapper } from '@common/toast/toastLayout';
 import { IcRefresh } from '@assets/svg';
 import DateTimeInput from '@common/dateTimeInput/DateTimeInput';
@@ -151,7 +152,7 @@ const MakeAttendanceCard = () => {
             </PasswordRow>
           </Field>
         </FieldRow>
-        {disabledReason && <ErrorText>{disabledReason}</ErrorText>}
+        {disabledReason && <FieldDescription $status="negative">{disabledReason}</FieldDescription>}
       </Content>
 
       <ToastWrapper>
@@ -327,10 +328,4 @@ const GenerateButton = styled.button`
     color: ${Label.assistive};
     cursor: not-allowed;
   }
-`;
-
-const ErrorText = styled.p`
-  margin: 0;
-  color: ${State.error};
-  ${typographyCss(Typography.caption1.regular)}
 `;

@@ -3,17 +3,16 @@ import styled from 'styled-components';
 import { useMutation, useQuery } from '@tanstack/react-query';
 
 import Button from '@common/button/Button';
-import Select from '@common/select/Select';
-import ListboxOptions from '@common/select/ListboxOptions';
+import ModalOverlay from '@common/modalOverlay/ModalOverlay';
+import ListboxSelect from '@common/select/ListboxSelect';
 import ScrollArea from '@common/scrollArea/ScrollArea';
 import TextField from '@common/textField/TextField';
 import { IcKakaotalk } from '@assets/svg';
 import useFocusTrap from 'src/hooks/useFocusTrap';
-import useListboxSelect from 'src/hooks/useListboxSelect';
 import { getAvailableParts, subscribeRecruitment } from 'src/apis/recruitment';
 import useRecruitModalStore from 'src/store/useRecruitModalStore';
 import { excludeCommonPart, isUnfilled } from '@utils/index';
-import { BackgroundColor, Fill, Label, Material } from '@utils/constant/color';
+import { BackgroundColor, Fill, Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { MOBILE } from '@home/common/responsive';
 
@@ -24,7 +23,6 @@ const EMAIL_REGEX = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
 const RecruitNotifyModal = ({ onClose }: { onClose: () => void }) => {
   const [name, setName] = useState('');
   const [department, setDepartment] = useState('');
-  const [isDepartmentOpen, setIsDepartmentOpen] = useState(false);
   const [email, setEmail] = useState('');
   const [showEmailError, setShowEmailError] = useState(false);
   const closeWithToast = useRecruitModalStore((state) => state.closeWithToast);
@@ -40,23 +38,6 @@ const RecruitNotifyModal = ({ onClose }: { onClose: () => void }) => {
   const visibleParts = useMemo(() => excludeCommonPart(availableParts ?? []), [availableParts]);
   const departmentOptions = useMemo(() => visibleParts.map((part) => part.name), [visibleParts]);
   const selectedPart = useMemo(() => visibleParts.find((part) => part.name === department), [visibleParts, department]);
-
-  const {
-    listId: departmentListId,
-    wrapperRef: departmentSelectRef,
-    triggerRef: departmentTriggerRef,
-    activeIndex: activeDepartmentIndex,
-    handleKeyDown: handleDepartmentKeyDown,
-    handleBlur: handleDepartmentBlur,
-    selectOption: selectDepartment,
-  } = useListboxSelect({
-    isOpen: isDepartmentOpen,
-    options: departmentOptions,
-    value: department,
-    onOpen: () => setIsDepartmentOpen(true),
-    onClose: () => setIsDepartmentOpen(false),
-    onSelect: setDepartment,
-  });
 
   const isEmailInvalid = showEmailError && !EMAIL_REGEX.test(email);
   const isValid = !isUnfilled(name) && !!selectedPart && !isUnfilled(email);
@@ -81,15 +62,8 @@ const RecruitNotifyModal = ({ onClose }: { onClose: () => void }) => {
   };
 
   return (
-    <Backdrop onClick={onClose}>
-      <Modal
-        ref={modalRef}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={titleId}
-        tabIndex={-1}
-        onClick={(event) => event.stopPropagation()}
-      >
+    <ModalOverlay onDimmerClick={onClose}>
+      <Modal ref={modalRef} role="dialog" aria-modal="true" aria-labelledby={titleId} tabIndex={-1}>
         <InformationScroll>
           <Information>
             <Title id={titleId}>다음 기수 모집 알림받기</Title>
@@ -104,33 +78,14 @@ const RecruitNotifyModal = ({ onClose }: { onClose: () => void }) => {
                   onChange={(event) => setName(event.target.value)}
                 />
               </FieldWrapper>
-              <SelectWrapper
-                ref={departmentSelectRef}
-                onKeyDownCapture={handleDepartmentKeyDown}
-                onBlur={handleDepartmentBlur}
-              >
-                <Select
-                  ref={departmentTriggerRef}
-                  heading="관심파트"
-                  required
-                  placeholder="선택"
-                  value={department}
-                  onClick={() => setIsDepartmentOpen((prev) => !prev)}
-                  aria-expanded={isDepartmentOpen}
-                  aria-activedescendant={isDepartmentOpen ? `${departmentListId}-${activeDepartmentIndex}` : undefined}
-                  aria-controls={departmentListId}
-                >
-                  {isDepartmentOpen && (
-                    <ListboxOptions
-                      listId={departmentListId}
-                      options={departmentOptions}
-                      value={department}
-                      activeIndex={activeDepartmentIndex}
-                      onSelect={selectDepartment}
-                    />
-                  )}
-                </Select>
-              </SelectWrapper>
+              <DepartmentSelect
+                heading="관심파트"
+                required
+                placeholder="선택"
+                value={department}
+                options={departmentOptions}
+                onChange={setDepartment}
+              />
             </Row>
             <TextField
               type="email"
@@ -179,22 +134,11 @@ const RecruitNotifyModal = ({ onClose }: { onClose: () => void }) => {
           </ActionRow>
         </Actions>
       </Modal>
-    </Backdrop>
+    </ModalOverlay>
   );
 };
 
 export default RecruitNotifyModal;
-
-const Backdrop = styled.div`
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 20px;
-  background-color: ${Material.dimmer};
-  z-index: 9999;
-`;
 
 const Modal = styled.div`
   position: relative;
@@ -264,10 +208,10 @@ const FieldWrapper = styled.div`
   }
 `;
 
-const SelectWrapper = styled.div`
-  position: relative;
+const DepartmentSelect = styled(ListboxSelect)`
   flex: 1 0 0;
   min-width: 0;
+  width: auto;
 
   @media (max-width: ${MOBILE}px) {
     flex: 0 0 auto;

@@ -1,16 +1,13 @@
 import { ReactElement, ReactNode, useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import styled from 'styled-components';
 
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import LeaveConfirmAlert from '@common/alert/LeaveConfirmAlert';
-import Button from '@common/button/Button';
 import Toast from '@common/toast/Toast';
 import { ToastWrapper } from '@common/toast/toastLayout';
 import MyPageShell from '@mypage/component/MyPageShell';
+import AdminEditLayout from '@mypage/admin/component/AdminEditLayout';
 import LinearLoading from '@common/loading/LinearLoading';
-import EmptyState from '@common/emptyState/EmptyState';
-import PageLoadingGate from '@common/pageGate/PageLoadingGate';
 import IntroduceSection, { LandingMetrics, isMetricsInvalid } from '@mypage/admin/landing/IntroduceSection';
 import TrackSection, { TrackIntroItem, isTrackItemInvalid } from '@mypage/admin/landing/TrackSection';
 import ActivitySection, {
@@ -19,15 +16,10 @@ import ActivitySection, {
   PAGE_NAVIGATION_LABEL,
   PAGE_NAVIGATION_BY_LABEL,
 } from '@mypage/admin/landing/ActivitySection';
-import ProjectSection, {
-  FeaturedProject,
-  isProjectSelectionInvalid,
-  MIN_EXPOSED_PROJECT_COUNT,
-} from '@mypage/admin/landing/ProjectSection';
+import ProjectSection, { FeaturedProject, isProjectSelectionInvalid } from '@mypage/admin/landing/ProjectSection';
 import FAQSection from '@mypage/admin/landing/FAQSection';
 import { FaqItem, isFaqItemInvalid } from '@mypage/component/FaqCardList';
-import EditButton from '@mypage/admin/component/EditButton';
-import { syncListSection } from '@mypage/admin/utils';
+import { syncListSection } from '@utils/listSync';
 import useLeaveGuard from 'src/hooks/useLeaveGuard';
 import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import { getTracks, createTrack, updateTrack, deleteTrack, TrackResponse } from 'src/apis/track';
@@ -44,9 +36,6 @@ import { uploadFile } from 'src/apis/upload';
 import useRoleGuard from 'src/apis/useRoleGuard';
 import useTokenStore from 'src/store/useTokenStore';
 import { canManageSitePages } from '@utils/index';
-import { Label } from '@utils/constant/color';
-import { Typography, typographyCss } from '@utils/constant/typography';
-import { media } from '@utils/constant/breakpoint';
 
 const trackToLocal = (track: TrackResponse): TrackIntroItem => ({
   id: String(track.id),
@@ -234,13 +223,7 @@ const MyPageAdminLanding = () => {
       isProjectSelectionInvalid(projectItems) ||
       faqItems.some(isFaqItemInvalid);
 
-    if (!validate(hasError)) {
-      if (isProjectSelectionInvalid(projectItems)) {
-        setToastVariant('negative');
-        setToastMessage(`노출 프로젝트는 최소 ${MIN_EXPOSED_PROJECT_COUNT}개 이상 선택해 주세요.`);
-      }
-      return;
-    }
+    if (!validate(hasError)) return;
     setIsSaving(true);
     try {
       await Promise.all([
@@ -312,61 +295,43 @@ const MyPageAdminLanding = () => {
 
   return (
     <>
-      {!isAuthorized ? (
-        <PageLoadingGate isError={isUserProfileError} />
-      ) : (
-        <>
-          <TitleRow>
-            <PageTitle>랜딩페이지 관리</PageTitle>
-            <ButtonRow>
-              {isEditing ? (
-                <>
-                  <Button variant="outlined" color="assistive" size="small" onClick={handleCancel}>
-                    취소
-                  </Button>
-                  <Button size="small" onClick={handleSave} loading={isSaving}>
-                    저장
-                  </Button>
-                </>
-              ) : (
-                <EditButton onClick={() => setIsEditing(true)} />
-              )}
-            </ButtonRow>
-          </TitleRow>
-          {isDataError ? (
-            <EmptyState variant="error" />
-          ) : !isDataLoaded ? (
-            <LoadingWrapper>
-              <LinearLoading progress={dataLoadProgress} />
-            </LoadingWrapper>
-          ) : (
-            <ContentWrapper ref={contentRef}>
-              <IntroduceSection
-                metrics={introduceMetrics}
-                onChange={setIntroduceMetrics}
-                showErrors={showErrors}
-                disabled={!isEditing}
-              />
-              <TrackSection items={trackItems} onChange={setTrackItems} showErrors={showErrors} disabled={!isEditing} />
-              <ActivitySection
-                items={activityItems}
-                onChange={setActivityItems}
-                showErrors={showErrors}
-                disabled={!isEditing}
-                uploadingIds={uploadingActivityIds}
-                onUploadImage={handleActivityImageSelect}
-              />
-              <ProjectSection
-                projects={projectItems}
-                onChange={setProjectItems}
-                showErrors={showErrors}
-                disabled={!isEditing}
-              />
-              <FAQSection items={faqItems} onChange={setFaqItems} showErrors={showErrors} disabled={!isEditing} />
-            </ContentWrapper>
-          )}
-        </>
-      )}
+      <AdminEditLayout
+        title="랜딩페이지 관리"
+        isAuthorized={isAuthorized}
+        isUserProfileError={isUserProfileError}
+        isEditing={isEditing}
+        isSaving={isSaving}
+        onEdit={() => setIsEditing(true)}
+        onCancel={handleCancel}
+        onSave={handleSave}
+        isDataError={isDataError}
+        isDataLoaded={isDataLoaded}
+        loadingIndicator={<LinearLoading progress={dataLoadProgress} />}
+        contentRef={contentRef}
+      >
+        <IntroduceSection
+          metrics={introduceMetrics}
+          onChange={setIntroduceMetrics}
+          showErrors={showErrors}
+          disabled={!isEditing}
+        />
+        <TrackSection items={trackItems} onChange={setTrackItems} showErrors={showErrors} disabled={!isEditing} />
+        <ActivitySection
+          items={activityItems}
+          onChange={setActivityItems}
+          showErrors={showErrors}
+          disabled={!isEditing}
+          uploadingIds={uploadingActivityIds}
+          onUploadImage={handleActivityImageSelect}
+        />
+        <ProjectSection
+          projects={projectItems}
+          onChange={setProjectItems}
+          showErrors={showErrors}
+          disabled={!isEditing}
+        />
+        <FAQSection items={faqItems} onChange={setFaqItems} showErrors={showErrors} disabled={!isEditing} />
+      </AdminEditLayout>
       {isConfirmOpen && <LeaveConfirmAlert onCancel={cancelLeave} onConfirm={confirmLeave} />}
       <ToastWrapper>
         <Toast variant={toastVariant} text={toastMessage} show={!!toastMessage} onHidden={() => setToastMessage('')} />
@@ -384,42 +349,3 @@ MyPageAdminLanding.getLayout = function getLayout(page: ReactElement) {
 };
 
 export default MyPageAdminLanding;
-
-const TitleRow = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-`;
-
-const PageTitle = styled.p`
-  margin: 0;
-  color: ${Label.normal};
-  ${typographyCss(Typography.heading2.bold)}
-`;
-
-const ButtonRow = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 12px;
-`;
-
-const LoadingWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 300px;
-`;
-
-const ContentWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  width: 100%;
-  gap: 40px;
-
-  ${media.xs} {
-    gap: 32px;
-  }
-`;

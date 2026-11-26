@@ -2,15 +2,13 @@ import { useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import BackHeader from '@common/header/BackHeader';
+import ListboxSelect from '@common/select/ListboxSelect';
 import Alert from '@common/alert/Alert';
-import Select from '@common/select/Select';
-import ListboxOptions from '@common/select/ListboxOptions';
 import TextField from '@common/textField/TextField';
 import Textarea from '@common/textarea/Textarea';
 import CharCount from '@common/charCount/CharCount';
 import AddCardButton from '@mypage/component/AddCardButton';
 import RemoveCardButton from '@mypage/component/RemoveCardButton';
-import useListboxSelect from 'src/hooks/useListboxSelect';
 import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import useLeaveGuard from 'src/hooks/useLeaveGuard';
 import { AssignmentCreateRequest, AssignmentSubmitType } from 'src/apis/assignment';
@@ -279,50 +277,21 @@ const AssignmentCreateForm = ({
 
 export default AssignmentCreateForm;
 
-// 제출 형식 드롭다운 (공용 Select + useListboxSelect)
 const SubmitTypeSelect = ({
   value,
   onChange,
 }: {
   value: AssignmentSubmitType;
   onChange: (type: AssignmentSubmitType) => void;
-}) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const currentLabel = TYPE_TO_LABEL[value];
-  const { listId, wrapperRef, triggerRef, activeIndex, handleKeyDown, handleBlur, selectOption } = useListboxSelect({
-    isOpen,
-    options: SUBMIT_OPTIONS,
-    value: currentLabel,
-    onOpen: () => setIsOpen(true),
-    onClose: () => setIsOpen(false),
-    onSelect: (label) => onChange(LABEL_TO_TYPE[label]),
-  });
-
-  return (
-    <SelectColumn ref={wrapperRef} onKeyDownCapture={handleKeyDown} onBlur={handleBlur}>
-      <Select
-        ref={triggerRef}
-        heading="제출 형식"
-        required
-        value={currentLabel}
-        onClick={() => setIsOpen((prev) => !prev)}
-        aria-expanded={isOpen}
-        aria-activedescendant={isOpen ? `${listId}-${activeIndex}` : undefined}
-        aria-controls={listId}
-      >
-        {isOpen && (
-          <ListboxOptions
-            listId={listId}
-            options={SUBMIT_OPTIONS}
-            value={currentLabel}
-            activeIndex={activeIndex}
-            onSelect={selectOption}
-          />
-        )}
-      </Select>
-    </SelectColumn>
-  );
-};
+}) => (
+  <SubmitTypeListbox
+    heading="제출 형식"
+    required
+    value={TYPE_TO_LABEL[value]}
+    options={SUBMIT_OPTIONS}
+    onChange={(label) => onChange(LABEL_TO_TYPE[label])}
+  />
+);
 
 // 마감일: 달력 아이콘 + 네이티브 date input(오버레이) 조합
 const DateField = ({
@@ -471,14 +440,9 @@ const BottomLeft = styled.div`
   }
 `;
 
-const SelectColumn = styled.div`
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  width: 160px;
-
+const SubmitTypeListbox = styled(ListboxSelect)`
   ${media.xs} {
+    flex: 0 1 auto;
     width: 100%;
   }
 `;

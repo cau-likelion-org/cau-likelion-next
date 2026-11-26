@@ -5,11 +5,9 @@ import axios from 'axios';
 import styled from 'styled-components';
 
 import Button from '@common/button/Button';
+import ListboxSelect from '@common/select/ListboxSelect';
 import PageHeader from '@common/pageHeader/PageHeader';
-import Select from '@common/select/Select';
-import ListboxOptions from '@common/select/ListboxOptions';
 import TextField from '@common/textField/TextField';
-import useListboxSelect from 'src/hooks/useListboxSelect';
 import useTokenStore from 'src/store/useTokenStore';
 import { getGenerations } from 'src/apis/account';
 import {
@@ -23,8 +21,6 @@ import {
 import { excludeCommonPart, isUnfilled } from '@utils/index';
 import { track, newAttemptId } from 'src/lib/amplitude';
 
-type OpenField = 'part' | null;
-
 const classifyFailureReason = (error: unknown): 'validation_error' | 'network_error' | 'server_error' => {
   if (!axios.isAxiosError(error) || !error.response) return 'network_error';
   return error.response.status >= 500 ? 'server_error' : 'validation_error';
@@ -33,7 +29,6 @@ const classifyFailureReason = (error: unknown): 'validation_error' | 'network_er
 const SignUpFormSection = () => {
   const [name, setName] = useState('');
   const [partName, setPartName] = useState('');
-  const [openField, setOpenField] = useState<OpenField>(null);
   const [signupToken] = useState(() =>
     typeof window === 'undefined' ? null : sessionStorage.getItem(PENDING_SIGNUP_TOKEN_KEY),
   );
@@ -62,26 +57,6 @@ const SignUpFormSection = () => {
     () => excludeCommonPart(activeGeneration?.parts ?? []).map((p) => p.name),
     [activeGeneration],
   );
-
-  const {
-    listId: partListId,
-    wrapperRef: partWrapperRef,
-    triggerRef: partTriggerRef,
-    activeIndex: partActiveIndex,
-    handleKeyDown: handlePartKeyDown,
-    handleBlur: handlePartBlur,
-    selectOption: selectPartOption,
-  } = useListboxSelect({
-    isOpen: openField === 'part',
-    options: partOptions,
-    value: partName,
-    onOpen: () => setOpenField('part'),
-    onClose: () => setOpenField(null),
-    onSelect: (option) => {
-      setPartName(option);
-      setOpenField(null);
-    },
-  });
 
   useEffect(() => {
     if (!signupToken) {
@@ -160,31 +135,17 @@ const SignUpFormSection = () => {
             value={activeGeneration ? String(activeGeneration.number) : ''}
             description="수정이 필요한 경우 운영진에게 문의해주세요."
           />
-          <SelectWrapper ref={partWrapperRef} onKeyDownCapture={handlePartKeyDown} onBlur={handlePartBlur}>
-            <Select
-              ref={partTriggerRef}
-              heading="파트"
-              required
-              placeholder="선택"
-              value={partName}
-              onClick={() => setOpenField((prev) => (prev === 'part' ? null : 'part'))}
-              description="파트를 선택해 주세요."
-              disabled={!activeGeneration}
-              aria-expanded={openField === 'part'}
-              aria-activedescendant={openField === 'part' ? `${partListId}-${partActiveIndex}` : undefined}
-              aria-controls={partListId}
-            >
-              {openField === 'part' && (
-                <ListboxOptions
-                  listId={partListId}
-                  options={partOptions}
-                  value={partName}
-                  activeIndex={partActiveIndex}
-                  onSelect={selectPartOption}
-                />
-              )}
-            </Select>
-          </SelectWrapper>
+          <ListboxSelect
+            fullWidth
+            heading="파트"
+            required
+            placeholder="선택"
+            value={partName}
+            options={partOptions}
+            onChange={setPartName}
+            description="파트를 선택해 주세요."
+            disabled={!activeGeneration}
+          />
         </FieldGroup>
       </ContentGroup>
       <SubmitButton
@@ -229,11 +190,6 @@ const FieldGroup = styled.div`
   flex-direction: column;
   align-items: flex-start;
   gap: 39px;
-  width: 100%;
-`;
-
-const SelectWrapper = styled.div`
-  position: relative;
   width: 100%;
 `;
 

@@ -2,6 +2,7 @@ import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import ContentBadge from '@common/badge/ContentBadge';
+import { FieldDescription } from '@common/fieldStatus/FieldStatus';
 import Textarea from '@common/textarea/Textarea';
 import { ITEM_BADGE_CONFIG } from './WeeklyAssignmentCard';
 import { AssignmentFileInfo, AssignmentSubmission, formatSubmittedAt } from 'src/apis/assignment';
@@ -172,7 +173,11 @@ const AssignmentSubmitCard = ({
                 </AddButton>
               )}
               <HiddenFileInput ref={fileInputRef} type="file" onChange={handleFileChange} />
-              {errorMessage && <ErrorText role="alert">{errorMessage}</ErrorText>}
+              {errorMessage && (
+                <SubmitErrorText $status="negative" role="alert">
+                  {errorMessage}
+                </SubmitErrorText>
+              )}
             </Field>
           ) : (
             <Field>
@@ -191,7 +196,11 @@ const AssignmentSubmitCard = ({
                   $hasValue={link.trim() !== ''}
                 />
               </AttachmentField>
-              {errorMessage && <ErrorText role="alert">{errorMessage}</ErrorText>}
+              {errorMessage && (
+                <SubmitErrorText $status="negative" role="alert">
+                  {errorMessage}
+                </SubmitErrorText>
+              )}
             </Field>
           )}
 
@@ -460,10 +469,8 @@ const Required = styled.span`
   color: ${Status.negative};
 `;
 
-const ErrorText = styled.p`
-  margin: -12px 0 0;
-  color: ${Status.negative};
-  ${typographyCss(Typography.body2Normal.medium)}
+const SubmitErrorText = styled(FieldDescription)`
+  margin-top: -12px;
 `;
 
 const AttachmentRow = styled.div`

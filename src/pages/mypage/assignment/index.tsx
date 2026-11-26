@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import styled from 'styled-components';
 
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
+import LoadingArea from '@common/loading/LoadingArea';
 import Toast from '@common/toast/Toast';
 import { ToastWrapper } from '@common/toast/toastLayout';
 import CircularLoading from '@common/loading/CircularLoading';
@@ -27,6 +28,7 @@ import {
   resolveAssignmentActionLabel,
 } from 'src/apis/assignment';
 import useTokenStore from 'src/store/useTokenStore';
+import useLoginRequired from 'src/hooks/useLoginRequired';
 import { INACTIVE_MEMBER_NOTICE_KEY, TRACK_OPTIONS } from '@utils/constant';
 import { excludeCommonPart, isAdminRole, isFullAdminRole } from '@utils/index';
 import { IcPlus } from '@assets/svg';
@@ -55,14 +57,11 @@ const resolveActionLabel = (assignments: AssignmentSummary[]) => {
 
 const MyPageAssignment = () => {
   const tokenState = useTokenStore((state) => state.token);
-  const hasHydrated = useTokenStore((state) => state.hasHydrated);
   const router = useRouter();
 
   const { data: userProfile, isError: isUserProfileError } = useUserProfile();
 
-  useEffect(() => {
-    if (hasHydrated && !tokenState.access) router.push('/login');
-  }, [hasHydrated, tokenState, router]);
+  useLoginRequired();
 
   // 어른사자는 활동 중인 구성원이 아니므로 홈으로 돌려보내고, 홈에서 사유를 토스트로 안내한다
   useEffect(() => {
@@ -192,9 +191,9 @@ const MyPageAssignment = () => {
             )}
           </Header>
           {isWeekGroupsLoading || isPartResolving ? (
-            <LoadingWrapper>
+            <LoadingArea minHeight={300}>
               <CircularLoading size={32} />
-            </LoadingWrapper>
+            </LoadingArea>
           ) : isWeekGroupsError ? (
             <EmptyState variant="error" />
           ) : weeks.length === 0 ? (
@@ -220,9 +219,9 @@ const MyPageAssignment = () => {
             {userProfile.partName && <TrackName>{userProfile.partName} 파트</TrackName>}
           </TitleRow>
           {isMyWeekGroupsLoading ? (
-            <LoadingWrapper>
+            <LoadingArea minHeight={300}>
               <CircularLoading size={32} />
-            </LoadingWrapper>
+            </LoadingArea>
           ) : isMyWeekGroupsError ? (
             <EmptyState variant="error" />
           ) : myGroups.length === 0 ? (
@@ -321,12 +320,4 @@ const List = styled.div`
   align-items: flex-start;
   gap: 18px;
   width: 100%;
-`;
-
-const LoadingWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 300px;
 `;
