@@ -256,11 +256,6 @@ const FieldWrapper = styled.div`
 
 const CategorySelect = styled(ListboxSelect)`
   flex: 0 0 160px;
-
-  @media (max-width: 600px) {
-    flex: 0 0 160px;
-    width: 160px;
-  }
 `;
 
 const ButtonRow = styled.div`

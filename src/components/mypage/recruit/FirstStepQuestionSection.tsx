@@ -161,7 +161,7 @@ const FirstStepQuestionSection = ({ initialValues, onSave, onDirtyChange }: Firs
               </RangeRow>
             </Field>
           </FieldGroup>
-          <UnitSelect
+          <ListboxSelect
             heading="선택 단위"
             ariaLabel="선택 단위"
             value={unitLabel}
@@ -336,13 +336,6 @@ const RangeIcon = styled(IcLineHorizontal)`
   width: 24px;
   height: 24px;
   color: ${Label.assistive};
-`;
-
-const UnitSelect = styled(ListboxSelect)`
-  @media (max-width: 600px) {
-    flex: 0 0 auto;
-    width: 160px;
-  }
 `;
 
 const Preview = styled.div`

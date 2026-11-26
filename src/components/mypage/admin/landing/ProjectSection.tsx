@@ -164,10 +164,6 @@ const CardGrid = styled.div`
   grid-template-columns: repeat(3, 1fr);
   gap: 20px 20px;
   width: 100%;
-
-  @media (max-width: 700px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
 `;
 
 const CardFooter = styled.div`

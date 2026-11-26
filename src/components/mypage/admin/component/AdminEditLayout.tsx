@@ -8,7 +8,6 @@ import PageLoadingGate from '@common/pageGate/PageLoadingGate';
 import EditButton from '@mypage/admin/component/EditButton';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
-import { media } from '@utils/constant/breakpoint';
 
 interface AdminEditLayoutProps {
   title: string;
@@ -100,8 +99,4 @@ const ContentWrapper = styled.div`
   align-items: flex-start;
   width: 100%;
   gap: 40px;
-
-  ${media.xs} {
-    gap: 32px;
-  }
 `;
