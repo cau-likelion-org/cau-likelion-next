@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef } from 'react';
 import styled from 'styled-components';
 
 import { RecruitmentTextResponse } from 'src/apis/recruitment';
@@ -12,6 +12,7 @@ import { BackgroundColor, Fill, Label, Line, Orange, State } from '@utils/consta
 import { Typography, typographyCss } from '@utils/constant/typography';
 import useFocusTrap from 'src/hooks/useFocusTrap';
 import { formatDateTime } from '@utils/index';
+import { SendTargetChipRow, useChipRowOverflow } from './SendTargetChipList';
 
 interface RecruitmentTextDetailModalProps {
   text: RecruitmentTextResponse;
@@ -31,30 +32,15 @@ const RecruitmentTextDetailModal = ({
   const badge = STATUS_BADGE[text.status];
   const canResend = text.status === 'SENT' && text.failedCount > 0;
 
-  const [isRecipientListFaded, setIsRecipientListFaded] = useState(false);
-  const [isRecipientListExpanded, setIsRecipientListExpanded] = useState(false);
-  const [hasOverflow, setHasOverflow] = useState(false);
-  const recipientChipRowRef = useRef<HTMLDivElement>(null);
+  const {
+    rowRef: recipientChipRowRef,
+    isExpanded: isRecipientListExpanded,
+    toggleExpanded,
+    isFaded: isRecipientListFaded,
+    hasOverflow,
+  } = useChipRowOverflow(text.recipients);
   const modalRef = useRef<HTMLDivElement>(null);
   useFocusTrap(modalRef, onClose);
-
-  useEffect(() => {
-    const el = recipientChipRowRef.current;
-    if (!el) return;
-    const checkOverflow = () => {
-      setIsRecipientListFaded(el.scrollWidth - el.scrollLeft - el.clientWidth > 1);
-      // 펼쳐진 상태(줄바꿈)에서는 scrollWidth가 오버플로우를 반영하지 않으므로, 접힌 상태에서 잰 값만 반영한다
-      if (!isRecipientListExpanded) setHasOverflow(el.scrollWidth - el.clientWidth > 1);
-    };
-    checkOverflow();
-    el.addEventListener('scroll', checkOverflow);
-    const observer = new ResizeObserver(checkOverflow);
-    observer.observe(el);
-    return () => {
-      el.removeEventListener('scroll', checkOverflow);
-      observer.disconnect();
-    };
-  }, [text.recipients, isRecipientListExpanded]);
 
   return (
     <ModalOverlay onDimmerClick={onClose}>
@@ -79,7 +65,7 @@ const RecruitmentTextDetailModal = ({
                     type={hasOverflow ? 'button' : undefined}
                     $clickable={hasOverflow}
                     aria-expanded={hasOverflow ? isRecipientListExpanded : undefined}
-                    onClick={hasOverflow ? () => setIsRecipientListExpanded((prev) => !prev) : undefined}
+                    onClick={hasOverflow ? toggleExpanded : undefined}
                   >
                     {text.status === 'SENT' && (
                       <>
@@ -236,37 +222,10 @@ const CountLabel = styled.span<{ $tone?: 'negative' }>`
   ${typographyCss({ ...Typography.label2.bold, fontWeight: 500 })}
 `;
 
-const RecipientChipRow = styled.div<{ $expanded: boolean; $faded: boolean }>`
-  display: flex;
-  align-items: center;
-  gap: 4px;
+const RecipientChipRow = styled(SendTargetChipRow)`
+  flex: none;
   width: 100%;
-  min-width: 0;
-
-  ${(props) =>
-    props.$expanded
-      ? `
-    flex-wrap: wrap;
-  `
-      : `
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-
-    &::-webkit-scrollbar {
-      display: none;
-    }
-
-    ${
-      props.$faded
-        ? `
-      mask-image: linear-gradient(to right, black calc(100% - 32px), transparent 100%);
-      -webkit-mask-image: linear-gradient(to right, black calc(100% - 32px), transparent 100%);
-    `
-        : ''
-    }
-  `}
+  min-height: auto;
 `;
 
 const RecipientChip = styled.span<{ $failed?: boolean }>`
