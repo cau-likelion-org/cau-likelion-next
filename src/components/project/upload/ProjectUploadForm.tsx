@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import styled from 'styled-components';
 
 import Alert from '@common/alert/Alert';
+import { FieldDescription } from '@common/fieldStatus/FieldStatus';
 import LeaveConfirmAlert from '@common/alert/LeaveConfirmAlert';
 import BackHeader from '@common/header/BackHeader';
 import Button from '@common/button/Button';
@@ -519,9 +520,11 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
                   status={showErrors && isDateInvalid ? 'negative' : 'normal'}
                 />
               </DateRangeRow>
-              {showErrors && isDateMissing && <DateDescription>프로젝트 기간을 선택해 주세요.</DateDescription>}
+              {showErrors && isDateMissing && (
+                <FieldDescription $status="negative">프로젝트 기간을 선택해 주세요.</FieldDescription>
+              )}
               {showErrors && isDateOrderInvalid && (
-                <DateDescription>종료일은 시작일 이후로 선택해 주세요.</DateDescription>
+                <FieldDescription $status="negative">종료일은 시작일 이후로 선택해 주세요.</FieldDescription>
               )}
             </DateFieldGroup>
             <FieldGroup>
@@ -719,13 +722,6 @@ const DateRangeRow = styled.div`
   display: flex;
   align-items: center;
   gap: 12px;
-`;
-
-const DateDescription = styled.p`
-  margin: 0;
-  width: 100%;
-  color: ${State.error};
-  ${typographyCss(Typography.caption1.regular)}
 `;
 
 const DateRangeDivider = styled(IcLineHorizontal)`

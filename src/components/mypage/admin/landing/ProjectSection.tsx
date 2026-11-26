@@ -2,12 +2,13 @@ import { useMemo, useState } from 'react';
 import styled from 'styled-components';
 
 import Card from '@common/card/Card';
+import { FieldDescription } from '@common/fieldStatus/FieldStatus';
 import Checkbox from '@common/checkbox/Checkbox';
 import ContentBadge from '@common/badge/ContentBadge';
 import PaginationNavigation from '@common/pagination/PaginationNavigation';
 import ListboxSelect from '@common/select/ListboxSelect';
 import { PROJECT_CATEGORY_OPTIONS } from '@utils/constant';
-import { Label, State } from '@utils/constant/color';
+import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
 export interface FeaturedProject {
@@ -71,7 +72,9 @@ const ProjectSection = ({
       <TitleRow tabIndex={-1} aria-invalid={showErrors && isProjectSelectionInvalid(projects)}>
         <Title>프로젝트</Title>
         {showErrors && isProjectSelectionInvalid(projects) && (
-          <ErrorText>노출 프로젝트는 최소 {MIN_EXPOSED_PROJECT_COUNT}개 이상 선택해 주세요.</ErrorText>
+          <ErrorText $status="negative">
+            노출 프로젝트는 최소 {MIN_EXPOSED_PROJECT_COUNT}개 이상 선택해 주세요.
+          </ErrorText>
         )}
       </TitleRow>
       <FilterRow>
@@ -148,10 +151,8 @@ const Title = styled.p`
   ${typographyCss(Typography.heading2.bold)}
 `;
 
-const ErrorText = styled.p`
-  margin: 0;
-  color: ${State.error};
-  ${typographyCss(Typography.caption1.regular)}
+const ErrorText = styled(FieldDescription)`
+  width: auto;
 `;
 
 const FilterRow = styled.div`

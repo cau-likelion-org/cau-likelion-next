@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { useQuery } from '@tanstack/react-query';
 import Button from '@common/button/Button';
+import { FieldDescription } from '@common/fieldStatus/FieldStatus';
 import ModalOverlay from '@common/modalOverlay/ModalOverlay';
 import Radio from '@common/radio/Radio';
 import ScrollArea from '@common/scrollArea/ScrollArea';
@@ -22,7 +23,7 @@ import useTokenStore from 'src/store/useTokenStore';
 import { UploadDomain, uploadFile } from 'src/apis/upload';
 import { getGenerations } from 'src/apis/account';
 import { NUMERIC_ONLY_REGEX } from '@utils/constant';
-import { BackgroundColor, Label, Line, State } from '@utils/constant/color';
+import { BackgroundColor, Label, Line } from '@utils/constant/color';
 import { isUnfilled } from '@utils/index';
 import { resizeImageFile } from '@utils/resizeImage';
 import useImageSlots from 'src/hooks/useImageSlots';
@@ -382,9 +383,11 @@ const PostUploadModal = ({
                   }
                   invalid={showErrors && isDateInvalid}
                 />
-                {showErrors && isDateMissing && <DateDescription>날짜를 선택해 주세요.</DateDescription>}
+                {showErrors && isDateMissing && (
+                  <FieldDescription $status="negative">날짜를 선택해 주세요.</FieldDescription>
+                )}
                 {showErrors && isDateOrderInvalid && (
-                  <DateDescription>종료일은 시작일 이후로 선택해 주세요.</DateDescription>
+                  <FieldDescription $status="negative">종료일은 시작일 이후로 선택해 주세요.</FieldDescription>
                 )}
               </RowField>
             </Row>
@@ -599,13 +602,6 @@ const RadioRow = styled.div`
 const RadioItem = styled.div`
   flex: 1 0 0;
   min-width: 0;
-`;
-
-const DateDescription = styled.p`
-  margin: 0;
-  width: 100%;
-  color: ${State.error};
-  ${typographyCss(Typography.caption1.regular)}
 `;
 
 const DateRangeRow = styled.div`

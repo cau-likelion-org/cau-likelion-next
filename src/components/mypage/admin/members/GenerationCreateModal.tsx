@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 import { GenerationCreateRequestDto } from '@@types/request';
 import TextField from '@common/textField/TextField';
+import { FieldDescription } from '@common/fieldStatus/FieldStatus';
 import Button from '@common/button/Button';
 import ModalOverlay from '@common/modalOverlay/ModalOverlay';
 import ScrollArea from '@common/scrollArea/ScrollArea';
@@ -74,7 +75,9 @@ const GenerationCreateModal = ({ onClose, onSubmit, isSubmitting = false }: Gene
                 <Required>*</Required>
               </Heading>
               <TechStackInput value={partNames} onChange={setPartNames} placeholder="파트를 모두 입력해 주세요." />
-              {showErrors && partNames.length === 0 && <Description>파트명을 입력해 주세요.</Description>}
+              {showErrors && partNames.length === 0 && (
+                <FieldDescription $status="negative">파트명을 입력해 주세요.</FieldDescription>
+              )}
             </FieldColumn>
           </Information>
         </InformationScroll>
@@ -162,13 +165,6 @@ const HeadingLabel = styled.span`
 const Required = styled.span`
   color: ${Status.negative};
   ${typographyCss(Typography.label1Normal.medium)}
-`;
-
-const Description = styled.p`
-  margin: 0;
-  width: 100%;
-  color: ${Status.negative};
-  ${typographyCss(Typography.caption1.regular)}
 `;
 
 const Actions = styled.div`

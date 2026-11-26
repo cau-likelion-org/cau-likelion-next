@@ -2,6 +2,7 @@ import { useRef } from 'react';
 import styled from 'styled-components';
 
 import Textarea from '@common/textarea/Textarea';
+import { FieldDescription } from '@common/fieldStatus/FieldStatus';
 import ListboxSelect from '@common/select/ListboxSelect';
 import TextField from '@common/textField/TextField';
 import AddCardButton from '@mypage/component/AddCardButton';
@@ -191,7 +192,9 @@ const ActivityCard = ({
               event.target.value = '';
             }}
           />
-          {showErrors && isUnfilled(item.imageName) && <ImageErrorText>이미지를 첨부해 주세요.</ImageErrorText>}
+          {showErrors && isUnfilled(item.imageName) && (
+            <FieldDescription $status="negative">이미지를 첨부해 주세요.</FieldDescription>
+          )}
         </FieldWrapper>
       </Row>
       <TextField
@@ -355,11 +358,4 @@ const ClearButton = styled.button`
 
 const HiddenInput = styled.input`
   display: none;
-`;
-
-const ImageErrorText = styled.p`
-  margin: 0;
-  width: 100%;
-  color: ${State.error};
-  ${typographyCss(Typography.caption1.regular)}
 `;

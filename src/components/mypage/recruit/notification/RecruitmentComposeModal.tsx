@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import TextField from '@common/textField/TextField';
+import { FieldDescription } from '@common/fieldStatus/FieldStatus';
 import Textarea from '@common/textarea/Textarea';
 import Button from '@common/button/Button';
 import DateTimeInput from '@common/dateTimeInput/DateTimeInput';
@@ -142,7 +143,9 @@ const RecruitmentComposeModal = ({
             }))}
           />
         </RecipientBox>
-        {showErrors && recipients.length === 0 && <FieldDescription>발송 대상을 선택해 주세요.</FieldDescription>}
+        {showErrors && recipients.length === 0 && (
+          <FieldDescription $status="negative">발송 대상을 선택해 주세요.</FieldDescription>
+        )}
       </Field>
 
       <Field>
@@ -225,13 +228,6 @@ const RecipientBox = styled.div<{ $status: 'normal' | 'negative' }>`
     props.$status === 'negative'
       ? 'inset 0 0 0 1px rgba(255, 0, 0, 0.28), 0 1px 2px -1px rgba(23, 23, 23, 0.1)'
       : `inset 0 0 0 1px ${Line.normal}, 0 1px 2px -1px rgba(23, 23, 23, 0.1)`};
-`;
-
-const FieldDescription = styled.p`
-  margin: 0;
-  width: 100%;
-  color: ${State.error};
-  ${typographyCss(Typography.caption1.regular)}
 `;
 
 const DateRow = styled.div`
