@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import Button from '@common/button/Button';
+import LoadingArea from '@common/loading/LoadingArea';
 import ListboxSelect from '@common/select/ListboxSelect';
 import Card from '@common/card/Card';
 import ContentBadge from '@common/badge/ContentBadge';
@@ -435,9 +436,9 @@ const GalleryListSection = () => {
         </ToastWrapper>
         {activeTab === 'session' &&
           (isSessionsLoading ? (
-            <LoadingWrapper>
+            <LoadingArea minHeight={300}>
               <CircularLoading size={32} />
-            </LoadingWrapper>
+            </LoadingArea>
           ) : isSessionsError ? (
             <EmptyState variant="error" />
           ) : sessionCards.length === 0 ? (
@@ -468,9 +469,9 @@ const GalleryListSection = () => {
           ))}
         {activeTab === 'project' &&
           (isProjectsLoading ? (
-            <LoadingWrapper>
+            <LoadingArea minHeight={300}>
               <CircularLoading size={32} />
-            </LoadingWrapper>
+            </LoadingArea>
           ) : isProjectsError ? (
             <EmptyState variant="error" />
           ) : projectCards.length === 0 ? (
@@ -502,9 +503,9 @@ const GalleryListSection = () => {
           ))}
         {activeTab === 'gallery' &&
           (isHistoriesLoading ? (
-            <LoadingWrapper>
+            <LoadingArea minHeight={300}>
               <CircularLoading size={32} />
-            </LoadingWrapper>
+            </LoadingArea>
           ) : isHistoriesError ? (
             <EmptyState variant="error" />
           ) : historyCards.length === 0 ? (
@@ -597,14 +598,6 @@ const AddButtonWrapper = styled.div`
   @media (max-width: 600px) {
     display: none;
   }
-`;
-
-const LoadingWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 300px;
 `;
 
 const CardGrid = styled.div`

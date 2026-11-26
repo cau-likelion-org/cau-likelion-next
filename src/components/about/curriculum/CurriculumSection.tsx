@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import styled from 'styled-components';
 
 import Tab from '@common/tab/Tab';
+import LoadingArea from '@common/loading/LoadingArea';
 import LinearLoading from '@common/loading/LinearLoading';
 import EmptyState from '@common/emptyState/EmptyState';
 import { getTracks } from 'src/apis/track';
@@ -47,9 +48,9 @@ const CurriculumSection = () => {
     <Wrapper id="curriculum">
       <SectionTitle>14기 커리큘럼</SectionTitle>
       {isLoading ? (
-        <LoadingWrapper>
+        <LoadingArea minHeight={300}>
           <LinearLoading />
-        </LoadingWrapper>
+        </LoadingArea>
       ) : isError ? (
         <EmptyState variant="error" />
       ) : (
@@ -113,12 +114,4 @@ const Content = styled.div`
     flex-direction: column;
     align-items: stretch;
   }
-`;
-
-const LoadingWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 300px;
 `;

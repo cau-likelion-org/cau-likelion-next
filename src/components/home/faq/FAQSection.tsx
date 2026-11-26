@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { useQuery } from '@tanstack/react-query';
 import { getFaqs } from 'src/apis/faq';
 import LinearLoading from '@common/loading/LinearLoading';
+import LoadingArea from '@common/loading/LoadingArea';
 import EmptyState from '@common/emptyState/EmptyState';
 import FAQAccordion from '@common/faqAccordion/FAQAccordion';
 import { Black } from '@utils/constant/color';
@@ -15,9 +16,9 @@ const FAQSection = () => {
     <Wrapper>
       <Title>FAQ</Title>
       {isLoading ? (
-        <LoadingWrapper>
+        <LoadingArea minHeight={300}>
           <LinearLoading />
-        </LoadingWrapper>
+        </LoadingArea>
       ) : isError ? (
         <EmptyState variant="error" />
       ) : (
@@ -52,12 +53,4 @@ const Title = styled.p`
   @media (max-width: ${MOBILE}px) {
     ${typographyCss(Typography.title1.bold)}
   }
-`;
-
-const LoadingWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 300px;
 `;

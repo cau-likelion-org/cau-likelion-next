@@ -1,5 +1,6 @@
 import { ArchivingArrayType, IProjectData } from '@@types/request';
 import Button from '@common/button/Button';
+import LoadingArea from '@common/loading/LoadingArea';
 import CircularLoading from '@common/loading/CircularLoading';
 import EmptyState from '@common/emptyState/EmptyState';
 import Toast from '@common/toast/Toast';
@@ -178,9 +179,9 @@ const ProjectsSection = ({ staticData }: { staticData: ArchivingArrayType<IProje
           )}
         </FilterRow>
         {isLoading ? (
-          <LoadingWrapper>
+          <LoadingArea minHeight={468}>
             <CircularLoading size={32} />
-          </LoadingWrapper>
+          </LoadingArea>
         ) : isError && !hasLoadedProjects ? (
           <EmptyState variant="error" />
         ) : sortedProjects.length === 0 ? (
@@ -236,14 +237,6 @@ const AddButtonWrapper = styled.div`
   @media (max-width: 600px) {
     display: none;
   }
-`;
-
-const LoadingWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 468px;
 `;
 
 const CardGrid = styled.div`

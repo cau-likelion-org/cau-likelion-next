@@ -2,6 +2,7 @@ import { ReactNode, Ref } from 'react';
 import styled from 'styled-components';
 
 import Button from '@common/button/Button';
+import LoadingArea from '@common/loading/LoadingArea';
 import EmptyState from '@common/emptyState/EmptyState';
 import PageLoadingGate from '@common/pageGate/PageLoadingGate';
 import EditButton from '@mypage/admin/component/EditButton';
@@ -64,7 +65,7 @@ const SitePageEditor = ({
       {isDataError ? (
         <EmptyState variant="error" />
       ) : !isDataLoaded ? (
-        <LoadingWrapper>{loadingIndicator}</LoadingWrapper>
+        <LoadingArea minHeight={300}>{loadingIndicator}</LoadingArea>
       ) : (
         <ContentWrapper ref={contentRef}>{children}</ContentWrapper>
       )}
@@ -91,14 +92,6 @@ const ButtonRow = styled.div`
   display: flex;
   align-items: center;
   gap: 12px;
-`;
-
-const LoadingWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 300px;
 `;
 
 const ContentWrapper = styled.div`

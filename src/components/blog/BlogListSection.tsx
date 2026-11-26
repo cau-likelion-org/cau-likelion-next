@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { useQuery } from '@tanstack/react-query';
 import PageHeader from '@common/pageHeader/PageHeader';
+import LoadingArea from '@common/loading/LoadingArea';
 import ListboxSelect from '@common/select/ListboxSelect';
 import CircularLoading from '@common/loading/CircularLoading';
 import EmptyState from '@common/emptyState/EmptyState';
@@ -123,9 +124,9 @@ const BlogListSection = () => {
         </Header>
 
         {isLoading ? (
-          <LoadingWrapper>
+          <LoadingArea minHeight={468}>
             <CircularLoading size={32} />
-          </LoadingWrapper>
+          </LoadingArea>
         ) : isError && posts.length === 0 ? (
           <EmptyState variant="error" />
         ) : posts.length === 0 ? (
@@ -232,12 +233,4 @@ const PaginationRow = styled.div`
   display: flex;
   justify-content: center;
   width: 100%;
-`;
-
-const LoadingWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 468px;
 `;

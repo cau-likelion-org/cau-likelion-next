@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import styled from 'styled-components';
 
 import LinearLoading from '@common/loading/LinearLoading';
+import LoadingArea from '@common/loading/LoadingArea';
 import ListboxSelect from '@common/select/ListboxSelect';
 import EmptyState from '@common/emptyState/EmptyState';
 import { UserProfile } from '@@types/request';
@@ -68,9 +69,9 @@ const MemberScoreSection = ({ userProfile }: { userProfile: UserProfile }) => {
       <SectionTitle>아기사자 출결/과제 현황</SectionTitle>
 
       {isLoading ? (
-        <LoadingWrapper>
+        <LoadingArea minHeight={300}>
           <LinearLoading />
-        </LoadingWrapper>
+        </LoadingArea>
       ) : isError ? (
         <EmptyState variant="error" />
       ) : (
@@ -156,14 +157,6 @@ const SectionTitle = styled.p`
   width: 100%;
   color: ${Label.normal};
   ${typographyCss(Typography.heading2.bold)}
-`;
-
-const LoadingWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 300px;
 `;
 
 const FilterRow = styled.div`

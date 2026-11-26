@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 import { getTalents } from 'src/apis/talent';
 import LinearLoading from '@common/loading/LinearLoading';
+import LoadingArea from '@common/loading/LoadingArea';
 import EmptyState from '@common/emptyState/EmptyState';
 import { Black } from '@utils/constant/color';
 import { media } from '@utils/constant/breakpoint';
@@ -29,9 +30,9 @@ const TalentSection = () => {
       <Content>
         <SectionTitle>중앙대학교 멋쟁이사자처럼 인재상</SectionTitle>
         {isLoading ? (
-          <LoadingWrapper>
+          <LoadingArea minHeight={200}>
             <LinearLoading />
-          </LoadingWrapper>
+          </LoadingArea>
         ) : isError ? (
           <EmptyState variant="error" />
         ) : (
@@ -120,12 +121,4 @@ const PartCard = styled.div`
   padding: 12px;
   border-radius: 12px;
   background-color: ${Black.b900};
-`;
-
-const LoadingWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 200px;
 `;

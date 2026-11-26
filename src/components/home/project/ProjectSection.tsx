@@ -6,6 +6,7 @@ import { Autoplay } from 'swiper/modules';
 import 'swiper/css';
 
 import Button from '@common/button/Button';
+import LoadingArea from '@common/loading/LoadingArea';
 import LinearLoading from '@common/loading/LinearLoading';
 import EmptyState from '@common/emptyState/EmptyState';
 import { getProjectList } from 'src/apis/project';
@@ -36,9 +37,9 @@ const ProjectSection = () => {
     <Wrapper>
       <Title>프로젝트</Title>
       {isLoading ? (
-        <LoadingWrapper>
+        <LoadingArea minHeight={300}>
           <LinearLoading />
-        </LoadingWrapper>
+        </LoadingArea>
       ) : isError ? (
         <EmptyState variant="error" />
       ) : exposedProjects.length === 0 ? null : (
@@ -115,12 +116,4 @@ const CardSwiper = styled(Swiper)`
       width: 335px;
     }
   }
-`;
-
-const LoadingWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 300px;
 `;

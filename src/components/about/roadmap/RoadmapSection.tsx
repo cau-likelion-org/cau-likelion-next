@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 import { getRoadmap } from 'src/apis/roadmap';
 import LinearLoading from '@common/loading/LinearLoading';
+import LoadingArea from '@common/loading/LoadingArea';
 import EmptyState from '@common/emptyState/EmptyState';
 import { BackgroundWhite, Black, Label } from '@utils/constant/color';
 import { media } from '@utils/constant/breakpoint';
@@ -18,9 +19,9 @@ const RoadmapSection = () => {
       <Content>
         <SectionTitle>활동 로드맵</SectionTitle>
         {isLoading ? (
-          <LoadingWrapper>
+          <LoadingArea minHeight={200}>
             <LinearLoading />
-          </LoadingWrapper>
+          </LoadingArea>
         ) : isError ? (
           <EmptyState variant="error" />
         ) : (
@@ -86,12 +87,4 @@ const Caption = styled.p`
   width: 100%;
   color: ${Label.alternative};
   ${typographyCss(Typography.caption1.regular)}
-`;
-
-const LoadingWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 200px;
 `;

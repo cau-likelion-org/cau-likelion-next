@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import styled from 'styled-components';
 
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
+import LoadingArea from '@common/loading/LoadingArea';
 import Toast from '@common/toast/Toast';
 import { ToastWrapper } from '@common/toast/toastLayout';
 import CircularLoading from '@common/loading/CircularLoading';
@@ -190,9 +191,9 @@ const MyPageAssignment = () => {
             )}
           </Header>
           {isWeekGroupsLoading || isPartResolving ? (
-            <LoadingWrapper>
+            <LoadingArea minHeight={300}>
               <CircularLoading size={32} />
-            </LoadingWrapper>
+            </LoadingArea>
           ) : isWeekGroupsError ? (
             <EmptyState variant="error" />
           ) : weeks.length === 0 ? (
@@ -218,9 +219,9 @@ const MyPageAssignment = () => {
             {userProfile.partName && <TrackName>{userProfile.partName} 파트</TrackName>}
           </TitleRow>
           {isMyWeekGroupsLoading ? (
-            <LoadingWrapper>
+            <LoadingArea minHeight={300}>
               <CircularLoading size={32} />
-            </LoadingWrapper>
+            </LoadingArea>
           ) : isMyWeekGroupsError ? (
             <EmptyState variant="error" />
           ) : myGroups.length === 0 ? (
@@ -319,12 +320,4 @@ const List = styled.div`
   align-items: flex-start;
   gap: 18px;
   width: 100%;
-`;
-
-const LoadingWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 300px;
 `;

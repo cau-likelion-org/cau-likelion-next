@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import styled from 'styled-components';
 
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
+import LoadingArea from '@common/loading/LoadingArea';
 import MyPageShell from '@mypage/component/MyPageShell';
 import Toast from '@common/toast/Toast';
 import { ToastWrapper } from '@common/toast/toastLayout';
@@ -162,9 +163,9 @@ const MyPageAttendance = () => {
             <TrackName>{userProfile.partName} 파트</TrackName>
           </TitleRow>
           {isMyAttendancesLoading ? (
-            <LoadingWrapper>
+            <LoadingArea minHeight={300}>
               <CircularLoading size={32} />
-            </LoadingWrapper>
+            </LoadingArea>
           ) : isMyAttendancesError ? (
             <EmptyState variant="error" />
           ) : myRecords.length === 0 ? (
@@ -223,12 +224,4 @@ const List = styled.div`
   align-items: flex-start;
   gap: 18px;
   width: 100%;
-`;
-
-const LoadingWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 300px;
 `;
