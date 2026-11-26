@@ -8,6 +8,7 @@ import { Typography, typographyCss } from '@utils/constant/typography';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import CircularLoading from '@common/loading/CircularLoading';
+import LoadingArea from '@common/loading/LoadingArea';
 import EmptyState from '@common/emptyState/EmptyState';
 import { PROJECT_CATEGORY_LABEL, ProjectResponseDto, getProjectDetail, getSortedProjectImages } from 'src/apis/project';
 import useScrollLock from 'src/hooks/useScrollLock';
@@ -55,13 +56,11 @@ const ProjectDetailModal = ({ projectId, staticData, onClose }: ProjectDetailMod
             <BackHeader label="프로젝트 목록으로 돌아가기" onClick={onClose} />
           </MobileHeader>
           {isError ? (
-            <LoadingWrapper>
-              <EmptyState variant="error" />
-            </LoadingWrapper>
+            <EmptyState variant="error" />
           ) : !project ? (
-            <LoadingWrapper>
+            <LoadingArea minHeight={468}>
               <CircularLoading size={32} />
-            </LoadingWrapper>
+            </LoadingArea>
           ) : (
             <Contents>
               <ProjectDetailCarousel images={getSortedProjectImages(project.images)} />
@@ -152,12 +151,6 @@ const MobileHeader = styled.div`
     display: block;
     padding: 0 20px;
   }
-`;
-
-const LoadingWrapper = styled.div`
-  padding: 80px 28px;
-  text-align: center;
-  color: ${Label.alternative};
 `;
 
 const Contents = styled.div`
