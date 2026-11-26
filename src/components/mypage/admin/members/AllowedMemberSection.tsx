@@ -4,12 +4,13 @@ import styled, { css } from 'styled-components';
 
 import { AllowedUserEmailItem } from '@@types/request';
 import ListCell from '@common/listCell/ListCell';
+import { FieldDescription } from '@common/fieldStatus/FieldStatus';
 import CircularLoading from '@common/loading/CircularLoading';
 import Button from '@common/button/Button';
 import EditButton from '@mypage/admin/component/EditButton';
 import { IcCaretDown, IcCaretUp, IcPlus } from '@assets/svg';
 import { getServerMessage, isEmailFormatInvalid, isUnfilled } from '@utils/index';
-import { BackgroundColor, Black, Label, Line, Orange, State } from '@utils/constant/color';
+import { BackgroundColor, Black, Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { createId } from '../utils';
 
@@ -141,7 +142,7 @@ const AllowedMemberSection = ({
             )}
           </PanelHeaderRow>
 
-          {isEditing && saveError && <ErrorText>{saveError}</ErrorText>}
+          {isEditing && saveError && <FieldDescription $status="negative">{saveError}</FieldDescription>}
 
           {isLoading ? (
             <StateWrapper>
@@ -175,7 +176,7 @@ const AllowedMemberSection = ({
                         $invalid={isFormatInvalid || isDuplicate}
                         onChange={(event) => updateItem(item.key, { email: event.target.value })}
                       />
-                      {emailErrorText && <ErrorText>{emailErrorText}</ErrorText>}
+                      {emailErrorText && <FieldDescription $status="negative">{emailErrorText}</FieldDescription>}
                     </EmailFieldColumn>
                     <Button variant="outlined" color="assistive" size="small" onClick={() => removeItem(item.key)}>
                       삭제
@@ -346,12 +347,6 @@ const EmailField = styled(NameField)`
   width: auto;
   min-width: 0;
   ${typographyCss(Typography.headline2.medium)}
-`;
-
-const ErrorText = styled.p`
-  margin: 0;
-  color: ${State.error};
-  ${typographyCss(Typography.caption1.regular)}
 `;
 
 const StateWrapper = styled.div`

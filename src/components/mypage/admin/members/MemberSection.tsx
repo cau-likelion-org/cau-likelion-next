@@ -3,6 +3,7 @@ import styled, { css } from 'styled-components';
 
 import { Generation, MemberResponse, MemberRole, MemberUpdateRequest } from '@@types/request';
 import TextField from '@common/textField/TextField';
+import { FieldDescription } from '@common/fieldStatus/FieldStatus';
 import CircularLoading from '@common/loading/CircularLoading';
 import EmptyState from '@common/emptyState/EmptyState';
 import Button from '@common/button/Button';
@@ -13,7 +14,7 @@ import Alert from '@common/alert/Alert';
 import { IcSearch } from '@assets/svg';
 import { NUMERIC_ONLY_REGEX, ROLE_LABEL } from '@utils/constant';
 import { excludeCommonPart, isEmailFormatInvalid } from '@utils/index';
-import { Black, Label, Line, State } from '@utils/constant/color';
+import { Black, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { media } from '@utils/constant/breakpoint';
 
@@ -274,7 +275,7 @@ const MemberSection = ({
           ))}
       </Header>
 
-      {isEditing && saveError && <ErrorText>{saveError}</ErrorText>}
+      {isEditing && saveError && <FieldDescription $status="negative">{saveError}</FieldDescription>}
 
       <FilterRow>
         <SearchField
@@ -384,7 +385,7 @@ const MemberSection = ({
                       aria-label={`${member.name} 이메일 수정`}
                       onChange={(event) => changeEmail(member, event.target.value)}
                     />
-                    {emailErrorText && <ErrorText>{emailErrorText}</ErrorText>}
+                    {emailErrorText && <FieldDescription $status="negative">{emailErrorText}</FieldDescription>}
                   </EmailFieldColumn>
                 ) : (
                   <Cell>{member.email}</Cell>
@@ -560,12 +561,6 @@ const EmailFieldColumn = styled.div`
   flex-direction: column;
   min-width: 0;
   gap: 4px;
-`;
-
-const ErrorText = styled.p`
-  margin: 0;
-  color: ${State.error};
-  ${typographyCss(Typography.caption1.regular)}
 `;
 
 const StateWrapper = styled.div`
