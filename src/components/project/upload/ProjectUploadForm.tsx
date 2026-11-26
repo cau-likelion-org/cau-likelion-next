@@ -9,6 +9,7 @@ import BackHeader from '@common/header/BackHeader';
 import Button from '@common/button/Button';
 import CharCount from '@common/charCount/CharCount';
 import DateTimeInput from '@common/dateTimeInput/DateTimeInput';
+import ImageSlotUploader from '@common/imageSlotUploader/ImageSlotUploader';
 import TextField from '@common/textField/TextField';
 import Textarea from '@common/textarea/Textarea';
 import Toast from '@common/toast/Toast';
@@ -36,12 +37,12 @@ import {
 } from 'src/apis/project';
 import useImageSlots from 'src/hooks/useImageSlots';
 import useTokenStore from 'src/store/useTokenStore';
-import { IcCircleClose, IcLineHorizontal } from '@assets/svg';
+import { IcLineHorizontal } from '@assets/svg';
 import useInput from 'src/hooks/useInput';
 import useLeaveGuard from 'src/hooks/useLeaveGuard';
 import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import { NUMERIC_ONLY_REGEX, PROJECT_CATEGORY_OPTIONS } from '@utils/constant';
-import { AccentTint, BackgroundColor, Black, Fill, Label, Line, Orange, State } from '@utils/constant/color';
+import { Black, Label, State } from '@utils/constant/color';
 import { isUnfilled } from '@utils/index';
 import { resizeImageFile } from '@utils/resizeImage';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -81,20 +82,6 @@ const PART_LABELS = {
   backend: '백엔드',
 } as const;
 const KNOWN_PART_LABELS: string[] = Object.values(PART_LABELS);
-
-const ImagePlaceholderIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" strokeWidth="1.5" />
-    <circle cx="8.5" cy="9.5" r="1.5" stroke="currentColor" strokeWidth="1.5" />
-    <path
-      d="M3 16L8 11L12 15L16 11L21 16"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-);
 
 interface ProjectUploadFormProps {
   mode?: 'create' | 'edit';
@@ -146,8 +133,8 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
   const membersByPart = (part: string) =>
     initialData?.members.filter((member) => member.part === part).map((member) => member.name) ?? [];
 
-  const { images, imageFiles, featuredIndex, isDragging, isDropTarget, addFiles, removeImage, thumbnailProps } =
-    useImageSlots({ maxCount: MAX_IMAGE_COUNT, initialImages, initialFeaturedIndex });
+  const imageSlots = useImageSlots({ maxCount: MAX_IMAGE_COUNT, initialImages, initialFeaturedIndex });
+  const { images, imageFiles, featuredIndex } = imageSlots;
   const [isUploadingImages, setIsUploadingImages] = useState(false);
 
   const [title, setTitle] = useState(initialData?.title ?? '');
@@ -371,69 +358,7 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
       <BackHeader label="프로젝트 목록으로 돌아가기" onClick={handleCancel} />
       <PageTitle>{isEditMode ? '프로젝트 수정하기' : '프로젝트 추가하기'}</PageTitle>
       <FormContent>
-        <ImageUploadGroup>
-          <MainThumbnail as={images[featuredIndex] ? 'div' : 'label'} $hasImage={!!images[featuredIndex]}>
-            {images[featuredIndex] ? (
-              <MainThumbnailImage src={images[featuredIndex]} alt="대표 이미지" />
-            ) : (
-              <>
-                <UploadGuide>
-                  사진을 {MAX_IMAGE_COUNT}장까지 업로드하고
-                  <br />
-                  표지가 되는 대표사진을 선택해주세요
-                </UploadGuide>
-                <HiddenFileInput
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  aria-label="대표 이미지 선택"
-                  onChange={(event) => addFiles(featuredIndex, event)}
-                />
-              </>
-            )}
-            <FeaturedChip>대표</FeaturedChip>
-          </MainThumbnail>
-          <ThumbnailRow>
-            {images.map((image, index) =>
-              image ? (
-                <ThumbnailSlot
-                  key={index}
-                  as="div"
-                  role="button"
-                  tabIndex={0}
-                  $active={index === featuredIndex}
-                  $dragging={isDragging(index)}
-                  $dropTarget={isDropTarget(index)}
-                  aria-label={`${index + 1}번째 이미지를 대표사진으로 설정`}
-                  {...thumbnailProps(index)}
-                >
-                  <ThumbnailImage src={image} alt="" draggable={false} />
-                  <RemoveThumbnailButton
-                    type="button"
-                    aria-label={`${index + 1}번째 이미지 삭제`}
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      removeImage(index);
-                    }}
-                  >
-                    <IcCircleClose width={24} height={24} />
-                  </RemoveThumbnailButton>
-                </ThumbnailSlot>
-              ) : (
-                <ThumbnailSlot key={index}>
-                  <ImagePlaceholderIcon />
-                  <HiddenFileInput
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    aria-label={`이미지 ${index + 1} 선택`}
-                    onChange={(event) => addFiles(index, event)}
-                  />
-                </ThumbnailSlot>
-              ),
-            )}
-          </ThumbnailRow>
-        </ImageUploadGroup>
+        <ImageSlotUploader slots={imageSlots} maxCount={MAX_IMAGE_COUNT} />
 
         <FieldGroup>
           <FieldHeading>
@@ -706,118 +631,6 @@ const FormContent = styled.div`
   align-items: flex-start;
   gap: 46px;
   width: 100%;
-`;
-
-const ImageUploadGroup = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 46px;
-`;
-
-const MainThumbnail = styled.label<{ $hasImage: boolean }>`
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  border-radius: 22px;
-  background-color: ${(props) => (props.$hasImage ? '#f5f7f9' : '#f4f4f5')};
-  cursor: pointer;
-`;
-
-const MainThumbnailImage = styled.img`
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-`;
-
-const UploadGuide = styled.p`
-  ${typographyCss(Typography.body2Normal.regular)}
-  color: ${Orange.o500};
-  text-align: center;
-  margin: 0;
-`;
-
-const FeaturedChip = styled.span`
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  padding: 9px 12px;
-  border-radius: 10px;
-  background-color: ${Orange.o50};
-  box-shadow:
-    inset 0 0 0 9999px rgba(255, 96, 0, 0.05),
-    inset 0 0 0 1px ${AccentTint.border};
-  color: ${Orange.o500};
-  ${typographyCss(Typography.body2Normal.medium)}
-`;
-
-const ThumbnailRow = styled.div`
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-`;
-
-const ThumbnailSlot = styled.label<{ $active?: boolean; $dragging?: boolean; $dropTarget?: boolean }>`
-  position: relative;
-  flex-shrink: 0;
-  width: 160px;
-  height: 90px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: ${(props) => (props.$active ? `2px solid ${Orange.o500}` : 'none')};
-  border-radius: 8px;
-  background-color: ${Fill.subtle};
-  color: ${Line.normal};
-  cursor: pointer;
-  padding: 0;
-  opacity: ${(props) => (props.$dragging ? 0.4 : 1)};
-  outline: ${(props) => (props.$dropTarget ? `2px dashed ${Orange.o500}` : 'none')};
-  outline-offset: 2px;
-`;
-
-const RemoveThumbnailButton = styled.button`
-  position: absolute;
-  top: -10px;
-  right: -10px;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  padding: 0;
-  border: none;
-  border-radius: 50%;
-  background-color: ${BackgroundColor};
-  color: ${Orange.o500};
-  cursor: pointer;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.15s ease;
-
-  ${ThumbnailSlot}:hover &,
-  ${ThumbnailSlot}:focus-within & {
-    opacity: 1;
-    pointer-events: auto;
-  }
-`;
-
-const ThumbnailImage = styled.img`
-  width: 100%;
-  height: 100%;
-  border-radius: 6px;
-  object-fit: cover;
-`;
-
-const HiddenFileInput = styled.input`
-  display: none;
 `;
 
 const FieldGroup = styled.div`
