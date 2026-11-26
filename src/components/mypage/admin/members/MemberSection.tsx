@@ -7,7 +7,7 @@ import CircularLoading from '@common/loading/CircularLoading';
 import EmptyState from '@common/emptyState/EmptyState';
 import Button from '@common/button/Button';
 import TextSelect from '@common/select/TextSelect';
-import ProjectFilterSelect from '@project/projects/ProjectFilterSelect';
+import ListboxSelect from '@common/select/ListboxSelect';
 import EditButton from '@mypage/admin/component/EditButton';
 import Alert from '@common/alert/Alert';
 import { IcSearch } from '@assets/svg';
@@ -284,19 +284,19 @@ const MemberSection = ({
           value={nameQuery}
           onChange={(event) => onNameQueryChange(event.target.value)}
         />
-        <ProjectFilterSelect
+        <ListboxSelect
           heading="기수 구분"
           options={[ALL_FILTER, ...generationFilter.options]}
           value={generationFilter.value}
           onChange={generationFilter.onChange}
         />
-        <ProjectFilterSelect
+        <ListboxSelect
           heading="파트 구분"
           options={[ALL_FILTER, ...partFilter.options]}
           value={partFilter.value}
           onChange={partFilter.onChange}
         />
-        <ProjectFilterSelect
+        <ListboxSelect
           heading="권한 구분"
           options={[ALL_FILTER, ...roleFilter.options]}
           value={roleFilter.value}

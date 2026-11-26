@@ -4,19 +4,17 @@ import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import Button from '@common/button/Button';
+import ListboxSelect from '@common/select/ListboxSelect';
 import Card from '@common/card/Card';
 import ContentBadge from '@common/badge/ContentBadge';
 import CircularLoading from '@common/loading/CircularLoading';
 import EmptyState from '@common/emptyState/EmptyState';
-import Select from '@common/select/Select';
-import ListboxOptions from '@common/select/ListboxOptions';
 import Tab from '@common/tab/Tab';
 import Toast from '@common/toast/Toast';
 import { ToastWrapper } from '@common/toast/toastLayout';
 import PageScrollbar from '@common/pageScrollbar/PageScrollbar';
 import { IcAdd } from '@assets/svg';
 import PageHeader from '@common/pageHeader/PageHeader';
-import useListboxSelect from 'src/hooks/useListboxSelect';
 import usePageEngagementTracking from 'src/hooks/usePageEngagementTracking';
 import { getGenerations } from 'src/apis/account';
 import { COMMON_PART_NAME } from '@utils/constant';
@@ -43,7 +41,6 @@ const SessionEditModal = dynamic(() => import('./component/session/SessionEditMo
 const SessionUploadModal = dynamic(() => import('./component/session/SessionUploadModal'), { ssr: false });
 
 type GalleryTabKey = 'session' | 'project' | 'gallery';
-type FilterKey = 'generation' | 'track' | 'category';
 
 const isGalleryTabKey = (value: unknown): value is GalleryTabKey =>
   value === 'session' || value === 'project' || value === 'gallery';
@@ -92,7 +89,6 @@ const GalleryListSection = () => {
   const [generation, setGeneration] = useState(ALL_OPTION);
   const [track, setTrack] = useState(ALL_OPTION);
   const [projectCategory, setProjectCategory] = useState(ALL_OPTION);
-  const [openFilter, setOpenFilter] = useState<FilterKey | null>(null);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -153,7 +149,6 @@ const GalleryListSection = () => {
     setActiveTab(key as GalleryTabKey);
     setSelectedId(null);
     setIsEditModalOpen(false);
-    setOpenFilter(null);
     setGeneration(ALL_OPTION);
     setTrack(ALL_OPTION);
     setProjectCategory(ALL_OPTION);
@@ -387,43 +382,31 @@ const GalleryListSection = () => {
           <GalleryTab items={TABS} activeKey={activeTab} onChange={handleTabChange} size="medium" />
           <FilterRow>
             <FilterGroup>
-              <FilterSelect
-                label="기수 구분"
+              <ListboxSelect
+                heading="기수 구분"
                 value={generation}
                 options={generationOptions}
-                isOpen={openFilter === 'generation'}
-                onToggle={() => setOpenFilter((prev) => (prev === 'generation' ? null : 'generation'))}
-                onClose={() => setOpenFilter(null)}
-                onSelect={(option) => {
+                onChange={(option) => {
                   setGeneration(option);
-                  setOpenFilter(null);
                 }}
               />
               {activeTab === 'session' && (
-                <FilterSelect
-                  label="파트 구분"
+                <ListboxSelect
+                  heading="파트 구분"
                   value={track}
                   options={partOptions}
-                  isOpen={openFilter === 'track'}
-                  onToggle={() => setOpenFilter((prev) => (prev === 'track' ? null : 'track'))}
-                  onClose={() => setOpenFilter(null)}
-                  onSelect={(option) => {
+                  onChange={(option) => {
                     setTrack(option);
-                    setOpenFilter(null);
                   }}
                 />
               )}
               {activeTab === 'project' && (
-                <FilterSelect
-                  label="프로젝트 구분"
+                <ListboxSelect
+                  heading="프로젝트 구분"
                   value={projectCategory}
                   options={PROJECT_CATEGORY_FILTER_OPTIONS}
-                  isOpen={openFilter === 'category'}
-                  onToggle={() => setOpenFilter((prev) => (prev === 'category' ? null : 'category'))}
-                  onClose={() => setOpenFilter(null)}
-                  onSelect={(option) => {
+                  onChange={(option) => {
                     setProjectCategory(option);
-                    setOpenFilter(null);
                   }}
                 />
               )}
@@ -557,57 +540,6 @@ const GalleryListSection = () => {
 
 export default GalleryListSection;
 
-const FilterSelect = ({
-  label,
-  value,
-  options,
-  isOpen,
-  onToggle,
-  onClose,
-  onSelect,
-}: {
-  label: string;
-  value: string;
-  options: string[];
-  isOpen: boolean;
-  onToggle: () => void;
-  onClose: () => void;
-  onSelect: (option: string) => void;
-}) => {
-  const { listId, wrapperRef, triggerRef, activeIndex, handleKeyDown, handleBlur, selectOption } = useListboxSelect({
-    isOpen,
-    options,
-    value,
-    onOpen: onToggle,
-    onClose,
-    onSelect,
-  });
-
-  return (
-    <SelectWrapper ref={wrapperRef} onKeyDownCapture={handleKeyDown} onBlur={handleBlur}>
-      <Select
-        ref={triggerRef}
-        heading={label}
-        value={value}
-        onClick={onToggle}
-        aria-expanded={isOpen}
-        aria-activedescendant={isOpen ? `${listId}-${activeIndex}` : undefined}
-        aria-controls={listId}
-      >
-        {isOpen && (
-          <ListboxOptions
-            listId={listId}
-            options={options}
-            value={value}
-            activeIndex={activeIndex}
-            onSelect={selectOption}
-          />
-        )}
-      </Select>
-    </SelectWrapper>
-  );
-};
-
 const Wrapper = styled.div`
   ${containerCss}
   display: flex;
@@ -658,20 +590,6 @@ const FilterGroup = styled.div`
 
   @media (max-width: 600px) {
     width: 100%;
-  }
-`;
-
-const SelectWrapper = styled.div`
-  position: relative;
-  width: 160px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-
-  @media (max-width: 600px) {
-    flex: 1 0 0;
-    min-width: 0;
-    width: auto;
   }
 `;
 

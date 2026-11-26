@@ -2,13 +2,10 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import Button from '@common/button/Button';
-import Select from '@common/select/Select';
-import ListboxOptions from '@common/select/ListboxOptions';
 import TextField from '@common/textField/TextField';
-import ProjectFilterSelect from '@project/projects/ProjectFilterSelect';
+import ListboxSelect from '@common/select/ListboxSelect';
 import RemoveCardButton from '@mypage/component/RemoveCardButton';
 import { IcAdd, IcCircleClose, IcLink, IcSearch } from '@assets/svg';
-import useListboxSelect from 'src/hooks/useListboxSelect';
 import useListItems from 'src/hooks/useListItems';
 import { BlogCategory } from 'src/apis/blog';
 import { NUMERIC_ONLY_REGEX } from '@utils/constant';
@@ -99,7 +96,7 @@ const BlogSection = ({
     <Section>
       {!disabled && (
         <FilterRow>
-          <ProjectFilterSelect
+          <ListboxSelect
             heading="기수 구분"
             options={generationOptions}
             value={generationFilter}
@@ -152,24 +149,6 @@ const BlogCard = ({
   onChange: (patch: Partial<BlogItem>) => void;
   onRemove: () => void;
 }) => {
-  const [isCategoryOpen, setIsCategoryOpen] = useState(false);
-  const {
-    listId: categoryListId,
-    wrapperRef: categoryRef,
-    triggerRef: categoryTriggerRef,
-    activeIndex: categoryActiveIndex,
-    handleKeyDown: handleCategoryKeyDown,
-    handleBlur: handleCategoryBlur,
-    selectOption: selectCategory,
-  } = useListboxSelect({
-    isOpen: isCategoryOpen,
-    options: BLOG_CATEGORY_OPTIONS,
-    value: item.category,
-    onOpen: () => setIsCategoryOpen(true),
-    onClose: () => setIsCategoryOpen(false),
-    onSelect: (category) => onChange({ category }),
-  });
-
   return (
     <Card data-blog-item-id={item.id}>
       <Row>
@@ -199,31 +178,16 @@ const BlogCard = ({
             description={showErrors && isUnfilled(item.writer) ? '작성자명을 입력해 주세요.' : undefined}
           />
         </FieldWrapper>
-        <SelectWrapper ref={categoryRef} onKeyDownCapture={handleCategoryKeyDown} onBlur={handleCategoryBlur}>
-          <Select
-            ref={categoryTriggerRef}
-            heading="내용 구분"
-            placeholder="선택"
-            value={item.category}
-            readOnly={disabled}
-            onClick={() => setIsCategoryOpen((prev) => !prev)}
-            aria-expanded={isCategoryOpen}
-            aria-activedescendant={isCategoryOpen ? `${categoryListId}-${categoryActiveIndex}` : undefined}
-            aria-controls={categoryListId}
-            status={showErrors && isUnfilled(item.category) ? 'negative' : 'normal'}
-            description={showErrors && isUnfilled(item.category) ? '내용 구분을 선택해 주세요.' : undefined}
-          >
-            {isCategoryOpen && (
-              <ListboxOptions
-                listId={categoryListId}
-                options={BLOG_CATEGORY_OPTIONS}
-                value={item.category}
-                activeIndex={categoryActiveIndex}
-                onSelect={selectCategory}
-              />
-            )}
-          </Select>
-        </SelectWrapper>
+        <CategorySelect
+          heading="내용 구분"
+          placeholder="선택"
+          value={item.category}
+          options={BLOG_CATEGORY_OPTIONS}
+          readOnly={disabled}
+          onChange={(category) => onChange({ category })}
+          status={showErrors && isUnfilled(item.category) ? 'negative' : 'normal'}
+          description={showErrors && isUnfilled(item.category) ? '내용 구분을 선택해 주세요.' : undefined}
+        />
       </Row>
       <TextField
         heading="링크 첨부"
@@ -292,9 +256,13 @@ const FieldWrapper = styled.div`
   flex: 0 0 160px;
 `;
 
-const SelectWrapper = styled.div`
-  position: relative;
+const CategorySelect = styled(ListboxSelect)`
   flex: 0 0 160px;
+
+  @media (max-width: 600px) {
+    flex: 0 0 160px;
+    width: 160px;
+  }
 `;
 
 const ButtonRow = styled.div`

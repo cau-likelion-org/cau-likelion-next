@@ -7,7 +7,7 @@ import EmptyState from '@common/emptyState/EmptyState';
 import PaginationNavigation from '@common/pagination/PaginationNavigation';
 import TextSelect from '@common/select/TextSelect';
 import TextField from '@common/textField/TextField';
-import ProjectFilterSelect from '@project/projects/ProjectFilterSelect';
+import ListboxSelect from '@common/select/ListboxSelect';
 import { PART_OPTIONS_MOCK } from '@recruit/apply/mock';
 import { IcSearch } from '@assets/svg';
 import { Label, Line } from '@utils/constant/color';
@@ -289,7 +289,7 @@ const Filters = styled.div`
   gap: 18px;
 `;
 
-const FilterSelect = styled(ProjectFilterSelect)`
+const FilterSelect = styled(ListboxSelect)`
   flex-shrink: 0;
   width: 160px;
 `;

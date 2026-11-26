@@ -3,14 +3,13 @@ import styled from 'styled-components';
 import { useQuery } from '@tanstack/react-query';
 import Button from '@common/button/Button';
 import Radio from '@common/radio/Radio';
-import Select from '@common/select/Select';
-import ListboxOptions from '@common/select/ListboxOptions';
 import ScrollArea from '@common/scrollArea/ScrollArea';
 import TextButton from '@common/textButton/TextButton';
 import TextField from '@common/textField/TextField';
 import Textarea from '@common/textarea/Textarea';
 import CharCount from '@common/charCount/CharCount';
 import DateTimeInput from '@common/dateTimeInput/DateTimeInput';
+import ListboxSelect from '@common/select/ListboxSelect';
 import ImageSlotUploader from '@common/imageSlotUploader/ImageSlotUploader';
 import Toast from '@common/toast/Toast';
 import { ToastWrapper } from '@common/toast/toastLayout';
@@ -18,7 +17,6 @@ import { IcLineHorizontal } from '@assets/svg';
 import useFocusTrap from 'src/hooks/useFocusTrap';
 import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import useInput from 'src/hooks/useInput';
-import useListboxSelect from 'src/hooks/useListboxSelect';
 import useTokenStore from 'src/store/useTokenStore';
 import { UploadDomain, uploadFile } from 'src/apis/upload';
 import { getGenerations } from 'src/apis/account';
@@ -306,8 +304,10 @@ const PostUploadModal = ({
                 />
               </NarrowField>
               {categoryConfig && (
-                <CategorySelect
-                  label={categoryConfig.label}
+                <ListboxSelect
+                  heading={categoryConfig.label}
+                  required
+                  placeholder="선택"
                   options={categoryOptions}
                   value={category}
                   onChange={setCategory}
@@ -439,63 +439,6 @@ const PostUploadModal = ({
 };
 
 export default PostUploadModal;
-
-const CategorySelect = ({
-  label,
-  options,
-  value,
-  onChange,
-  disabled = false,
-  status,
-  description,
-}: {
-  label: string;
-  options: string[];
-  value: string;
-  onChange: (value: string) => void;
-  disabled?: boolean;
-  status?: 'normal' | 'positive' | 'negative';
-  description?: string;
-}) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const { listId, wrapperRef, triggerRef, activeIndex, handleKeyDown, handleBlur, selectOption } = useListboxSelect({
-    isOpen,
-    options,
-    value,
-    onOpen: () => setIsOpen(true),
-    onClose: () => setIsOpen(false),
-    onSelect: onChange,
-  });
-
-  return (
-    <NarrowSelectWrapper ref={wrapperRef} onKeyDownCapture={handleKeyDown} onBlur={handleBlur}>
-      <Select
-        ref={triggerRef}
-        heading={label}
-        required
-        placeholder="선택"
-        value={value}
-        disabled={disabled}
-        onClick={() => setIsOpen((prev) => !prev)}
-        aria-expanded={isOpen}
-        aria-activedescendant={isOpen ? `${listId}-${activeIndex}` : undefined}
-        aria-controls={listId}
-        status={status}
-        description={description}
-      >
-        {isOpen && (
-          <ListboxOptions
-            listId={listId}
-            options={options}
-            value={value}
-            activeIndex={activeIndex}
-            onSelect={selectOption}
-          />
-        )}
-      </Select>
-    </NarrowSelectWrapper>
-  );
-};
 
 const DateField = ({
   mode,
@@ -650,12 +593,6 @@ const RowField = styled.div<{ $gap?: number }>`
 `;
 
 const NarrowField = styled.div`
-  flex-shrink: 0;
-  width: 160px;
-`;
-
-const NarrowSelectWrapper = styled.div`
-  position: relative;
   flex-shrink: 0;
   width: 160px;
 `;

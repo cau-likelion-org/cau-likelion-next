@@ -9,7 +9,7 @@ import PaginationNavigation from '@common/pagination/PaginationNavigation';
 import HorizontalScrollArea from '@common/scrollArea/HorizontalScrollArea';
 import TextField from '@common/textField/TextField';
 import TextSelect from '@common/select/TextSelect';
-import ProjectFilterSelect from '@project/projects/ProjectFilterSelect';
+import ListboxSelect from '@common/select/ListboxSelect';
 import { PART_OPTIONS_MOCK } from '@recruit/apply/mock';
 import { IcDownload, IcSearch } from '@assets/svg';
 import { downloadCsv } from '@utils/csv';
@@ -274,7 +274,7 @@ const Filters = styled.div`
   gap: 18px;
 `;
 
-const FilterSelect = styled(ProjectFilterSelect)`
+const FilterSelect = styled(ListboxSelect)`
   flex-shrink: 0;
   width: 160px;
 `;

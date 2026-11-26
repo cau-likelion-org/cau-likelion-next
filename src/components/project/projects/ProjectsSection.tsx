@@ -22,7 +22,7 @@ import usePageEngagementTracking from 'src/hooks/usePageEngagementTracking';
 import { track, getDeviceType } from 'src/lib/amplitude';
 import styled from 'styled-components';
 import ProjectCard from './ProjectCard';
-import ProjectFilterSelect from './ProjectFilterSelect';
+import ListboxSelect from '@common/select/ListboxSelect';
 import { containerCss, media } from '@utils/constant/breakpoint';
 import useUserProfile from 'src/apis/useUserProfile';
 
@@ -150,13 +150,13 @@ const ProjectsSection = ({ staticData }: { staticData: ArchivingArrayType<IProje
         </ToastWrapper>
         <FilterRow>
           <FilterGroup>
-            <ProjectFilterSelect
+            <ListboxSelect
               heading="기수 구분"
               options={generationOptions}
               value={selectedGeneration}
               onChange={setSelectedGeneration}
             />
-            <ProjectFilterSelect
+            <ListboxSelect
               heading="프로젝트 구분"
               options={CATEGORY_OPTIONS}
               value={selectedCategory}

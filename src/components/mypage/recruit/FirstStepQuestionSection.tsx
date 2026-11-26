@@ -2,12 +2,10 @@ import { useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import Button from '@common/button/Button';
+import ListboxSelect from '@common/select/ListboxSelect';
 import DateTimeInput from '@common/dateTimeInput/DateTimeInput';
-import Select from '@common/select/Select';
-import ListboxOptions from '@common/select/ListboxOptions';
 import InterviewTimeGrid from '@recruit/InterviewTimeGrid';
 import { IcLineHorizontal } from '@assets/svg';
-import useListboxSelect from 'src/hooks/useListboxSelect';
 import useNotifyDirtyChange from 'src/hooks/useNotifyDirtyChange';
 import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import { REQUIRED_FIELD_MESSAGE } from '@utils/constant';
@@ -49,22 +47,12 @@ const FirstStepQuestionSection = ({ initialValues, onSave, onDirtyChange }: Firs
   // 저장된 값이 있으면 읽기 전용으로 시작하고, [수정]을 눌러야 편집할 수 있다
   const [hasSaved, setHasSaved] = useState(initialValues.startDate !== '');
   const [isEditing, setIsEditing] = useState(!hasSaved);
-  const [isUnitOpen, setIsUnitOpen] = useState(false);
   useNotifyDirtyChange(JSON.stringify(values) !== JSON.stringify(savedValues), onDirtyChange);
 
   const update = (patch: Partial<RecruitInterviewSetting>) => setValues((prev) => ({ ...prev, ...patch }));
 
   const unitLabel = UNIT_OPTIONS.find((option) => option.minutes === values.unitMinutes)?.label ?? '';
   const unitLabels = UNIT_OPTIONS.map((option) => option.label);
-  const { listId, wrapperRef, triggerRef, activeIndex, handleKeyDown, handleBlur, selectOption } = useListboxSelect({
-    isOpen: isUnitOpen,
-    options: unitLabels,
-    value: unitLabel,
-    onOpen: () => setIsUnitOpen(true),
-    onClose: () => setIsUnitOpen(false),
-    onSelect: (label) => update({ unitMinutes: UNIT_OPTIONS.find((option) => option.label === label)!.minutes }),
-  });
-
   const isDateRangeInvalid = !!values.startDate && !!values.endDate && values.endDate < values.startDate;
   const isTimeRangeInvalid = !!values.startTime && !!values.endTime && values.endTime <= values.startTime;
   const isFilled =
@@ -83,7 +71,6 @@ const FirstStepQuestionSection = ({ initialValues, onSave, onDirtyChange }: Firs
     onSave(values, hasSaved);
     setSavedValues(values);
     setHasSaved(true);
-    setIsUnitOpen(false);
     setIsEditing(false);
   };
 
@@ -97,7 +84,6 @@ const FirstStepQuestionSection = ({ initialValues, onSave, onDirtyChange }: Firs
   const handleCancel = () => {
     hideErrors();
     setValues(savedValues);
-    setIsUnitOpen(false);
     setIsEditing(false);
   };
 
@@ -175,29 +161,16 @@ const FirstStepQuestionSection = ({ initialValues, onSave, onDirtyChange }: Firs
               </RangeRow>
             </Field>
           </FieldGroup>
-          <UnitField ref={wrapperRef} onKeyDownCapture={handleKeyDown} onBlur={handleBlur}>
-            <Select
-              ref={triggerRef}
-              heading="선택 단위"
-              aria-label="선택 단위"
-              aria-expanded={isUnitOpen}
-              aria-controls={listId}
-              aria-activedescendant={isUnitOpen ? `${listId}-${activeIndex}` : undefined}
-              value={unitLabel}
-              readOnly={!isEditing}
-              onClick={() => setIsUnitOpen((prev) => !prev)}
-            >
-              {isUnitOpen && (
-                <ListboxOptions
-                  listId={listId}
-                  options={unitLabels}
-                  value={unitLabel}
-                  activeIndex={activeIndex}
-                  onSelect={selectOption}
-                />
-              )}
-            </Select>
-          </UnitField>
+          <UnitSelect
+            heading="선택 단위"
+            ariaLabel="선택 단위"
+            value={unitLabel}
+            options={unitLabels}
+            readOnly={!isEditing}
+            onChange={(label) =>
+              update({ unitMinutes: UNIT_OPTIONS.find((option) => option.label === label)!.minutes })
+            }
+          />
         </Card>
         <Preview>
           <PreviewTitle>지원자 화면 미리보기</PreviewTitle>
@@ -365,8 +338,11 @@ const RangeIcon = styled(IcLineHorizontal)`
   color: ${Label.assistive};
 `;
 
-const UnitField = styled.div`
-  width: 160px;
+const UnitSelect = styled(ListboxSelect)`
+  @media (max-width: 600px) {
+    flex: 0 0 auto;
+    width: 160px;
+  }
 `;
 
 const Preview = styled.div`

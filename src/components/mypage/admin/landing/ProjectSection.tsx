@@ -5,7 +5,7 @@ import Card from '@common/card/Card';
 import Checkbox from '@common/checkbox/Checkbox';
 import ContentBadge from '@common/badge/ContentBadge';
 import PaginationNavigation from '@common/pagination/PaginationNavigation';
-import ProjectFilterSelect from '@project/projects/ProjectFilterSelect';
+import ListboxSelect from '@common/select/ListboxSelect';
 import { PROJECT_CATEGORY_OPTIONS } from '@utils/constant';
 import { Label, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -75,7 +75,7 @@ const ProjectSection = ({
         )}
       </TitleRow>
       <FilterRow>
-        <ProjectFilterSelect
+        <ListboxSelect
           heading="기수 구분"
           options={generationOptions}
           value={generationFilter}
@@ -84,7 +84,7 @@ const ProjectSection = ({
             setPage(1);
           }}
         />
-        <ProjectFilterSelect
+        <ListboxSelect
           heading="프로젝트 구분"
           options={CATEGORY_OPTIONS}
           value={categoryFilter}

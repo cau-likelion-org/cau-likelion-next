@@ -5,31 +5,41 @@ import Select from '@common/select/Select';
 import ListboxOptions from '@common/select/ListboxOptions';
 import useListboxSelect from 'src/hooks/useListboxSelect';
 
-interface ProjectFilterSelectProps {
+interface ListboxSelectProps {
   className?: string;
   heading?: string;
   options: string[];
   value: string;
   onChange: (value: string) => void;
   required?: boolean;
+  placeholder?: string;
+  disabled?: boolean;
+  readOnly?: boolean;
+  ariaLabel?: string;
   status?: 'normal' | 'positive' | 'negative';
   description?: string;
   leadingIcon?: ReactNode;
   hideValue?: boolean;
+  fullWidth?: boolean;
 }
 
-const ProjectFilterSelect = ({
+const ListboxSelect = ({
   className,
   heading = '',
   options,
   value,
   onChange,
   required,
+  placeholder,
+  disabled = false,
+  readOnly = false,
+  ariaLabel,
   status,
   description,
   leadingIcon,
   hideValue,
-}: ProjectFilterSelectProps) => {
+  fullWidth = false,
+}: ListboxSelectProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const { listId, wrapperRef, triggerRef, activeIndex, handleKeyDown, handleBlur, selectOption } = useListboxSelect({
     isOpen,
@@ -39,15 +49,26 @@ const ProjectFilterSelect = ({
     onClose: () => setIsOpen(false),
     onSelect: onChange,
   });
+  const isInteractive = !disabled && !readOnly;
 
   return (
-    <Wrapper className={className} ref={wrapperRef} onKeyDownCapture={handleKeyDown} onBlur={handleBlur}>
+    <Wrapper
+      className={className}
+      $fullWidth={fullWidth}
+      ref={wrapperRef}
+      onKeyDownCapture={handleKeyDown}
+      onBlur={handleBlur}
+    >
       <Select
         ref={triggerRef}
         heading={heading}
         required={required}
+        placeholder={placeholder}
         value={value}
+        disabled={disabled}
+        readOnly={readOnly}
         onClick={() => setIsOpen((prev) => !prev)}
+        aria-label={ariaLabel}
         aria-expanded={isOpen}
         aria-activedescendant={isOpen ? `${listId}-${activeIndex}` : undefined}
         aria-controls={listId}
@@ -56,7 +77,7 @@ const ProjectFilterSelect = ({
         leadingIcon={leadingIcon}
         hideValue={hideValue}
       >
-        {isOpen && (
+        {isInteractive && isOpen && (
           <ListboxOptions
             listId={listId}
             options={options}
@@ -70,18 +91,22 @@ const ProjectFilterSelect = ({
   );
 };
 
-export default ProjectFilterSelect;
+export default ListboxSelect;
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{ $fullWidth: boolean }>`
   position: relative;
-  width: 160px;
+  width: ${(props) => (props.$fullWidth ? '100%' : '160px')};
   display: flex;
   flex-direction: column;
   gap: 8px;
 
-  @media (max-width: 600px) {
-    flex: 1 0 0;
-    min-width: 0;
-    width: auto;
-  }
+  ${(props) =>
+    !props.$fullWidth &&
+    `
+    @media (max-width: 600px) {
+      flex: 1 0 0;
+      min-width: 0;
+      width: auto;
+    }
+  `}
 `;

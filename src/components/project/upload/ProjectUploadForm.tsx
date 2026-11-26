@@ -14,7 +14,7 @@ import TextField from '@common/textField/TextField';
 import Textarea from '@common/textarea/Textarea';
 import Toast from '@common/toast/Toast';
 import { ToastWrapper } from '@common/toast/toastLayout';
-import ProjectFilterSelect from '@project/projects/ProjectFilterSelect';
+import ListboxSelect from '@common/select/ListboxSelect';
 import TechStackInput from '@mypage/admin/component/TechStackInput';
 import { Generation } from '@@types/request';
 import {
@@ -449,7 +449,7 @@ const ProjectUploadForm = ({ mode = 'create', initialData }: ProjectUploadFormPr
               }
             />
           </NarrowField>
-          <ProjectFilterSelect
+          <ListboxSelect
             heading="프로젝트 구분"
             required
             options={PROJECT_CATEGORY_OPTIONS}
