@@ -15,7 +15,7 @@ import BlogSection, {
   BLOG_CATEGORY_BY_LABEL,
   isBlogItemInvalid,
 } from '@mypage/admin/blog/BlogSection';
-import { syncListSection } from '@mypage/admin/utils';
+import { syncListSection } from '@utils/listSync';
 import useLeaveGuard from 'src/hooks/useLeaveGuard';
 import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import { getGenerations } from 'src/apis/account';

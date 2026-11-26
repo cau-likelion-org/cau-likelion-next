@@ -13,7 +13,7 @@ import { PageNavigation } from 'src/apis/activity';
 import { IcCircleCloseOutline, IcCircleExclamation, IcImage } from '@assets/svg';
 import { BackgroundWhite, Label, Line, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
-import { createId } from '../utils';
+import { createId } from '@utils/listSync';
 
 // imageName엔 원본 파일명이 아니라 업로드된 이미지의 URL이 들어있어(S3 URL만 내려옴),
 // 화면에 보여줄 파일명은 URL 마지막 경로에서 추출한다

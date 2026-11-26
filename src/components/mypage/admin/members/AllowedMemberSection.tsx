@@ -13,7 +13,7 @@ import { IcCaretDown, IcCaretUp, IcPlus } from '@assets/svg';
 import { getServerMessage, isEmailFormatInvalid, isUnfilled } from '@utils/index';
 import { BackgroundColor, Black, Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
-import { createId } from '../utils';
+import { createId } from '@utils/listSync';
 
 interface LocalAllowedItem {
   key: string;

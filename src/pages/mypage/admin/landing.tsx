@@ -19,7 +19,7 @@ import ActivitySection, {
 import ProjectSection, { FeaturedProject, isProjectSelectionInvalid } from '@mypage/admin/landing/ProjectSection';
 import FAQSection from '@mypage/admin/landing/FAQSection';
 import { FaqItem, isFaqItemInvalid } from '@mypage/component/FaqCardList';
-import { syncListSection } from '@mypage/admin/utils';
+import { syncListSection } from '@utils/listSync';
 import useLeaveGuard from 'src/hooks/useLeaveGuard';
 import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import { getTracks, createTrack, updateTrack, deleteTrack, TrackResponse } from 'src/apis/track';

@@ -9,7 +9,7 @@ import useListItems from 'src/hooks/useListItems';
 import { isUnfilled } from '@utils/index';
 import { BackgroundWhite, Black, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
-import { createId } from '../utils';
+import { createId } from '@utils/listSync';
 
 export interface TalentItem {
   id: string;

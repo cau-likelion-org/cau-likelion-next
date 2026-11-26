@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import Alert from '@common/alert/Alert';
 import Button from '@common/button/Button';
 import Category from '@common/category/Category';
-import { createId } from '@mypage/admin/utils';
+import { createId } from '@utils/listSync';
 import { IcPlus } from '@assets/svg';
 import useNotifyDirtyChange from 'src/hooks/useNotifyDirtyChange';
 import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
