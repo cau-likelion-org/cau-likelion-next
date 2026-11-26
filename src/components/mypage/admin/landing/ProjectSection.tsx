@@ -72,9 +72,9 @@ const ProjectSection = ({
       <TitleRow tabIndex={-1} aria-invalid={showErrors && isProjectSelectionInvalid(projects)}>
         <Title>프로젝트</Title>
         {showErrors && isProjectSelectionInvalid(projects) && (
-          <ErrorText $status="negative">
+          <FieldDescription $status="negative">
             노출 프로젝트는 최소 {MIN_EXPOSED_PROJECT_COUNT}개 이상 선택해 주세요.
-          </ErrorText>
+          </FieldDescription>
         )}
       </TitleRow>
       <FilterRow>
@@ -146,13 +146,10 @@ const TitleRow = styled.div`
 `;
 
 const Title = styled.p`
+  flex-shrink: 0;
   margin: 0;
   color: ${Label.normal};
   ${typographyCss(Typography.heading2.bold)}
-`;
-
-const ErrorText = styled(FieldDescription)`
-  width: auto;
 `;
 
 const FilterRow = styled.div`
