@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
 
-import { toDateString } from '@utils/date';
+import { toDateString, toMinutesOfDay, toTimeOfDay } from '@utils/date';
 import { BackgroundWhite, Black, Label, Orange } from '@utils/constant/color';
 import { media } from '@utils/constant/breakpoint';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -34,19 +34,11 @@ const getDates = (startDate: string, endDate: string) => {
   return dates;
 };
 
-const toMinutes = (time: string) => {
-  const [hours, minutes] = time.split(':').map(Number);
-  return hours * 60 + minutes;
-};
-
-const toTimeLabel = (minutes: number) =>
-  `${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`;
-
 const getTimes = (startTime: string, endTime: string, unitMinutes: number) => {
   if (!startTime || !endTime || unitMinutes <= 0) return [];
   const times: string[] = [];
-  for (let minutes = toMinutes(startTime); minutes <= toMinutes(endTime); minutes += unitMinutes) {
-    times.push(toTimeLabel(minutes));
+  for (let minutes = toMinutesOfDay(startTime); minutes <= toMinutesOfDay(endTime); minutes += unitMinutes) {
+    times.push(toTimeOfDay(minutes));
   }
   return times;
 };

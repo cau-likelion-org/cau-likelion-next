@@ -24,12 +24,12 @@ export const toDateTimeLabel = (date: Date) => {
   );
 };
 
-const toMinutesOfDay = (time: string) => {
+export const toMinutesOfDay = (time: string) => {
   const [hours, minutes] = time.split(':').map(Number);
   return hours * 60 + minutes;
 };
 
-const toTimeOfDay = (minutes: number) => `${pad2(Math.floor(minutes / 60))}:${pad2(minutes % 60)}`;
+export const toTimeOfDay = (minutes: number) => `${pad2(Math.floor(minutes / 60))}:${pad2(minutes % 60)}`;
 
 export const formatInterviewSlots = (slots: string[], unitMinutes: number) => {
   const ranges: { date: string; start: number; end: number }[] = [];
