@@ -27,7 +27,7 @@ import {
 import useRoleGuard from 'src/apis/useRoleGuard';
 import useTokenStore from 'src/store/useTokenStore';
 import { COMMON_PART_NAME } from '@utils/constant';
-import { canManageRecruit } from '@utils/index';
+import { canManageRecruit } from '@utils/role';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 

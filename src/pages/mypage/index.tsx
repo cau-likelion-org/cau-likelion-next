@@ -1,7 +1,7 @@
 import { ReactElement, useState } from 'react';
 import useLoginRequired from 'src/hooks/useLoginRequired';
 import { INACTIVE_MEMBER_NOTICE_KEY } from '@utils/constant';
-import { canCreateAttendance, isAdminRole, isAttendanceTarget } from '@utils/index';
+import { canCreateAttendance, isAdminRole, isAttendanceTarget } from '@utils/role';
 import styled from 'styled-components';
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import Toast from '@common/toast/Toast';

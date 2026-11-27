@@ -1,6 +1,6 @@
 import { env } from 'src/lib/env';
 import { UserProfile } from '@@types/request';
-import { isAdminRole } from '@utils/index';
+import { isAdminRole } from '@utils/role';
 import { AmplitudeEventName, AmplitudeEventProperties } from 'src/lib/amplitudeEvents';
 
 type AmplitudeModule = typeof import('@amplitude/analytics-browser');

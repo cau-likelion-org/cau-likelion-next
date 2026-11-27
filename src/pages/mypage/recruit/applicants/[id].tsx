@@ -9,7 +9,7 @@ import PageLoadingGate from '@common/pageGate/PageLoadingGate';
 import ApplicantDetailView from '@mypage/recruit/ApplicantDetailView';
 import { getApplicant } from '@mypage/recruit/applicantMock';
 import useRoleGuard from 'src/apis/useRoleGuard';
-import { canDeleteApplication, canManageRecruit } from '@utils/index';
+import { canDeleteApplication, canManageRecruit } from '@utils/role';
 
 const MyPageRecruitApplicantDetail = () => {
   const router = useRouter();

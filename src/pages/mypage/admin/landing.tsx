@@ -35,7 +35,7 @@ import {
 import { uploadFile } from 'src/apis/upload';
 import useRoleGuard from 'src/apis/useRoleGuard';
 import useTokenStore from 'src/store/useTokenStore';
-import { canManageSitePages } from '@utils/index';
+import { canManageSitePages } from '@utils/role';
 
 const trackToLocal = (track: TrackResponse): TrackIntroItem => ({
   id: String(track.id),

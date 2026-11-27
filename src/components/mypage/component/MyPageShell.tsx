@@ -7,7 +7,7 @@ import Sidebar, { PATHNAME_TO_ACTIVE, SidebarActive } from '@mypage/component/Si
 import PageLoadingGate from '@common/pageGate/PageLoadingGate';
 import PageScrollbar from '@common/pageScrollbar/PageScrollbar';
 import { IcChevronRight } from '@assets/svg';
-import { canManageRecruit, canManageSitePages } from '@utils/index';
+import { canManageRecruit, canManageSitePages } from '@utils/role';
 import { Black, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { containerCss, media } from '@utils/constant/breakpoint';

@@ -16,7 +16,7 @@ import { getRecruitDashboard } from '@mypage/recruit/dashboard/dashboardMock';
 import { ENROLLMENT_STATUS_OPTIONS, GRADE_OPTIONS } from '@recruit/apply/mock';
 import { IcCaretDown } from '@assets/svg';
 import useRoleGuard from 'src/apis/useRoleGuard';
-import { canManageRecruit } from '@utils/index';
+import { canManageRecruit } from '@utils/role';
 import { DashboardCount, formatRatio } from '@utils/recruitDashboard';
 import { Black, Label, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';

@@ -30,7 +30,8 @@ import {
 import useTokenStore from 'src/store/useTokenStore';
 import useLoginRequired from 'src/hooks/useLoginRequired';
 import { INACTIVE_MEMBER_NOTICE_KEY, TRACK_OPTIONS } from '@utils/constant';
-import { excludeCommonPart, isAdminRole, isFullAdminRole } from '@utils/index';
+import { excludeCommonPart } from '@utils/index';
+import { isAdminRole, isFullAdminRole } from '@utils/role';
 import { IcPlus } from '@assets/svg';
 import { Fill, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';

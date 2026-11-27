@@ -26,7 +26,7 @@ import {
 } from 'src/apis/account';
 import useRoleGuard from 'src/apis/useRoleGuard';
 import useTokenStore from 'src/store/useTokenStore';
-import { canManageMemberRoles } from '@utils/index';
+import { canManageMemberRoles } from '@utils/role';
 import { ROLE_LABEL, TRACK_OPTIONS } from '@utils/constant';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';

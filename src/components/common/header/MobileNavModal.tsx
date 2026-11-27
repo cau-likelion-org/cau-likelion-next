@@ -8,7 +8,7 @@ import NotificationSetting from '@common/header/NotificationSetting';
 import useTokenStore from 'src/store/useTokenStore';
 import useRecruitModalStore from 'src/store/useRecruitModalStore';
 import useScrollLock from 'src/hooks/useScrollLock';
-import { canManageSitePages } from '@utils/index';
+import { canManageSitePages } from '@utils/role';
 import { track, getDeviceType, markNextAction } from 'src/lib/amplitude';
 import { BackgroundColor, Black, Line } from '@utils/constant/color';
 import { media } from '@utils/constant/breakpoint';

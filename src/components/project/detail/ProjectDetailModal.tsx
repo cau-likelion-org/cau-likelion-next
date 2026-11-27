@@ -12,7 +12,7 @@ import LoadingArea from '@common/loading/LoadingArea';
 import EmptyState from '@common/emptyState/EmptyState';
 import { PROJECT_CATEGORY_LABEL, ProjectResponseDto, getProjectDetail, getSortedProjectImages } from 'src/apis/project';
 import useScrollLock from 'src/hooks/useScrollLock';
-import { isAdminRole } from '@utils/index';
+import { isAdminRole } from '@utils/role';
 import styled from 'styled-components';
 import ImageCarousel from '@common/carousel/ImageCarousel';
 import ProjectDetailMetaPanel from './ProjectDetailMetaPanel';

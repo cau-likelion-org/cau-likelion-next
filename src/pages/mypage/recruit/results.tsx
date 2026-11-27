@@ -16,7 +16,7 @@ import ScreeningStageView from '@mypage/recruit/results/ScreeningStageView';
 import { ScreeningStage, getScreeningData } from '@mypage/recruit/results/resultMock';
 import useRoleGuard from 'src/apis/useRoleGuard';
 import useLeaveGuard from 'src/hooks/useLeaveGuard';
-import { canManageRecruit } from '@utils/index';
+import { canManageRecruit } from '@utils/role';
 import { Black } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
