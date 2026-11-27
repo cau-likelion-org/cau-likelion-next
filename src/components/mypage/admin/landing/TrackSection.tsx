@@ -10,7 +10,7 @@ import RemoveCardButton from '@mypage/component/RemoveCardButton';
 import CharCount from '@common/charCount/CharCount';
 import ChipInput from '@common/chipInput/ChipInput';
 import useListItems from 'src/hooks/useListItems';
-import { isUnfilled } from '@utils/index';
+import { isUnfilled } from '@utils/validation';
 import { BackgroundWhite, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { createId } from '@utils/listSync';

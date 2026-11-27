@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import TextField from '@common/textField/TextField';
 import { applyFieldHeadingCss } from '@recruit/apply/applyFieldStyle';
 import { PASSWORD_CAPTION, PASSWORD_MISMATCH_MESSAGE } from '@recruit/apply/validation';
-import { getPasswordError, isUnfilled } from '@utils/index';
+import { getPasswordError, isUnfilled } from '@utils/validation';
 
 export const isPasswordFieldsValid = (password: string, passwordConfirm: string) =>
   !isUnfilled(password) && !getPasswordError(password) && passwordConfirm === password;

@@ -13,7 +13,7 @@ import { ToastWrapper } from '@common/toast/toastLayout';
 import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import { RecruitQuestion } from '@mypage/recruit/mock';
 import { ApplyAnswersDraft } from '@utils/applyDraft';
-import { isUnfilled } from '@utils/index';
+import { isUnfilled } from '@utils/validation';
 import { media } from '@utils/constant/breakpoint';
 
 import ApplyFieldHeading from './ApplyFieldHeading';

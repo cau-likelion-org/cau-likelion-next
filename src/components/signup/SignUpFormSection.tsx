@@ -18,7 +18,8 @@ import {
   SIGNUP_SUCCESS_FLAG_KEY,
   SIGNUP_UNAPPROVED_EMAIL_FLAG_KEY,
 } from 'src/apis/signUp';
-import { excludeCommonPart, isUnfilled } from '@utils/index';
+import { excludeCommonPart } from '@utils/index';
+import { isUnfilled } from '@utils/validation';
 import { track, newAttemptId } from 'src/lib/amplitude';
 
 const classifyFailureReason = (error: unknown): 'validation_error' | 'network_error' | 'server_error' => {

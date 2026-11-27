@@ -14,7 +14,8 @@ import EditButton from '@mypage/admin/component/EditButton';
 import Alert from '@common/alert/Alert';
 import { IcSearch } from '@assets/svg';
 import { NUMERIC_ONLY_REGEX, ROLE_LABEL } from '@utils/constant';
-import { excludeCommonPart, isEmailFormatInvalid } from '@utils/index';
+import { excludeCommonPart } from '@utils/index';
+import { isEmailFormatInvalid } from '@utils/validation';
 import { Black, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 

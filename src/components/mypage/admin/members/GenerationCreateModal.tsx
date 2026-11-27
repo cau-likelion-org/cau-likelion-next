@@ -10,7 +10,7 @@ import ScrollArea from '@common/scrollArea/ScrollArea';
 import ChipInput from '@common/chipInput/ChipInput';
 import useFocusTrap from 'src/hooks/useFocusTrap';
 import { NUMERIC_ONLY_REGEX } from '@utils/constant';
-import { isUnfilled } from '@utils/index';
+import { isUnfilled } from '@utils/validation';
 import { BackgroundWhite, Label, State, Status } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 

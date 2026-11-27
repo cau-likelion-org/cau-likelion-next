@@ -24,7 +24,7 @@ import { UploadDomain, uploadFile } from 'src/apis/upload';
 import { getGenerations } from 'src/apis/account';
 import { NUMERIC_ONLY_REGEX } from '@utils/constant';
 import { BackgroundColor, Label, Line } from '@utils/constant/color';
-import { isUnfilled } from '@utils/index';
+import { isUnfilled } from '@utils/validation';
 import { resizeImageFile } from '@utils/resizeImage';
 import useImageSlots from 'src/hooks/useImageSlots';
 import { Typography, typographyCss } from '@utils/constant/typography';
