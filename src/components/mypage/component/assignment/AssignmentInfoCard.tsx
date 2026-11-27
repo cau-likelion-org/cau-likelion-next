@@ -1,16 +1,8 @@
 import styled from 'styled-components';
 
+import { formatDueDate } from 'src/apis/assignment';
 import { BackgroundWhite, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
-
-const formatDeadline = (value: string) => {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return value;
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
-  return `${y}/${m}/${d}`;
-};
 
 interface AssignmentInfoCardProps {
   title: string;
@@ -25,7 +17,7 @@ const AssignmentInfoCard = ({ title, detail, endDate }: AssignmentInfoCardProps)
       <Title>{title}</Title>
       {detail && <Detail>{detail}</Detail>}
       <Deadline>
-        마감일 <Bar>ㅣ</Bar> {formatDeadline(endDate)}
+        마감일 <Bar>ㅣ</Bar> {formatDueDate(endDate)}
       </Deadline>
     </Card>
   );
