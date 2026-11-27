@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { ArchivingArrayType, IGalleryData, IProjectData, ISessionData } from '@@types/request';
 import { COMMON_PART_NAME } from '@utils/constant';
 
 // 서버가 내려주는 실패 사유(중복, 형식 오류, 마감 초과 등)를 그대로 보여줄 때 사용
@@ -25,35 +24,3 @@ export const formatFileSize = (bytes: number) => {
 // 갤러리 게시물 파트 선택지에만 있는 "공통"은 관리자 화면의 파트 목록·드롭다운에서는 제외한다
 export const excludeCommonPart = <T extends { name: string }>(parts: T[]) =>
   parts.filter((part) => part.name !== COMMON_PART_NAME);
-
-export const sortArchivingListDesc = <T extends IGalleryData | IProjectData>(
-  data: ArchivingArrayType<T>,
-): Array<[string, T[]]> => {
-  return Object.entries(data).sort(([a], [b]) => Number(b) - Number(a));
-};
-
-interface IPath {
-  params: IParams;
-}
-type IParams = Record<'project_id' | 'session_id' | 'gallery_id', string>;
-
-export function getPaths<T extends IProjectData | IGalleryData | ISessionData>(
-  archivingArray: ArchivingArrayType<T>,
-  type: 'project' | 'session' | 'gallery',
-) {
-  const paths = [] as IPath[];
-
-  let key: 'project_id' | 'session_id' | 'gallery_id';
-  if (type === 'project') key = 'project_id';
-  if (type === 'session') key = 'session_id';
-  if (type === 'gallery') key = 'gallery_id';
-
-  Object.values(archivingArray).forEach((archivings) => {
-    archivings.forEach((archiving) => {
-      const obj = {} as IParams;
-      obj[key] = String(archiving.id);
-      paths.push({ params: obj });
-    });
-  });
-  return paths;
-}

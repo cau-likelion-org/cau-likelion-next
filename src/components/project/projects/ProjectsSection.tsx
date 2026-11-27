@@ -18,7 +18,7 @@ import {
   PROJECT_UPDATED_FLAG_KEY,
   getProjects,
 } from 'src/apis/project';
-import { sortArchivingListDesc } from '@utils/index';
+import { sortArchivingListDesc } from '@utils/archiving';
 import { isAdminRole } from '@utils/role';
 import usePageEngagementTracking from 'src/hooks/usePageEngagementTracking';
 import { track, getDeviceType } from 'src/lib/amplitude';
