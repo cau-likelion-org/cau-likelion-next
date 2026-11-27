@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-24.04-arm
     environment:
       name: aws-staging
-      url: http://${{ vars.EC2_HOST }}
+      url: https://dev.cau-likelion.org
     permissions:
       contents: read
       packages: write
@@ -75,8 +75,9 @@ jobs:
           set -e
           trap 'docker logout ghcr.io' EXIT
           docker pull "$TAG"
+          docker network inspect web-net >/dev/null 2>&1 || docker network create web-net
           docker rm -f web || true
-          docker run -d --name web -p 80:3000 --restart unless-stopped "$TAG"
+          docker run -d --name web --network web-net -p 127.0.0.1:3000:3000 --restart unless-stopped "$TAG"
           docker image prune -af
-          curl -fsS -o /dev/null --retry 10 --retry-delay 3 --retry-all-errors http://localhost/
+          curl -fsS -o /dev/null --retry 10 --retry-delay 3 --retry-all-errors http://localhost:3000/
           EOF
