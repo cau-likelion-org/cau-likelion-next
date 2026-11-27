@@ -2,9 +2,12 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const router = vi.hoisted(() => ({ pathname: '/' }));
 const track = vi.hoisted(() => vi.fn());
+const trackBeforeUnload = vi.hoisted(() => vi.fn());
+const document = vi.hoisted(() => ({ visibilityState: 'visible' }));
 
 vi.mock('next/router', () => ({ default: router }));
-vi.mock('src/lib/amplitude', () => ({ track, getDeviceType: () => 'mobile' }));
+vi.mock('src/lib/amplitude', () => ({ track, trackBeforeUnload, getDeviceType: () => 'mobile' }));
+vi.stubGlobal('document', document);
 
 const loadReporter = async () => (await import('./webVitals')).reportWebVital;
 
@@ -19,7 +22,22 @@ describe('reportWebVital', () => {
   beforeEach(() => {
     vi.resetModules();
     track.mockClear();
+    trackBeforeUnload.mockClear();
     router.pathname = '/';
+    document.visibilityState = 'visible';
+  });
+
+  it('페이지가 가려진 뒤 보고된 지표는 바로 전송되도록 trackBeforeUnload로 보낸다', async () => {
+    const reportWebVital = await loadReporter();
+    document.visibilityState = 'hidden';
+
+    reportWebVital(metric('CLS', 0.05));
+
+    expect(trackBeforeUnload).toHaveBeenCalledWith(
+      'Web Vital Reported',
+      expect.objectContaining({ metric_name: 'CLS' }),
+    );
+    expect(track).not.toHaveBeenCalled();
   });
 
   it('지표를 Web Vital Reported 이벤트로 보낸다', async () => {
