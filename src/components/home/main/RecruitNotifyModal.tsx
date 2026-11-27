@@ -12,14 +12,12 @@ import useFocusTrap from 'src/hooks/useFocusTrap';
 import { getAvailableParts, subscribeRecruitment } from 'src/apis/recruitment';
 import useRecruitModalStore from 'src/store/useRecruitModalStore';
 import { excludeCommonPart } from '@utils/index';
-import { isUnfilled } from '@utils/validation';
+import { EMAIL_REGEX, isUnfilled } from '@utils/validation';
 import { BackgroundColor, Fill, Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { MOBILE } from '@home/common/responsive';
 
 const KAKAO_CHANNEL_URL = 'https://pf.kakao.com/_HMPxfG';
-// 한글 등 이메일에 쓰일 수 없는 문자가 섞여 들어가는 것을 막기 위해 허용 문자를 제한한다
-const EMAIL_REGEX = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
 
 const RecruitNotifyModal = ({ onClose }: { onClose: () => void }) => {
   const [name, setName] = useState('');
