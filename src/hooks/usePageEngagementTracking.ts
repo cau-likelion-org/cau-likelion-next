@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { Router } from 'next/router';
-import { track, getLastNextActionAt } from 'src/lib/amplitude';
+import { track, trackBeforeUnload, getLastNextActionAt } from 'src/lib/amplitude';
 import { AmplitudeEventName, AmplitudeEventProperties } from 'src/lib/amplitudeEvents';
 
 // react-hooks/purity가 useEffect 안의 Date.now() 호출도 막아서, 계측용 타임스탬프는 밖에서 받는다
@@ -66,7 +66,7 @@ const usePageEngagementTracking = ({
       nextPath = url;
     };
 
-    const trackExit = () => {
+    const trackExit = (send: typeof track = track) => {
       if (exited) return;
       exited = true;
       const properties = {
@@ -82,16 +82,17 @@ const usePageEngagementTracking = ({
           : {}),
         ...extraProperties,
       };
-      track(exitEvent, properties as AmplitudeEventProperties[typeof exitEvent]);
+      send(exitEvent, properties as AmplitudeEventProperties[typeof exitEvent]);
     };
+    const handlePageHide = () => trackExit(trackBeforeUnload);
 
     if (scrollDepthEvent) window.addEventListener('scroll', handleScroll, { passive: true });
-    window.addEventListener('pagehide', trackExit);
+    window.addEventListener('pagehide', handlePageHide);
     if (trackExitContext) Router.events.on('routeChangeStart', handleRouteChangeStart);
 
     return () => {
       if (scrollDepthEvent) window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('pagehide', trackExit);
+      window.removeEventListener('pagehide', handlePageHide);
       if (trackExitContext) Router.events.off('routeChangeStart', handleRouteChangeStart);
       trackExit();
     };

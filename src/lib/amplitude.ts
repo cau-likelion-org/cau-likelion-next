@@ -43,6 +43,9 @@ const loadAmplitude = (): Promise<AmplitudeModule | null> => {
             fileDownloads: false,
           },
         });
+        document.addEventListener('visibilitychange', () => {
+          if (document.visibilityState === 'visible') amplitude.setTransport('fetch');
+        });
         ready = true;
         loadedAmplitude = amplitude;
         for (const item of buffered) {
@@ -82,6 +85,7 @@ export const trackBeforeUnload = <E extends AmplitudeEventName>(
   if (ready && loadedAmplitude) {
     loadedAmplitude.setTransport('beacon');
     loadedAmplitude.track(eventName, eventProperties);
+    loadedAmplitude.flush();
     return;
   }
 

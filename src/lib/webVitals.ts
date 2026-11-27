@@ -1,7 +1,7 @@
 import NextRouter from 'next/router';
 import { useReportWebVitals } from 'next/web-vitals';
 
-import { getDeviceType, track } from 'src/lib/amplitude';
+import { getDeviceType, track, trackBeforeUnload } from 'src/lib/amplitude';
 import { AmplitudeEventProperties } from 'src/lib/amplitudeEvents';
 
 type WebVitalMetric = Pick<AmplitudeEventProperties['Web Vital Reported'], 'value' | 'rating'> & {
@@ -14,7 +14,8 @@ let landingRoute: string | null = null;
 
 export const reportWebVital = (metric: WebVitalMetric) => {
   landingRoute ??= NextRouter.pathname;
-  track('Web Vital Reported', {
+  const send = document.visibilityState === 'hidden' ? trackBeforeUnload : track;
+  send('Web Vital Reported', {
     metric_name: metric.name,
     value: metric.value,
     rating: metric.rating,
