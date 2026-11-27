@@ -20,16 +20,15 @@ import { applyFieldHeadingCss } from '@recruit/apply/applyFieldStyle';
 import { EMAIL_FORMAT_MESSAGE } from '@recruit/apply/validation';
 import useLeaveGuard from 'src/hooks/useLeaveGuard';
 import { IcDocument, IcDownload, IcLink } from '@assets/svg';
+import { formatFileSize } from '@utils/index';
+import { formatInterviewSlots, toDateTimeLabel } from '@utils/date';
 import {
-  formatFileSize,
-  formatInterviewSlots,
   formatPhoneNumber,
   isEmailFormatInvalid,
   isNameFormatInvalid,
   isPhoneFormatInvalid,
   isUnfilled,
-  toDateTimeLabel,
-} from '@utils/index';
+} from '@utils/validation';
 import { Black, Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 

@@ -7,7 +7,7 @@ import PaginationNavigation from '@common/pagination/PaginationNavigation';
 import HorizontalScrollArea from '@common/scrollArea/HorizontalScrollArea';
 import TextField from '@common/textField/TextField';
 import Tooltip from '@common/tooltip/Tooltip';
-import { formatInterviewSlots } from '@utils/index';
+import { formatInterviewSlots } from '@utils/date';
 import { INTERVIEW_WARNING, getInterviewWarnings } from '@utils/recruitResult';
 import { Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';

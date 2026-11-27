@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import ContentBadge from '@common/badge/ContentBadge';
 import DateTimeInput from '@common/dateTimeInput/DateTimeInput';
 import { FieldDescription } from '@common/fieldStatus/FieldStatus';
-import { toDateTimeLabel } from '@utils/index';
+import { toDateTimeLabel } from '@utils/date';
 import { isWithinMonths } from '@utils/recruitResult';
 import { BackgroundWhite, Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';

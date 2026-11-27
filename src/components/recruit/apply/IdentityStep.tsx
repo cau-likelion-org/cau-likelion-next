@@ -15,7 +15,7 @@ import {
   isNameFormatInvalid,
   isPhoneFormatInvalid,
   isUnfilled,
-} from '@utils/index';
+} from '@utils/validation';
 import { Label } from '@utils/constant/color';
 import { media } from '@utils/constant/breakpoint';
 import { Typography, typographyCss } from '@utils/constant/typography';

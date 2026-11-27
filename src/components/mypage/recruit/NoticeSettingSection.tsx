@@ -9,6 +9,7 @@ import FaqCardList, { isFaqItemInvalid } from '@mypage/component/FaqCardList';
 import useNotifyDirtyChange from 'src/hooks/useNotifyDirtyChange';
 import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import { REQUIRED_FIELD_MESSAGE } from '@utils/constant';
+import { toDateString } from '@utils/date';
 import { BackgroundWhite, Black, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 
@@ -52,9 +53,6 @@ const isNoticeEntered = (notice: RecruitNoticeSetting) =>
   notice.faqs.length > 0 &&
   !notice.faqs.some(isFaqItemInvalid);
 
-const toDateValue = (date: Date) =>
-  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-
 const NoticeSettingSection = ({ initialValues, onSave, onDirtyChange }: NoticeSettingSectionProps) => {
   const [values, setValues] = useState(initialValues);
   const [savedValues, setSavedValues] = useState(initialValues);
@@ -64,7 +62,7 @@ const NoticeSettingSection = ({ initialValues, onSave, onDirtyChange }: NoticeSe
   const isDirty = JSON.stringify(values) !== JSON.stringify(savedValues);
 
   useNotifyDirtyChange(isDirty, onDirtyChange);
-  const today = toDateValue(new Date());
+  const today = toDateString(new Date());
 
   const isFilled = isNoticeFilled(values);
 

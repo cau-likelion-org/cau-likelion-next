@@ -11,7 +11,7 @@ import {
   getFieldBackground,
   getFieldBoxShadow,
 } from '@common/fieldStatus/FieldStatus';
-import { formatDate } from '@utils/index';
+import { formatDate } from '@utils/date';
 
 type DateTimeInputType = 'date' | 'time';
 

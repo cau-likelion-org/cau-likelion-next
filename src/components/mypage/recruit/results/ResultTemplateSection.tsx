@@ -5,7 +5,7 @@ import Button from '@common/button/Button';
 import Category from '@common/category/Category';
 import Textarea from '@common/textarea/Textarea';
 import { IcCircleCheck } from '@assets/svg';
-import { toDateTimeLabel } from '@utils/index';
+import { toDateTimeLabel } from '@utils/date';
 import { TEMPLATE_VARIABLES, fillResultTemplate } from '@utils/recruitResult';
 import { Inverse, Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';

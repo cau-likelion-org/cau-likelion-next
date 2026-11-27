@@ -11,7 +11,7 @@ import InterviewTimeGrid, { getInterviewSlotKeys } from '@recruit/InterviewTimeG
 import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import { RECRUIT_INTERVIEW_SETTING_MOCK } from '@mypage/recruit/mock';
 import { ApplyBasicDraft } from '@utils/applyDraft';
-import { isUnfilled } from '@utils/index';
+import { isUnfilled } from '@utils/validation';
 import { Label } from '@utils/constant/color';
 
 import ApplyFieldHeading from './ApplyFieldHeading';

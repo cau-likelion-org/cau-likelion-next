@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import styled from 'styled-components';
 
-import { AssignmentStaffSummary } from 'src/apis/assignment';
+import { AssignmentStaffSummary, formatDueDate } from 'src/apis/assignment';
 import { IcChevronLeft } from '@assets/svg';
 import { Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
@@ -12,16 +12,6 @@ interface StaffAssignmentCardProps {
   assignments: AssignmentStaffSummary[];
   onDetail?: () => void;
 }
-
-// 마감 기한 → ~YYYY/MM/DD
-const formatDeadline = (endDate: string) => {
-  const date = new Date(endDate);
-  if (Number.isNaN(date.getTime())) return endDate;
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
-  return `~${y}/${m}/${d}`;
-};
 
 // 운영진 과제 목록 카드: 한 주차의 개별 과제별 제출 현황 요약 (Figma 8.4.1)
 const StaffAssignmentCard = ({ week, assignments, onDetail }: StaffAssignmentCardProps) => {
@@ -53,7 +43,7 @@ const StaffAssignmentCard = ({ week, assignments, onDetail }: StaffAssignmentCar
             <Row key={assignment.assignmentId}>
               <TitleLine>
                 <AssignmentTitle>{assignment.title}</AssignmentTitle>
-                <Deadline>{formatDeadline(assignment.endDate)}</Deadline>
+                <Deadline>~{formatDueDate(assignment.endDate)}</Deadline>
               </TitleLine>
               <Stats>
                 <Count $emphasis={assignment.pendingReviewCount > 0 ? 'orange' : 'dark'} $mobileOrder={1}>

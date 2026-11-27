@@ -12,7 +12,7 @@ import RemoveCardButton from '@mypage/component/RemoveCardButton';
 import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';
 import useLeaveGuard from 'src/hooks/useLeaveGuard';
 import { AssignmentCreateRequest, AssignmentSubmitType } from 'src/apis/assignment';
-import { isUnfilled } from '@utils/index';
+import { isUnfilled } from '@utils/validation';
 import DateTimeInput from '@common/dateTimeInput/DateTimeInput';
 import { BackgroundWhite, Black, Fill, Label, Line, Orange, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';

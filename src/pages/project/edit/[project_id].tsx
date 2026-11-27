@@ -7,7 +7,7 @@ import PageLoadingGate from '@common/pageGate/PageLoadingGate';
 import ProjectUploadForm from '@project/upload/ProjectUploadForm';
 import { ProjectResponseDto, getProjectById } from 'src/apis/project';
 import useTokenStore from 'src/store/useTokenStore';
-import { isAdminRole } from '@utils/index';
+import { isAdminRole } from '@utils/role';
 import useRoleGuard from 'src/apis/useRoleGuard';
 
 const ProjectEdit = () => {

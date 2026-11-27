@@ -9,7 +9,7 @@ import { createId } from '@utils/listSync';
 import { IcHandleDesktop } from '@assets/svg';
 import useDragReorder from 'src/hooks/useDragReorder';
 import useListItems from 'src/hooks/useListItems';
-import { isUnfilled } from '@utils/index';
+import { isUnfilled } from '@utils/validation';
 import { BackgroundWhite, Label, Line } from '@utils/constant/color';
 
 export interface FaqItem {

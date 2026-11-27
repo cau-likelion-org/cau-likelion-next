@@ -20,7 +20,7 @@ import {
 } from '@mypage/recruit/mock';
 import useRoleGuard from 'src/apis/useRoleGuard';
 import useLeaveGuard from 'src/hooks/useLeaveGuard';
-import { canManageRecruit } from '@utils/index';
+import { canManageRecruit } from '@utils/role';
 
 const TAB_ITEMS = [
   { key: 'generation', label: '기수 설정' },

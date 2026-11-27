@@ -6,7 +6,7 @@ import { FieldDescription } from '@common/fieldStatus/FieldStatus';
 import Textarea from '@common/textarea/Textarea';
 import Button from '@common/button/Button';
 import DateTimeInput from '@common/dateTimeInput/DateTimeInput';
-import { isUnfilled } from '@utils/index';
+import { isUnfilled } from '@utils/validation';
 import { Label, Line, Orange, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import useRequiredFieldsSave from 'src/hooks/useRequiredFieldsSave';

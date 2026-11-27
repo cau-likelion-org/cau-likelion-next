@@ -11,7 +11,7 @@ import RecruitPageHeader from '@recruit/RecruitPageHeader';
 import PasswordFields, { isPasswordFieldsValid } from '@recruit/PasswordFields';
 import { requestPasswordResetCode, resetApplicantPassword } from '@recruit/apply/mock';
 import { EMAIL_FORMAT_MESSAGE } from '@recruit/apply/validation';
-import { isEmailFormatInvalid, isUnfilled } from '@utils/index';
+import { isEmailFormatInvalid, isUnfilled } from '@utils/validation';
 import { media } from '@utils/constant/breakpoint';
 
 const PasswordResetForm = () => {

@@ -22,7 +22,8 @@ import { getGenerations } from 'src/apis/account';
 import { getBlogs, createBlog, updateBlog, deleteBlog, BlogResponse, BlogRequest } from 'src/apis/blog';
 import useRoleGuard from 'src/apis/useRoleGuard';
 import useTokenStore from 'src/store/useTokenStore';
-import { canManageSitePages, getServerMessage } from '@utils/index';
+import { getServerMessage } from '@utils/index';
+import { canManageSitePages } from '@utils/role';
 
 const blogToLocal = (blog: BlogResponse): BlogItem => ({
   id: String(blog.id),

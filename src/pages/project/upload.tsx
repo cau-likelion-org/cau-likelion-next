@@ -3,7 +3,7 @@ import { ReactElement } from 'react';
 import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import PageLoadingGate from '@common/pageGate/PageLoadingGate';
 import ProjectUploadForm from '@project/upload/ProjectUploadForm';
-import { isAdminRole } from '@utils/index';
+import { isAdminRole } from '@utils/role';
 import useRoleGuard from 'src/apis/useRoleGuard';
 
 const ProjectUpload = () => {

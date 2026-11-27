@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 import TextField from '@common/textField/TextField';
-import { isUnfilled } from '@utils/index';
+import { isUnfilled } from '@utils/validation';
 import { BackgroundWhite, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 

@@ -8,7 +8,7 @@ import { ToastWrapper } from '@common/toast/toastLayout';
 import MyPageShell from '@mypage/component/MyPageShell';
 import ApplicantListSection from '@mypage/recruit/ApplicantListSection';
 import useRoleGuard from 'src/apis/useRoleGuard';
-import { canManageRecruit } from '@utils/index';
+import { canManageRecruit } from '@utils/role';
 
 const MyPageRecruitApplicants = () => {
   const router = useRouter();

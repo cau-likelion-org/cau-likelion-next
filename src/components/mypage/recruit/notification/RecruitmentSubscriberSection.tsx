@@ -11,7 +11,7 @@ import PaginationNavigation from '@common/pagination/PaginationNavigation';
 import TextSelect from '@common/select/TextSelect';
 import { Black, Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
-import { formatDate } from '@utils/index';
+import { formatDate } from '@utils/date';
 
 export const ALL_PART_FILTER = '전체';
 const PAGE_SIZE = 6;

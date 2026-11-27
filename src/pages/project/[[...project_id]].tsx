@@ -2,7 +2,7 @@ import LayoutFullWidth from '@common/layout/LayoutFullWidth';
 import ProjectDetailModal from '@project/detail/ProjectDetailModal';
 import ProjectPageHeader from '@project/projects/ProjectPageHeader';
 import ProjectsSection from '@project/projects/ProjectsSection';
-import { getPaths } from '@utils/index';
+import { getPaths } from '@utils/archiving';
 import { GetStaticPaths, InferGetStaticPropsType } from 'next';
 import { useRouter } from 'next/router';
 import { ReactElement } from 'react';

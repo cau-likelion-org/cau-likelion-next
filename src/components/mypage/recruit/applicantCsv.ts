@@ -1,4 +1,4 @@
-import { toDateTimeLabel, formatInterviewSlots } from '@utils/index';
+import { toDateTimeLabel, formatInterviewSlots } from '@utils/date';
 
 import { ApplicantAnswer, ApplicantDetail, SECOND_STEP_QUESTIONS_BY_PART } from './applicantMock';
 import { RecruitQuestion } from './mock';

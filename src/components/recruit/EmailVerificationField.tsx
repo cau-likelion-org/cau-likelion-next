@@ -8,7 +8,7 @@ import { IcCircleCheck } from '@assets/svg';
 import { VERIFICATION_CODE_LENGTH, VERIFICATION_EXPIRE_SECONDS, verifyCode } from '@recruit/apply/mock';
 import { applyFieldHeadingCss } from '@recruit/apply/applyFieldStyle';
 import useCountdown, { formatCountdown } from 'src/hooks/useCountdown';
-import { isEmailFormatInvalid, isUnfilled } from '@utils/index';
+import { isEmailFormatInvalid, isUnfilled } from '@utils/validation';
 import { Label, Orange, State } from '@utils/constant/color';
 import { media } from '@utils/constant/breakpoint';
 import { Typography, typographyCss } from '@utils/constant/typography';

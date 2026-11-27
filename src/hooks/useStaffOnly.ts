@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 
 import useTokenStore from 'src/store/useTokenStore';
-import { isAdminRole } from '@utils/index';
+import { isAdminRole } from '@utils/role';
 import useUserProfile from 'src/apis/useUserProfile';
 
 // 운영진(STAFF/PRESIDENT/ADMIN) 전용 화면 가드.

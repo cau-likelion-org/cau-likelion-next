@@ -15,7 +15,7 @@ import { applyFieldHeadingCss } from '@recruit/apply/applyFieldStyle';
 import { ApplicantLoginError, ApplicantNotFoundError, SubmittedHistory, loginApplicant } from '@recruit/apply/mock';
 import useApplicantSessionStore from 'src/store/useApplicantSessionStore';
 import { deriveDraftKey } from '@utils/applyDraft';
-import { isUnfilled } from '@utils/index';
+import { isUnfilled } from '@utils/validation';
 import { media } from '@utils/constant/breakpoint';
 
 export interface ApplicantLoginFormProps {

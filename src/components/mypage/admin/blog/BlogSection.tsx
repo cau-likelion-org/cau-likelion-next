@@ -9,7 +9,8 @@ import { IcAdd, IcCircleClose, IcLink, IcSearch } from '@assets/svg';
 import useListItems from 'src/hooks/useListItems';
 import { BlogCategory } from 'src/apis/blog';
 import { NUMERIC_ONLY_REGEX } from '@utils/constant';
-import { isUnfilled, invertRecord } from '@utils/index';
+import { invertRecord } from '@utils/index';
+import { isUnfilled } from '@utils/validation';
 import { BackgroundWhite, Label, Line } from '@utils/constant/color';
 import { createId } from '@utils/listSync';
 

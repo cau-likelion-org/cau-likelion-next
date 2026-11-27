@@ -7,7 +7,7 @@ import CharCount from '@common/charCount/CharCount';
 import AddCardButton from '@mypage/component/AddCardButton';
 import RemoveCardButton from '@mypage/component/RemoveCardButton';
 import useListItems from 'src/hooks/useListItems';
-import { isUnfilled } from '@utils/index';
+import { isUnfilled } from '@utils/validation';
 import { BackgroundWhite, Black, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { createId } from '@utils/listSync';

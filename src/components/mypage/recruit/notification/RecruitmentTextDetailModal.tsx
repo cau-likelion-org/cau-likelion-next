@@ -7,7 +7,7 @@ import LinkifiedText from './LinkifiedText';
 import { IcCaretDown, IcCaretUp } from '@assets/svg';
 import { BackgroundColor, Fill, Label, Line, Orange, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
-import { formatDateTime } from '@utils/index';
+import { formatDateTime } from '@utils/date';
 import { SendTargetChipRow, useChipRowOverflow } from './SendTargetChipList';
 import EmailModalLayout, { Field } from './EmailModalLayout';
 
