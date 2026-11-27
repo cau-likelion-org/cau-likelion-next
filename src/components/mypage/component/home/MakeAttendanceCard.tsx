@@ -14,7 +14,7 @@ import {
   getWeeklyAttendanceByDate,
 } from 'src/apis/attendance';
 import useTokenStore from 'src/store/useTokenStore';
-import { toDateString } from '@utils/index';
+import { toDateString } from '@utils/date';
 import { BackgroundWhite, Black, Label, Line, State } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 import { media } from '@utils/constant/breakpoint';

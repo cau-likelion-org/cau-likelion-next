@@ -9,7 +9,7 @@ import EmptyState from '@common/emptyState/EmptyState';
 import PaginationNavigation from '@common/pagination/PaginationNavigation';
 import { Black, Label, Line } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
-import { formatDate, formatDateTime } from '@utils/index';
+import { formatDate, formatDateTime } from '@utils/date';
 
 const PAGE_SIZE = 6;
 

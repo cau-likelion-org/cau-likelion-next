@@ -8,7 +8,7 @@ import Tooltip from '@common/tooltip/Tooltip';
 import { AssignmentDisplayStatus, AssignmentMemberSubmission, AssignmentSubmission } from 'src/apis/assignment';
 import { Black, Label, Line, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
-import { formatDate, formatDateTime } from '@utils/index';
+import { formatDate, formatDateTime } from '@utils/date';
 
 const STATUS_BADGE: Record<AssignmentDisplayStatus, { label: string; color: 'neutral' | 'accent' }> = {
   BEFORE_SUBMISSION: { label: '제출 전', color: 'neutral' },

@@ -20,7 +20,8 @@ import { applyFieldHeadingCss } from '@recruit/apply/applyFieldStyle';
 import { EMAIL_FORMAT_MESSAGE } from '@recruit/apply/validation';
 import useLeaveGuard from 'src/hooks/useLeaveGuard';
 import { IcDocument, IcDownload, IcLink } from '@assets/svg';
-import { formatFileSize, formatInterviewSlots, toDateTimeLabel } from '@utils/index';
+import { formatFileSize } from '@utils/index';
+import { formatInterviewSlots, toDateTimeLabel } from '@utils/date';
 import {
   formatPhoneNumber,
   isEmailFormatInvalid,

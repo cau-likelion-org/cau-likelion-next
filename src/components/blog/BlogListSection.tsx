@@ -11,7 +11,7 @@ import TextField from '@common/textField/TextField';
 import PageScrollbar from '@common/pageScrollbar/PageScrollbar';
 import { IcSearch } from '@assets/svg';
 import { getBlogs, BlogCategory } from 'src/apis/blog';
-import { toDateString } from '@utils/index';
+import { toDateString } from '@utils/date';
 import { Label } from '@utils/constant/color';
 import { track } from 'src/lib/amplitude';
 

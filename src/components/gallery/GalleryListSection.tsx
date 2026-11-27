@@ -21,7 +21,7 @@ import { getGenerations } from 'src/apis/account';
 import { COMMON_PART_NAME } from '@utils/constant';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
-import { formatDate } from '@utils/index';
+import { formatDate } from '@utils/date';
 import { isAdminRole } from '@utils/role';
 import { getSessionList, getSession } from 'src/apis/session';
 import { getHistoryList, getHistory } from 'src/apis/history';

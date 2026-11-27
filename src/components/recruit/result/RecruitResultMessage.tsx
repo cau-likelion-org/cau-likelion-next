@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-import { toDateTimeLabel } from '@utils/index';
+import { toDateTimeLabel } from '@utils/date';
 import { Label, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 

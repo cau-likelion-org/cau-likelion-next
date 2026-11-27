@@ -9,7 +9,7 @@ import ApplicantLoginForm from '@recruit/history/ApplicantLoginForm';
 import RecruitSummary from '@recruit/RecruitSummary';
 import { SubmittedHistory } from '@recruit/apply/mock';
 import { RECRUIT_MOCK } from '@recruit/mock';
-import { toDateTimeLabel } from '@utils/index';
+import { toDateTimeLabel } from '@utils/date';
 
 const RecruitHistory = () => {
   const router = useRouter();

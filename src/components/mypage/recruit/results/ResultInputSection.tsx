@@ -16,7 +16,7 @@ import { Typography, typographyCss } from '@utils/constant/typography';
 import { ApplicantDetail, SCREENING_RESULT_LABEL, SUBMISSION_STATUS_LABEL, ScreeningResult } from '../applicantMock';
 import ResultSection, { BorderBox, GrayBox, Inset } from './ResultSection';
 import { InterviewInfo, ScreeningStage } from './resultMock';
-import { formatDate } from '@utils/index';
+import { formatDate } from '@utils/date';
 import useApplicantFilter, { ALL } from '../useApplicantFilter';
 
 const PAGE_SIZE = 6;

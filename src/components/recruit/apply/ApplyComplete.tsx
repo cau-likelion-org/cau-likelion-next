@@ -2,7 +2,7 @@ import { useRouter } from 'next/router';
 
 import RecruitSummary from '@recruit/RecruitSummary';
 import { IllustApplyComplete } from '@assets/svg';
-import { toDateTimeLabel } from '@utils/index';
+import { toDateTimeLabel } from '@utils/date';
 
 export interface ApplyCompleteProps {
   generation: number;

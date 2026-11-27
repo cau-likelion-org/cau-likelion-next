@@ -7,7 +7,7 @@ import Button from '@common/button/Button';
 import Category from '@common/category/Category';
 import EmptyState from '@common/emptyState/EmptyState';
 import useNotifyDirtyChange from 'src/hooks/useNotifyDirtyChange';
-import { toDateTimeLabel } from '@utils/index';
+import { toDateTimeLabel } from '@utils/date';
 import { Label, Orange } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
 

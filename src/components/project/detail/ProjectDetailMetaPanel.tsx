@@ -4,7 +4,7 @@ import Chip from '@common/chip/Chip';
 import { LinkPlatform, ProjectLinkDto } from 'src/apis/project';
 import { Label } from '@utils/constant/color';
 import { Typography, typographyCss } from '@utils/constant/typography';
-import { formatDate } from '@utils/index';
+import { formatDate } from '@utils/date';
 import styled from 'styled-components';
 
 const LINK_PLATFORM_ICON: Record<LinkPlatform, ReactNode> = {
